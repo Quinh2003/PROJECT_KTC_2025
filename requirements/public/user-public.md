@@ -27,31 +27,7 @@
 
 ---
 
-## 🧩 User Story #3: Tạo đơn vận chuyển
-
-- **User Story**: _As a user, I want to create a new delivery order so that I can ship my items easily._
-- **Acceptance Criteria**:
-  - Nhập đầy đủ thông tin đơn: tên hàng, địa chỉ gửi/nhận, loại hàng
-  - Gửi API `/orders`
-  - Trả về mã đơn hàng + trạng thái “Chờ xử lý”
-- **Priority**: High  
-- **Story Points**: 8
-
----
-
-## 🧩 User Story #4: Tra cứu đơn hàng
-
-- **User Story**: _As a user, I want to track my shipment so that I know where it is._
-- **Acceptance Criteria**:
-  - Nhập mã đơn hàng
-  - Hiển thị: trạng thái đơn (timeline), vị trí hiện tại (nếu có)
-  - Gọi API `/orders/{id}`
-- **Priority**: Medium  
-- **Story Points**: 5
-
----
-
-## 🧩 User Story #5: Cập nhật thông tin cá nhân
+## 🧩 User Story #3: Cập nhật thông tin cá nhân
 
 - **User Story**: _As a user, I want to update my profile so that I can manage my personal info._
 - **Acceptance Criteria**:
@@ -63,7 +39,33 @@
 
 ---
 
-## 🧩 User Story #6: Nhận thông báo trạng thái đơn hàng
+## 🧩 User Story #4: Tạo đơn vận chuyển
+
+- **User Story**: _As a user, I want to create a delivery order and choose prepaid or postpaid payment._
+- **Acceptance Criteria**:
+  - Nhập thông tin hàng hóa, địa chỉ gửi & nhận
+  - Chọn loại dịch vụ: hỏa tốc, tiêu chuẩn, tiết kiệm
+  - **Chọn phương thức thanh toán**: Trả trước hoặc Trả sau
+  - Tính toán cước phí tự động
+  - Gửi API để tạo đơn và nhận mã đơn
+- **Priority**: High
+- **Story Points**: 8
+
+---
+
+## 🧩 User Story #4: Tra cứu đơn hàng
+
+- **User Story**: _As a user, I want to track my order status via code._
+- **Acceptance Criteria**:
+  - Nhập mã đơn vận
+  - Nhận được trạng thái hiện tại, lịch sử trạng thái
+  - Hiển thị thông tin người nhận/người gửi (ẩn 1 phần)
+- **Priority**: Medium
+- **Story Points**: 3
+
+---
+
+## 🧩 User Story #5: Nhận thông báo trạng thái đơn hàng
 
 - **User Story**: _As a user, I want to get real-time updates about my orders so that I don’t miss any changes._
 - **Acceptance Criteria**:
@@ -75,13 +77,12 @@
 
 ---
 
-## 🧩 User Story #7: Hỗ trợ trực tuyến (Live Chat)
+## 🧩 User Story #6: Hỗ trợ trực tuyến
 
 - **User Story**: _As a user, I want to chat with support so that I can get help when I need it._
 - **Acceptance Criteria**:
-  - Giao diện chat hoặc form liên hệ
-  - Nếu không có nhân viên: “Chúng tôi sẽ phản hồi qua email”
-  - Nhận phản hồi qua email hoặc giao diện
+  - Điền thông tin cá nhân và nội dung cần hỗ trợ qua form
+  - Nhận phản hồi qua email
 - **Priority**: Medium  
 - **Story Points**: 8
   
