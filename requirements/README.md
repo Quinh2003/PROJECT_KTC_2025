@@ -5,10 +5,12 @@
 Dự án KTC Logistics được chia thành 3 phần chính:
 
 ### 🌐 **Frontend Applications**
+
 - **Public Website (NextJS)** - Dành cho người dùng cuối
 - **Admin Dashboard (ReactJS)** - Dành cho logistics manager
 
 ### ⚙️ **Backend System**
+
 - **API Server (Spring Boot)** - REST API và business logic
 - **Real-time Services** - WebSocket, GPS tracking
 - **Database** - MySQL/PostgreSQL
@@ -17,20 +19,38 @@ Dự án KTC Logistics được chia thành 3 phần chính:
 
 ## 📁 Requirements Structure
 
+Tất cả user stories được tổ chức trong 4 files chính:
+
 ```
 requirements/
-├── public/
-│   └── user-stories.md          # Public website user stories (7 stories)
-├── admin/
-│   └── user-stories.md          # Admin dashboard user stories (5 stories)
-├── backend/
-│   └── user-stories.md          # Backend system user stories (7 stories)
-└── README.md                    # This overview file
+├── README.md                       # Tổng quan dự án (file này)
+├── user-stories-public.md          # 7 user stories cho người dùng cuối (NextJS)
+├── user-stories-admin.md           # 5 user stories cho logistics manager (ReactJS)
+└── user-stories-backend.md         # 7 user stories cho hệ thống backend (Spring Boot)
 ```
 
 ---
 
-## 📊 Summary Statistics
+## � How to Use These Documents
+
+### For Developers
+
+1. **Start with this README** to understand overall project scope
+2. **Choose your component** and read corresponding user stories:
+   - Frontend developers → `user-stories-public.md` or `user-stories-admin.md`
+   - Backend developers → `user-stories-backend.md`
+3. **Implement stories** in priority order (High → Medium)
+4. **Cross-reference** between components for integration points
+
+### For Project Managers
+
+- Use **Summary Statistics** section for planning and resource allocation
+- Track progress using **Development Phases**
+- Monitor completion against **Success Criteria**
+
+---
+
+## �📊 Summary Statistics
 
 | Component | User Stories | Total Story Points | Priority High | Priority Medium |
 |-----------|--------------|-------------------|---------------|-----------------|
@@ -87,12 +107,19 @@ requirements/
 - Priority được phân loại theo tầm quan trọng business
 - Mỗi component có thể phát triển độc lập nhưng cần integration testing
 
+### Implementation Guidelines
+
+- **Sprint Planning**: Sử dụng story points để estimate effort
+- **Dependencies**: Backend APIs cần hoàn thành trước frontend features
+- **Testing**: Mỗi user story cần unit tests và integration tests
+- **Documentation**: Update API docs khi implement backend stories
+
 ---
 
 ## 🔗 Related Documents
 
-- [Public Website User Stories](./public/user-stories.md)
-- [Admin Dashboard User Stories](./admin/user-stories.md) 
-- [Backend System User Stories](./backend/user-stories.md)
+- [Public Website User Stories](./user-stories-public.md)
+- [Admin Dashboard User Stories](./user-stories-admin.md)
+- [Backend System User Stories](./user-stories-backend.md)
 - [Technical Architecture](../architecture.md) _(to be created)_
 - [API Documentation](../api-docs.md) _(to be created)_
