@@ -1,4 +1,4 @@
-# ✅ User Stories - Public Website (NextJS - Người dùng)
+# ✅ User Stories - Public Website (NextJS - Người dùng cuối)
 
 ## 🧩 User Story #1: Đăng ký tài khoản
 
@@ -33,7 +33,7 @@
 - **Acceptance Criteria**:
   - Nhập đầy đủ thông tin đơn: tên hàng, địa chỉ gửi/nhận, loại hàng
   - Gửi API `/orders`
-  - Trả về mã đơn hàng + trạng thái “Chờ xử lý”
+  - Trả về mã đơn hàng + trạng thái "Chờ xử lý"
 - **Priority**: High  
 - **Story Points**: 8
 
@@ -65,7 +65,7 @@
 
 ## 🧩 User Story #6: Nhận thông báo trạng thái đơn hàng
 
-- **User Story**: _As a user, I want to get real-time updates about my orders so that I don’t miss any changes._
+- **User Story**: _As a user, I want to get real-time updates about my orders so that I don't miss any changes._
 - **Acceptance Criteria**:
   - Khi đơn đổi trạng thái → hiện toast notification
   - Có thể xem danh sách lịch sử thông báo
@@ -80,12 +80,7 @@
 - **User Story**: _As a user, I want to chat with support so that I can get help when I need it._
 - **Acceptance Criteria**:
   - Giao diện chat hoặc form liên hệ
-  - Nếu không có nhân viên: “Chúng tôi sẽ phản hồi qua email”
+  - Nếu không có nhân viên: "Chúng tôi sẽ phản hồi qua email"
   - Nhận phản hồi qua email hoặc giao diện
 - **Priority**: Medium  
 - **Story Points**: 8
-  
-User Story #9: Theo dõi lộ trình tài xế theo thời gian thực
-
-User Story: As a logistics manager, I want to track drivers’ routes in real-time so that I can monitor their progress and ensure timely deliveries.
-Acceptance Criteria:
