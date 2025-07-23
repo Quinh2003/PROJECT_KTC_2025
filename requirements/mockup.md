@@ -1,159 +1,66 @@
-# 🖥️ Mô tả Giao Diện Mockup Hệ Thống Logistics
+# 📐 Giao Diện Mô Phỏng – Hệ Thống Quản Lý Logistics Thông Minh
 
-Tài liệu mô tả chi tiết các màn hình giao diện chính của hệ thống quản lý logistics, bao gồm các thành phần UI, chức năng và tương tác người dùng.
-
----
-
-## 🔐 1. Trang Đăng Nhập
-
-### 🎯 Mục đích:
-
-Cho phép người dùng đăng nhập vào hệ thống theo vai trò đã được cấp.
-
-### 🧩 Thành phần giao diện:
-
-- **Email Input**:
-  - Nhập địa chỉ email
-  - Placeholder: `example@email.com`
-  - Kiểm tra định dạng email hợp lệ
-- **Password Input**:
-  - Nhập mật khẩu (ẩn ký tự)
-  - Placeholder: `••••••••`
-- **Checkbox**: "Ghi nhớ đăng nhập"
-- **Button**: `Đăng nhập`
-- **Link**: `Quên mật khẩu?`
-- **Validation**:
-  - Nếu thiếu hoặc sai định dạng ➝ hiển thị lỗi rõ ràng
+Dưới đây là danh sách các giao diện chính theo **vai trò người dùng** trong hệ thống. Giao diện được thiết kế trực quan, dễ thao tác để tối ưu hiệu quả quản lý logistics nội bộ (1PL).
 
 ---
 
-## 📝 2. Trang Đăng Ký
+## 🔐 1. Màn Hình Đăng Nhập
 
-### 🎯 Mục đích:
-
-Cho phép **khách hàng đăng ký tài khoản mới** để sử dụng hệ thống, bao gồm khả năng **tạo đơn hàng**.
-
-### 🧩 Thành phần giao diện:
-
-- **Form Đăng ký người dùng**:
-  - Họ và tên
-  - Email
-  - Mật khẩu
-  - Xác nhận mật khẩu
-- **Dropdown (ẩn/hiện)**: Chọn loại tài khoản (mặc định là "Khách hàng")
-- **Button**: `Đăng ký`
-- **Validation**:
-  - Kiểm tra định dạng email
-  - Mật khẩu tối thiểu 6 ký tự, phải trùng nhau
-  - Nếu có lỗi ➝ hiển thị thông báo rõ ràng
-- **Chuyển hướng**:
-  - Sau khi đăng ký thành công ➝ chuyển đến trang đăng nhập hoặc dashboard khách hàng
+- 📧 **Trường thông tin**: Email, mật khẩu  
+- 🔄 **Phân quyền**: Tự động điều hướng tới dashboard theo vai trò (Dispatcher, Admin...)
 
 ---
 
-## 📊 3. Dashboard (Trang tổng quan)
+## 🖥️ 2. Dashboard Theo Vai Trò
 
-### 🎯 Mục đích:
+### 🧭 **Dispatcher Dashboard**
 
-Hiển thị thông tin thống kê, điều hướng các tính năng chính tùy theo vai trò (Quản trị / Điều phối / Khách hàng).
-
-### 🧩 Thành phần:
-
-- **Sidebar điều hướng**:
-  - Đơn hàng
-  - Phương tiện
-  - Kho bãi
-  - Báo cáo
-  - AI Lộ trình
-- **Header**:
-  - Tên người dùng + avatar
-  - Nút đăng xuất
-- **Main content**:
-  - Biểu đồ hiệu suất (theo vai trò)
-  - Danh sách các hành động gần đây
+- ➕ Tạo lệnh vận chuyển mới  
+- 🚚 Gán xe & tài xế cho từng lệnh  
+- 📋 Danh sách lệnh: chờ – đang vận chuyển – đã hoàn thành  
+- 🧮 Bộ lọc: theo ngày, tuyến đường, trạng thái  
+- 🗺️ Bản đồ theo dõi trực quan hành trình xe  
 
 ---
 
-## 📦 4. Quản Lý Đơn Hàng
+### 🛠 **Fleet Manager Dashboard**
 
-### 🎯 Mục đích:
-
-Cho phép người dùng (tùy vai trò) tạo và quản lý đơn hàng.
-
-### 🧩 Khác biệt theo vai trò:
-
-- **Khách hàng**:
-  - Có thể nhấn `Tạo đơn hàng`
-  - Nhập thông tin người nhận, địa chỉ, loại hàng
-  - Theo dõi trạng thái đơn hàng
-- **Điều phối viên / Quản trị viên**:
-  - Có thể cập nhật, xoá, phân công tài xế
-
-### 🧩 Thành phần chung:
-
-- **Bảng danh sách**:
-  - Mã đơn, người nhận, trạng thái, ngày tạo
-- **Bộ lọc**:
-  - Theo trạng thái / thời gian
-- **Nút hành động**:
-  - ➕ Tạo mới
-  - ✏️ Cập nhật
-  - 🗑️ Xoá
+- 🚛 Danh sách phương tiện (biển số, loại xe, tình trạng)  
+- 📆 Quản lý lịch bảo trì định kỳ  
+- 🔔 Nhắc nhở tự động khi gần tới hạn bảo trì  
+- 📜 Lịch sử vận hành từng phương tiện  
 
 ---
 
-## 🗺️ 5. Bản Đồ 3D Lộ Trình
+### 📱 **Driver Mobile App**
 
-### 🎯 Mục đích:
-
-Mô phỏng trực quan các tuyến vận chuyển.
-
-### 🧩 Thành phần:
-
-- Bản đồ 3D tương tác
-- Markers:
-  - Vị trí kho
-  - Phương tiện đang di chuyển
-- Chế độ xem:
-  - Theo từng tài xế
-  - Tổng thể hệ thống
+- 📥 Nhận lệnh mới từ Dispatcher  
+- 🔄 Cập nhật trạng thái: Đang nhận hàng / Đang giao / Đã giao thành công  
+- 🗺️ Xem chi tiết tuyến đường (Google Maps API tích hợp)  
+- 📸 Gửi hình ảnh biên nhận, ✍️ chữ ký điện tử  
 
 ---
 
-## 🤖 6. AI Đề Xuất Lộ Trình
+### 📊 **Operations Manager Dashboard**
 
-### 🎯 Mục đích:
-
-Đưa ra gợi ý tuyến đường tối ưu.
-
-### 🧩 Thành phần:
-
-- Chọn kho xuất phát + điểm đến
-- Tùy chọn ưu tiên: thời gian / chi phí
-- Hiển thị kết quả:
-  - Bản đồ
-  - Tuyến gợi ý chi tiết: khoảng cách, thời gian, chi phí ước tính
+- 📈 Tổng quan hiệu suất (hôm nay: giao đúng/trễ...)  
+- 🔍 Phân tích dữ liệu: tuyến trễ nhất, tài xế hiệu quả nhất  
+- 📊 Biểu đồ thống kê: heatmap, cột, tròn (bar, pie, heatmap)  
+- 📤 Xuất báo cáo định kỳ: PDF, Excel  
 
 ---
 
-## 📈 7. Thống Kê & Báo Cáo
+### 👑 **Admin Dashboard**
 
-### 🎯 Mục đích:
-
-Phân tích hiệu suất hoạt động của hệ thống.
-
-### 🧩 Thành phần:
-
-- **Biểu đồ cột**: số đơn theo trạng thái
-- **Biểu đồ tròn**: tỉ lệ giao đúng giờ
-- **Xuất báo cáo**:
-  - 📥 Excel (.xlsx)
-  - 📥 PDF
+- 👤 Quản lý người dùng: tạo, sửa, xoá tài khoản  
+- 🔐 Phân quyền vai trò: Dispatcher, Driver, Manager...  
+- ⚙️ Cấu hình hệ thống: API, IoT, lịch định kỳ  
+- 📑 Nhật ký hệ thống: theo dõi hoạt động (logs)
 
 ---
 
-✅ **Ghi chú UI/UX**:
+## 🧩 3. Giao Diện Hỗ Trợ
 
-- Giao diện phản hồi nhanh, tương thích mobile/tablet
-- Màu sắc rõ ràng, thân thiện
-- Luồng đăng nhập → dashboard → thao tác đơn hàng mượt mà
+- 🪟 **Modal xác nhận** khi xoá hoặc giao lệnh  
+- 🔔 **Thông báo real-time** (toast notifications)  
+- 📱 **Responsive UI**: Tương thích tablet, mobile  

@@ -1,56 +1,31 @@
-# 📁 File: 02-auth-page-stories.md
+# 🔐 Authentication Pages - User Stories
 
-## 🔐 Trang Đăng nhập / Đăng xuất / Đăng ký
+## ✅ US-AUTH-LOGIN-01
 
----
+**As a registered user**,  
+I want to log in using email and password,  
+So that I can truy cập hệ thống phù hợp với vai trò.  
+**Priority**: ⭐⭐⭐⭐⭐  
+**Story Points**: 5
 
-### ✅ US-AUTH-01: User Login
+### 📋 Acceptance Criteria
 
-- **As a User**  
-  I want to login with email and password  
-  So that I can access the system with appropriate permissions  
-- **🎯 Priority:** High  
-- **🧮 Story Points:** 3  
-
-#### 🎯 Tiêu chí chấp nhận:
-
-- Input validation cho định dạng email và yêu cầu password  
-- Checkbox "Remember me"  
-- Link "Forgot password"  
-- Chuyển hướng đến dashboard sau khi đăng nhập thành công  
-- Hiển thị thông báo lỗi nếu thông tin đăng nhập sai
+- Form đăng nhập với email & password
+- Báo lỗi khi thông tin sai
+- Chuyển hướng đúng dashboard theo vai trò
+>>>>>>> d0ff6f0 (requirements)
 
 ---
 
-### ✅ US-AUTH-02: Password Reset
+## ✅ US-AUTH-FORGOT-01
 
-- **As a User**  
-  I want to reset my password when I forget it  
-  So that I can regain access to my account  
-- **🎯 Priority:** Medium  
-- **🧮 Story Points:** 3  
+**As a user**,  
+I want to recover password via email,  
+So that I can lấy lại quyền truy cập khi quên mật khẩu.  
+**Priority**: ⭐⭐⭐⭐  
+**Story Points**: 3
 
-#### 🎯 Tiêu chí chấp nhận:
-- Nhập email để nhận liên kết đặt lại mật khẩu  
-- Liên kết reset có hiệu lực trong 24 giờ  
-- Form để đổi mật khẩu mới  
-- Gửi email xác nhận sau khi đổi mật khẩu thành công
+### 📋 Acceptance Criteria
 
----
-
-### ✅ US-AUTH-03: User Registration
-
-- **As a New User**  
-  I want to register with my personal information  
-  So that I can create a new account and access the system  
-- **🎯 Priority:** Medium  
-- **🧮 Story Points:** 4  
-
-#### 🎯 Tiêu chí chấp nhận:
-
-- Form đăng ký gồm: Họ tên, email, password, xác nhận password  
-- Xác thực định dạng email, password tối thiểu 8 ký tự  
-- Kiểm tra password và confirm password phải khớp nhau  
-- Checkbox chấp nhận điều khoản dịch vụ  
-- Hiển thị thông báo thành công và chuyển hướng sang trang đăng nhập hoặc dashboard  
-- Hiển thị lỗi rõ ràng nếu đăng ký không thành công (ví dụ: email đã tồn tại)
+- Gửi link reset mật khẩu qua email
+- Mã xác thực hết hạn sau 15 phút
