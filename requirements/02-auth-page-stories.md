@@ -1,6 +1,6 @@
 # 📁 File: 02-auth-page-stories.md
 
-## 🔐 Trang Đăng nhập / Đăng xuất
+## 🔐 Trang Đăng nhập / Đăng xuất / Đăng ký
 
 ---
 
