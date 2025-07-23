@@ -13,7 +13,6 @@ So that I can truy cập hệ thống phù hợp với vai trò.
 - Form đăng nhập với email & password
 - Báo lỗi khi thông tin sai
 - Chuyển hướng đúng dashboard theo vai trò
->>>>>>> d0ff6f0 (requirements)
 
 ---
 
