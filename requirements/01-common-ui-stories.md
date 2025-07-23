@@ -44,3 +44,5 @@ So that I can biết rõ mình sai ở đâu để xử lý.
 - Hiển thị lỗi rõ ràng, dễ hiểu
 - Có hướng dẫn khắc phục
 - Phân biệt lỗi frontend và backend
+
+---

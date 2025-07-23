@@ -1,6 +1,6 @@
 # 🧑‍💼 Vai Trò Người Dùng – KTC Logistics 2025
 
-Hệ thống được thiết kế với **5 vai trò chính**, mỗi vai trò có các chức năng riêng biệt nhằm tối ưu quy trình vận hành logistics nội bộ (1PL).
+Hệ thống được thiết kế với **5 vai trò chính**, mỗi vai trò có các chức năng riêng biệt nhằm tối ưu quy trình vận hành logistics nội bộ (1PL)
 
 | 👤 **Vai trò**         | ⚙️ **Chức năng chính**                                                                                       |
 |-----------------------|---------------------------------------------------------------------------------------------------------------|

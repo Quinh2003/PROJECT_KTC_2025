@@ -27,3 +27,5 @@ So that hệ thống hoạt động ổn định và theo chính sách.
 
 - Thiết lập tham số hệ thống
 - Tích hợp API, thông báo, thời gian định kỳ
+
+---
