@@ -64,3 +64,5 @@ Dưới đây là danh sách các giao diện chính theo **vai trò người d�
 - 🪟 **Modal xác nhận** khi xoá hoặc giao lệnh  
 - 🔔 **Thông báo real-time** (toast notifications)  
 - 📱 **Responsive UI**: Tương thích tablet, mobile  
+
+---

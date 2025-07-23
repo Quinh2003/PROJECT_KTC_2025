@@ -27,3 +27,5 @@ So that hệ thống ghi nhận đúng trạng thái đơn hàng.
 
 - Trạng thái: Đang nhận – Đang giao – Đã giao
 - Gửi ảnh, GPS, chữ ký khách
+
+---

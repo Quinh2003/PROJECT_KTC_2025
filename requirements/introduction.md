@@ -104,3 +104,5 @@ Nền tảng hướng đến các mục tiêu cốt lõi:
 | 🗺️ 3D Map Real-time        | 12           | ⭐⭐⭐⭐     | Sprint 3  |
 | 📊 Operations Analytics    | 11           | ⭐⭐⭐      | Sprint 4  |
 | 🔧 Common UI Components    | 8            | ⭐⭐⭐⭐⭐    | Sprint 1  |
+
+---
