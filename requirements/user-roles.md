@@ -1,117 +1,79 @@
-<!-- filepath: D:\PROJECT_KTC_2025\requirements\user-roles.md -->
-# 📘 user-roles.md - Vai trò và Phân quyền Người dùng
+# 🧑‍💼 Vai Trò Người Dùng – KTC Logistics 2025
 
-## 🎯 Mục đích
+Hệ thống được thiết kế với **5 vai trò chính**, mỗi vai trò có các chức năng riêng biệt nhằm tối ưu quy trình vận hành logistics nội bộ (1PL).
 
-Định nghĩa chi tiết vai trò và quyền hạn của từng loại người dùng trong hệ thống quản lý logistics.
+| 👤 **Vai trò**         | ⚙️ **Chức năng chính**                                                                                       |
+|-----------------------|---------------------------------------------------------------------------------------------------------------|
+| 🚦 **Dispatcher**      | - 📝 Tạo lệnh vận chuyển mới <br> - 👨‍✈️ Phân công tài xế và phương tiện phù hợp <br> - 🔄 Theo dõi trạng thái chuyến hàng <br> - ⚠️ Cập nhật thay đổi phát sinh nhanh chóng |
+| 🚛 **Fleet Manager**   | - 🚗 Quản lý đội xe <br> - 🛠️ Cập nhật & theo dõi lịch bảo trì xe định kỳ <br> - 🔔 Cảnh báo phương tiện gần tới hạn kỹ thuật |
+| 📱 **Driver (Tài xế)** | - 📥 Nhận lệnh mới từ mobile app <br> - 🗺️ Xem tuyến đường và trạng thái đơn <br> - 🔄 Cập nhật trạng thái vận chuyển <br> - 📸 Gửi ảnh hoá đơn, ✍️ ký nhận từ khách |
+| 📊 **Operations Manager** | - 👁️ Giám sát toàn hệ thống <br> - 📉 Phân tích hiệu suất: thời gian, trễ, tài xế tốt, tuyến hiệu quả <br> - 📤 Xuất báo cáo & đề xuất cải tiến |
+| 👑 **Admin**           | - 👤 Quản lý người dùng & phân quyền <br> - ⚙️ Cấu hình hệ thống, định kỳ, tích hợp API <br> - 📜 Theo dõi nhật ký hệ thống & quyền truy cập |
 
----
+## 👑 Quản trị viên (Admin)
 
-## 🔖 Nội dung chính
-
-- **Định nghĩa vai trò**: Mô tả rõ ràng từng vai trò trong hệ thống
-- **Ma trận phân quyền**: Bảng chi tiết quyền hạn theo chức năng
-- **Cấu trúc phân cấp**: Mối quan hệ giữa các vai trò
-- **Quy tắc kiểm soát**: Nguyên tắc kiểm soát quyền truy cập
-- **Quy trình đăng ký**: Các bước tạo tài khoản theo vai trò
-- **Quy trình phân quyền**: Cách thức gán và thay đổi quyền hạn
-
----
-
-## 🧩 Ma trận Phân quyền
-
-| 📌 Chức năng                         | 👑 Quản trị | 🚦 Điều phối | 🚚 Tài xế | 👤 Khách hàng |
-|-------------------------------------|:----------:|:------------:|:--------:|:-------------:|
-| Quản lý người dùng                  |     ✓      |      ✗       |    ✗     |       ✗       |
-| Tạo đơn hàng mới                    |     ✗      |      ✗       |    ✗     |       ✓       |
-| Xem đơn hàng của mình               |     ✓      |      ✓       |    ✓     |       ✓       |
-| Xem tất cả đơn hàng                 |     ✓      |      ✓       |    ✗     |       ✗       |
-| Cập nhật trạng thái đơn hàng        |     ✓      |      ✓       |    ✓     |       ✗       |
-| Xem bản đồ 3D                       |     ✓      |      ✓       |    ✓     |       ✗       |
-| Sử dụng AI đề xuất lộ trình         |     ✓      |      ✓       |    ✗     |       ✗       |
-| Xem báo cáo tổng hợp                |     ✓      |      ✗       |    ✗     |       ✗       |
-| Theo dõi GPS tài xế                 |     ✓      |      ✓       |    ✗     |       ✗       |
-| Quản lý phương tiện                 |     ✓      |      ✓       |    ✗     |       ✗       |
-
----
-
-## 👥 Mô tả Vai trò
-
-### 1. 👑 Quản trị viên (Administrator)
-
-**Mô tả**: Người có toàn quyền quản lý hệ thống.
+**Mô tả**: Người có toàn quyền cấu hình và giám sát hệ thống.
 
 **Trách nhiệm**:
 
 - Quản lý tài khoản người dùng và phân quyền
 - Cấu hình các thông số hệ thống
+- Tích hợp hệ thống bên ngoài qua API
 - Xem tất cả báo cáo và thống kê hoạt động
-- Quản lý dữ liệu gốc (kho bãi, xe cộ, tuyến đường)
-- **Giám sát và quản lý toàn bộ đơn hàng trong hệ thống**
+- Theo dõi nhật ký hệ thống (logs) và lịch sử truy cập
+- Quản lý dữ liệu gốc (kho, xe, tuyến đường)
 
 ---
 
-### 2. 🚦 Điều phối viên (Dispatcher)
+## 🧭 Điều phối viên (Dispatcher)
 
-**Mô tả**: Nhân viên điều phối vận chuyển hàng hóa.
+**Mô tả**: Người lên kế hoạch và điều hành các chuyến giao hàng.
 
 **Trách nhiệm**:
 
-- **Xử lý và quản lý đơn hàng từ khách hàng**
-- Phân công tài xế và phương tiện vận chuyển
-- Theo dõi tiến độ và trạng thái giao hàng
-- Sử dụng AI để tối ưu hóa lộ trình vận chuyển
+- Tạo và chỉnh sửa lệnh vận chuyển mới
+- Phân công tài xế và phương tiện phù hợp
+- Theo dõi trạng thái các chuyến hàng theo thời gian thực
+- Cập nhật thay đổi nhanh chóng khi có phát sinh
 
 ---
 
-### 3. 🚚 Tài xế (Driver)
+## 🚚 Tài xế (Driver)
 
-**Mô tả**: Người lái xe thực hiện việc giao hàng.
+**Mô tả**: Người thực hiện vận chuyển và cập nhật trạng thái đơn hàng.
 
 **Trách nhiệm**:
 
-- Xem lộ trình và đơn hàng được phân công
-- Cập nhật trạng thái tiến độ giao hàng
-- Báo cáo sự cố hoặc tình huống chậm trễ
-- Xác nhận hoàn thành việc giao hàng
+- Nhận thông báo và chi tiết lệnh mới từ ứng dụng mobile
+- Xem tuyến đường, đơn hàng và khách cần giao
+- Cập nhật trạng thái vận chuyển theo từng chặng
+- Gửi ảnh hóa đơn, bằng chứng giao hàng và chữ ký nhận hàng
 
 ---
 
-### 4. 👤 Khách hàng (Customer)
+## 🛠️ Quản lý đội xe (Fleet Manager)
 
-**Mô tả**: Người sử dụng dịch vụ, nhận hàng hoặc đặt vận chuyển.
+**Mô tả**: Người chịu trách nhiệm quản lý và bảo trì phương tiện.
 
 **Trách nhiệm**:
 
-- **Tạo đơn hàng mới** (quyền độc quyền)
-- Theo dõi trạng thái đơn hàng của mình
-- Xem thời gian dự kiến nhận hàng
-- Đánh giá chất lượng dịch vụ giao hàng
-- Gửi phản hồi về trải nghiệm sử dụng
+- Quản lý thông tin và lịch sử bảo trì phương tiện
+- Theo dõi và lên lịch kiểm tra định kỳ
+- Nhận cảnh báo phương tiện gần tới hạn kiểm tra kỹ thuật
+- Quản lý tài liệu đăng kiểm, bảo hiểm và hồ sơ xe
 
 ---
 
-## 🔐 Cấu trúc Phân cấp & Quy tắc Kiểm soát
+## 📊 Quản lý vận hành (Operations Manager)
 
-- **Phân cấp quyền lực**: `Quản trị viên > Điều phối viên > Tài xế > Khách hàng`
-- **Nguyên tắc tối thiểu (Least Privilege)**: Người dùng chỉ được cấp quyền đủ để hoàn thành nhiệm vụ.
-- **RBAC - Role-Based Access Control**: Phân quyền dựa trên vai trò, dễ kiểm soát và mở rộng.
-- **Quy tắc đặc biệt**: Chỉ khách hàng được phép tạo đơn hàng mới để đảm bảo tính toàn vẹn quy trình nghiệp vụ.
+**Mô tả**: Người giám sát toàn hệ thống, tối ưu hiệu suất vận hành.
 
----
+**Trách nhiệm**:
 
-## 📝 Quy trình Đăng ký Người dùng
-
-1. Người dùng truy cập hệ thống và chọn loại tài khoản cần đăng ký.
-2. Nhập thông tin cá nhân (Họ tên, Email, Mật khẩu,...).
-3. Xác thực email (nếu có).
-4. Tài khoản được gán vai trò mặc định (ví dụ: Khách hàng).
-5. Quản trị viên có thể điều chỉnh vai trò nếu cần.
+- Giám sát tiến độ vận chuyển và chất lượng dịch vụ
+- Phân tích hiệu suất vận hành (thời gian, trễ, tỷ lệ hoàn thành)
+- Đánh giá hiệu quả tài xế và tuyến đường
+- Xuất báo cáo theo định kỳ hoặc tùy chọn
+- Đề xuất giải pháp cải tiến quy trình
 
 ---
-
-## 🔄 Quy trình Phân quyền & Cập nhật
-
-- **Gán vai trò khi tạo tài khoản**: Tự động hoặc do quản trị viên xác định.
-- **Cập nhật phân quyền**: Quản trị viên có thể nâng cấp, hạ cấp hoặc thu hồi quyền.
-- **Theo dõi lịch sử phân quyền**: Ghi nhận các thay đổi để đảm bảo minh bạch và bảo mật.
