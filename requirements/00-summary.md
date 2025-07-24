@@ -32,3 +32,5 @@ Thông qua bảng này, nhóm phát triển và stakeholders có thể dễ dàn
 | US-OPS-EXPORT-01          | Export Reports & Data Files           | Xuất báo cáo KPI, dữ liệu phân tích thành Excel/CSV/PDF với tùy chọn |
 | US-ADMIN-USERS-01         | Manage Users and Roles                | CRUD user, phân quyền vai trò, theo dõi thay đổi (audit logs) |
 | US-ADMIN-CONFIG-01        | Manage System Configurations          | Thiết lập tham số, tích hợp API, thông báo định kỳ |
+
+---
