@@ -44,3 +44,38 @@ Tính năng bản đồ 3D giúp người dùng (như điều phối viên hoặ
 - Cho phép **xem lại hành trình đã đi (lịch sử)**
 
 ---
+
+## ✅ US-MAP-FILTER-03 – Lọc và tìm kiếm xe trên bản đồ
+
+**Người dùng**: Điều phối viên / Quản lý vận hành  
+**Mục tiêu**: Dễ dàng tìm kiếm và lọc xe theo các tiêu chí khác nhau  
+**Ưu tiên**: ⭐⭐⭐  
+**Story Points**: 3
+
+### 🎯 Yêu cầu chức năng:
+
+- **Filter theo trạng thái xe:**
+  - Checkbox để ẩn/hiện xe theo trạng thái (Rảnh, Đang giao, Trễ, Offline)
+  - Có thể chọn nhiều trạng thái cùng lúc
+  - Cập nhật bản đồ ngay lập tức khi thay đổi filter
+
+- **Tìm kiếm xe:**
+  - Ô tìm kiếm theo biển số xe
+  - Tìm kiếm theo tên tài xế
+  - Tìm kiếm theo mã đơn hàng đang giao
+  - Kết quả tìm kiếm highlight xe trên bản đồ
+  - Tự động zoom đến xe được tìm thấy
+
+- **Bộ lọc nâng cao:**
+  - Lọc theo loại xe (nhỏ, vừa, lớn)
+  - Lọc theo khu vực hoạt động
+  - Lọc theo thời gian hoạt động (trong 1h, 2h, 1 ngày)
+  - Reset filter về mặc định
+
+### 📋 Acceptance Criteria:
+
+- Hiển thị panel filter ở góc trái/phải bản đồ
+- Filter hoạt động real-time, không reload trang
+- Hiển thị số lượng xe được filter
+- Lưu trạng thái filter khi chuyển trang
+- Responsive trên mobile và desktop
