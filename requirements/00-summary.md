@@ -28,5 +28,7 @@ Thông qua bảng này, nhóm phát triển và stakeholders có thể dễ dàn
 | US-AI-SUGGEST-01          | AI Suggest Optimal Routes             | AI đề xuất tuyến giao tối ưu, kèm lý do và khả năng điều chỉnh |
 | US-MAP-REALTIME-01        | 3D Real-Time Vehicle Visualization    | Bản đồ 3D (CesiumJS), định vị GPS, thể hiện trạng thái chuyến hàng |
 | US-MAP-DETAIL-02          | Detailed Route & Delivery Tracking    | Hiển thị tuyến đường chi tiết, animation di chuyển, ETA, lịch sử hành trình |
+| US-MAP-FILTER-03          | Vehicle Filter & Search on Map        | Lọc xe theo trạng thái, tìm kiếm theo biển số, tài xế, mã đơn hàng |
+| US-OPS-EXPORT-01          | Export Reports & Data Files           | Xuất báo cáo KPI, dữ liệu phân tích thành Excel/CSV/PDF với tùy chọn |
 | US-ADMIN-USERS-01         | Manage Users and Roles                | CRUD user, phân quyền vai trò, theo dõi thay đổi (audit logs) |
 | US-ADMIN-CONFIG-01        | Manage System Configurations          | Thiết lập tham số, tích hợp API, thông báo định kỳ |
