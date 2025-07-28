@@ -1,0 +1,79 @@
+{
+  "entities": [
+    {
+      "name": "User",
+      "fields": [
+        { "name": "id", "type": "number", "primary": true },
+        { "name": "name", "type": "string" },
+        { "name": "email", "type": "string" },
+        { "name": "password", "type": "string" },
+        { "name": "role", "type": "string" }
+      ]
+    },
+    {
+      "name": "AuditLog",
+      "fields": [
+        { "name": "id", "type": "number", "primary": true },
+        { "name": "action", "type": "string" },
+        { "name": "timestamp", "type": "datetime" },
+        { "name": "userId", "type": "number", "relation": "User" }
+      ]
+    },
+    {
+      "name": "PasswordResetToken",
+      "fields": [
+        { "name": "id", "type": "number", "primary": true },
+        { "name": "token", "type": "string" },
+        { "name": "expiry", "type": "datetime" },
+        { "name": "userId", "type": "number", "relation": "User" }
+      ]
+    },
+    {
+      "name": "DeliveryOrder",
+      "fields": [
+        { "name": "id", "type": "number", "primary": true },
+        { "name": "code", "type": "string" },
+        { "name": "status", "type": "string" },
+        { "name": "createdBy", "type": "number", "relation": "User" },
+        { "name": "vehicleId", "type": "number", "relation": "Vehicle" }
+      ]
+    },
+    {
+      "name": "OrderTracking",
+      "fields": [
+        { "name": "id", "type": "number", "primary": true },
+        { "name": "status", "type": "string" },
+        { "name": "timestamp", "type": "datetime" },
+        { "name": "deliveryOrderId", "type": "number", "relation": "DeliveryOrder" }
+      ]
+    },
+    {
+      "name": "DispatchAssignment",
+      "fields": [
+        { "name": "id", "type": "number", "primary": true },
+        { "name": "assignedAt", "type": "datetime" },
+        { "name": "deliveryOrderId", "type": "number", "relation": "DeliveryOrder" },
+        { "name": "vehicleId", "type": "number", "relation": "Vehicle" },
+        { "name": "driverId", "type": "number", "relation": "User" }
+      ]
+    },
+    {
+      "name": "Vehicle",
+      "fields": [
+        { "name": "id", "type": "number", "primary": true },
+        { "name": "licensePlate", "type": "string" },
+        { "name": "type", "type": "string" }
+      ]
+    },
+    {
+      "name": "VehicleMaintenance",
+      "fields": [
+        { "name": "id", "type": "number", "primary": true },
+        { "name": "description", "type": "string" },
+        { "name": "maintenanceDate", "type": "datetime" },
+        { "name": "vehicleId", "type": "number", "relation": "Vehicle" },
+        { "name": "creatorId", "type": "number", "relation": "User" }
+      ]
+    }
+  ]
+}
