@@ -1,0 +1,856 @@
+{
+"version": "3",
+"dialect": "mysql",
+"id": "ktc-logistics-database",
+"prevId": "",
+"tables": {
+"users": {
+"name": "users",
+"columns": {
+"id": {
+"name": "id",
+"type": "bigint",
+"primaryKey": true,
+"notNull": true,
+"autoincrement": true
+},
+"name": {
+"name": "name",
+"type": "varchar(255)",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"email": {
+"name": "email",
+"type": "varchar(255)",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"password": {
+"name": "password",
+"type": "varchar(255)",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"role": {
+"name": "role",
+"type": "enum('ADMIN','DRIVER','DISPATCHER','CUSTOMER')",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"phone": {
+"name": "phone",
+"type": "varchar(20)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"address": {
+"name": "address",
+"type": "text",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"created_at": {
+"name": "created_at",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "CURRENT_TIMESTAMP"
+},
+"updated_at": {
+"name": "updated_at",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+}
+},
+"indexes": {
+"idx_email": {
+"name": "idx_email",
+"columns": ["email"],
+"isUnique": true
+},
+"idx_role": {
+"name": "idx_role",
+"columns": ["role"],
+"isUnique": false
+}
+},
+"foreignKeys": {},
+"compositePrimaryKeys": {},
+"uniqueConstraints": {
+"email_unique": {
+"name": "email_unique",
+"columns": ["email"]
+}
+}
+},
+"vehicles": {
+"name": "vehicles",
+"columns": {
+"id": {
+"name": "id",
+"type": "bigint",
+"primaryKey": true,
+"notNull": true,
+"autoincrement": true
+},
+"license_plate": {
+"name": "license_plate",
+"type": "varchar(20)",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"vehicle_type": {
+"name": "vehicle_type",
+"type": "varchar(50)",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"capacity": {
+"name": "capacity",
+"type": "decimal(10,2)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"status": {
+"name": "status",
+"type": "enum('AVAILABLE','IN_USE','MAINTENANCE','OUT_OF_SERVICE')",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "'AVAILABLE'"
+},
+"fuel_consumption": {
+"name": "fuel_consumption",
+"type": "decimal(5,2)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"created_at": {
+"name": "created_at",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "CURRENT_TIMESTAMP"
+},
+"updated_at": {
+"name": "updated_at",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+}
+},
+"indexes": {
+"idx_license_plate": {
+"name": "idx_license_plate",
+"columns": ["license_plate"],
+"isUnique": true
+},
+"idx_status": {
+"name": "idx_status",
+"columns": ["status"],
+"isUnique": false
+}
+},
+"foreignKeys": {},
+"compositePrimaryKeys": {},
+"uniqueConstraints": {
+"license_plate_unique": {
+"name": "license_plate_unique",
+"columns": ["license_plate"]
+}
+}
+},
+"routes": {
+"name": "routes",
+"columns": {
+"id": {
+"name": "id",
+"type": "bigint",
+"primaryKey": true,
+"notNull": true,
+"autoincrement": true
+},
+"route_name": {
+"name": "route_name",
+"type": "varchar(255)",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"start_location": {
+"name": "start_location",
+"type": "varchar(255)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"end_location": {
+"name": "end_location",
+"type": "varchar(255)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"distance": {
+"name": "distance",
+"type": "decimal(8,2)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"estimated_time": {
+"name": "estimated_time",
+"type": "int",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"created_at": {
+"name": "created_at",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "CURRENT_TIMESTAMP"
+}
+},
+"indexes": {
+"idx_route_name": {
+"name": "idx_route_name",
+"columns": ["route_name"],
+"isUnique": false
+}
+},
+"foreignKeys": {},
+"compositePrimaryKeys": {},
+"uniqueConstraints": {
+"route_name_unique": {
+"name": "route_name_unique",
+"columns": ["route_name"]
+}
+}
+},
+"delivery_orders": {
+"name": "delivery_orders",
+"columns": {
+"id": {
+"name": "id",
+"type": "bigint",
+"primaryKey": true,
+"notNull": true,
+"autoincrement": true
+},
+"sender_name": {
+"name": "sender_name",
+"type": "varchar(255)",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"sender_address": {
+"name": "sender_address",
+"type": "text",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"sender_phone": {
+"name": "sender_phone",
+"type": "varchar(20)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"recipient_name": {
+"name": "recipient_name",
+"type": "varchar(255)",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"recipient_address": {
+"name": "recipient_address",
+"type": "text",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"recipient_phone": {
+"name": "recipient_phone",
+"type": "varchar(20)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"status": {
+"name": "status",
+"type": "enum('PENDING','ASSIGNED','IN_TRANSIT','DELIVERED','CANCELLED')",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "'PENDING'"
+},
+"route_name": {
+"name": "route_name",
+"type": "varchar(255)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"weight": {
+"name": "weight",
+"type": "decimal(8,2)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"delivery_fee": {
+"name": "delivery_fee",
+"type": "decimal(10,2)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"created_at": {
+"name": "created_at",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "CURRENT_TIMESTAMP"
+},
+"delivery_date": {
+"name": "delivery_date",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"completed_at": {
+"name": "completed_at",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"created_by": {
+"name": "created_by",
+"type": "bigint",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"driver_id": {
+"name": "driver_id",
+"type": "bigint",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"vehicle_id": {
+"name": "vehicle_id",
+"type": "bigint",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+}
+},
+"indexes": {
+"idx_status": {
+"name": "idx_status",
+"columns": ["status"],
+"isUnique": false
+},
+"idx_created_by": {
+"name": "idx_created_by",
+"columns": ["created_by"],
+"isUnique": false
+},
+"idx_driver_id": {
+"name": "idx_driver_id",
+"columns": ["driver_id"],
+"isUnique": false
+},
+"idx_vehicle_id": {
+"name": "idx_vehicle_id",
+"columns": ["vehicle_id"],
+"isUnique": false
+},
+"idx_route_name": {
+"name": "idx_route_name",
+"columns": ["route_name"],
+"isUnique": false
+},
+"idx_created_at": {
+"name": "idx_created_at",
+"columns": ["created_at"],
+"isUnique": false
+}
+},
+"foreignKeys": {
+"fk_delivery_orders_created_by": {
+"name": "fk_delivery_orders_created_by",
+"tableFrom": "delivery_orders",
+"tableTo": "users",
+"columnsFrom": ["created_by"],
+"columnsTo": ["id"],
+"onDelete": "restrict",
+"onUpdate": "cascade"
+},
+"fk_delivery_orders_driver": {
+"name": "fk_delivery_orders_driver",
+"tableFrom": "delivery_orders",
+"tableTo": "users",
+"columnsFrom": ["driver_id"],
+"columnsTo": ["id"],
+"onDelete": "set null",
+"onUpdate": "cascade"
+},
+"fk_delivery_orders_vehicle": {
+"name": "fk_delivery_orders_vehicle",
+"tableFrom": "delivery_orders",
+"tableTo": "vehicles",
+"columnsFrom": ["vehicle_id"],
+"columnsTo": ["id"],
+"onDelete": "set null",
+"onUpdate": "cascade"
+}
+},
+"compositePrimaryKeys": {},
+"uniqueConstraints": {}
+},
+"order_tracking": {
+"name": "order_tracking",
+"columns": {
+"id": {
+"name": "id",
+"type": "bigint",
+"primaryKey": true,
+"notNull": true,
+"autoincrement": true
+},
+"order_id": {
+"name": "order_id",
+"type": "bigint",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"location": {
+"name": "location",
+"type": "varchar(255)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"status": {
+"name": "status",
+"type": "varchar(100)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"notes": {
+"name": "notes",
+"type": "text",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"timestamp": {
+"name": "timestamp",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "CURRENT_TIMESTAMP"
+},
+"latitude": {
+"name": "latitude",
+"type": "decimal(10,8)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"longitude": {
+"name": "longitude",
+"type": "decimal(11,8)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+}
+},
+"indexes": {
+"idx_order_id": {
+"name": "idx_order_id",
+"columns": ["order_id"],
+"isUnique": false
+},
+"idx_timestamp": {
+"name": "idx_timestamp",
+"columns": ["timestamp"],
+"isUnique": false
+}
+},
+"foreignKeys": {
+"fk_order_tracking_order": {
+"name": "fk_order_tracking_order",
+"tableFrom": "order_tracking",
+"tableTo": "delivery_orders",
+"columnsFrom": ["order_id"],
+"columnsTo": ["id"],
+"onDelete": "cascade",
+"onUpdate": "cascade"
+}
+},
+"compositePrimaryKeys": {},
+"uniqueConstraints": {}
+},
+"vehicle_maintenance": {
+"name": "vehicle_maintenance",
+"columns": {
+"id": {
+"name": "id",
+"type": "bigint",
+"primaryKey": true,
+"notNull": true,
+"autoincrement": true
+},
+"vehicle_id": {
+"name": "vehicle_id",
+"type": "bigint",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"maintenance_type": {
+"name": "maintenance_type",
+"type": "varchar(100)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"description": {
+"name": "description",
+"type": "text",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"cost": {
+"name": "cost",
+"type": "decimal(10,2)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"maintenance_date": {
+"name": "maintenance_date",
+"type": "date",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"next_maintenance_date": {
+"name": "next_maintenance_date",
+"type": "date",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"performed_by": {
+"name": "performed_by",
+"type": "varchar(255)",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"status": {
+"name": "status",
+"type": "enum('SCHEDULED','IN_PROGRESS','COMPLETED','CANCELLED')",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "'SCHEDULED'"
+},
+"created_at": {
+"name": "created_at",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "CURRENT_TIMESTAMP"
+}
+},
+"indexes": {
+"idx_vehicle_id": {
+"name": "idx_vehicle_id",
+"columns": ["vehicle_id"],
+"isUnique": false
+},
+"idx_maintenance_date": {
+"name": "idx_maintenance_date",
+"columns": ["maintenance_date"],
+"isUnique": false
+},
+"idx_status": {
+"name": "idx_status",
+"columns": ["status"],
+"isUnique": false
+}
+},
+"foreignKeys": {
+"fk_vehicle_maintenance_vehicle": {
+"name": "fk_vehicle_maintenance_vehicle",
+"tableFrom": "vehicle_maintenance",
+"tableTo": "vehicles",
+"columnsFrom": ["vehicle_id"],
+"columnsTo": ["id"],
+"onDelete": "cascade",
+"onUpdate": "cascade"
+}
+},
+"compositePrimaryKeys": {},
+"uniqueConstraints": {}
+},
+"dispatch_assignments": {
+"name": "dispatch_assignments",
+"columns": {
+"id": {
+"name": "id",
+"type": "bigint",
+"primaryKey": true,
+"notNull": true,
+"autoincrement": true
+},
+"order_id": {
+"name": "order_id",
+"type": "bigint",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"dispatcher_id": {
+"name": "dispatcher_id",
+"type": "bigint",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"driver_id": {
+"name": "driver_id",
+"type": "bigint",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"vehicle_id": {
+"name": "vehicle_id",
+"type": "bigint",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"assigned_at": {
+"name": "assigned_at",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "CURRENT_TIMESTAMP"
+},
+"estimated_delivery_time": {
+"name": "estimated_delivery_time",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+},
+"priority_level": {
+"name": "priority_level",
+"type": "enum('LOW','MEDIUM','HIGH','URGENT')",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "'MEDIUM'"
+},
+"notes": {
+"name": "notes",
+"type": "text",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false
+}
+},
+"indexes": {
+"idx_order_id": {
+"name": "idx_order_id",
+"columns": ["order_id"],
+"isUnique": false
+},
+"idx_dispatcher_id": {
+"name": "idx_dispatcher_id",
+"columns": ["dispatcher_id"],
+"isUnique": false
+},
+"idx_driver_id": {
+"name": "idx_driver_id",
+"columns": ["driver_id"],
+"isUnique": false
+},
+"idx_vehicle_id": {
+"name": "idx_vehicle_id",
+"columns": ["vehicle_id"],
+"isUnique": false
+},
+"idx_assigned_at": {
+"name": "idx_assigned_at",
+"columns": ["assigned_at"],
+"isUnique": false
+}
+},
+"foreignKeys": {
+"fk_dispatch_assignments_order": {
+"name": "fk_dispatch_assignments_order",
+"tableFrom": "dispatch_assignments",
+"tableTo": "delivery_orders",
+"columnsFrom": ["order_id"],
+"columnsTo": ["id"],
+"onDelete": "cascade",
+"onUpdate": "cascade"
+},
+"fk_dispatch_assignments_dispatcher": {
+"name": "fk_dispatch_assignments_dispatcher",
+"tableFrom": "dispatch_assignments",
+"tableTo": "users",
+"columnsFrom": ["dispatcher_id"],
+"columnsTo": ["id"],
+"onDelete": "restrict",
+"onUpdate": "cascade"
+},
+"fk_dispatch_assignments_driver": {
+"name": "fk_dispatch_assignments_driver",
+"tableFrom": "dispatch_assignments",
+"tableTo": "users",
+"columnsFrom": ["driver_id"],
+"columnsTo": ["id"],
+"onDelete": "restrict",
+"onUpdate": "cascade"
+},
+"fk_dispatch_assignments_vehicle": {
+"name": "fk_dispatch_assignments_vehicle",
+"tableFrom": "dispatch_assignments",
+"tableTo": "vehicles",
+"columnsFrom": ["vehicle_id"],
+"columnsTo": ["id"],
+"onDelete": "restrict",
+"onUpdate": "cascade"
+}
+},
+"compositePrimaryKeys": {},
+"uniqueConstraints": {}
+},
+"password_reset_tokens": {
+"name": "password_reset_tokens",
+"columns": {
+"id": {
+"name": "id",
+"type": "bigint",
+"primaryKey": true,
+"notNull": true,
+"autoincrement": true
+},
+"user_id": {
+"name": "user_id",
+"type": "bigint",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"token": {
+"name": "token",
+"type": "varchar(255)",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"expiry_date": {
+"name": "expiry_date",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": true,
+"autoincrement": false
+},
+"used": {
+"name": "used",
+"type": "boolean",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "false"
+},
+"created_at": {
+"name": "created_at",
+"type": "timestamp",
+"primaryKey": false,
+"notNull": false,
+"autoincrement": false,
+"default": "CURRENT_TIMESTAMP"
+}
+},
+"indexes": {
+"idx_user_id": {
+"name": "idx_user_id",
+"columns": ["user_id"],
+"isUnique": false
+},
+"idx_token": {
+"name": "idx_token",
+"columns": ["token"],
+"isUnique": false
+},
+"idx_expiry_date": {
+"name": "idx_expiry_date",
+"columns": ["expiry_date"],
+"isUnique": false
+}
+},
+"foreignKeys": {
+"fk_password_reset_tokens_user": {
+"name": "fk_password_reset_tokens_user",
+"tableFrom": "password_reset_tokens",
+"tableTo": "users",
+"columnsFrom": ["user_id"],
+"columnsTo": ["id"],
+"onDelete": "cascade",
+"onUpdate": "cascade"
+}
+},
+"compositePrimaryKeys": {},
+"uniqueConstraints": {}
+}
+},
+"_meta": {
+"schemas": {},
+"tables": {},
+"columns": {}
+}
+}
