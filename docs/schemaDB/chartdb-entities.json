@@ -1,0 +1,938 @@
+{
+  "entities": [
+    {
+      "name": "users",
+      "displayName": "Users",
+      "description": "Quản lý người dùng hệ thống với phân quyền theo role",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "primary": true,
+          "autoIncrement": true,
+          "nullable": false,
+          "description": "Primary key tự tăng"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "description": "Tên người dùng"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "unique": true,
+          "description": "Email đăng nhập duy nhất"
+        },
+        {
+          "name": "password",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "description": "Mật khẩu đã mã hóa"
+        },
+        {
+          "name": "role",
+          "type": "ENUM",
+          "enumValues": ["ADMIN", "DRIVER", "DISPATCHER", "CUSTOMER"],
+          "nullable": false,
+          "description": "Vai trò trong hệ thống"
+        },
+        {
+          "name": "phone",
+          "type": "VARCHAR(20)",
+          "nullable": true,
+          "description": "Số điện thoại"
+        },
+        {
+          "name": "address",
+          "type": "TEXT",
+          "nullable": true,
+          "description": "Địa chỉ"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "description": "Ngày tạo"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMP",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+          "description": "Ngày cập nhật"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_email",
+          "fields": ["email"],
+          "unique": true
+        },
+        {
+          "name": "idx_role",
+          "fields": ["role"]
+        }
+      ]
+    },
+    {
+      "name": "vehicles",
+      "displayName": "Vehicles",
+      "description": "Quản lý phương tiện vận chuyển",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "primary": true,
+          "autoIncrement": true,
+          "nullable": false,
+          "description": "Primary key tự tăng"
+        },
+        {
+          "name": "license_plate",
+          "type": "VARCHAR(20)",
+          "nullable": false,
+          "unique": true,
+          "description": "Biển số xe duy nhất"
+        },
+        {
+          "name": "vehicle_type",
+          "type": "VARCHAR(50)",
+          "nullable": false,
+          "description": "Loại xe (truck, van, motorcycle, etc.)"
+        },
+        {
+          "name": "capacity",
+          "type": "DECIMAL(10,2)",
+          "nullable": true,
+          "description": "Trọng tải tối đa (kg)"
+        },
+        {
+          "name": "status",
+          "type": "ENUM",
+          "enumValues": ["AVAILABLE", "IN_USE", "MAINTENANCE", "OUT_OF_SERVICE"],
+          "nullable": false,
+          "default": "AVAILABLE",
+          "description": "Trạng thái xe hiện tại"
+        },
+        {
+          "name": "fuel_consumption",
+          "type": "DECIMAL(5,2)",
+          "nullable": true,
+          "description": "Mức tiêu thụ nhiên liệu (L/100km)"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "description": "Ngày tạo"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMP",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+          "description": "Ngày cập nhật"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_license_plate",
+          "fields": ["license_plate"],
+          "unique": true
+        },
+        {
+          "name": "idx_status",
+          "fields": ["status"]
+        }
+      ]
+    },
+    {
+      "name": "routes",
+      "displayName": "Routes",
+      "description": "Quản lý tuyến đường vận chuyển (tùy chọn)",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "primary": true,
+          "autoIncrement": true,
+          "nullable": false,
+          "description": "Primary key tự tăng"
+        },
+        {
+          "name": "route_name",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "unique": true,
+          "description": "Tên tuyến đường duy nhất"
+        },
+        {
+          "name": "start_location",
+          "type": "VARCHAR(255)",
+          "nullable": true,
+          "description": "Điểm bắt đầu"
+        },
+        {
+          "name": "end_location",
+          "type": "VARCHAR(255)",
+          "nullable": true,
+          "description": "Điểm kết thúc"
+        },
+        {
+          "name": "distance",
+          "type": "DECIMAL(8,2)",
+          "nullable": true,
+          "description": "Khoảng cách (km)"
+        },
+        {
+          "name": "estimated_time",
+          "type": "INT",
+          "nullable": true,
+          "description": "Thời gian ước tính (phút)"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "description": "Ngày tạo"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_route_name",
+          "fields": ["route_name"],
+          "unique": true
+        }
+      ]
+    },
+    {
+      "name": "delivery_orders",
+      "displayName": "Delivery Orders",
+      "description": "Đơn hàng vận chuyển - Entity trung tâm của hệ thống",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "primary": true,
+          "autoIncrement": true,
+          "nullable": false,
+          "description": "Primary key tự tăng"
+        },
+        {
+          "name": "sender_name",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "description": "Tên người gửi"
+        },
+        {
+          "name": "sender_address",
+          "type": "TEXT",
+          "nullable": false,
+          "description": "Địa chỉ người gửi"
+        },
+        {
+          "name": "sender_phone",
+          "type": "VARCHAR(20)",
+          "nullable": true,
+          "description": "SĐT người gửi"
+        },
+        {
+          "name": "recipient_name",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "description": "Tên người nhận"
+        },
+        {
+          "name": "recipient_address",
+          "type": "TEXT",
+          "nullable": false,
+          "description": "Địa chỉ người nhận"
+        },
+        {
+          "name": "recipient_phone",
+          "type": "VARCHAR(20)",
+          "nullable": true,
+          "description": "SĐT người nhận"
+        },
+        {
+          "name": "status",
+          "type": "ENUM",
+          "enumValues": ["PENDING", "ASSIGNED", "IN_TRANSIT", "DELIVERED", "CANCELLED"],
+          "nullable": false,
+          "default": "PENDING",
+          "description": "Trạng thái đơn hàng"
+        },
+        {
+          "name": "route_name",
+          "type": "VARCHAR(255)",
+          "nullable": true,
+          "description": "Tên tuyến đường"
+        },
+        {
+          "name": "weight",
+          "type": "DECIMAL(8,2)",
+          "nullable": true,
+          "description": "Trọng lượng hàng hóa (kg)"
+        },
+        {
+          "name": "delivery_fee",
+          "type": "DECIMAL(10,2)",
+          "nullable": true,
+          "description": "Phí vận chuyển"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "description": "Ngày tạo đơn"
+        },
+        {
+          "name": "delivery_date",
+          "type": "TIMESTAMP",
+          "nullable": true,
+          "description": "Ngày giao hàng dự kiến"
+        },
+        {
+          "name": "completed_at",
+          "type": "TIMESTAMP",
+          "nullable": true,
+          "description": "Ngày hoàn thành"
+        },
+        {
+          "name": "created_by",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "ID người tạo đơn hàng",
+          "foreignKey": {
+            "table": "users",
+            "field": "id",
+            "onDelete": "RESTRICT",
+            "onUpdate": "CASCADE"
+          }
+        },
+        {
+          "name": "driver_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "description": "ID tài xế được phân công",
+          "foreignKey": {
+            "table": "users",
+            "field": "id",
+            "onDelete": "SET NULL",
+            "onUpdate": "CASCADE"
+          }
+        },
+        {
+          "name": "vehicle_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "description": "ID xe được phân công",
+          "foreignKey": {
+            "table": "vehicles",
+            "field": "id",
+            "onDelete": "SET NULL",
+            "onUpdate": "CASCADE"
+          }
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_status",
+          "fields": ["status"]
+        },
+        {
+          "name": "idx_created_by",
+          "fields": ["created_by"]
+        },
+        {
+          "name": "idx_driver_id",
+          "fields": ["driver_id"]
+        },
+        {
+          "name": "idx_vehicle_id",
+          "fields": ["vehicle_id"]
+        },
+        {
+          "name": "idx_created_at",
+          "fields": ["created_at"]
+        }
+      ]
+    },
+    {
+      "name": "order_tracking",
+      "displayName": "Order Tracking",
+      "description": "Theo dõi đơn hàng real-time với GPS",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "primary": true,
+          "autoIncrement": true,
+          "nullable": false,
+          "description": "Primary key tự tăng"
+        },
+        {
+          "name": "order_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "ID đơn hàng được track",
+          "foreignKey": {
+            "table": "delivery_orders",
+            "field": "id",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE"
+          }
+        },
+        {
+          "name": "location",
+          "type": "VARCHAR(255)",
+          "nullable": true,
+          "description": "Mô tả vị trí hiện tại"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(100)",
+          "nullable": true,
+          "description": "Trạng thái tracking"
+        },
+        {
+          "name": "notes",
+          "type": "TEXT",
+          "nullable": true,
+          "description": "Ghi chú thêm"
+        },
+        {
+          "name": "timestamp",
+          "type": "TIMESTAMP",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "description": "Thời gian cập nhật"
+        },
+        {
+          "name": "latitude",
+          "type": "DECIMAL(10,8)",
+          "nullable": true,
+          "description": "Vĩ độ GPS"
+        },
+        {
+          "name": "longitude",
+          "type": "DECIMAL(11,8)",
+          "nullable": true,
+          "description": "Kinh độ GPS"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_order_id",
+          "fields": ["order_id"]
+        },
+        {
+          "name": "idx_timestamp",
+          "fields": ["timestamp"]
+        },
+        {
+          "name": "idx_order_timestamp",
+          "fields": ["order_id", "timestamp"]
+        }
+      ]
+    },
+    {
+      "name": "vehicle_maintenance",
+      "displayName": "Vehicle Maintenance",
+      "description": "Quản lý bảo trì phương tiện",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "primary": true,
+          "autoIncrement": true,
+          "nullable": false,
+          "description": "Primary key tự tăng"
+        },
+        {
+          "name": "vehicle_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "ID phương tiện cần bảo trì",
+          "foreignKey": {
+            "table": "vehicles",
+            "field": "id",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE"
+          }
+        },
+        {
+          "name": "maintenance_type",
+          "type": "VARCHAR(100)",
+          "nullable": false,
+          "description": "Loại bảo trì (preventive, corrective, emergency)"
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "nullable": true,
+          "description": "Mô tả chi tiết công việc bảo trì"
+        },
+        {
+          "name": "cost",
+          "type": "DECIMAL(10,2)",
+          "nullable": true,
+          "description": "Chi phí bảo trì"
+        },
+        {
+          "name": "maintenance_date",
+          "type": "DATE",
+          "nullable": false,
+          "description": "Ngày thực hiện bảo trì"
+        },
+        {
+          "name": "next_maintenance_date",
+          "type": "DATE",
+          "nullable": true,
+          "description": "Ngày bảo trì tiếp theo"
+        },
+        {
+          "name": "performed_by",
+          "type": "VARCHAR(255)",
+          "nullable": true,
+          "description": "Người/Công ty thực hiện bảo trì"
+        },
+        {
+          "name": "status",
+          "type": "ENUM",
+          "enumValues": ["SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"],
+          "nullable": false,
+          "default": "SCHEDULED",
+          "description": "Trạng thái bảo trì"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "description": "Ngày tạo record"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_vehicle_id",
+          "fields": ["vehicle_id"]
+        },
+        {
+          "name": "idx_maintenance_date",
+          "fields": ["maintenance_date"]
+        },
+        {
+          "name": "idx_next_maintenance_date",
+          "fields": ["next_maintenance_date"]
+        },
+        {
+          "name": "idx_status",
+          "fields": ["status"]
+        }
+      ]
+    },
+    {
+      "name": "dispatch_assignments",
+      "displayName": "Dispatch Assignments",
+      "description": "Phân công vận chuyển - Bridge table kết nối nhiều entities",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "primary": true,
+          "autoIncrement": true,
+          "nullable": false,
+          "description": "Primary key tự tăng"
+        },
+        {
+          "name": "order_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "ID đơn hàng được phân công",
+          "foreignKey": {
+            "table": "delivery_orders",
+            "field": "id",
+            "onDelete": "RESTRICT",
+            "onUpdate": "CASCADE"
+          }
+        },
+        {
+          "name": "dispatcher_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "ID người phân công (role DISPATCHER)",
+          "foreignKey": {
+            "table": "users",
+            "field": "id",
+            "onDelete": "RESTRICT",
+            "onUpdate": "CASCADE"
+          }
+        },
+        {
+          "name": "driver_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "ID tài xế được phân (role DRIVER)",
+          "foreignKey": {
+            "table": "users",
+            "field": "id",
+            "onDelete": "RESTRICT",
+            "onUpdate": "CASCADE"
+          }
+        },
+        {
+          "name": "vehicle_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "ID xe được phân (status AVAILABLE)",
+          "foreignKey": {
+            "table": "vehicles",
+            "field": "id",
+            "onDelete": "RESTRICT",
+            "onUpdate": "CASCADE"
+          }
+        },
+        {
+          "name": "assigned_at",
+          "type": "TIMESTAMP",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "description": "Thời gian phân công"
+        },
+        {
+          "name": "estimated_delivery_time",
+          "type": "TIMESTAMP",
+          "nullable": true,
+          "description": "Thời gian giao hàng ước tính"
+        },
+        {
+          "name": "priority_level",
+          "type": "ENUM",
+          "enumValues": ["LOW", "MEDIUM", "HIGH", "URGENT"],
+          "nullable": false,
+          "default": "MEDIUM",
+          "description": "Mức độ ưu tiên"
+        },
+        {
+          "name": "notes",
+          "type": "TEXT",
+          "nullable": true,
+          "description": "Ghi chú phân công"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_order_id",
+          "fields": ["order_id"]
+        },
+        {
+          "name": "idx_dispatcher_id",
+          "fields": ["dispatcher_id"]
+        },
+        {
+          "name": "idx_driver_id",
+          "fields": ["driver_id"]
+        },
+        {
+          "name": "idx_vehicle_id",
+          "fields": ["vehicle_id"]
+        },
+        {
+          "name": "idx_assigned_at",
+          "fields": ["assigned_at"]
+        },
+        {
+          "name": "idx_priority_level",
+          "fields": ["priority_level"]
+        }
+      ]
+    },
+    {
+      "name": "password_reset_tokens",
+      "displayName": "Password Reset Tokens",
+      "description": "Quản lý token reset mật khẩu",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "primary": true,
+          "autoIncrement": true,
+          "nullable": false,
+          "description": "Primary key tự tăng"
+        },
+        {
+          "name": "user_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "ID user yêu cầu reset password",
+          "foreignKey": {
+            "table": "users",
+            "field": "id",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE"
+          }
+        },
+        {
+          "name": "token",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "description": "Token bảo mật để reset password"
+        },
+        {
+          "name": "expiry_date",
+          "type": "TIMESTAMP",
+          "nullable": false,
+          "description": "Thời gian hết hạn token"
+        },
+        {
+          "name": "used",
+          "type": "BOOLEAN",
+          "nullable": false,
+          "default": false,
+          "description": "Trạng thái đã sử dụng"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "description": "Ngày tạo token"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_user_id",
+          "fields": ["user_id"]
+        },
+        {
+          "name": "idx_token",
+          "fields": ["token"],
+          "unique": true
+        },
+        {
+          "name": "idx_expiry_date",
+          "fields": ["expiry_date"]
+        },
+        {
+          "name": "idx_used",
+          "fields": ["used"]
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "user_creates_orders",
+      "fromEntity": "users",
+      "fromField": "id",
+      "toEntity": "delivery_orders",
+      "toField": "created_by",
+      "type": "one-to-many",
+      "description": "Một user có thể tạo nhiều đơn hàng"
+    },
+    {
+      "name": "user_drives_orders",
+      "fromEntity": "users",
+      "fromField": "id",
+      "toEntity": "delivery_orders",
+      "toField": "driver_id",
+      "type": "one-to-many",
+      "description": "Một driver có thể được phân công nhiều đơn hàng"
+    },
+    {
+      "name": "vehicle_transports_orders",
+      "fromEntity": "vehicles",
+      "fromField": "id",
+      "toEntity": "delivery_orders",
+      "toField": "vehicle_id",
+      "type": "one-to-many",
+      "description": "Một xe có thể vận chuyển nhiều đơn hàng"
+    },
+    {
+      "name": "order_has_tracking",
+      "fromEntity": "delivery_orders",
+      "fromField": "id",
+      "toEntity": "order_tracking",
+      "toField": "order_id",
+      "type": "one-to-many",
+      "description": "Một đơn hàng có nhiều điểm tracking"
+    },
+    {
+      "name": "vehicle_has_maintenance",
+      "fromEntity": "vehicles",
+      "fromField": "id",
+      "toEntity": "vehicle_maintenance",
+      "toField": "vehicle_id",
+      "type": "one-to-many",
+      "description": "Một xe có nhiều lần bảo trì"
+    },
+    {
+      "name": "order_has_assignment",
+      "fromEntity": "delivery_orders",
+      "fromField": "id",
+      "toEntity": "dispatch_assignments",
+      "toField": "order_id",
+      "type": "one-to-many",
+      "description": "Một đơn hàng có thể có nhiều assignment"
+    },
+    {
+      "name": "dispatcher_creates_assignment",
+      "fromEntity": "users",
+      "fromField": "id",
+      "toEntity": "dispatch_assignments",
+      "toField": "dispatcher_id",
+      "type": "one-to-many",
+      "description": "Một dispatcher có thể tạo nhiều assignment"
+    },
+    {
+      "name": "driver_receives_assignment",
+      "fromEntity": "users",
+      "fromField": "id",
+      "toEntity": "dispatch_assignments",
+      "toField": "driver_id",
+      "type": "one-to-many",
+      "description": "Một driver có thể nhận nhiều assignment"
+    },
+    {
+      "name": "vehicle_in_assignment",
+      "fromEntity": "vehicles",
+      "fromField": "id",
+      "toEntity": "dispatch_assignments",
+      "toField": "vehicle_id",
+      "type": "one-to-many",
+      "description": "Một xe có thể được phân trong nhiều assignment"
+    },
+    {
+      "name": "user_has_reset_tokens",
+      "fromEntity": "users",
+      "fromField": "id",
+      "toEntity": "password_reset_tokens",
+      "toField": "user_id",
+      "type": "one-to-many",
+      "description": "Một user có thể có nhiều token reset password"
+    }
+  ],
+  "businessRules": [
+    {
+      "entity": "users",
+      "rule": "Email phải unique trong toàn hệ thống",
+      "implementation": "UNIQUE constraint on email field"
+    },
+    {
+      "entity": "delivery_orders",
+      "rule": "driver_id phải có role = 'DRIVER'",
+      "implementation": "Trigger trg_check_driver_role_insert/update"
+    },
+    {
+      "entity": "dispatch_assignments",
+      "rule": "dispatcher_id phải có role = 'DISPATCHER'",
+      "implementation": "Trigger trg_check_dispatcher_role_insert/update"
+    },
+    {
+      "entity": "dispatch_assignments",
+      "rule": "driver_id phải có role = 'DRIVER'",
+      "implementation": "Trigger trg_check_driver_role_insert/update"
+    },
+    {
+      "entity": "vehicles",
+      "rule": "Chỉ xe AVAILABLE mới có thể được phân công",
+      "implementation": "Business logic trong application layer"
+    },
+    {
+      "entity": "delivery_orders",
+      "rule": "Status flow: PENDING → ASSIGNED → IN_TRANSIT → DELIVERED/CANCELLED",
+      "implementation": "State machine trong application layer"
+    },
+    {
+      "entity": "vehicles",
+      "rule": "Auto update status dựa trên order status",
+      "implementation": "Trigger trg_update_vehicle_status_insert/update"
+    },
+    {
+      "entity": "password_reset_tokens",
+      "rule": "Token có thời gian hết hạn và chỉ dùng một lần",
+      "implementation": "expiry_date field + used boolean flag"
+    }
+  ],
+  "views": [
+    {
+      "name": "delivery_orders_full",
+      "description": "Complete order information với JOINs",
+      "query": "SELECT o.*, u1.name as creator_name, u2.name as driver_name, v.license_plate, v.vehicle_type FROM delivery_orders o LEFT JOIN users u1 ON o.created_by = u1.id LEFT JOIN users u2 ON o.driver_id = u2.id LEFT JOIN vehicles v ON o.vehicle_id = v.id"
+    },
+    {
+      "name": "driver_statistics",
+      "description": "Performance metrics per driver",
+      "query": "SELECT u.id, u.name, COUNT(o.id) as total_orders, COUNT(CASE WHEN o.status = 'DELIVERED' THEN 1 END) as completed_orders, AVG(TIMESTAMPDIFF(HOUR, o.created_at, o.completed_at)) as avg_completion_hours FROM users u LEFT JOIN delivery_orders o ON u.id = o.driver_id WHERE u.role = 'DRIVER' GROUP BY u.id, u.name"
+    },
+    {
+      "name": "vehicle_usage_stats",
+      "description": "Vehicle utilization reports", 
+      "query": "SELECT v.id, v.license_plate, v.vehicle_type, COUNT(o.id) as total_orders, COUNT(CASE WHEN o.status IN ('ASSIGNED', 'IN_TRANSIT') THEN 1 END) as active_orders, v.status FROM vehicles v LEFT JOIN delivery_orders o ON v.id = o.vehicle_id GROUP BY v.id, v.license_plate, v.vehicle_type, v.status"
+    }
+  ],
+  "triggers": [
+    {
+      "name": "trg_check_driver_role_insert",
+      "table": "delivery_orders",
+      "timing": "BEFORE INSERT",
+      "description": "Kiểm tra driver_id có role = 'DRIVER'"
+    },
+    {
+      "name": "trg_check_driver_role_update",
+      "table": "delivery_orders",
+      "timing": "BEFORE UPDATE",
+      "description": "Kiểm tra driver_id có role = 'DRIVER'"
+    },
+    {
+      "name": "trg_check_dispatcher_role_insert",
+      "table": "dispatch_assignments",
+      "timing": "BEFORE INSERT",
+      "description": "Kiểm tra dispatcher_id có role = 'DISPATCHER'"
+    },
+    {
+      "name": "trg_check_dispatcher_role_update",
+      "table": "dispatch_assignments",
+      "timing": "BEFORE UPDATE",
+      "description": "Kiểm tra dispatcher_id có role = 'DISPATCHER'"
+    },
+    {
+      "name": "trg_update_vehicle_status_insert",
+      "table": "delivery_orders",
+      "timing": "AFTER INSERT",
+      "description": "Tự động cập nhật vehicle status khi order được tạo"
+    },
+    {
+      "name": "trg_update_vehicle_status_update",
+      "table": "delivery_orders", 
+      "timing": "AFTER UPDATE",
+      "description": "Tự động cập nhật vehicle status khi order status thay đổi"
+    }
+  ],
+  "performance": {
+    "strategicIndexes": [
+      "Email lookups: idx_email on users",
+      "Role filtering: idx_role on users",
+      "Status queries: idx_status on delivery_orders, vehicles",
+      "License plate: idx_license_plate on vehicles",
+      "Time-based queries: idx_created_at, idx_timestamp",
+      "Foreign key indexes: All FK columns indexed"
+    ],
+    "scalabilityConsiderations": [
+      "order_tracking có thể partition theo timestamp",
+      "delivery_orders có thể partition theo created_at",
+      "Separate read replicas cho reporting queries",
+      "Connection pooling cho database connections",
+      "Caching cho frequently accessed data",
+      "Async processing cho tracking updates"
+    ]
+  }
+}
