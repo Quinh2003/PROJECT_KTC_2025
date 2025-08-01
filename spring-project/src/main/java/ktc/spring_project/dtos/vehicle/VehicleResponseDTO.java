@@ -1,7 +1,7 @@
 package ktc.spring_project.dtos.vehicle;
 
-import ktc.spring_project.enums.VehicleStatus;
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 /**
  * DTO for vehicle response data
@@ -11,27 +11,25 @@ public class VehicleResponseDTO {
     private Long id;
     private String licensePlate;
     private String vehicleType;
-    private Double capacity;
-    private String fuelType;
-    private VehicleStatus status;
-    private LocalDateTime registrationDate;
-    private LocalDateTime lastMaintenanceDate;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private BigDecimal capacity;
+    private String notes;
     
-    // Statistics
-    private Integer totalDeliveries;
-    private Integer activeDeliveries;
-    private Boolean isMaintenanceDue;
+    // Status information
+    private Long statusId;
+    private String statusCode;
+    private String statusDescription;
+    
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     
     // Constructors
     public VehicleResponseDTO() {}
     
-    public VehicleResponseDTO(Long id, String licensePlate, String vehicleType, VehicleStatus status) {
+    public VehicleResponseDTO(Long id, String licensePlate, String vehicleType, BigDecimal capacity) {
         this.id = id;
         this.licensePlate = licensePlate;
         this.vehicleType = vehicleType;
-        this.status = status;
+        this.capacity = capacity;
     }
     
     // Getters and Setters
@@ -44,50 +42,33 @@ public class VehicleResponseDTO {
     public String getVehicleType() { return vehicleType; }
     public void setVehicleType(String vehicleType) { this.vehicleType = vehicleType; }
     
-    public Double getCapacity() { return capacity; }
-    public void setCapacity(Double capacity) { this.capacity = capacity; }
+    public BigDecimal getCapacity() { return capacity; }
+    public void setCapacity(BigDecimal capacity) { this.capacity = capacity; }
     
-    public String getFuelType() { return fuelType; }
-    public void setFuelType(String fuelType) { this.fuelType = fuelType; }
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
     
-    public VehicleStatus getStatus() { return status; }
-    public void setStatus(VehicleStatus status) { this.status = status; }
+    public Long getStatusId() { return statusId; }
+    public void setStatusId(Long statusId) { this.statusId = statusId; }
     
-    public LocalDateTime getRegistrationDate() { return registrationDate; }
-    public void setRegistrationDate(LocalDateTime registrationDate) { this.registrationDate = registrationDate; }
+    public String getStatusCode() { return statusCode; }
+    public void setStatusCode(String statusCode) { this.statusCode = statusCode; }
     
-    public LocalDateTime getLastMaintenanceDate() { return lastMaintenanceDate; }
-    public void setLastMaintenanceDate(LocalDateTime lastMaintenanceDate) { this.lastMaintenanceDate = lastMaintenanceDate; }
+    public String getStatusDescription() { return statusDescription; }
+    public void setStatusDescription(String statusDescription) { this.statusDescription = statusDescription; }
     
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
     
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-    
-    public Integer getTotalDeliveries() { return totalDeliveries; }
-    public void setTotalDeliveries(Integer totalDeliveries) { this.totalDeliveries = totalDeliveries; }
-    
-    public Integer getActiveDeliveries() { return activeDeliveries; }
-    public void setActiveDeliveries(Integer activeDeliveries) { this.activeDeliveries = activeDeliveries; }
-    
-    public Boolean getIsMaintenanceDue() { return isMaintenanceDue; }
-    public void setIsMaintenanceDue(Boolean isMaintenanceDue) { this.isMaintenanceDue = isMaintenanceDue; }
+    public Timestamp getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
     
     // Utility methods
-    public String getStatusDisplayName() {
-        return status != null ? status.getDisplayName() : null;
+    public String getDisplayName() {
+        return licensePlate + " - " + vehicleType;
     }
     
-    public boolean isAvailable() {
-        return VehicleStatus.AVAILABLE.equals(status);
-    }
-    
-    public boolean isInUse() {
-        return VehicleStatus.IN_USE.equals(status);
-    }
-    
-    public boolean isUnderMaintenance() {
-        return VehicleStatus.MAINTENANCE.equals(status);
+    public boolean hasCapacity() {
+        return capacity != null && capacity.compareTo(BigDecimal.ZERO) > 0;
     }
 }
