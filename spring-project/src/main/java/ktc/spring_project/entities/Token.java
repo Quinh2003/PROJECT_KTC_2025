@@ -2,26 +2,29 @@ package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "vehicles")
-public class Vehicle {
+@Table(name = "tokens")
+public class Token {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String licensePlate;
+    private String token;
 
-    private String vehicleType;
+    private Timestamp expiry;
 
-    private BigDecimal capacity;
+    @Enumerated(EnumType.STRING)
+    private TokenType tokenType;
 
     private String notes;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "status_id")
@@ -30,13 +33,9 @@ public class Vehicle {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    @UpdateTimestamp
-    private Timestamp updatedAt;
+    public Token() {}
 
-    // Constructor mặc định
-    public Vehicle() {}
-
-    // Getters và Setters
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -46,28 +45,28 @@ public class Vehicle {
         this.id = id;
     }
 
-    public String getLicensePlate() {
-        return licensePlate;
+    public String getToken() {
+        return token;
     }
 
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    public String getVehicleType() {
-        return vehicleType;
+    public Timestamp getExpiry() {
+        return expiry;
     }
 
-    public void setVehicleType(String vehicleType) {
-        this.vehicleType = vehicleType;
+    public void setExpiry(Timestamp expiry) {
+        this.expiry = expiry;
     }
 
-    public BigDecimal getCapacity() {
-        return capacity;
+    public TokenType getTokenType() {
+        return tokenType;
     }
 
-    public void setCapacity(BigDecimal capacity) {
-        this.capacity = capacity;
+    public void setTokenType(TokenType tokenType) {
+        this.tokenType = tokenType;
     }
 
     public String getNotes() {
@@ -76,6 +75,14 @@ public class Vehicle {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Status getStatus() {
@@ -92,13 +99,5 @@ public class Vehicle {
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

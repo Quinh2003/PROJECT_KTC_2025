@@ -4,11 +4,12 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "warehouses")
+public class Warehouse {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,22 +17,19 @@ public class User {
 
     private String name;
 
-    @Column(unique = true)
-    private String email;
-
-    private String password;
-
-    private String phone;
-
     private String address;
+
+    private BigDecimal capacity;
+
+    private BigDecimal maxWeight;
 
     private Boolean isActive;
 
     private String notes;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+    @JoinColumn(name = "created_by")
+    private User createdBy;
 
     @CreationTimestamp
     private Timestamp createdAt;
@@ -39,7 +37,7 @@ public class User {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    public User() {}
+    public Warehouse() {}
 
     // Getters and setters
 
@@ -59,36 +57,28 @@ public class User {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     public String getAddress() {
         return address;
     }
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public BigDecimal getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(BigDecimal capacity) {
+        this.capacity = capacity;
+    }
+
+    public BigDecimal getMaxWeight() {
+        return maxWeight;
+    }
+
+    public void setMaxWeight(BigDecimal maxWeight) {
+        this.maxWeight = maxWeight;
     }
 
     public Boolean getIsActive() {
@@ -107,12 +97,12 @@ public class User {
         this.notes = notes;
     }
 
-    public Role getRole() {
-        return role;
+    public User getCreatedBy() {
+        return createdBy;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 
     public Timestamp getCreatedAt() {
