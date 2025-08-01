@@ -1,37 +1,31 @@
-package ktc.spring_project.services;
+package com.ktc.logistics.service;
 
-import ktc.spring_project.entities.User;
-import ktc.spring_project.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ktc.logistics.entity.User;
+import com.ktc.logistics.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-// CRUD tài khoản
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    public List<User> getAllUsers() {
+    public List<User> findAll() {
         return userRepository.findAll();
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow();
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
     }
 
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public User save(User entity) {
+        return userRepository.save(entity);
     }
 
-    public User updateUser(User user) {
-        return userRepository.save(user);
-    }
-
-    public void deleteUser(Long id) {
+    public void delete(Long id) {
         userRepository.deleteById(id);
     }
 }
