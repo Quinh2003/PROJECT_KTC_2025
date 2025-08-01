@@ -4,28 +4,35 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "vehicles")
-public class Vehicle {
+@Table(name = "delivery_tracking")
+public class DeliveryTracking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String licensePlate;
+    private Double latitude;
 
-    private String vehicleType;
+    private Double longitude;
 
-    private BigDecimal capacity;
+    private String location;
+
+    private Timestamp arrivedAt;
 
     private String notes;
 
     @ManyToOne
+    @JoinColumn(name = "vehicle_id")
+    private Vehicle vehicle;
+
+    @ManyToOne
     @JoinColumn(name = "status_id")
     private Status status;
+
+    private Timestamp timestamp;
 
     @CreationTimestamp
     private Timestamp createdAt;
@@ -33,10 +40,9 @@ public class Vehicle {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    // Constructor mặc định
-    public Vehicle() {}
+    public DeliveryTracking() {}
 
-    // Getters và Setters
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -46,28 +52,36 @@ public class Vehicle {
         this.id = id;
     }
 
-    public String getLicensePlate() {
-        return licensePlate;
+    public Double getLatitude() {
+        return latitude;
     }
 
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
 
-    public String getVehicleType() {
-        return vehicleType;
+    public Double getLongitude() {
+        return longitude;
     }
 
-    public void setVehicleType(String vehicleType) {
-        this.vehicleType = vehicleType;
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
-    public BigDecimal getCapacity() {
-        return capacity;
+    public String getLocation() {
+        return location;
     }
 
-    public void setCapacity(BigDecimal capacity) {
-        this.capacity = capacity;
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Timestamp getArrivedAt() {
+        return arrivedAt;
+    }
+
+    public void setArrivedAt(Timestamp arrivedAt) {
+        this.arrivedAt = arrivedAt;
     }
 
     public String getNotes() {
@@ -78,12 +92,28 @@ public class Vehicle {
         this.notes = notes;
     }
 
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
     public Status getStatus() {
         return status;
     }
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 
     public Timestamp getCreatedAt() {
