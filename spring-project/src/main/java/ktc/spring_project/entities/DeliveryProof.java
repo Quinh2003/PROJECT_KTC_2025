@@ -1,5 +1,6 @@
 package ktc.spring_project.entities;
 
+import ktc.spring_project.enums.ProofType;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -10,25 +11,17 @@ public class DeliveryProof {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "proof_type", nullable = false)
-    private String proofType; // PHOTO, SIGNATURE, RECEIPT
+    private ProofType proofType;
     
-    @Column(name = "file_path")
-    private String filePath; // Path to uploaded file
+    @Column(name = "file_path", length = 500)
+    private String filePath;
     
-    @Column(name = "file_name")
+    @Column(name = "file_name", length = 255)
     private String fileName;
     
-    @Column(name = "file_size")
-    private Long fileSize;
-    
-    @Column(name = "mime_type")
-    private String mimeType;
-    
-    @Column(columnDefinition = "TEXT")
-    private String description;
-    
-    @Column(name = "recipient_name")
+    @Column(name = "recipient_name", length = 255)
     private String recipientName;
     
     @Column(name = "recipient_signature", columnDefinition = "TEXT")
@@ -40,64 +33,138 @@ public class DeliveryProof {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
-    @ManyToOne
-    @JoinColumn(name = "delivery_order_id", nullable = false)
-    private DeliveryOrder deliveryOrder;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false, foreignKey = @ForeignKey(name = "FK_PROOF_ORDER"))
+    private Order order;
     
-    @ManyToOne
-    @JoinColumn(name = "uploaded_by")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uploaded_by", foreignKey = @ForeignKey(name = "FK_PROOF_UPLOADED_BY"))
     private User uploadedBy;
     
-    // Constructors
-    public DeliveryProof() {
-        this.createdAt = LocalDateTime.now();
-        this.capturedAt = LocalDateTime.now();
-    }
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
     
-    public DeliveryProof(String proofType, DeliveryOrder deliveryOrder, User uploadedBy) {
-        this();
+    // Constructors
+    public DeliveryProof() {}
+    
+    public DeliveryProof(ProofType proofType, String filePath, String fileName, Order order, User uploadedBy) {
         this.proofType = proofType;
-        this.deliveryOrder = deliveryOrder;
+        this.filePath = filePath;
+        this.fileName = fileName;
+        this.order = order;
         this.uploadedBy = uploadedBy;
     }
     
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        if (capturedAt == null) {
+            capturedAt = LocalDateTime.now();
+        }
+    }
+    
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() { 
+        return id; 
+    }
     
-    public String getProofType() { return proofType; }
-    public void setProofType(String proofType) { this.proofType = proofType; }
+    public void setId(Long id) { 
+        this.id = id; 
+    }
     
-    public String getFilePath() { return filePath; }
-    public void setFilePath(String filePath) { this.filePath = filePath; }
+    public ProofType getProofType() { 
+        return proofType; 
+    }
     
-    public String getFileName() { return fileName; }
-    public void setFileName(String fileName) { this.fileName = fileName; }
+    public void setProofType(ProofType proofType) { 
+        this.proofType = proofType; 
+    }
     
-    public Long getFileSize() { return fileSize; }
-    public void setFileSize(Long fileSize) { this.fileSize = fileSize; }
+    public String getFilePath() { 
+        return filePath; 
+    }
     
-    public String getMimeType() { return mimeType; }
-    public void setMimeType(String mimeType) { this.mimeType = mimeType; }
+    public void setFilePath(String filePath) { 
+        this.filePath = filePath; 
+    }
     
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getFileName() { 
+        return fileName; 
+    }
     
-    public String getRecipientName() { return recipientName; }
-    public void setRecipientName(String recipientName) { this.recipientName = recipientName; }
+    public void setFileName(String fileName) { 
+        this.fileName = fileName; 
+    }
     
-    public String getRecipientSignature() { return recipientSignature; }
-    public void setRecipientSignature(String recipientSignature) { this.recipientSignature = recipientSignature; }
+    public String getRecipientName() { 
+        return recipientName; 
+    }
     
-    public LocalDateTime getCapturedAt() { return capturedAt; }
-    public void setCapturedAt(LocalDateTime capturedAt) { this.capturedAt = capturedAt; }
+    public void setRecipientName(String recipientName) { 
+        this.recipientName = recipientName; 
+    }
     
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public String getRecipientSignature() { 
+        return recipientSignature; 
+    }
     
-    // Relationship getters/setters
-    public DeliveryOrder getDeliveryOrder() { return deliveryOrder; }
-    public void setDeliveryOrder(DeliveryOrder deliveryOrder) { this.deliveryOrder = deliveryOrder; }
+    public void setRecipientSignature(String recipientSignature) { 
+        this.recipientSignature = recipientSignature; 
+    }
     
-    public User getUploadedBy() { return uploadedBy; }
-    public void setUploadedBy(User uploadedBy) { this.uploadedBy = uploadedBy; }
+    public LocalDateTime getCapturedAt() { 
+        return capturedAt; 
+    }
+    
+    public void setCapturedAt(LocalDateTime capturedAt) { 
+        this.capturedAt = capturedAt; 
+    }
+    
+    public LocalDateTime getCreatedAt() { 
+        return createdAt; 
+    }
+    
+    public void setCreatedAt(LocalDateTime createdAt) { 
+        this.createdAt = createdAt; 
+    }
+    
+    public Order getOrder() { 
+        return order; 
+    }
+    
+    public void setOrder(Order order) { 
+        this.order = order; 
+    }
+    
+    public User getUploadedBy() { 
+        return uploadedBy; 
+    }
+    
+    public void setUploadedBy(User uploadedBy) { 
+        this.uploadedBy = uploadedBy; 
+    }
+    
+    public String getNotes() { 
+        return notes; 
+    }
+    
+    public void setNotes(String notes) { 
+        this.notes = notes; 
+    }
+    
+    @Override
+    public String toString() {
+        return "DeliveryProof{" +
+                "id=" + id +
+                ", proofType=" + proofType +
+                ", filePath='" + filePath + '\'' +
+                ", fileName='" + fileName + '\'' +
+                ", recipientName='" + recipientName + '\'' +
+                ", capturedAt=" + capturedAt +
+                ", createdAt=" + createdAt +
+                ", order=" + (order != null ? order.getOrderCode() : "null") +
+                ", uploadedBy=" + (uploadedBy != null ? uploadedBy.getName() : "null") +
+                ", notes='" + notes + '\'' +
+                '}';
+    }
 }

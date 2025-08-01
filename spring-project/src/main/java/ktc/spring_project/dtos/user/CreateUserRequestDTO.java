@@ -1,6 +1,5 @@
 package ktc.spring_project.dtos.user;
 
-import ktc.spring_project.enums.UserRole;
 import jakarta.validation.constraints.*;
 
 /**
@@ -24,8 +23,8 @@ public class CreateUserRequestDTO {
              message = "Password must contain at least one lowercase letter, one uppercase letter, and one digit")
     private String password;
     
-    @NotNull(message = "User role is required")
-    private UserRole role;
+    @NotNull(message = "Role ID is required")
+    private Long roleId;
     
     @Pattern(regexp = "^[+]?[0-9\\s\\-\\(\\)]{0,20}$", message = "Invalid phone number format")
     private String phone;
@@ -36,11 +35,11 @@ public class CreateUserRequestDTO {
     // Constructors
     public CreateUserRequestDTO() {}
     
-    public CreateUserRequestDTO(String name, String email, String password, UserRole role) {
+    public CreateUserRequestDTO(String name, String email, String password, Long roleId) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.roleId = roleId;
     }
     
     // Getters and Setters
@@ -53,8 +52,8 @@ public class CreateUserRequestDTO {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
     
-    public UserRole getRole() { return role; }
-    public void setRole(UserRole role) { this.role = role; }
+    public Long getRoleId() { return roleId; }
+    public void setRoleId(Long roleId) { this.roleId = roleId; }
     
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }

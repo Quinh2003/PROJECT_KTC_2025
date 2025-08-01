@@ -1,6 +1,6 @@
 package ktc.spring_project.dtos.user;
 
-import ktc.spring_project.enums.UserRole;
+
 import java.time.LocalDateTime;
 
 /**
@@ -12,7 +12,8 @@ public class UserResponseDTO {
     private Long id;
     private String name;
     private String email;
-    private UserRole role;
+    private Long roleId;
+    private String roleName; // Display name for the role
     private String phone;
     private String address;
     private Boolean isActive;
@@ -22,11 +23,12 @@ public class UserResponseDTO {
     // Constructors
     public UserResponseDTO() {}
     
-    public UserResponseDTO(Long id, String name, String email, UserRole role, Boolean isActive) {
+    public UserResponseDTO(Long id, String name, String email, Long roleId, String roleName, Boolean isActive) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.role = role;
+        this.roleId = roleId;
+        this.roleName = roleName;
         this.isActive = isActive;
     }
     
@@ -40,8 +42,11 @@ public class UserResponseDTO {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     
-    public UserRole getRole() { return role; }
-    public void setRole(UserRole role) { this.role = role; }
+    public Long getRoleId() { return roleId; }
+    public void setRoleId(Long roleId) { this.roleId = roleId; }
+    
+    public String getRoleName() { return roleName; }
+    public void setRoleName(String roleName) { this.roleName = roleName; }
     
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
@@ -58,8 +63,5 @@ public class UserResponseDTO {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
     
-    // Utility method to get role display name
-    public String getRoleDisplayName() {
-        return role != null ? role.getDisplayName() : null;
-    }
+
 }

@@ -16,7 +16,7 @@ public class UpdateUserRequestDTO {
     @Size(max = 150, message = "Email must not exceed 150 characters")
     private String email;
     
-    private UserRole role;
+    private Long roleId;
     
     @Pattern(regexp = "^[+]?[0-9\\s\\-\\(\\)]{0,20}$", message = "Invalid phone number format")
     private String phone;
@@ -36,8 +36,8 @@ public class UpdateUserRequestDTO {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     
-    public UserRole getRole() { return role; }
-    public void setRole(UserRole role) { this.role = role; }
+    public Long getRoleId() { return roleId; }
+    public void setRoleId(Long roleId) { this.roleId = roleId; }
     
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }

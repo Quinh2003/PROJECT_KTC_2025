@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 
+/**
+ * FUTURE IMPLEMENTATION - KPI and Analytics System
+ * This entity is not yet included in the current SQL schema but will be added in Phase 2
+ * Handles performance metrics, analytics, and business intelligence reporting
+ */
 @Entity
 @Table(name = "kpi_metrics")
 public class KPIMetrics {

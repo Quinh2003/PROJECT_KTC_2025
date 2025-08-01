@@ -1,7 +1,7 @@
 package ktc.spring_project.entities;
 
-import ktc.spring_project.enums.VehicleStatus;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,110 +12,148 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "license_plate", unique = true, nullable = false)
+    @Column(name = "license_plate", unique = true, nullable = false, length = 20)
     private String licensePlate;
     
-    @Column(name = "vehicle_type")
+    @Column(name = "vehicle_type", length = 100)
     private String vehicleType;
     
-    private Double capacity; // tải trọng (tấn)
+    @Column(name = "capacity", precision = 10, scale = 2)
+    private BigDecimal capacity; // Tải trọng (tấn)
     
-    @Column(name = "fuel_type")
-    private String fuelType;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private VehicleStatus status = VehicleStatus.AVAILABLE;
-    
-    @Column(name = "registration_date")
-    private LocalDateTime registrationDate;
-    
-    @Column(name = "last_maintenance_date")
-    private LocalDateTime lastMaintenanceDate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id", nullable = false, foreignKey = @ForeignKey(name = "FK_VEHICLE_STATUS"))
+    private Status status;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
 
-    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
-    private List<DeliveryOrder> deliveryOrders;
+    // Relationships
+    @OneToMany(mappedBy = "vehicle", fetch = FetchType.LAZY)
+    private List<Order> orders;
 
-    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
-    private List<VehicleMaintenance> maintenances;
-
-    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
-    private List<DispatchAssignment> dispatchAssignments;
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DeliveryTracking> deliveryTrackings;
     
     // Constructors
-    public Vehicle() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
+    public Vehicle() {}
     
-    public Vehicle(String licensePlate, String vehicleType) {
-        this();
+    public Vehicle(String licensePlate, String vehicleType, BigDecimal capacity, Status status) {
         this.licensePlate = licensePlate;
         this.vehicleType = vehicleType;
+        this.capacity = capacity;
+        this.status = status;
+    }
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+    
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
     
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() { 
+        return id; 
+    }
     
-    public String getLicensePlate() { return licensePlate; }
+    public void setId(Long id) { 
+        this.id = id; 
+    }
+    
+    public String getLicensePlate() { 
+        return licensePlate; 
+    }
+    
     public void setLicensePlate(String licensePlate) { 
         this.licensePlate = licensePlate;
-        this.updatedAt = LocalDateTime.now();
     }
     
-    public String getVehicleType() { return vehicleType; }
+    public String getVehicleType() { 
+        return vehicleType; 
+    }
+    
     public void setVehicleType(String vehicleType) { 
         this.vehicleType = vehicleType;
-        this.updatedAt = LocalDateTime.now();
     }
     
-    public Double getCapacity() { return capacity; }
-    public void setCapacity(Double capacity) { 
+    public BigDecimal getCapacity() { 
+        return capacity; 
+    }
+    
+    public void setCapacity(BigDecimal capacity) { 
         this.capacity = capacity;
-        this.updatedAt = LocalDateTime.now();
     }
     
-    public String getFuelType() { return fuelType; }
-    public void setFuelType(String fuelType) { 
-        this.fuelType = fuelType;
-        this.updatedAt = LocalDateTime.now();
+    public Status getStatus() { 
+        return status; 
     }
     
-    public VehicleStatus getStatus() { return status; }
-    public void setStatus(VehicleStatus status) { 
+    public void setStatus(Status status) { 
         this.status = status;
-        this.updatedAt = LocalDateTime.now();
     }
     
-    public LocalDateTime getRegistrationDate() { return registrationDate; }
-    public void setRegistrationDate(LocalDateTime registrationDate) { 
-        this.registrationDate = registrationDate;
-        this.updatedAt = LocalDateTime.now();
+    public LocalDateTime getCreatedAt() { 
+        return createdAt; 
     }
     
-    public LocalDateTime getLastMaintenanceDate() { return lastMaintenanceDate; }
-    public void setLastMaintenanceDate(LocalDateTime lastMaintenanceDate) { 
-        this.lastMaintenanceDate = lastMaintenanceDate;
-        this.updatedAt = LocalDateTime.now();
+    public void setCreatedAt(LocalDateTime createdAt) { 
+        this.createdAt = createdAt; 
     }
     
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public LocalDateTime getUpdatedAt() { 
+        return updatedAt; 
+    }
     
-    // Relationship getters/setters
-    public List<DeliveryOrder> getDeliveryOrders() { return deliveryOrders; }
-    public void setDeliveryOrders(List<DeliveryOrder> deliveryOrders) { this.deliveryOrders = deliveryOrders; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { 
+        this.updatedAt = updatedAt; 
+    }
     
-    public List<VehicleMaintenance> getMaintenances() { return maintenances; }
-    public void setMaintenances(List<VehicleMaintenance> maintenances) { this.maintenances = maintenances; }
+    public String getNotes() { 
+        return notes; 
+    }
     
-    public List<DispatchAssignment> getDispatchAssignments() { return dispatchAssignments; }
-    public void setDispatchAssignments(List<DispatchAssignment> dispatchAssignments) { this.dispatchAssignments = dispatchAssignments; }
+    public void setNotes(String notes) { 
+        this.notes = notes; 
+    }
+    
+    public List<Order> getOrders() { 
+        return orders; 
+    }
+    
+    public void setOrders(List<Order> orders) { 
+        this.orders = orders; 
+    }
+    
+    public List<DeliveryTracking> getDeliveryTrackings() { 
+        return deliveryTrackings; 
+    }
+    
+    public void setDeliveryTrackings(List<DeliveryTracking> deliveryTrackings) { 
+        this.deliveryTrackings = deliveryTrackings; 
+    }
+    
+    @Override
+    public String toString() {
+        return "Vehicle{" +
+                "id=" + id +
+                ", licensePlate='" + licensePlate + '\'' +
+                ", vehicleType='" + vehicleType + '\'' +
+                ", capacity=" + capacity +
+                ", status=" + (status != null ? status.getCode() : "null") +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", notes='" + notes + '\'' +
+                '}';
+    }
 }

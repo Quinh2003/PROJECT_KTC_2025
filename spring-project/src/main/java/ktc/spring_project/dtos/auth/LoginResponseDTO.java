@@ -49,14 +49,14 @@ public class LoginResponseDTO {
     }
     
     public boolean isDriver() {
-        return user != null && UserRole.DRIVER.equals(user.getRole());
+        return user != null && "DRIVER".equals(user.getRoleName());
     }
     
     public boolean isAdmin() {
-        return user != null && UserRole.ADMIN.equals(user.getRole());
+        return user != null && "ADMIN".equals(user.getRoleName());
     }
     
-    public boolean isDispatcher() {
-        return user != null && UserRole.DISPATCHER.equals(user.getRole());
+    public boolean isManager() {
+        return user != null && "MANAGER".equals(user.getRoleName());
     }
 }

@@ -3,6 +3,11 @@ package ktc.spring_project.entities;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * FUTURE IMPLEMENTATION - System Configuration Management
+ * This entity is not yet included in the current SQL schema but will be added in Phase 2
+ * Handles dynamic system configuration and feature toggles
+ */
 @Entity
 @Table(name = "system_configs")
 public class SystemConfig {

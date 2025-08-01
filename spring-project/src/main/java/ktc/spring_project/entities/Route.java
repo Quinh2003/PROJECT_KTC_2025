@@ -1,6 +1,7 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,41 +12,23 @@ public class Route {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false, length = 255)
     private String name;
     
-    @Column(name = "start_address", nullable = false)
-    private String startAddress;
+    @Column(name = "waypoints", nullable = false, columnDefinition = "JSON")
+    private String waypoints; // JSON array of waypoints with terrain_type, distance_to_next, completed_at
     
-    @Column(name = "end_address", nullable = false)
-    private String endAddress;
+    @Column(name = "estimated_distance", precision = 10, scale = 2)
+    private BigDecimal estimatedDistance; // Total distance in km
     
-    @Column(name = "start_latitude")
-    private Double startLatitude;
+    @Column(name = "estimated_duration")
+    private Integer estimatedDuration; // Duration in minutes
     
-    @Column(name = "start_longitude")
-    private Double startLongitude;
+    @Column(name = "estimated_cost", precision = 10, scale = 2)
+    private BigDecimal estimatedCost; // Estimated shipping cost in VND
     
-    @Column(name = "end_latitude")
-    private Double endLatitude;
-    
-    @Column(name = "end_longitude")
-    private Double endLongitude;
-    
-    @Column(name = "estimated_distance") // in km
-    private Double estimatedDistance;
-    
-    @Column(name = "estimated_duration") // in minutes
-    private Integer estimatedDuration;
-    
-    @Column(columnDefinition = "TEXT")
-    private String waypoints; // JSON string of waypoints
-    
-    @Column(name = "is_optimized")
-    private Boolean isOptimized = false;
-    
-    @Column(name = "optimization_score")
-    private Double optimizationScore;
+    @Column(name = "ai_optimized")
+    private Boolean aiOptimized = false; // Được tối ưu bởi AI
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -53,109 +36,147 @@ public class Route {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
-    @ManyToOne
-    @JoinColumn(name = "created_by")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", foreignKey = @ForeignKey(name = "FK_ROUTE_CREATED_BY"))
     private User createdBy;
     
-    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL)
-    private List<DeliveryOrder> deliveryOrders;
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+    
+    // Relationships
+    @OneToMany(mappedBy = "route", fetch = FetchType.LAZY)
+    private List<Order> orders;
     
     // Constructors
-    public Route() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+    public Route() {}
+    
+    public Route(String name, String waypoints, User createdBy) {
+        this.name = name;
+        this.waypoints = waypoints;
+        this.createdBy = createdBy;
     }
     
-    public Route(String name, String startAddress, String endAddress) {
-        this();
-        this.name = name;
-        this.startAddress = startAddress;
-        this.endAddress = endAddress;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+    
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
     
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() { 
+        return id; 
+    }
     
-    public String getName() { return name; }
+    public void setId(Long id) { 
+        this.id = id; 
+    }
+    
+    public String getName() { 
+        return name; 
+    }
+    
     public void setName(String name) { 
         this.name = name;
-        this.updatedAt = LocalDateTime.now();
     }
     
-    public String getStartAddress() { return startAddress; }
-    public void setStartAddress(String startAddress) { 
-        this.startAddress = startAddress;
-        this.updatedAt = LocalDateTime.now();
+    public String getWaypoints() { 
+        return waypoints; 
     }
     
-    public String getEndAddress() { return endAddress; }
-    public void setEndAddress(String endAddress) { 
-        this.endAddress = endAddress;
-        this.updatedAt = LocalDateTime.now();
-    }
-    
-    public Double getStartLatitude() { return startLatitude; }
-    public void setStartLatitude(Double startLatitude) { 
-        this.startLatitude = startLatitude;
-        this.updatedAt = LocalDateTime.now();
-    }
-    
-    public Double getStartLongitude() { return startLongitude; }
-    public void setStartLongitude(Double startLongitude) { 
-        this.startLongitude = startLongitude;
-        this.updatedAt = LocalDateTime.now();
-    }
-    
-    public Double getEndLatitude() { return endLatitude; }
-    public void setEndLatitude(Double endLatitude) { 
-        this.endLatitude = endLatitude;
-        this.updatedAt = LocalDateTime.now();
-    }
-    
-    public Double getEndLongitude() { return endLongitude; }
-    public void setEndLongitude(Double endLongitude) { 
-        this.endLongitude = endLongitude;
-        this.updatedAt = LocalDateTime.now();
-    }
-    
-    public Double getEstimatedDistance() { return estimatedDistance; }
-    public void setEstimatedDistance(Double estimatedDistance) { 
-        this.estimatedDistance = estimatedDistance;
-        this.updatedAt = LocalDateTime.now();
-    }
-    
-    public Integer getEstimatedDuration() { return estimatedDuration; }
-    public void setEstimatedDuration(Integer estimatedDuration) { 
-        this.estimatedDuration = estimatedDuration;
-        this.updatedAt = LocalDateTime.now();
-    }
-    
-    public String getWaypoints() { return waypoints; }
     public void setWaypoints(String waypoints) { 
         this.waypoints = waypoints;
-        this.updatedAt = LocalDateTime.now();
     }
     
-    public Boolean getIsOptimized() { return isOptimized; }
-    public void setIsOptimized(Boolean isOptimized) { 
-        this.isOptimized = isOptimized;
-        this.updatedAt = LocalDateTime.now();
+    public BigDecimal getEstimatedDistance() { 
+        return estimatedDistance; 
     }
     
-    public Double getOptimizationScore() { return optimizationScore; }
-    public void setOptimizationScore(Double optimizationScore) { 
-        this.optimizationScore = optimizationScore;
-        this.updatedAt = LocalDateTime.now();
+    public void setEstimatedDistance(BigDecimal estimatedDistance) { 
+        this.estimatedDistance = estimatedDistance;
     }
     
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public Integer getEstimatedDuration() { 
+        return estimatedDuration; 
+    }
     
-    // Relationship getters/setters
-    public User getCreatedBy() { return createdBy; }
-    public void setCreatedBy(User createdBy) { this.createdBy = createdBy; }
+    public void setEstimatedDuration(Integer estimatedDuration) { 
+        this.estimatedDuration = estimatedDuration;
+    }
     
-    public List<DeliveryOrder> getDeliveryOrders() { return deliveryOrders; }
-    public void setDeliveryOrders(List<DeliveryOrder> deliveryOrders) { this.deliveryOrders = deliveryOrders; }
+    public BigDecimal getEstimatedCost() { 
+        return estimatedCost; 
+    }
+    
+    public void setEstimatedCost(BigDecimal estimatedCost) { 
+        this.estimatedCost = estimatedCost;
+    }
+    
+    public Boolean getAiOptimized() { 
+        return aiOptimized; 
+    }
+    
+    public void setAiOptimized(Boolean aiOptimized) { 
+        this.aiOptimized = aiOptimized;
+    }
+    
+    public LocalDateTime getCreatedAt() { 
+        return createdAt; 
+    }
+    
+    public void setCreatedAt(LocalDateTime createdAt) { 
+        this.createdAt = createdAt; 
+    }
+    
+    public LocalDateTime getUpdatedAt() { 
+        return updatedAt; 
+    }
+    
+    public void setUpdatedAt(LocalDateTime updatedAt) { 
+        this.updatedAt = updatedAt; 
+    }
+    
+    public User getCreatedBy() { 
+        return createdBy; 
+    }
+    
+    public void setCreatedBy(User createdBy) { 
+        this.createdBy = createdBy; 
+    }
+    
+    public String getNotes() { 
+        return notes; 
+    }
+    
+    public void setNotes(String notes) { 
+        this.notes = notes; 
+    }
+    
+    public List<Order> getOrders() { 
+        return orders; 
+    }
+    
+    public void setOrders(List<Order> orders) { 
+        this.orders = orders; 
+    }
+    
+    @Override
+    public String toString() {
+        return "Route{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", estimatedDistance=" + estimatedDistance +
+                ", estimatedDuration=" + estimatedDuration +
+                ", estimatedCost=" + estimatedCost +
+                ", aiOptimized=" + aiOptimized +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", createdBy=" + (createdBy != null ? createdBy.getName() : "null") +
+                ", notes='" + notes + '\'' +
+                '}';
+    }
 }

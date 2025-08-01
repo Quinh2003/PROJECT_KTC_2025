@@ -111,6 +111,6 @@ public class DeliveryOrderResponseDTO {
     }
     
     public boolean isInProgress() {
-        return OrderStatus.IN_PROGRESS.equals(status) || OrderStatus.ON_DELIVERY.equals(status);
+        return OrderStatus.READY.equals(status) || OrderStatus.ON_DELIVERY.equals(status);
     }
 }

@@ -4,6 +4,11 @@ import ktc.spring_project.enums.AssignmentStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * FUTURE IMPLEMENTATION - Dispatch Assignment Management
+ * This entity is not yet included in the current SQL schema but will be added in Phase 2
+ * Handles driver assignments, task distribution, and completion tracking
+ */
 @Entity
 @Table(name = "dispatch_assignments")
 public class DispatchAssignment {
@@ -32,7 +37,7 @@ public class DispatchAssignment {
 
     @ManyToOne
     @JoinColumn(name = "delivery_order_id")
-    private DeliveryOrder deliveryOrder;
+    private Order order;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id")
@@ -81,8 +86,8 @@ public class DispatchAssignment {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     
     // Relationship getters/setters
-    public DeliveryOrder getDeliveryOrder() { return deliveryOrder; }
-    public void setDeliveryOrder(DeliveryOrder deliveryOrder) { this.deliveryOrder = deliveryOrder; }
+    public Order getOrder() { return order; }
+    public void setOrder(Order order) { this.order = order; }
     
     public Vehicle getVehicle() { return vehicle; }
     public void setVehicle(Vehicle vehicle) { this.vehicle = vehicle; }

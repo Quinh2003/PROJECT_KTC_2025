@@ -3,6 +3,11 @@ package ktc.spring_project.entities;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * FUTURE IMPLEMENTATION - Vehicle Maintenance Management
+ * This entity is not yet included in the current SQL schema but will be added in Phase 2
+ * Handles vehicle maintenance scheduling, tracking, and cost management
+ */
 @Entity
 @Table(name = "vehicle_maintenances")
 public class VehicleMaintenance {

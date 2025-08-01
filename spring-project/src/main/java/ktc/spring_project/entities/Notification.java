@@ -3,6 +3,11 @@ package ktc.spring_project.entities;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * FUTURE IMPLEMENTATION - Real-time Notification System
+ * This entity is not yet included in the current SQL schema but will be added in Phase 2
+ * Handles push notifications, email alerts, and in-app messaging
+ */
 @Entity
 @Table(name = "notifications")
 public class Notification {
