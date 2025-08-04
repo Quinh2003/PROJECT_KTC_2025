@@ -67,30 +67,6 @@ public class OrderItem {
         this.unitPrice = unitPrice;
     }
 
-    public BigDecimal getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(BigDecimal subtotal) {
-        this.subtotal = subtotal;
-    }
-
-    public BigDecimal getWeightKg() {
-        return weightKg;
-    }
-
-    public void setWeightKg(BigDecimal weightKg) {
-        this.weightKg = weightKg;
-    }
-
-    public BigDecimal getActualDistanceKm() {
-        return actualDistanceKm;
-    }
-
-    public void setActualDistanceKm(BigDecimal actualDistanceKm) {
-        this.actualDistanceKm = actualDistanceKm;
-    }
-
     public BigDecimal getShippingFee() {
         return shippingFee;
     }

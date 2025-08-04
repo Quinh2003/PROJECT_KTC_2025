@@ -42,9 +42,8 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "product_status")
-    private Status productStatus;
+    @Column(name = "product_status")
+    private Integer productStatus;
 
     private String notes;
 
@@ -155,11 +154,11 @@ public class Product {
         this.category = category;
     }
 
-    public Status getProductStatus() {
+    public Integer getProductStatus() {
         return productStatus;
     }
 
-    public void setProductStatus(Status productStatus) {
+    public void setProductStatus(Integer productStatus) {
         this.productStatus = productStatus;
     }
 
@@ -171,13 +170,6 @@ public class Product {
         this.stockQuantity = stockQuantity;
     }
 
-    public Boolean getTemporary() {
-        return temporary;
-    }
-
-    public void setTemporary(Boolean temporary) {
-        this.temporary = temporary;
-    }
 
     public String getNotes() {
         return notes;
