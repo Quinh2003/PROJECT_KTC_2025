@@ -15,24 +15,28 @@ public class WarehouseTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_type", length = 50, nullable = false)
     private TransactionType transactionType;
 
+    @Column(nullable = false)
     private Integer quantity;
 
+    @Column(name = "unit_cost", precision = 15, scale = 2, nullable = false)
     private BigDecimal unitCost;
 
+    @Column(name = "transaction_date")
     private Timestamp transactionDate;
 
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "warehouse_id")
+    @JoinColumn(name = "warehouse_id", nullable = false)
     private Warehouse warehouse;
 
     @ManyToOne
@@ -40,7 +44,7 @@ public class WarehouseTransaction {
     private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "status_id")
+    @JoinColumn(name = "status_id", nullable = false)
     private Status status;
 
     @ManyToOne
