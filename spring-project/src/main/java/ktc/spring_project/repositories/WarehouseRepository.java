@@ -32,3 +32,4 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, Long> {
     @Query("SELECT COUNT(w) FROM Warehouse w WHERE w.isActive = true")
     long countActiveWarehouses();
 }
+

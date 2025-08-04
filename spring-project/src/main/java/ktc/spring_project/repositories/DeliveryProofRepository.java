@@ -38,3 +38,4 @@ public interface DeliveryProofRepository extends JpaRepository<DeliveryProof, Lo
     @Query("SELECT dp FROM DeliveryProof dp WHERE dp.filePath IS NOT NULL AND dp.filePath != ''")
     List<DeliveryProof> findProofsWithFiles();
 }
+

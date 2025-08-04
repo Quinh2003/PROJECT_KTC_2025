@@ -51,4 +51,4 @@ public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> 
     
     @Query("SELECT DISTINCT al.tableName FROM ActivityLog al ORDER BY al.tableName")
     List<String> findDistinctTableNames();
-}
+}  
