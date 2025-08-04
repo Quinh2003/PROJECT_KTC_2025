@@ -1,6 +1,7 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import ktc.spring_project.enums.VehicleType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,9 +18,15 @@ public class Vehicle {
 
     private String licensePlate;
 
-    private String vehicleType;
+    @Enumerated(EnumType.STRING)
+    private VehicleType vehicleType;
 
-    private BigDecimal capacity;
+    private BigDecimal capacityWeightKg;
+
+    private BigDecimal capacityVolumeM3;
+    @ManyToOne
+    @JoinColumn(name = "current_driver_id")
+    private User currentDriver;
 
     private String notes;
 
@@ -54,20 +61,36 @@ public class Vehicle {
         this.licensePlate = licensePlate;
     }
 
-    public String getVehicleType() {
+    public VehicleType getVehicleType() {
         return vehicleType;
     }
 
-    public void setVehicleType(String vehicleType) {
+    public void setVehicleType(VehicleType vehicleType) {
         this.vehicleType = vehicleType;
     }
 
-    public BigDecimal getCapacity() {
-        return capacity;
+    public BigDecimal getCapacityWeightKg() {
+        return capacityWeightKg;
     }
 
-    public void setCapacity(BigDecimal capacity) {
-        this.capacity = capacity;
+    public void setCapacityWeightKg(BigDecimal capacityWeightKg) {
+        this.capacityWeightKg = capacityWeightKg;
+    }
+
+    public BigDecimal getCapacityVolumeM3() {
+        return capacityVolumeM3;
+    }
+
+    public void setCapacityVolumeM3(BigDecimal capacityVolumeM3) {
+        this.capacityVolumeM3 = capacityVolumeM3;
+    }
+
+    public User getCurrentDriver() {
+        return currentDriver;
+    }
+
+    public void setCurrentDriver(User currentDriver) {
+        this.currentDriver = currentDriver;
     }
 
     public String getNotes() {

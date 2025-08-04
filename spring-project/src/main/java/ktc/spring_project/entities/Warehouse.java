@@ -15,13 +15,19 @@ public class Warehouse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    private String warehouseCode;
+
     private String name;
 
     private String address;
 
-    private BigDecimal capacity;
 
-    private BigDecimal maxWeight;
+    private BigDecimal latitude;
+
+    private BigDecimal longitude;
+
+    private BigDecimal capacityM3;
 
     private Boolean isActive;
 
@@ -65,20 +71,37 @@ public class Warehouse {
         this.address = address;
     }
 
-    public BigDecimal getCapacity() {
-        return capacity;
+
+    public String getWarehouseCode() {
+        return warehouseCode;
     }
 
-    public void setCapacity(BigDecimal capacity) {
-        this.capacity = capacity;
+    public void setWarehouseCode(String warehouseCode) {
+        this.warehouseCode = warehouseCode;
     }
 
-    public BigDecimal getMaxWeight() {
-        return maxWeight;
+    public BigDecimal getLatitude() {
+        return latitude;
     }
 
-    public void setMaxWeight(BigDecimal maxWeight) {
-        this.maxWeight = maxWeight;
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public BigDecimal getCapacityM3() {
+        return capacityM3;
+    }
+
+    public void setCapacityM3(BigDecimal capacityM3) {
+        this.capacityM3 = capacityM3;
     }
 
     public Boolean getIsActive() {

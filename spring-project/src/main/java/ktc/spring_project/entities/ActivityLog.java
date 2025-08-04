@@ -1,6 +1,7 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import ktc.spring_project.enums.ActionType;
 import java.sql.Timestamp;
 
 @Entity
@@ -21,10 +22,15 @@ public class ActivityLog {
     @JoinColumn(name = "status_id")
     private Status status;
 
-    private Timestamp actionTimestamp;
 
-    @Column(columnDefinition = "json")
-    private String deviceInfo;
+    @Enumerated(EnumType.STRING)
+    private ActionType actionType;
+
+    private String tableName;
+
+    private Long recordId;
+
+    private Timestamp actionTimestamp;
 
     @Column(columnDefinition = "json")
     private String metadata;
@@ -65,20 +71,37 @@ public class ActivityLog {
         this.status = status;
     }
 
+
+    public ActionType getActionType() {
+        return actionType;
+    }
+
+    public void setActionType(ActionType actionType) {
+        this.actionType = actionType;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public Long getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(Long recordId) {
+        this.recordId = recordId;
+    }
+
     public Timestamp getActionTimestamp() {
         return actionTimestamp;
     }
 
     public void setActionTimestamp(Timestamp actionTimestamp) {
         this.actionTimestamp = actionTimestamp;
-    }
-
-    public String getDeviceInfo() {
-        return deviceInfo;
-    }
-
-    public void setDeviceInfo(String deviceInfo) {
-        this.deviceInfo = deviceInfo;
     }
 
     public String getMetadata() {

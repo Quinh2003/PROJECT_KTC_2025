@@ -1,14 +1,13 @@
 package ktc.spring_project.enums;
 
-public enum ProofType {
-    PHOTO("Photo"),
-    SIGNATURE("Signature"),
-    AUDIO("Audio"),
-    RECEIPT("Receipt");
+public enum TransactionType {
+    IN("In"),
+    OUT("Out"),
+    TRANSFER("Transfer");
 
     private final String displayName;
 
-    ProofType(String displayName) {
+    TransactionType(String displayName) {
         this.displayName = displayName;
     }
 

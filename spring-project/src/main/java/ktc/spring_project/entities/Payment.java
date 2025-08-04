@@ -1,6 +1,7 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import ktc.spring_project.enums.PaymentMethod;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 

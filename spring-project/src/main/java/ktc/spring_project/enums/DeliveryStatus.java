@@ -1,14 +1,14 @@
 package ktc.spring_project.enums;
 
-public enum ProofType {
-    PHOTO("Photo"),
-    SIGNATURE("Signature"),
-    AUDIO("Audio"),
-    RECEIPT("Receipt");
+public enum DeliveryStatus {
+    PENDING("Pending"),
+    IN_PROGRESS("In Progress"),
+    COMPLETED("Completed"),
+    FAILED("Failed");
 
     private final String displayName;
 
-    ProofType(String displayName) {
+    DeliveryStatus(String displayName) {
         this.displayName = displayName;
     }
 
