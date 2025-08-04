@@ -8,29 +8,32 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "vehicles")
-public class Vehicle {
+@Table(name = "payments")
+public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String licensePlate;
+    private BigDecimal amount;
 
-    private String vehicleType;
+    private String paymentMethod;
 
-    private BigDecimal capacityWeightKg;
-
-    private BigDecimal capacityVolumeM3;
-    @ManyToOne
-    @JoinColumn(name = "current_driver_id")
-    private User currentDriver;
+    private String transactionId;
 
     private String notes;
 
     @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+    @ManyToOne
     @JoinColumn(name = "status_id")
     private Status status;
+
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private User createdBy;
 
     @CreationTimestamp
     private Timestamp createdAt;
@@ -38,10 +41,9 @@ public class Vehicle {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    // Constructor mặc định
-    public Vehicle() {}
+    public Payment() {}
 
-    // Getters và Setters
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -51,44 +53,28 @@ public class Vehicle {
         this.id = id;
     }
 
-    public String getLicensePlate() {
-        return licensePlate;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 
-    public String getVehicleType() {
-        return vehicleType;
+    public String getPaymentMethod() {
+        return paymentMethod;
     }
 
-    public void setVehicleType(String vehicleType) {
-        this.vehicleType = vehicleType;
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
-    public BigDecimal getCapacityWeightKg() {
-        return capacityWeightKg;
+    public String getTransactionId() {
+        return transactionId;
     }
 
-    public void setCapacityWeightKg(BigDecimal capacityWeightKg) {
-        this.capacityWeightKg = capacityWeightKg;
-    }
-
-    public BigDecimal getCapacityVolumeM3() {
-        return capacityVolumeM3;
-    }
-
-    public void setCapacityVolumeM3(BigDecimal capacityVolumeM3) {
-        this.capacityVolumeM3 = capacityVolumeM3;
-    }
-
-    public User getCurrentDriver() {
-        return currentDriver;
-    }
-
-    public void setCurrentDriver(User currentDriver) {
-        this.currentDriver = currentDriver;
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public String getNotes() {
@@ -99,12 +85,28 @@ public class Vehicle {
         this.notes = notes;
     }
 
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
     public Status getStatus() {
         return status;
     }
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 
     public Timestamp getCreatedAt() {
