@@ -263,7 +263,6 @@ CREATE TABLE IF NOT EXISTS `activity_logs` (
 CREATE TABLE IF NOT EXISTS `orders` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của đơn hàng',
     `order_id` VARCHAR(100) NOT NULL UNIQUE COMMENT 'Mã đơn hàng nghiệp vụ (dễ đọc)',
-    `order_customer_id` VARCHAR(50) NOT NULL COMMENT 'Mã định danh khách hàng bên ngoài',
     `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái đơn hàng (chờ xử lý, đang xử lý, hoàn thành, hủy)',
     `store_id` BIGINT COMMENT 'ID cửa hàng liên kết, NULL cho đơn hàng online',
     `description` TEXT COMMENT 'Mô tả và chi tiết đơn hàng',
@@ -285,7 +284,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
 CREATE TABLE IF NOT EXISTS `payments` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của thanh toán',
     `order_id` BIGINT NOT NULL COMMENT 'Mã đơn hàng được thanh toán',
-    `amount` DECIMAL(15,2) NOT NULL,
+    `amount` DECIMAL(15,2) NOT NULL 'Tổng số tiền thanh toán',
     `payment_method` VARCHAR(50) NOT NULL DEFAULT 'CASH' COMMENT 'Phương thức thanh toán (tiền mặt, thẻ, chuyển khoản)',
     `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái thanh toán (thành công, thất bại, chờ xử lý)',
     `transaction_id` VARCHAR(255) COMMENT 'Mã giao dịch từ cổng thanh toán',
@@ -423,6 +422,143 @@ ALTER TABLE `routes` ADD CONSTRAINT `fk_routes_created_by` FOREIGN KEY(`created_
 ALTER TABLE `warehouse_transactions` ADD CONSTRAINT `fk_warehouse_transactions_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`);
 ALTER TABLE `payments` ADD CONSTRAINT `fk_payments_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`);
 ALTER TABLE `warehouses` ADD CONSTRAINT `fk_warehouses_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`);
+
+-- =====================================================================================
+-- Thêm Data Validation Constraints
+-- =====================================================================================
+ALTER TABLE vehicles ADD CONSTRAINT chk_vehicle_capacity 
+    CHECK (capacity_weight_kg >= 0 AND capacity_volume_m3 >= 0);
+
+ALTER TABLE products ADD CONSTRAINT chk_product_price_positive 
+    CHECK (unit_price >= 0);
+
+ALTER TABLE products ADD CONSTRAINT chk_product_weight_volume 
+    CHECK (weight >= 0 AND volume >= 0);
+
+ALTER TABLE order_items ADD CONSTRAINT chk_order_item_quantity 
+    CHECK (quantity > 0);
+
+ALTER TABLE payments ADD CONSTRAINT chk_payment_amount 
+    CHECK (amount > 0);
+
+ALTER TABLE deliveries ADD CONSTRAINT chk_delivery_attempts 
+    CHECK (delivery_attempts >= 0);
+
+
+-- =====================================================================================
+-- PERFORMANCE INDEXES - CRITICAL FOR PRODUCTION
+-- =====================================================================================
+-- Thêm các indexes quan trọng cho hiệu suất truy vấn trong hệ thống logistics
+-- Các indexes này được thiết kế dựa trên các truy vấn thường xuyên của hệ thống
+-- =====================================================================================
+
+-- Indexes cho bảng ORDERS (truy vấn nhiều nhất)
+CREATE INDEX idx_orders_status ON orders(status_id) COMMENT 'Tìm đơn hàng theo trạng thái';
+CREATE INDEX idx_orders_customer ON orders(order_customer_id) COMMENT 'Tìm đơn hàng theo khách hàng';
+CREATE INDEX idx_orders_status_created ON orders(status_id, created_at) COMMENT 'Sắp xếp đơn hàng theo trạng thái và thời gian';
+CREATE INDEX idx_orders_store ON orders(store_id) COMMENT 'Tìm đơn hàng theo cửa hàng';
+CREATE INDEX idx_orders_created_by ON orders(created_by) COMMENT 'Tìm đơn hàng theo người tạo';
+
+-- Indexes cho bảng DELIVERIES (core logistics operations)
+CREATE INDEX idx_deliveries_vehicle ON deliveries(vehicle_id) COMMENT 'Tìm giao hàng theo phương tiện';
+CREATE INDEX idx_deliveries_driver ON deliveries(driver_id) COMMENT 'Tìm giao hàng theo tài xế';
+CREATE INDEX idx_deliveries_status ON deliveries(delivery_status) COMMENT 'Tìm giao hàng theo trạng thái';
+CREATE INDEX idx_deliveries_schedule_time ON deliveries(schedule_delivery_time) COMMENT 'Sắp xếp theo thời gian giao hàng dự kiến';
+CREATE INDEX idx_deliveries_route ON deliveries(route_id) COMMENT 'Tìm giao hàng theo tuyến đường';
+CREATE INDEX idx_deliveries_order ON deliveries(order_id) COMMENT 'Tìm giao hàng theo đơn hàng';
+CREATE INDEX idx_deliveries_tracking ON deliveries(tracking_id) COMMENT 'Tìm giao hàng theo tracking';
+
+-- Indexes cho bảng DELIVERY_TRACKING (real-time tracking)
+CREATE INDEX idx_delivery_tracking_vehicle ON delivery_tracking(vehicle_id) COMMENT 'Tracking theo phương tiện';
+CREATE INDEX idx_delivery_tracking_vehicle_time ON delivery_tracking(vehicle_id, timestamp DESC) COMMENT 'Tracking theo thời gian mới nhất';
+CREATE INDEX idx_delivery_tracking_status ON delivery_tracking(status_id) COMMENT 'Tracking theo trạng thái';
+CREATE INDEX idx_delivery_tracking_timestamp ON delivery_tracking(timestamp DESC) COMMENT 'Sắp xếp tracking theo thời gian';
+
+-- Indexes cho bảng PRODUCTS (catalog operations)
+CREATE INDEX idx_products_category ON products(category_id) COMMENT 'Tìm sản phẩm theo danh mục';
+CREATE INDEX idx_products_warehouse ON products(warehouse_id) COMMENT 'Tìm sản phẩm theo kho';
+CREATE INDEX idx_products_status ON products(product_status) COMMENT 'Tìm sản phẩm theo trạng thái';
+CREATE INDEX idx_products_code ON products(product_code) COMMENT 'Tìm sản phẩm theo mã SKU';
+CREATE INDEX idx_products_card_id ON products(product_card_id) COMMENT 'Tìm sản phẩm theo mã thẻ';
+
+-- Indexes cho bảng ORDER_ITEMS (order details)
+CREATE INDEX idx_order_items_order ON order_items(order_id) COMMENT 'Tìm items theo đơn hàng';
+CREATE INDEX idx_order_items_product ON order_items(product_id) COMMENT 'Tìm items theo sản phẩm';
+CREATE INDEX idx_order_items_order_product ON order_items(order_id, product_id) COMMENT 'Composite index cho order-product';
+
+-- Indexes cho bảng WAREHOUSE_TRANSACTIONS (inventory management)
+CREATE INDEX idx_warehouse_trans_product ON warehouse_transactions(product_id) COMMENT 'Giao dịch theo sản phẩm';
+CREATE INDEX idx_warehouse_trans_warehouse ON warehouse_transactions(warehouse_id) COMMENT 'Giao dịch theo kho';
+CREATE INDEX idx_warehouse_trans_date ON warehouse_transactions(transaction_date DESC) COMMENT 'Giao dịch theo thời gian';
+CREATE INDEX idx_warehouse_trans_type ON warehouse_transactions(transaction_type) COMMENT 'Giao dịch theo loại';
+CREATE INDEX idx_warehouse_trans_order ON warehouse_transactions(order_id) COMMENT 'Giao dịch theo đơn hàng';
+CREATE INDEX idx_warehouse_trans_product_date ON warehouse_transactions(product_id, transaction_date DESC) COMMENT 'Lịch sử giao dịch sản phẩm';
+
+-- Indexes cho bảng PAYMENTS (financial operations)
+CREATE INDEX idx_payments_order ON payments(order_id) COMMENT 'Thanh toán theo đơn hàng';
+CREATE INDEX idx_payments_status ON payments(status_id) COMMENT 'Thanh toán theo trạng thái';
+CREATE INDEX idx_payments_method ON payments(payment_method) COMMENT 'Thanh toán theo phương thức';
+CREATE INDEX idx_payments_transaction ON payments(transaction_id) COMMENT 'Thanh toán theo mã giao dịch';
+CREATE INDEX idx_payments_created ON payments(created_at DESC) COMMENT 'Thanh toán theo thời gian tạo';
+
+-- Indexes cho bảng USERS (authentication & authorization)
+CREATE INDEX idx_users_role ON users(role_id) COMMENT 'Người dùng theo vai trò';
+CREATE INDEX idx_users_status ON users(status_id) COMMENT 'Người dùng theo trạng thái';
+CREATE INDEX idx_users_email ON users(email) COMMENT 'Tìm người dùng theo email';
+CREATE INDEX idx_users_username ON users(username) COMMENT 'Tìm người dùng theo username';
+
+-- Indexes cho bảng VEHICLES (fleet management)
+CREATE INDEX idx_vehicles_status ON vehicles(status_id) COMMENT 'Phương tiện theo trạng thái';
+CREATE INDEX idx_vehicles_driver ON vehicles(current_driver_id) COMMENT 'Phương tiện theo tài xế hiện tại';
+CREATE INDEX idx_vehicles_type ON vehicles(vehicle_type) COMMENT 'Phương tiện theo loại';
+CREATE INDEX idx_vehicles_license ON vehicles(license_plate) COMMENT 'Phương tiện theo biển số';
+
+-- Indexes cho bảng ADDRESSES (geographical operations)
+CREATE INDEX idx_addresses_order ON addresses(order_id) COMMENT 'Địa chỉ theo đơn hàng';
+CREATE INDEX idx_addresses_type ON addresses(address_type) COMMENT 'Địa chỉ theo loại';
+CREATE INDEX idx_addresses_city ON addresses(city) COMMENT 'Địa chỉ theo thành phố';
+CREATE INDEX idx_addresses_coordinates ON addresses(latitude, longitude) COMMENT 'Tìm kiếm theo tọa độ GPS';
+
+-- Indexes cho bảng DELIVERY_PROOFS (proof management)
+CREATE INDEX idx_delivery_proofs_order ON delivery_proofs(order_id) COMMENT 'Bằng chứng theo đơn hàng';
+CREATE INDEX idx_delivery_proofs_type ON delivery_proofs(proof_type) COMMENT 'Bằng chứng theo loại';
+CREATE INDEX idx_delivery_proofs_uploader ON delivery_proofs(uploaded_by) COMMENT 'Bằng chứng theo người upload';
+CREATE INDEX idx_delivery_proofs_captured ON delivery_proofs(captured_at DESC) COMMENT 'Bằng chứng theo thời gian chụp';
+
+-- Indexes cho bảng ACTIVITY_LOGS (audit trail)
+CREATE INDEX idx_activity_logs_actor ON activity_logs(actor_id) COMMENT 'Log theo người thực hiện';
+CREATE INDEX idx_activity_logs_action_time ON activity_logs(action_timestamp DESC) COMMENT 'Log theo thời gian hành động';
+CREATE INDEX idx_activity_logs_table ON activity_logs(table_name) COMMENT 'Log theo bảng bị ảnh hưởng';
+CREATE INDEX idx_activity_logs_action_type ON activity_logs(action_type) COMMENT 'Log theo loại hành động';
+CREATE INDEX idx_activity_logs_record ON activity_logs(table_name, record_id) COMMENT 'Log theo bản ghi cụ thể';
+
+-- Indexes cho bảng CATEGORIES (product categorization)
+CREATE INDEX idx_categories_parent ON categories(parent_id) COMMENT 'Danh mục theo danh mục cha';
+CREATE INDEX idx_categories_active ON categories(is_active) COMMENT 'Danh mục đang hoạt động';
+CREATE INDEX idx_categories_category_id ON categories(category_id) COMMENT 'Tìm theo mã danh mục';
+
+-- Indexes cho bảng STORES (store operations)
+CREATE INDEX idx_stores_active ON stores(is_active) COMMENT 'Cửa hàng đang hoạt động';
+CREATE INDEX idx_stores_code ON stores(store_code) COMMENT 'Tìm cửa hàng theo mã';
+CREATE INDEX idx_stores_coordinates ON stores(latitude, longitude) COMMENT 'Tìm cửa hàng theo tọa độ';
+
+-- Indexes cho bảng WAREHOUSES (warehouse operations)
+CREATE INDEX idx_warehouses_active ON warehouses(is_active) COMMENT 'Kho đang hoạt động';
+CREATE INDEX idx_warehouses_code ON warehouses(warehouse_code) COMMENT 'Tìm kho theo mã';
+CREATE INDEX idx_warehouses_coordinates ON warehouses(latitude, longitude) COMMENT 'Tìm kho theo tọa độ';
+
+-- Indexes cho bảng ROUTES (route optimization)
+CREATE INDEX idx_routes_created_by ON routes(created_by) COMMENT 'Tuyến đường theo người tạo';
+CREATE INDEX idx_routes_completed ON routes(completed_at) COMMENT 'Tuyến đường đã hoàn thành';
+CREATE INDEX idx_routes_estimated_cost ON routes(estimated_cost) COMMENT 'Sắp xếp theo chi phí dự kiến';
+
+-- Indexes cho bảng STATUS (system status)
+CREATE INDEX idx_status_type ON status(type) COMMENT 'Trạng thái theo loại';
+CREATE INDEX idx_status_name ON status(name) COMMENT 'Tìm trạng thái theo tên';
+
+-- Indexes cho bảng ROLES (role management)
+CREATE INDEX idx_roles_active ON roles(is_active) COMMENT 'Vai trò đang hoạt động';
+CREATE INDEX idx_roles_name ON roles(role_name) COMMENT 'Tìm vai trò theo tên';
 
 -- =====================================================================================
 -- KẾT THÚC TRANSACTION VÀ COMMIT DỮ LIỆU
