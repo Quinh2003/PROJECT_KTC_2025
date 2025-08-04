@@ -1,15 +1,12 @@
 package ktc.spring_project.dtos.tracking;
 
-import ktc.spring_project.enums.TrackingStatus;
 import jakarta.validation.constraints.*;
+import java.sql.Timestamp;
 
 /**
- * DTO for creating order tracking updates
+ * DTO for creating delivery tracking updates
  */
 public class CreateOrderTrackingRequestDTO {
-    
-    @NotNull(message = "Tracking status is required")
-    private TrackingStatus status;
     
     @DecimalMin(value = "-90.0", message = "Latitude must be between -90 and 90")
     @DecimalMax(value = "90.0", message = "Latitude must be between -90 and 90")
@@ -22,33 +19,29 @@ public class CreateOrderTrackingRequestDTO {
     @Size(max = 255, message = "Location must not exceed 255 characters")
     private String location;
     
+    private Timestamp arrivedAt;
+    
     @Size(max = 1000, message = "Notes must not exceed 1000 characters")
     private String notes;
     
-    @NotNull(message = "Delivery order ID is required")
-    private Long deliveryOrderId;
+    @NotNull(message = "Vehicle ID is required")
+    private Long vehicleId;
+    
+    private Long statusId;
+    
+    private Timestamp timestamp;
     
     // Constructors
     public CreateOrderTrackingRequestDTO() {}
     
-    public CreateOrderTrackingRequestDTO(TrackingStatus status, Long deliveryOrderId) {
-        this.status = status;
-        this.deliveryOrderId = deliveryOrderId;
-    }
-    
-    public CreateOrderTrackingRequestDTO(TrackingStatus status, Double latitude, Double longitude, 
-                                        String location, Long deliveryOrderId) {
-        this.status = status;
+    public CreateOrderTrackingRequestDTO(Long vehicleId, Double latitude, Double longitude, String location) {
+        this.vehicleId = vehicleId;
         this.latitude = latitude;
         this.longitude = longitude;
         this.location = location;
-        this.deliveryOrderId = deliveryOrderId;
     }
     
     // Getters and Setters
-    public TrackingStatus getStatus() { return status; }
-    public void setStatus(TrackingStatus status) { this.status = status; }
-    
     public Double getLatitude() { return latitude; }
     public void setLatitude(Double latitude) { this.latitude = latitude; }
     
@@ -58,9 +51,18 @@ public class CreateOrderTrackingRequestDTO {
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
     
+    public Timestamp getArrivedAt() { return arrivedAt; }
+    public void setArrivedAt(Timestamp arrivedAt) { this.arrivedAt = arrivedAt; }
+    
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
     
-    public Long getDeliveryOrderId() { return deliveryOrderId; }
-    public void setDeliveryOrderId(Long deliveryOrderId) { this.deliveryOrderId = deliveryOrderId; }
+    public Long getVehicleId() { return vehicleId; }
+    public void setVehicleId(Long vehicleId) { this.vehicleId = vehicleId; }
+    
+    public Long getStatusId() { return statusId; }
+    public void setStatusId(Long statusId) { this.statusId = statusId; }
+    
+    public Timestamp getTimestamp() { return timestamp; }
+    public void setTimestamp(Timestamp timestamp) { this.timestamp = timestamp; }
 }
