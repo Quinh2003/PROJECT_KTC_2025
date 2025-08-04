@@ -1,6 +1,7 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import ktc.spring_project.enums.ActionType;
 import java.sql.Timestamp;
 
 @Entity
@@ -22,7 +23,8 @@ public class ActivityLog {
     private Status status;
 
 
-    private String actionType;
+    @Enumerated(EnumType.STRING)
+    private ActionType actionType;
 
     private String tableName;
 
@@ -70,11 +72,11 @@ public class ActivityLog {
     }
 
 
-    public String getActionType() {
+    public ActionType getActionType() {
         return actionType;
     }
 
-    public void setActionType(String actionType) {
+    public void setActionType(ActionType actionType) {
         this.actionType = actionType;
     }
 

@@ -1,6 +1,6 @@
 package ktc.spring_project.dtos.auth;
 
-import ktc.spring_project.enums.UserRole;
+
 import ktc.spring_project.dtos.user.UserResponseDTO;
 import java.time.LocalDateTime;
 
@@ -49,14 +49,14 @@ public class LoginResponseDTO {
     }
     
     public boolean isDriver() {
-        return user != null && UserRole.DRIVER.equals(user.getRole());
+        return user != null && "DRIVER".equals(user.getRoleName());
     }
     
     public boolean isAdmin() {
-        return user != null && UserRole.ADMIN.equals(user.getRole());
+        return user != null && "ADMIN".equals(user.getRoleName());
     }
     
     public boolean isDispatcher() {
-        return user != null && UserRole.DISPATCHER.equals(user.getRole());
+        return user != null && "DISPATCHER".equals(user.getRoleName());
     }
 }
