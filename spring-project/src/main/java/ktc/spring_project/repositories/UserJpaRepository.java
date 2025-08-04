@@ -12,30 +12,39 @@ import java.util.Optional;
 @Repository
 public interface UserJpaRepository extends JpaRepository<User, Long> {
     
-    @Query("SELECT u FROM User u JOIN FETCH u.roles WHERE u.username = :username")
-    Optional<User> findByUsername(@Param("username") String username);
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.username = :username")
+    Optional<User> findByUsernameWithRoles(@Param("username") String username);
     
-    Optional<User> findByEmail(String email);
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email = :email")
+    Optional<User> findByEmailWithRoles(@Param("email") String email);
     
-    Optional<User> findByPhone(String phone);
-    
-    List<User> findByIsActiveTrue();
-    
-    @Query("SELECT u FROM User u JOIN FETCH u.roles WHERE u.id = :id")
-    Optional<User> findByIdWithRoles(@Param("id") Long id);
-    
-    @Query("SELECT u FROM User u JOIN FETCH u.roles")
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles")
     List<User> findAllWithRoles();
+    
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.id = :id")
+    Optional<User> findByIdWithRoles(@Param("id") Long id);
     
     @Query("SELECT u FROM User u JOIN u.roles r WHERE r.roleName = :roleName")
     List<User> findByRoleName(@Param("roleName") String roleName);
     
-    @Query("SELECT u FROM User u WHERE u.name LIKE %:name% OR u.email LIKE %:email%")
-    List<User> searchByNameOrEmail(@Param("name") String name, @Param("email") String email);
+    @Query("SELECT u FROM User u JOIN u.roles r WHERE r.roleName = 'DRIVER' AND u.status.name = 'ACTIVE'")
+    List<User> findActiveDrivers();
+    
+    Optional<User> findByUsername(String username);
+    
+    Optional<User> findByEmail(String email);
+    
+    Optional<User> findByUsernameOrEmail(String username, String email);
+    
+    List<User> findByStatusId(Short statusId);
+    
+    boolean existsByUsername(String username);
     
     boolean existsByEmail(String email);
     
-    boolean existsByPhone(String phone);
+    @Query("SELECT COUNT(u) FROM User u JOIN u.roles r WHERE r.roleName = :roleName")
+    long countByRoleName(@Param("roleName") String roleName);
     
-    boolean existsByUsername(String username);
+    @Query("SELECT DISTINCT u FROM User u JOIN FETCH u.roles r WHERE r.isActive = true")
+    List<User> findUsersWithActiveRoles();
 }
