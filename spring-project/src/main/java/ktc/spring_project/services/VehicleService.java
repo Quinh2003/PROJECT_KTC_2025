@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -45,8 +46,8 @@ public class VehicleService {
         vehicle.setVehicleType(vehicleDetails.getVehicleType());
         vehicle.setCapacityWeightKg(vehicleDetails.getCapacityWeightKg());
         vehicle.setCapacityVolumeM3(vehicleDetails.getCapacityVolumeM3());
-        vehicle.setStatusId(vehicleDetails.getStatusId());
-        vehicle.setCurrentDriverId(vehicleDetails.getCurrentDriverId());
+        vehicle.setStatus(vehicleDetails.getStatus());
+        vehicle.setCurrentDriver(vehicleDetails.getCurrentDriver());
         vehicle.setNotes(vehicleDetails.getNotes());
         return vehicleRepository.save(vehicle);
     }

@@ -29,7 +29,7 @@ public class AddressService {
 
     public Address updateAddress(Long id, Address addressDetails) {
         Address address = getAddressById(id);
-        address.setOrderId(addressDetails.getOrderId());
+        address.setOrder(addressDetails.getOrder());
         address.setAddressType(addressDetails.getAddressType());
         address.setAddress(addressDetails.getAddress());
         address.setLatitude(addressDetails.getLatitude());
