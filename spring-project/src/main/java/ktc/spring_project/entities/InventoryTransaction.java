@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "inventory_transactions")
@@ -13,7 +14,12 @@ public class InventoryTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    private String transactionType;
+
     private Integer quantity;
+
+    private BigDecimal unitCost;
 
     private Timestamp transactionDate;
 
@@ -47,8 +53,15 @@ public class InventoryTransaction {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
+
+    public String getTransactionType() { return transactionType; }
+    public void setTransactionType(String transactionType) { this.transactionType = transactionType; }
+
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
+
+    public BigDecimal getUnitCost() { return unitCost; }
+    public void setUnitCost(BigDecimal unitCost) { this.unitCost = unitCost; }
 
     public Timestamp getTransactionDate() { return transactionDate; }
     public void setTransactionDate(Timestamp transactionDate) { this.transactionDate = transactionDate; }

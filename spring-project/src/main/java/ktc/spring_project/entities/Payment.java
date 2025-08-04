@@ -17,8 +17,7 @@ public class Payment {
 
     private BigDecimal amount;
 
-    @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
+    private String paymentMethod;
 
     private String transactionId;
 
@@ -62,11 +61,11 @@ public class Payment {
         this.amount = amount;
     }
 
-    public PaymentMethod getPaymentMethod() {
+    public String getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(PaymentMethod paymentMethod) {
+    public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
 
