@@ -1,9 +1,10 @@
 package ktc.spring_project.controllers;
 
 import ktc.spring_project.entities.Product;
-import ktc.spring_project.entities.InventoryTransaction;
+import ktc.spring_project.entities.WarehouseTransaction;
 import ktc.spring_project.services.UserService;
-// Remove non-existing services and use placeholder approach
+import ktc.spring_project.services.ProductService;
+import ktc.spring_project.services.WarehouseTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +16,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Controller responsible for managing products and inventory
- * Based on database schema for products and inventory_transactions tables
+ * Controller responsible for managing products
+ * Based on database schema for products table
  */
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
 
     @Autowired
+    private ProductService productService;
+
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private WarehouseTransactionService warehouseTransactionService;
 
     /**
      * Get all products with optional filters
@@ -35,9 +42,8 @@ public class ProductController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Long warehouseId) {
 
-        // TODO: Implement ProductService and inject here
-        // List<Product> products = productService.getFilteredProducts(category, status, search, warehouseId);
-        return ResponseEntity.ok(List.of());
+        List<Product> products = productService.getFilteredProducts(category, status, search, warehouseId);
+        return ResponseEntity.ok(products);
     }
 
     /**
@@ -45,9 +51,8 @@ public class ProductController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        // TODO: Implement ProductService and inject here
-        // Product product = productService.getProductById(id);
-        return ResponseEntity.ok(new Product());
+        Product product = productService.getProductById(id);
+        return ResponseEntity.ok(product);
     }
 
     /**
@@ -58,9 +63,8 @@ public class ProductController {
             @Valid @RequestBody Product product,
             Authentication authentication) {
 
-        // TODO: Implement ProductService and inject here
-        // Product createdProduct = productService.createProduct(product, authentication);
-        return new ResponseEntity<>(new Product(), HttpStatus.CREATED);
+        Product createdProduct = productService.createProduct(product, authentication);
+        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
     /**
@@ -72,9 +76,8 @@ public class ProductController {
             @Valid @RequestBody Product product,
             Authentication authentication) {
 
-        // TODO: Implement ProductService and inject here
-        // Product updatedProduct = productService.updateProduct(id, product, authentication);
-        return ResponseEntity.ok(new Product());
+        Product updatedProduct = productService.updateProduct(id, product, authentication);
+        return ResponseEntity.ok(updatedProduct);
     }
 
     /**
@@ -85,24 +88,23 @@ public class ProductController {
             @PathVariable Long id,
             Authentication authentication) {
 
-        // TODO: Implement ProductService and inject here
-        // productService.deleteProduct(id, authentication);
+        productService.deleteProduct(id, authentication);
         return ResponseEntity.noContent().build();
     }
 
     /**
-     * Get product inventory transactions
+     * Get product warehouse transactions
      */
-    @GetMapping("/{id}/inventory-transactions")
-    public ResponseEntity<List<InventoryTransaction>> getProductInventoryTransactions(
+    @GetMapping("/{id}/warehouse-transactions")
+    public ResponseEntity<List<WarehouseTransaction>> getProductWarehouseTransactions(
             @PathVariable Long id,
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo,
             @RequestParam(required = false) String transactionType) {
 
-        // TODO: Implement InventoryService and inject here
-        // List<InventoryTransaction> transactions = inventoryService.getProductTransactions(id, dateFrom, dateTo, transactionType);
-        return ResponseEntity.ok(List.of());
+        List<WarehouseTransaction> transactions = warehouseTransactionService.getProductTransactions(
+                id, dateFrom, dateTo, transactionType);
+        return ResponseEntity.ok(transactions);
     }
 
     /**
@@ -117,9 +119,8 @@ public class ProductController {
         Integer newQuantity = (Integer) stockData.get("quantity");
         String reason = (String) stockData.get("reason");
 
-        // TODO: Implement ProductService and inject here
-        // Product updatedProduct = productService.updateProductStock(id, newQuantity, reason, authentication);
-        return ResponseEntity.ok(new Product());
+        Product updatedProduct = productService.updateProductStock(id, newQuantity, reason, authentication);
+        return ResponseEntity.ok(updatedProduct);
     }
 
     /**
@@ -127,10 +128,9 @@ public class ProductController {
      */
     @GetMapping("/low-stock")
     public ResponseEntity<List<Product>> getLowStockProducts(
-            @RequestParam(defaultValue = "10") int threshold) {
+            @RequestParam(defaultValue = "10") Integer threshold) {
 
-        // TODO: Implement ProductService and inject here
-        // List<Product> lowStockProducts = productService.getLowStockProducts(threshold);
-        return ResponseEntity.ok(List.of());
+        List<Product> lowStockProducts = productService.getLowStockProducts(threshold);
+        return ResponseEntity.ok(lowStockProducts);
     }
 }

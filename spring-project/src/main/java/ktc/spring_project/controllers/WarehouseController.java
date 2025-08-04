@@ -186,53 +186,53 @@ public class WarehouseController {
     }
 
     /**
-     * Get inventory movement report
+     * Get warehouse movement report
      */
     @GetMapping("/movement")
-    public ResponseEntity<List<Map<String, Object>>> getInventoryMovementReport(
+    public ResponseEntity<List<Map<String, Object>>> getWarehouseMovementReport(
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo,
             @RequestParam(required = false) Long productId,
             @RequestParam(required = false) Long warehouseId) {
 
-        List<Map<String, Object>> movementReport = warehouseService.getInventoryMovementReport(
+        List<Map<String, Object>> movementReport = warehouseService.getWarehouseMovementReport(
                 dateFrom, dateTo, productId, warehouseId);
         return ResponseEntity.ok(movementReport);
     }
 
     /**
-     * Adjust inventory quantity
+     * Adjust warehouse quantity
      */
     @PostMapping("/adjust")
-    public ResponseEntity<Map<String, Object>> adjustInventory(
+    public ResponseEntity<Map<String, Object>> adjustWarehouse(
             @Valid @RequestBody Map<String, Object> adjustmentData,
             Authentication authentication) {
 
-        Map<String, Object> adjustment = warehouseService.adjustInventory(adjustmentData, authentication);
+        Map<String, Object> adjustment = warehouseService.adjustWarehouse(adjustmentData, authentication);
         return new ResponseEntity<>(adjustment, HttpStatus.CREATED);
     }
 
     /**
-     * Get inventory valuation report
+     * Get warehouse valuation report
      */
     @GetMapping("/valuation")
-    public ResponseEntity<Map<String, Object>> getInventoryValuation(
+    public ResponseEntity<Map<String, Object>> getWarehouseValuation(
             @RequestParam(required = false) Long warehouseId) {
 
-        Map<String, Object> valuation = warehouseService.getInventoryValuation(warehouseId);
+        Map<String, Object> valuation = warehouseService.getWarehouseValuation(warehouseId);
         return ResponseEntity.ok(valuation);
     }
 
     /**
-     * Get inventory turnover report
+     * Get warehouse turnover report
      */
     @GetMapping("/turnover")
-    public ResponseEntity<List<Map<String, Object>>> getInventoryTurnover(
+    public ResponseEntity<List<Map<String, Object>>> getWarehouseTurnover(
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo,
             @RequestParam(required = false) Long categoryId) {
 
-        List<Map<String, Object>> turnoverReport = warehouseService.getInventoryTurnover(dateFrom, dateTo, categoryId);
+        List<Map<String, Object>> turnoverReport = warehouseService.getWarehouseTurnover(dateFrom, dateTo, categoryId);
         return ResponseEntity.ok(turnoverReport);
     }
 }

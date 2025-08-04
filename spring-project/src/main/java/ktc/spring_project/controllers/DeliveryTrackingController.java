@@ -1,7 +1,7 @@
 package ktc.spring_project.controllers;
 
 import ktc.spring_project.entities.DeliveryTracking;
-import ktc.spring_project.services.TrackingService;
+import ktc.spring_project.services.DeliveryTrackingService;
 import ktc.spring_project.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ import java.util.Map;
 public class DeliveryTrackingController {
 
     @Autowired
-    private TrackingService trackingService;
+    private DeliveryTrackingService deliveryTrackingService; // Renamed from trackingService
 
     @Autowired
     private UserService userService;
@@ -46,7 +46,7 @@ public class DeliveryTrackingController {
         String location = (String) locationData.get("location");
         String notes = (String) locationData.get("notes");
 
-        DeliveryTracking tracking = trackingService.updateVehicleLocation(
+        DeliveryTracking tracking = deliveryTrackingService.updateVehicleLocation(
                 vehicleId, latitude, longitude, statusId, location, notes);
 
         return new ResponseEntity<>(tracking, HttpStatus.CREATED);
@@ -63,7 +63,7 @@ public class DeliveryTrackingController {
             @RequestParam(required = false) String dateTo,
             @RequestParam(defaultValue = "50") int limit) {
 
-        List<DeliveryTracking> trackingHistory = trackingService.getVehicleTrackingHistory(
+        List<DeliveryTracking> trackingHistory = deliveryTrackingService.getVehicleTrackingHistory(
                 vehicleId, dateFrom, dateTo, limit);
 
         return ResponseEntity.ok(trackingHistory);
@@ -75,7 +75,7 @@ public class DeliveryTrackingController {
      */
     @GetMapping("/vehicle/{vehicleId}/current")
     public ResponseEntity<DeliveryTracking> getCurrentVehicleLocation(@PathVariable Long vehicleId) {
-        DeliveryTracking currentLocation = trackingService.getCurrentVehicleLocation(vehicleId);
+        DeliveryTracking currentLocation = deliveryTrackingService.getCurrentVehicleLocation(vehicleId);
         return ResponseEntity.ok(currentLocation);
     }
 
@@ -88,7 +88,7 @@ public class DeliveryTrackingController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String vehicleType) {
 
-        List<Map<String, Object>> activeLocations = trackingService.getActiveVehicleLocations(status, vehicleType);
+        List<Map<String, Object>> activeLocations = deliveryTrackingService.getActiveVehicleLocations(status, vehicleType);
         return ResponseEntity.ok(activeLocations);
     }
 
@@ -98,7 +98,7 @@ public class DeliveryTrackingController {
      */
     @GetMapping("/order/{orderId}/route")
     public ResponseEntity<Map<String, Object>> getOrderRouteTracking(@PathVariable Long orderId) {
-        Map<String, Object> routeData = trackingService.getOrderRouteTracking(orderId);
+        Map<String, Object> routeData = deliveryTrackingService.getOrderRouteTracking(orderId);
         return ResponseEntity.ok(routeData);
     }
 
@@ -111,7 +111,7 @@ public class DeliveryTrackingController {
             @RequestParam(required = false) String dateTo,
             @RequestParam(required = false) Long vehicleId) {
 
-        Map<String, Object> statistics = trackingService.getTrackingStatistics(dateFrom, dateTo, vehicleId);
+        Map<String, Object> statistics = deliveryTrackingService.getTrackingStatistics(dateFrom, dateTo, vehicleId);
         return ResponseEntity.ok(statistics);
     }
 
@@ -123,7 +123,7 @@ public class DeliveryTrackingController {
             @Valid @RequestBody List<Map<String, Object>> locationDataList,
             Authentication authentication) {
 
-        List<DeliveryTracking> updatedTrackings = trackingService.bulkUpdateLocations(locationDataList);
+        List<DeliveryTracking> updatedTrackings = deliveryTrackingService.bulkUpdateLocations(locationDataList);
         return ResponseEntity.ok(updatedTrackings);
     }
 }
