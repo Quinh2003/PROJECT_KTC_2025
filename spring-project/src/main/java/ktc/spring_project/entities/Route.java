@@ -1,138 +1,63 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "routes")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Route {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
+    @Column(name = "name", nullable = false, length = 255)
     private String name;
-
-    @Column(columnDefinition = "json")
+    
+    @Column(name = "waypoints", nullable = false, columnDefinition = "JSON")
     private String waypoints;
-
-    private BigDecimal estimatedDistance;
-
-    private Integer estimatedDuration;
-
-    private BigDecimal estimatedCost;
-
-    private Boolean aiOptimized;
-
-    private String notes;
-
-    @ManyToOne
+    
+    @Column(name = "estimated_distance_km", precision = 10, scale = 2)
+    private BigDecimal estimatedDistanceKm = BigDecimal.ZERO;
+    
+    @Column(name = "estimated_duration_minutes")
+    private Integer estimatedDurationMinutes = 0;
+    
+    @Column(name = "estimated_cost", precision = 15, scale = 2)
+    private BigDecimal estimatedCost = BigDecimal.ZERO;
+    
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
-
-    @CreationTimestamp
-    private Timestamp createdAt;
-
-    @UpdateTimestamp
-    private Timestamp updatedAt;
-
-
-    // Constructor mặc định
-    public Route() {
+    
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
-
-
-    // Getters and Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getWaypoints() {
-        return waypoints;
-    }
-
-    public void setWaypoints(String waypoints) {
-        this.waypoints = waypoints;
-    }
-
-    public BigDecimal getEstimatedDistance() {
-        return estimatedDistance;
-    }
-
-    public void setEstimatedDistance(BigDecimal estimatedDistance) {
-        this.estimatedDistance = estimatedDistance;
-    }
-
-    public Integer getEstimatedDuration() {
-        return estimatedDuration;
-    }
-
-    public void setEstimatedDuration(Integer estimatedDuration) {
-        this.estimatedDuration = estimatedDuration;
-    }
-
-    public BigDecimal getEstimatedCost() {
-        return estimatedCost;
-    }
-
-    public void setEstimatedCost(BigDecimal estimatedCost) {
-        this.estimatedCost = estimatedCost;
-    }
-
-    public Boolean getAiOptimized() {
-        return aiOptimized;
-    }
-
-    public void setAiOptimized(Boolean aiOptimized) {
-        this.aiOptimized = aiOptimized;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
+    
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

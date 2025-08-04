@@ -1,17 +1,17 @@
 package ktc.spring_project.enums;
 
 public enum TransactionType {
-    IN("In"),
-    OUT("Out"),
-    TRANSFER("Transfer");
+    IN("Nhập kho"),
+    OUT("Xuất kho"),
+    TRANSFER("Chuyển kho");
 
-    private final String displayName;
+    private final String description;
 
-    TransactionType(String displayName) {
-        this.displayName = displayName;
+    TransactionType(String description) {
+        this.description = description;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getDescription() {
+        return description;
     }
 }

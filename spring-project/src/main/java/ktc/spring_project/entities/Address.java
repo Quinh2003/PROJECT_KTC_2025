@@ -1,94 +1,83 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
-import java.sql.Timestamp;
+import ktc.spring_project.enums.AddressType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "addresses")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Address {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
+    
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
-
+    
+    @Enumerated(EnumType.STRING)
     @Column(name = "address_type", nullable = false, length = 50)
-    private String addressType;
-
-    @Column(nullable = false, length = 500)
+    private AddressType addressType;
+    
+    @Column(name = "address", nullable = false, length = 500)
     private String address;
-
-    private Double latitude;
-    private Double longitude;
-
-    @Column(length = 100)
+    
+    @Column(name = "latitude", precision = 10, scale = 8)
+    private BigDecimal latitude;
+    
+    @Column(name = "longitude", precision = 11, scale = 8)
+    private BigDecimal longitude;
+    
+    @Column(name = "city", length = 100)
     private String city;
-
-    @Column(length = 100)
+    
+    @Column(name = "state", length = 100)
     private String state;
-
-    @Column(length = 100)
-    private String country;
-
-    @Column(length = 100)
+    
+    @Column(name = "country", length = 100)
+    private String country = "Vietnam";
+    
+    @Column(name = "region", length = 100)
     private String region;
-
+    
     @Column(name = "postal_code", length = 20)
     private String postalCode;
-
+    
     @Column(name = "contact_name", length = 255)
     private String contactName;
-
-    @Column(name = "contact_phone", length = 50)
+    
+    @Column(name = "contact_phone", length = 20)
     private String contactPhone;
-
+    
     @Column(name = "contact_email", length = 255)
     private String contactEmail;
-
+    
     @Column(name = "floor_number", length = 10)
     private String floorNumber;
-
+    
     @Column(name = "created_at")
-    private Timestamp createdAt;
-
+    private LocalDateTime createdAt;
+    
     @Column(name = "updated_at")
-    private Timestamp updatedAt;
-
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Order getOrder() { return order; }
-    public void setOrder(Order order) { this.order = order; }
-    public String getAddressType() { return addressType; }
-    public void setAddressType(String addressType) { this.addressType = addressType; }
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
-    public Double getLatitude() { return latitude; }
-    public void setLatitude(Double latitude) { this.latitude = latitude; }
-    public Double getLongitude() { return longitude; }
-    public void setLongitude(Double longitude) { this.longitude = longitude; }
-    public String getCity() { return city; }
-    public void setCity(String city) { this.city = city; }
-    public String getState() { return state; }
-    public void setState(String state) { this.state = state; }
-    public String getCountry() { return country; }
-    public void setCountry(String country) { this.country = country; }
-    public String getRegion() { return region; }
-    public void setRegion(String region) { this.region = region; }
-    public String getPostalCode() { return postalCode; }
-    public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
-    public String getContactName() { return contactName; }
-    public void setContactName(String contactName) { this.contactName = contactName; }
-    public String getContactPhone() { return contactPhone; }
-    public void setContactPhone(String contactPhone) { this.contactPhone = contactPhone; }
-    public String getContactEmail() { return contactEmail; }
-    public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
-    public String getFloorNumber() { return floorNumber; }
-    public void setFloorNumber(String floorNumber) { this.floorNumber = floorNumber; }
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
-    public Timestamp getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
+    private LocalDateTime updatedAt;
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+    
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

@@ -1,17 +1,18 @@
 package ktc.spring_project.enums;
 
 public enum ProofType {
-    PHOTO("Photo"),
-    SIGNATURE("Signature"),
-    RECEIPT("Receipt");
+    PHOTO("Ảnh"),
+    SIGNATURE("Chữ ký"),
+    AUDIO("Ghi âm"),
+    VIDEO("Video");
 
-    private final String displayName;
+    private final String description;
 
-    ProofType(String displayName) {
-        this.displayName = displayName;
+    ProofType(String description) {
+        this.description = description;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getDescription() {
+        return description;
     }
 }

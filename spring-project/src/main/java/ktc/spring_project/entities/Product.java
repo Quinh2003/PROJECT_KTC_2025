@@ -1,221 +1,86 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "products")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-
+    
+    @Column(name = "product_card_id", nullable = false, unique = true, length = 50)
     private String productCardId;
-
+    
+    @Column(name = "product_code", nullable = false, unique = true, length = 50)
     private String productCode;
-
+    
+    @Column(name = "name", nullable = false, length = 255)
     private String name;
-
+    
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
-
-    private BigDecimal unitPrice;
-
-
-    private BigDecimal weight;
-
-    private BigDecimal volume;
-
-    private Boolean isFragile;
-
-    private Integer stockQuantity;
-
-
-    private String productImage;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
-    @ManyToOne
-    @JoinColumn(name = "product_status")
-    private Status productStatus;
-
-    private String notes;
-
-    @ManyToOne
+    
+    @Column(name = "unit_price", nullable = false, precision = 15, scale = 2)
+    private BigDecimal unitPrice;
+    
+    @Column(name = "weight", precision = 10, scale = 3)
+    private BigDecimal weight = BigDecimal.ZERO;
+    
+    @Column(name = "volume", precision = 10, scale = 3)
+    private BigDecimal volume = BigDecimal.ZERO;
+    
+    @Column(name = "is_fragile", nullable = false)
+    private Boolean isFragile = false;
+    
+    @Column(name = "stock_quantity", nullable = false)
+    private Integer stockQuantity = 0;
+    
+    @Column(name = "product_image", length = 500)
+    private String productImage;
+    
+    @Column(name = "product_status", nullable = false)
+    private Boolean productStatus = true;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;
-
-    @ManyToOne
+    
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
-
-    @CreationTimestamp
-    private Timestamp createdAt;
-
-    @UpdateTimestamp
-    private Timestamp updatedAt;
-
-    public Product() {}
-
-    // Getters and setters
-
-    public Long getId() {
-        return id;
+    
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getProductCode() {
-        return productCode;
-    }
-
-    public void setProductCode(String productCode) {
-        this.productCode = productCode;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
-
-    public BigDecimal getWeight() {
-        return weight;
-    }
-
-    public void setWeight(BigDecimal weight) {
-        this.weight = weight;
-    }
-
-
-    public BigDecimal getVolume() {
-        return volume;
-    }
-
-    public void setVolume(BigDecimal volume) {
-        this.volume = volume;
-    }
-
-    public Boolean getIsFragile() {
-        return isFragile;
-    }
-
-    public void setIsFragile(Boolean isFragile) {
-        this.isFragile = isFragile;
-    }
-
-    public String getProductCardId() {
-        return productCardId;
-    }
-
-    public void setProductCardId(String productCardId) {
-        this.productCardId = productCardId;
-    }
-
-    public String getProductImage() {
-        return productImage;
-    }
-
-    public void setProductImage(String productImage) {
-        this.productImage = productImage;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public Status getProductStatus() {
-        return productStatus;
-    }
-
-    public void setProductStatus(Status productStatus) {
-        this.productStatus = productStatus;
-    }
-
-    public Integer getStockQuantity() {
-        return stockQuantity;
-    }
-
-    public void setStockQuantity(Integer stockQuantity) {
-        this.stockQuantity = stockQuantity;
-    }
-
-    public Boolean getTemporary() {
-        return temporary;
-    }
-
-    public void setTemporary(Boolean temporary) {
-        this.temporary = temporary;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public Warehouse getWarehouse() {
-        return warehouse;
-    }
-
-    public void setWarehouse(Warehouse warehouse) {
-        this.warehouse = warehouse;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
+    
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

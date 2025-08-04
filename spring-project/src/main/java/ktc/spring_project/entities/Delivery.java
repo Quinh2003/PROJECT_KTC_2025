@@ -1,88 +1,97 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import ktc.spring_project.enums.DeliveryStatus;
+import ktc.spring_project.enums.ServiceType;
+import ktc.spring_project.enums.TransportMode;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "deliveries")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Delivery {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "order_id")
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
-
-    private BigDecimal deliveryFee;
-
-    private String transportMode;
-
-    private String serviceType;
-
-    private Timestamp orderDate;
-
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id")
+    
+    @Column(name = "delivery_fee", precision = 15, scale = 2)
+    private BigDecimal deliveryFee = BigDecimal.ZERO;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transport_mode", length = 50)
+    private TransportMode transportMode = TransportMode.ROAD;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "service_type", length = 50)
+    private ServiceType serviceType = ServiceType.STANDARD;
+    
+    @Column(name = "order_date", nullable = false)
+    private LocalDateTime orderDate;
+    
+    @Column(name = "pickup_date")
+    private LocalDateTime pickupDate;
+    
+    @Column(name = "schedule_delivery_time")
+    private LocalDateTime scheduleDeliveryTime;
+    
+    @Column(name = "actual_delivery_time")
+    private LocalDateTime actualDeliveryTime;
+    
+    @Column(name = "late_delivery_risk", nullable = false)
+    private Boolean lateDeliveryRisk = false;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "delivery_status", length = 50)
+    private DeliveryStatus deliveryStatus = DeliveryStatus.PENDING;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
-
-    @ManyToOne
+    
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id")
     private User driver;
-
-    @ManyToOne
+    
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tracking_id")
     private DeliveryTracking tracking;
-
-    @ManyToOne
+    
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "route_id")
     private Route route;
-
-    @CreationTimestamp
-    private Timestamp createdAt;
-
-    @UpdateTimestamp
-    private Timestamp updatedAt;
-
-    public Delivery() {}
-
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Order getOrder() { return order; }
-    public void setOrder(Order order) { this.order = order; }
-
-    public BigDecimal getDeliveryFee() { return deliveryFee; }
-    public void setDeliveryFee(BigDecimal deliveryFee) { this.deliveryFee = deliveryFee; }
-
-    public String getTransportMode() { return transportMode; }
-    public void setTransportMode(String transportMode) { this.transportMode = transportMode; }
-
-    public String getServiceType() { return serviceType; }
-    public void setServiceType(String serviceType) { this.serviceType = serviceType; }
-
-    public Timestamp getOrderDate() { return orderDate; }
-    public void setOrderDate(Timestamp orderDate) { this.orderDate = orderDate; }
-
-    public Vehicle getVehicle() { return vehicle; }
-    public void setVehicle(Vehicle vehicle) { this.vehicle = vehicle; }
-
-    public User getDriver() { return driver; }
-    public void setDriver(User driver) { this.driver = driver; }
-
-    public DeliveryTracking getTracking() { return tracking; }
-    public void setTracking(DeliveryTracking tracking) { this.tracking = tracking; }
-
-    public Route getRoute() { return route; }
-    public void setRoute(Route route) { this.route = route; }
-
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
-
-    public Timestamp getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
+    
+    @Column(name = "delivery_attempts")
+    private Integer deliveryAttempts = 0;
+    
+    @Column(name = "delivery_notes", columnDefinition = "TEXT")
+    private String deliveryNotes;
+    
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+    
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

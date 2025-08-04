@@ -1,17 +1,18 @@
 package ktc.spring_project.enums;
 
 public enum ServiceType {
-    STANDARD("Standard"),
-    EXPRESS("Express"),
-    PRIORITY("Priority");
+    STANDARD("Tiêu chuẩn"),
+    FAST("Nhanh"),
+    PRIORITY("Ưu tiên"),
+    EXPRESS("Hỏa tốc");
 
-    private final String displayName;
+    private final String description;
 
-    ServiceType(String displayName) {
-        this.displayName = displayName;
+    ServiceType(String description) {
+        this.description = description;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getDescription() {
+        return description;
     }
 }

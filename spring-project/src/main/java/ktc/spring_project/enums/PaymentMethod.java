@@ -1,18 +1,19 @@
 package ktc.spring_project.enums;
 
 public enum PaymentMethod {
-    CASH("Cash"),
-    CREDIT_CARD("Credit Card"),
-    BANK_TRANSFER("Bank Transfer"),
-    STRIPE("Stripe");
+    CASH("Tiền mặt"),
+    CARD("Thẻ"),
+    BANK_TRANSFER("Chuyển khoản"),
+    E_WALLET("Ví điện tử"),
+    COD("Thu hộ");
 
-    private final String displayName;
+    private final String description;
 
-    PaymentMethod(String displayName) {
-        this.displayName = displayName;
+    PaymentMethod(String description) {
+        this.description = description;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getDescription() {
+        return description;
     }
 }

@@ -1,18 +1,22 @@
 package ktc.spring_project.enums;
 
 public enum ActionType {
-    CREATE("Create"),
-    UPDATE("Update"),
-    DELETE("Delete"),
-    LOGIN("Login");
+    CREATE("Tạo mới"),
+    UPDATE("Cập nhật"),
+    DELETE("Xóa"),
+    LOGIN("Đăng nhập"),
+    LOGOUT("Đăng xuất"),
+    VIEW("Xem"),
+    EXPORT("Xuất dữ liệu"),
+    IMPORT("Nhập dữ liệu");
 
-    private final String displayName;
+    private final String description;
 
-    ActionType(String displayName) {
-        this.displayName = displayName;
+    ActionType(String description) {
+        this.description = description;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getDescription() {
+        return description;
     }
 }

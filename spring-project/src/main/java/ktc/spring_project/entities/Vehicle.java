@@ -1,125 +1,63 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import ktc.spring_project.enums.VehicleType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "vehicles")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Vehicle {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
+    @Column(name = "license_plate", nullable = false, unique = true, length = 20)
     private String licensePlate;
-
-    private String vehicleType;
-
-    private BigDecimal capacityWeightKg;
-
-    private BigDecimal capacityVolumeM3;
-    @ManyToOne
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "vehicle_type", nullable = false, length = 50)
+    private VehicleType vehicleType = VehicleType.TRUCK;
+    
+    @Column(name = "capacity_weight_kg", precision = 10, scale = 2)
+    private BigDecimal capacityWeightKg = BigDecimal.ZERO;
+    
+    @Column(name = "capacity_volume_m3", precision = 10, scale = 2)
+    private BigDecimal capacityVolumeM3 = BigDecimal.ZERO;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id", nullable = false)
+    private Status status;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "current_driver_id")
     private User currentDriver;
-
+    
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    
+    @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
-
-    @ManyToOne
-    @JoinColumn(name = "status_id")
-    private Status status;
-
-    @CreationTimestamp
-    private Timestamp createdAt;
-
-    @UpdateTimestamp
-    private Timestamp updatedAt;
-
-    // Constructor mặc định
-    public Vehicle() {}
-
-    // Getters và Setters
-
-    public Long getId() {
-        return id;
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getLicensePlate() {
-        return licensePlate;
-    }
-
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
-    }
-
-    public String getVehicleType() {
-        return vehicleType;
-    }
-
-    public void setVehicleType(String vehicleType) {
-        this.vehicleType = vehicleType;
-    }
-
-    public BigDecimal getCapacityWeightKg() {
-        return capacityWeightKg;
-    }
-
-    public void setCapacityWeightKg(BigDecimal capacityWeightKg) {
-        this.capacityWeightKg = capacityWeightKg;
-    }
-
-    public BigDecimal getCapacityVolumeM3() {
-        return capacityVolumeM3;
-    }
-
-    public void setCapacityVolumeM3(BigDecimal capacityVolumeM3) {
-        this.capacityVolumeM3 = capacityVolumeM3;
-    }
-
-    public User getCurrentDriver() {
-        return currentDriver;
-    }
-
-    public void setCurrentDriver(User currentDriver) {
-        this.currentDriver = currentDriver;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
+    
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

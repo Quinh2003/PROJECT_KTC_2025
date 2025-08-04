@@ -1,17 +1,18 @@
 package ktc.spring_project.enums;
 
 public enum TransportMode {
-    STANDARD("Standard"),
-    EXPRESS("Express"),
-    PRIORITY("Priority");
+    ROAD("Đường bộ"),
+    AIR("Hàng không"),
+    SEA("Đường biển"),
+    RAIL("Đường sắt");
 
-    private final String displayName;
+    private final String description;
 
-    TransportMode(String displayName) {
-        this.displayName = displayName;
+    TransportMode(String description) {
+        this.description = description;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getDescription() {
+        return description;
     }
 }
