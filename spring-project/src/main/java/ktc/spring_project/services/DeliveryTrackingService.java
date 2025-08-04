@@ -1,7 +1,7 @@
 package ktc.spring_project.services;
 
 import ktc.spring_project.entities.DeliveryTracking;
-import ktc.spring_project.repository.DeliveryTrackingRepository;
+import ktc.spring_project.repositories.DeliveryTrackingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class DeliveryTrackingService {
-    private final DeliveryTrackingRepository deliveryTrackingRepository;
+    private DeliveryTrackingRepository deliveryTrackingRepository;
 
     public List<DeliveryTracking> findAll() {
         return deliveryTrackingRepository.findAll();

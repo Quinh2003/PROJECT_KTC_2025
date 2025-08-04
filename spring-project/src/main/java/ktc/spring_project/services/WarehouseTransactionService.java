@@ -1,7 +1,7 @@
-package ktc.spring_project.serviceư;
+package ktc.spring_project.services;
 
-import ktc.spring_project.entities.InventoryTransaction;
-import ktc.spring_project.repository.InventoryTransactionRepository;
+import ktc.spring_project.entities.WarehouseTransaction;
+import ktc.spring_project.repositories.WarehouseTransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,22 +10,23 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class InventoryTransactionService {
-    private final InventoryTransactionRepository inventoryTransactionRepository;
+public class WarehouseTransactionService {
 
-    public List<InventoryTransaction> findAll() {
-        return inventoryTransactionRepository.findAll();
+    private WarehouseTransactionRepository warehouseTransactionRepository;
+
+    public List<WarehouseTransaction> findAll() {
+        return warehouseTransactionRepository.findAll();
     }
 
-    public Optional<InventoryTransaction> findById(Long id) {
-        return inventoryTransactionRepository.findById(id);
+    public Optional<WarehouseTransaction> findById(Long id) {
+        return warehouseTransactionRepository.findById(id);
     }
 
-    public InventoryTransaction save(InventoryTransaction entities) {
-        return inventoryTransactionRepository.save(entities);
+    public WarehouseTransaction save(WarehouseTransaction entities) {
+        return warehouseTransactionRepository.save(entities);
     }
 
     public void delete(Long id) {
-        inventoryTransactionRepository.deleteById(id);
+        warehouseTransactionRepository.deleteById(id);
     }
 }

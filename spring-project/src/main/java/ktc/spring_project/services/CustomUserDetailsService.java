@@ -30,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với tên đăng nhập: " + username));
 
         // Lấy vai trò từ role_id
-        Role role = roleRepository.findById(user.getRoleId())
+        Role role = roleRepository.findById(user.getRole().getId())
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy vai trò cho người dùng: " + username));
 
         List<GrantedAuthority> authorities = new ArrayList<>();

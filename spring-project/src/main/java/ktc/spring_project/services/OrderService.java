@@ -1,7 +1,7 @@
 package ktc.spring_project.services;
 
 import ktc.spring_project.entities.Order;
-import ktc.spring_project.repository.OrderRepository;
+import ktc.spring_project.repositories.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,13 +51,13 @@ public class OrderService {
             throw new IllegalArgumentException("Order profit per order cannot be negative");
         }
         order.setOrderId(orderDetails.getOrderId());
-        order.setStatusId(orderDetails.getStatusId());
-        order.setStoreId(orderDetails.getStoreId());
+        order.setStatus(orderDetails.getStatus());
+        order.setStore(orderDetails.getStore());
         order.setDescription(orderDetails.getDescription());
         order.setTotalAmount(orderDetails.getTotalAmount());
         order.setBenefitPerOrder(orderDetails.getBenefitPerOrder());
         order.setOrderProfitPerOrder(orderDetails.getOrderProfitPerOrder());
-        order.setNotes(orderDetails.getNotes());
+        order.setDescription(orderDetails.getDescription());
         order.setCreatedBy(orderDetails.getCreatedBy());
         return orderRepository.save(order);
     }

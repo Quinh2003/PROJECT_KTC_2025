@@ -32,7 +32,7 @@ public class CategoryService {
         category.setCategoryId(categoryDetails.getCategoryId());
         category.setName(categoryDetails.getName());
         category.setDescription(categoryDetails.getDescription());
-        category.setParentId(categoryDetails.getParentId());
+        category.setParent(categoryDetails.getParent());
         category.setIsActive(categoryDetails.getIsActive());
         category.setNotes(categoryDetails.getNotes());
         return categoryRepository.save(category);
