@@ -14,7 +14,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+
+    @Column(name = "username", nullable = false, unique = true, length = 100)
+    private String username;
+
+    @Column(name = "full_name", length = 255)
+    private String fullName;
 
     @Column(unique = true)
     private String email;
@@ -23,15 +28,18 @@ public class User {
 
     private String phone;
 
-    private String address;
 
-    private Boolean isActive;
 
     private String notes;
 
+
     @ManyToOne
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private Status status;
 
     @CreationTimestamp
     private Timestamp createdAt;
@@ -51,12 +59,21 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {
@@ -91,12 +108,13 @@ public class User {
         this.address = address;
     }
 
-    public Boolean getIsActive() {
-        return isActive;
+
+    public Status getStatus() {
+        return status;
     }
 
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public String getNotes() {
