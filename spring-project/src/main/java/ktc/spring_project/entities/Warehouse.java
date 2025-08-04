@@ -8,25 +8,28 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "routes")
-public class Route {
+@Table(name = "warehouses")
+public class Warehouse {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    private String warehouseCode;
+
     private String name;
 
-    @Column(columnDefinition = "json")
-    private String waypoints;
+    private String address;
 
-    private BigDecimal estimatedDistance;
 
-    private Integer estimatedDuration;
+    private BigDecimal latitude;
 
-    private BigDecimal estimatedCost;
+    private BigDecimal longitude;
 
-    private Boolean aiOptimized;
+    private BigDecimal capacityM3;
+
+    private Boolean isActive;
 
     private String notes;
 
@@ -40,13 +43,9 @@ public class Route {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
+    public Warehouse() {}
 
-    // Constructor mặc định
-    public Route() {
-    }
-
-
-    // Getters and Setters
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -64,44 +63,53 @@ public class Route {
         this.name = name;
     }
 
-    public String getWaypoints() {
-        return waypoints;
+    public String getAddress() {
+        return address;
     }
 
-    public void setWaypoints(String waypoints) {
-        this.waypoints = waypoints;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public BigDecimal getEstimatedDistance() {
-        return estimatedDistance;
+
+    public String getWarehouseCode() {
+        return warehouseCode;
     }
 
-    public void setEstimatedDistance(BigDecimal estimatedDistance) {
-        this.estimatedDistance = estimatedDistance;
+    public void setWarehouseCode(String warehouseCode) {
+        this.warehouseCode = warehouseCode;
     }
 
-    public Integer getEstimatedDuration() {
-        return estimatedDuration;
+    public BigDecimal getLatitude() {
+        return latitude;
     }
 
-    public void setEstimatedDuration(Integer estimatedDuration) {
-        this.estimatedDuration = estimatedDuration;
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
     }
 
-    public BigDecimal getEstimatedCost() {
-        return estimatedCost;
+    public BigDecimal getLongitude() {
+        return longitude;
     }
 
-    public void setEstimatedCost(BigDecimal estimatedCost) {
-        this.estimatedCost = estimatedCost;
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
     }
 
-    public Boolean getAiOptimized() {
-        return aiOptimized;
+    public BigDecimal getCapacityM3() {
+        return capacityM3;
     }
 
-    public void setAiOptimized(Boolean aiOptimized) {
-        this.aiOptimized = aiOptimized;
+    public void setCapacityM3(BigDecimal capacityM3) {
+        this.capacityM3 = capacityM3;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 
     public String getNotes() {
