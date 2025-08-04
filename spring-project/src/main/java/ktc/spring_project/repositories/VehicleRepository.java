@@ -35,3 +35,4 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     @Query("SELECT COUNT(v) FROM Vehicle v WHERE v.status.name = 'ACTIVE'")
     long countActiveVehicles();
 }
+

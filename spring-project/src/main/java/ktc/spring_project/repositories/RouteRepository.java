@@ -39,3 +39,4 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
     @Query("SELECT AVG(r.estimatedCost) FROM Route r WHERE r.completedAt IS NOT NULL")
     BigDecimal getAverageCompletedRouteCost();
 }
+
