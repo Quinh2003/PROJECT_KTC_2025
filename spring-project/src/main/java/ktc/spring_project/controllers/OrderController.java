@@ -10,7 +10,7 @@ import ktc.spring_project.entities.Route;
 import ktc.spring_project.services.DeliveryOrderService;
 import ktc.spring_project.services.UserService;
 import ktc.spring_project.services.VehicleService;
-import ktc.spring_project.services.TrackingService;
+import ktc.spring_project.services.DeliveryTrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +44,7 @@ public class OrderController {
     private VehicleService vehicleService;
 
     @Autowired
-    private TrackingService trackingService;
+    private DeliveryTrackingService deliveryTrackingService;
 
     /**
      * Create a new delivery order
@@ -164,7 +164,7 @@ public class OrderController {
      */
     @GetMapping("/{id}/tracking")
     public ResponseEntity<?> getOrderTracking(@PathVariable Long id) {
-        Map<String, Object> trackingData = trackingService.getOrderTrackingData(id);
+        Map<String, Object> trackingData = deliveryTrackingService.getOrderTrackingData(id);
         return ResponseEntity.ok(trackingData);
     }
 
