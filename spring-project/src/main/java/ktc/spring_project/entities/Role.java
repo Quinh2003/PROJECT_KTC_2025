@@ -21,6 +21,8 @@ public class Role {
 
     private String description;
 
+    private Boolean isActive;
+
     @CreationTimestamp
     private Timestamp createdAt;
 
@@ -61,6 +63,14 @@ public class Role {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 
     public Timestamp getCreatedAt() {
