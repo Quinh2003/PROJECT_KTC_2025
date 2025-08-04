@@ -16,7 +16,7 @@ public class Status {
 
     private String type;
 
-    private String code;
+    private String name;
 
     private String description;
 
@@ -46,12 +46,12 @@ public class Status {
         this.type = type;
     }
 
-    public String getCode() {
-        return code;
+    public String getName() {
+        return name;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
