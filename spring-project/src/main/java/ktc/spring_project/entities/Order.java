@@ -15,57 +15,30 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String orderCode;
+    private String orderId;
 
-    private String pickupAddress;
-    private Double pickupLatitude;
-    private Double pickupLongitude;
+    private String orderCustomerId;
 
-    private String deliveryAddress;
-    private Double deliveryLatitude;
-    private Double deliveryLongitude;
-
-    private String recipientName;
-    private String recipientPhone;
     private String description;
 
     private BigDecimal totalAmount;
-    private BigDecimal shippingFee;
 
-    @Enumerated(EnumType.STRING)
-    private TransportMode transportMode;
+    private BigDecimal benefitPerOrder;
 
-    private Timestamp scheduledTime;
-    private Timestamp actualDeliveryTime;
-    private String notes;
+    private BigDecimal orderProfitPerOrder;
+
 
     @ManyToOne
     @JoinColumn(name = "status_id")
     private Status status;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private User customer;
+    @JoinColumn(name = "store_id")
+    private Store store;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
     private User createdBy;
-
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id")
-    private Vehicle vehicle;
-
-    @ManyToOne
-    @JoinColumn(name = "driver_id")
-    private User driver;
-
-    @ManyToOne
-    @JoinColumn(name = "tracking_id")
-    private DeliveryTracking tracking;
-
-    @ManyToOne
-    @JoinColumn(name = "route_id")
-    private Route route;
 
     @CreationTimestamp
     private Timestamp createdAt;
@@ -81,32 +54,13 @@ public class Order {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getOrderCode() { return orderCode; }
-    public void setOrderCode(String orderCode) { this.orderCode = orderCode; }
 
-    public String getPickupAddress() { return pickupAddress; }
-    public void setPickupAddress(String pickupAddress) { this.pickupAddress = pickupAddress; }
+    public String getOrderId() { return orderId; }
+    public void setOrderId(String orderId) { this.orderId = orderId; }
 
-    public Double getPickupLatitude() { return pickupLatitude; }
-    public void setPickupLatitude(Double pickupLatitude) { this.pickupLatitude = pickupLatitude; }
+    public String getOrderCustomerId() { return orderCustomerId; }
+    public void setOrderCustomerId(String orderCustomerId) { this.orderCustomerId = orderCustomerId; }
 
-    public Double getPickupLongitude() { return pickupLongitude; }
-    public void setPickupLongitude(Double pickupLongitude) { this.pickupLongitude = pickupLongitude; }
-
-    public String getDeliveryAddress() { return deliveryAddress; }
-    public void setDeliveryAddress(String deliveryAddress) { this.deliveryAddress = deliveryAddress; }
-
-    public Double getDeliveryLatitude() { return deliveryLatitude; }
-    public void setDeliveryLatitude(Double deliveryLatitude) { this.deliveryLatitude = deliveryLatitude; }
-
-    public Double getDeliveryLongitude() { return deliveryLongitude; }
-    public void setDeliveryLongitude(Double deliveryLongitude) { this.deliveryLongitude = deliveryLongitude; }
-
-    public String getRecipientName() { return recipientName; }
-    public void setRecipientName(String recipientName) { this.recipientName = recipientName; }
-
-    public String getRecipientPhone() { return recipientPhone; }
-    public void setRecipientPhone(String recipientPhone) { this.recipientPhone = recipientPhone; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
@@ -114,26 +68,19 @@ public class Order {
     public BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
 
-    public BigDecimal getShippingFee() { return shippingFee; }
-    public void setShippingFee(BigDecimal shippingFee) { this.shippingFee = shippingFee; }
 
-    public TransportMode getTransportMode() { return transportMode; }
-    public void setTransportMode(TransportMode transportMode) { this.transportMode = transportMode; }
 
-    public Timestamp getScheduledTime() { return scheduledTime; }
-    public void setScheduledTime(Timestamp scheduledTime) { this.scheduledTime = scheduledTime; }
+    public BigDecimal getBenefitPerOrder() { return benefitPerOrder; }
+    public void setBenefitPerOrder(BigDecimal benefitPerOrder) { this.benefitPerOrder = benefitPerOrder; }
 
-    public Timestamp getActualDeliveryTime() { return actualDeliveryTime; }
-    public void setActualDeliveryTime(Timestamp actualDeliveryTime) { this.actualDeliveryTime = actualDeliveryTime; }
-
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
+    public BigDecimal getOrderProfitPerOrder() { return orderProfitPerOrder; }
+    public void setOrderProfitPerOrder(BigDecimal orderProfitPerOrder) { this.orderProfitPerOrder = orderProfitPerOrder; }
 
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
 
-    public User getCustomer() { return customer; }
-    public void setCustomer(User customer) { this.customer = customer; }
+    public Store getStore() { return store; }
+    public void setStore(Store store) { this.store = store; }
 
     public User getCreatedBy() { return createdBy; }
     public void setCreatedBy(User createdBy) { this.createdBy = createdBy; }
