@@ -1,12 +1,12 @@
 package ktc.spring_project.repositories;
 
 import ktc.spring_project.entities.Order;
-import ktc.spring_project.enums.TransportMode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -14,30 +14,36 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     
-    Optional<Order> findByOrderCode(String orderCode);
+    Optional<Order> findByOrderId(String orderId);
     
-    List<Order> findByCustomerId(Long customerId);
+    List<Order> findByStatusId(Short statusId);
     
-    List<Order> findByDriverId(Long driverId);
+    List<Order> findByStoreId(Long storeId);
     
-    List<Order> findByVehicleId(Long vehicleId);
+    List<Order> findByCreatedBy(Long createdBy);
     
-    List<Order> findByStatusId(Long statusId);
+    @Query("SELECT o FROM Order o WHERE o.status.name = :statusName ORDER BY o.createdAt DESC")
+    List<Order> findByStatusNameOrderByCreatedAtDesc(@Param("statusName") String statusName);
     
-    List<Order> findByTransportMode(TransportMode transportMode);
+    @Query("SELECT o FROM Order o WHERE o.createdAt BETWEEN :startDate AND :endDate ORDER BY o.createdAt DESC")
+    List<Order> findOrdersBetweenDates(@Param("startDate") LocalDateTime startDate, 
+                                     @Param("endDate") LocalDateTime endDate);
     
-    @Query("SELECT o FROM Order o WHERE o.createdAt BETWEEN :startDate AND :endDate")
-    List<Order> findByDateRange(@Param("startDate") LocalDateTime startDate, 
-                               @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT o FROM Order o WHERE o.totalAmount BETWEEN :minAmount AND :maxAmount")
+    List<Order> findByTotalAmountRange(@Param("minAmount") BigDecimal minAmount, 
+                                     @Param("maxAmount") BigDecimal maxAmount);
     
-    @Query("SELECT o FROM Order o WHERE o.status.code = :statusCode")
-    List<Order> findByStatusCode(@Param("statusCode") String statusCode);
+    @Query("SELECT o FROM Order o WHERE o.store.storeCode = :storeCode ORDER BY o.createdAt DESC")
+    List<Order> findByStoreCodeOrderByCreatedAtDesc(@Param("storeCode") String storeCode);
     
-    @Query("SELECT o FROM Order o WHERE o.recipientPhone = :phone")
-    List<Order> findByRecipientPhone(@Param("phone") String phone);
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.status.name = :statusName")
+    long countByStatusName(@Param("statusName") String statusName);
     
-    @Query("SELECT o FROM Order o WHERE o.deliveryAddress LIKE %:address%")
-    List<Order> findByDeliveryAddress(@Param("address") String address);
+    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.status.name = 'COMPLETED' " +
+           "AND o.createdAt BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalRevenueInPeriod(@Param("startDate") LocalDateTime startDate, 
+                                     @Param("endDate") LocalDateTime endDate);
     
-    boolean existsByOrderCode(String orderCode);
+    @Query("SELECT COUNT(o) FROM Order o WHERE DATE(o.createdAt) = CURRENT_DATE")
+    long countTodayOrders();
 }
