@@ -15,6 +15,12 @@ public class DeliveryService {
     private DeliveryRepository deliveryRepository;
 
     public Delivery createDelivery(Delivery delivery) {
+        if (delivery.getDeliveryAttempts() != null && delivery.getDeliveryAttempts() < 0) {
+            throw new IllegalArgumentException("Delivery attempts cannot be negative");
+        }
+        if (delivery.getDeliveryFee() != null && delivery.getDeliveryFee().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Delivery fee cannot be negative");
+        }
         return deliveryRepository.save(delivery);
     }
 
@@ -29,6 +35,12 @@ public class DeliveryService {
 
     public Delivery updateDelivery(Long id, Delivery deliveryDetails) {
         Delivery delivery = getDeliveryById(id);
+        if (delivery.getDeliveryAttempts() != null && delivery.getDeliveryAttempts() < 0) {
+            throw new IllegalArgumentException("Delivery attempts cannot be negative");
+        }
+        if (delivery.getDeliveryFee() != null && delivery.getDeliveryFee().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Delivery fee cannot be negative");
+        }
         delivery.setOrderId(deliveryDetails.getOrderId());
         delivery.setDeliveryFee(deliveryDetails.getDeliveryFee());
         delivery.setTransportMode(deliveryDetails.getTransportMode());
