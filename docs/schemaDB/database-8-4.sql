@@ -310,6 +310,7 @@ CREATE TABLE IF NOT EXISTS `deliveries` (
     `schedule_delivery_time` DATETIME COMMENT 'Thời gian giao hàng dự kiến',
     `actual_delivery_time` DATETIME COMMENT 'Thời gian hoàn thành giao hàng thực tế',
     `late_delivery_risk` tinyint NOT NULL DEFAULT 0 COMMENT 'Cờ rủi ro giao hàng trễ: 0=Không, 1=Có',
+    `delivery_status` VARCHAR(50) DEFAULT 'PENDING' COMMENT 'Trạng thái giao hàng hiện tại',
     `vehicle_id` BIGINT NOT NULL COMMENT 'Phương tiện được phân công cho giao hàng này',
     `driver_id` BIGINT COMMENT 'Tài xế được phân công cho giao hàng này',
     `tracking_id` BIGINT COMMENT 'Bản ghi theo dõi GPS cho giao hàng này',
@@ -475,6 +476,7 @@ CREATE INDEX idx_orders_created_by ON orders(created_by) COMMENT 'Tìm đơn hà
 -- Indexes cho bảng DELIVERIES (core logistics operations)
 CREATE INDEX idx_deliveries_vehicle ON deliveries(vehicle_id) COMMENT 'Tìm giao hàng theo phương tiện';
 CREATE INDEX idx_deliveries_driver ON deliveries(driver_id) COMMENT 'Tìm giao hàng theo tài xế';
+CREATE INDEX idx_deliveries_status ON deliveries(delivery_status) COMMENT 'Tìm giao hàng theo trạng thái';
 CREATE INDEX idx_deliveries_schedule_time ON deliveries(schedule_delivery_time) COMMENT 'Sắp xếp theo thời gian giao hàng dự kiến';
 CREATE INDEX idx_deliveries_route ON deliveries(route_id) COMMENT 'Tìm giao hàng theo tuyến đường';
 CREATE INDEX idx_deliveries_order ON deliveries(order_id) COMMENT 'Tìm giao hàng theo đơn hàng';
