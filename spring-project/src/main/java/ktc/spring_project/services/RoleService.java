@@ -1,7 +1,7 @@
 package ktc.spring_project.services;
 
 import ktc.spring_project.entities.Role;
-import ktc.spring_project.repository.RoleRepository;
+import ktc.spring_project.repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class RoleService {
-    private final RoleRepository roleRepository;
+    private RoleRepository roleRepository;
 
     public List<Role> findAll() {
         return roleRepository.findAll();
