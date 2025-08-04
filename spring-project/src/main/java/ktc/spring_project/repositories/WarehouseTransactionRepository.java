@@ -49,3 +49,4 @@ public interface WarehouseTransactionRepository extends JpaRepository<WarehouseT
     @Query("SELECT wt FROM WarehouseTransaction wt WHERE wt.createdBy.id = :userId ORDER BY wt.createdAt DESC")
     List<WarehouseTransaction> findByCreatedByOrderByCreatedAtDesc(@Param("userId") Long userId);
 }
+

@@ -48,3 +48,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT SUM(p.stockQuantity) FROM Product p WHERE p.productStatus = true")
     Long getTotalStockQuantity();
 }
+

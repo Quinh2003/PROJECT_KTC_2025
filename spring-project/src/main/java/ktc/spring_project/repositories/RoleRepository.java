@@ -20,3 +20,4 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     
     boolean existsByRoleName(String roleName);
 }
+

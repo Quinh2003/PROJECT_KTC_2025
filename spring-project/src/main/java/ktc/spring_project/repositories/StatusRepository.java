@@ -21,3 +21,4 @@ public interface StatusRepository extends JpaRepository<Status, Short> {
     
     boolean existsByTypeAndName(String type, String name);
 }
+

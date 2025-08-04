@@ -48,3 +48,4 @@ public interface DeliveryTrackingRepository extends JpaRepository<DeliveryTracki
     @Query("SELECT DISTINCT dt.vehicle.id FROM DeliveryTracking dt WHERE dt.timestamp >= :since")
     List<Long> findActiveVehicleIdsSince(@Param("since") LocalDateTime since);
 }
+
