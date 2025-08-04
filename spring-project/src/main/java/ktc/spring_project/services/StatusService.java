@@ -1,31 +1,42 @@
 package ktc.spring_project.services;
 
 import ktc.spring_project.entities.Status;
-import ktc.spring_project.repository.StatusRepository;
-import lombok.RequiredArgsConstructor;
+import ktc.spring_project.repositories.StatusRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class StatusService {
+
     private final StatusRepository statusRepository;
 
-    public List<Status> findAll() {
-        return statusRepository.findAll();
+    public StatusService(StatusRepository statusRepository) {
+        this.statusRepository = statusRepository;
     }
 
-    public Optional<Status> findById(Long id) {
-        return statusRepository.findById(id);
+    public List<Status> getStatusesByType(String type) {
+        return statusRepository.findByType(type);
     }
 
-    public Status save(Status entities) {
-        return statusRepository.save(entities);
+    public Optional<Status> getStatusByTypeAndName(String type, String name) {
+        return statusRepository.findByTypeAndName(type, name);
     }
 
-    public void delete(Long id) {
+    public List<Status> getStatusesByTypeOrderByName(String type) {
+        return statusRepository.findByTypeOrderByName(type);
+    }
+
+    public boolean existsByTypeAndName(String type, String name) {
+        return statusRepository.existsByTypeAndName(type, name);
+    }
+
+    public Status saveStatus(Status status) {
+        return statusRepository.save(status);
+    }
+
+    public void deleteStatusById(Short id) {
         statusRepository.deleteById(id);
     }
 }

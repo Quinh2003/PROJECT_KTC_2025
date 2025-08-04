@@ -1,7 +1,7 @@
 package ktc.spring_project.services;
 
 import ktc.spring_project.entities.Route;
-import ktc.spring_project.repository.RouteRepository;
+import ktc.spring_project.repositories.RouteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class RouteService {
-    private final RouteRepository routeRepository;
+    private RouteRepository routeRepository;
 
     public List<Route> findAll() {
         return routeRepository.findAll();

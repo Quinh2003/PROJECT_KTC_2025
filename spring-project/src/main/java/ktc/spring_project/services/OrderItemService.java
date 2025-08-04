@@ -1,7 +1,7 @@
 package ktc.spring_project.services;
 
 import ktc.spring_project.entities.OrderItem;
-import ktc.spring_project.repository.OrderItemRepository;
+import ktc.spring_project.repositories.OrderItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class OrderItemService {
-    private final OrderItemRepository orderItemRepository;
+    private OrderItemRepository orderItemRepository;
 
     public List<OrderItem> findAll() {
         return orderItemRepository.findAll();
