@@ -424,23 +424,38 @@ ALTER TABLE `payments` ADD CONSTRAINT `fk_payments_created_by` FOREIGN KEY(`crea
 ALTER TABLE `warehouses` ADD CONSTRAINT `fk_warehouses_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`);
 
 -- =====================================================================================
--- Thêm Data Validation Constraints
+-- DATA VALIDATION CONSTRAINTS - Ràng buộc kiểm tra tính hợp lệ của dữ liệu
 -- =====================================================================================
+-- Các ràng buộc này đảm bảo tính toàn vẹn dữ liệu và ngăn chặn việc nhập dữ liệu không hợp lệ
+-- vào hệ thống quản lý chuỗi cung ứng và logistics
+
+-- Ràng buộc kiểm tra sức chứa xe tải
+-- Đảm bảo trọng lượng và thể tích chứa hàng của xe không được âm
 ALTER TABLE vehicles ADD CONSTRAINT chk_vehicle_capacity 
     CHECK (capacity_weight_kg >= 0 AND capacity_volume_m3 >= 0);
 
+-- Ràng buộc kiểm tra giá sản phẩm
+-- Đảm bảo đơn giá sản phẩm không được âm (có thể bằng 0 cho sản phẩm miễn phí)
 ALTER TABLE products ADD CONSTRAINT chk_product_price_positive 
     CHECK (unit_price >= 0);
 
+-- Ràng buộc kiểm tra trọng lượng và thể tích sản phẩm
+-- Đảm bảo trọng lượng và thể tích sản phẩm không được âm
 ALTER TABLE products ADD CONSTRAINT chk_product_weight_volume 
     CHECK (weight >= 0 AND volume >= 0);
 
+-- Ràng buộc kiểm tra số lượng trong đơn hàng
+-- Đảm bảo số lượng sản phẩm trong mỗi item của đơn hàng phải lớn hơn 0
 ALTER TABLE order_items ADD CONSTRAINT chk_order_item_quantity 
     CHECK (quantity > 0);
 
+-- Ràng buộc kiểm tra số tiền thanh toán
+-- Đảm bảo số tiền thanh toán phải lớn hơn 0 (không cho phép thanh toán số âm)
 ALTER TABLE payments ADD CONSTRAINT chk_payment_amount 
     CHECK (amount > 0);
 
+-- Ràng buộc kiểm tra số lần giao hàng
+-- Đảm bảo số lần thử giao hàng không được âm (tối thiểu là 0)
 ALTER TABLE deliveries ADD CONSTRAINT chk_delivery_attempts 
     CHECK (delivery_attempts >= 0);
 
