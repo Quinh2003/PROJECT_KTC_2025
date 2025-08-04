@@ -1,128 +1,49 @@
 package ktc.spring_project.services;
 
+import ktc.spring_project.dtos.LoginRequestDto;
+import ktc.spring_project.dtos.LoginResponseDto;
 import ktc.spring_project.entities.User;
-import ktc.spring_project.repositories.UserJpaRepository;
+import ktc.spring_project.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-
-// CRUD tài khoản
 
 @Service
-@Transactional
 public class UserService {
 
     @Autowired
-    private UserJpaRepository userJpaRepository;
+    private UserRepository userRepository;
 
-    /**
-     * Find user by username with roles fetched
-     * @param username the username to search for
-     * @return Optional<User> with roles populated
-     */
-    @Transactional(readOnly = true)
-    public Optional<User> findByUserName(String username) {
-        return userJpaRepository.findByUsernameWithRoles(username);
-    }
+    @Autowired
+    private JwtService jwtService;
 
-    /**
-     * Find user by email with roles fetched
-     * @param email the email to search for
-     * @return Optional<User> with roles populated
-     */
-    @Transactional(readOnly = true)
-    public Optional<User> findByEmailWithRoles(String email) {
-        return userJpaRepository.findByEmailWithRoles(email);
-    }
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
-    /**
-     * Find user by ID with roles fetched
-     * @param id the user ID to search for
-     * @return Optional<User> with roles populated
-     */
-    @Transactional(readOnly = true)
-    public Optional<User> findByIdWithRoles(Long id) {
-        return userJpaRepository.findByIdWithRoles(id);
-    }
+    public LoginResponseDto login(LoginRequestDto request) {
+        // Tìm người dùng theo username
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException("Tên người dùng hoặc mật khẩu không đúng"));
 
-    /**
-     * Get all users with their roles
-     * @return List of users with roles populated
-     */
-    @Transactional(readOnly = true)
-    public List<User> findAllWithRoles() {
-        return userJpaRepository.findAllWithRoles();
-    }
+        // Kiểm tra trạng thái tài khoản
+        if (user.getStatusId() == null || user.getStatusId() != 1) {
+            throw new EntityNotFoundException("Tài khoản không hoạt động");
+        }
 
-    /**
-     * Find users by role name
-     * @param roleName the role name to search for
-     * @return List of users with the specified role
-     */
-    @Transactional(readOnly = true)
-    public List<User> findByRoleName(String roleName) {
-        return userJpaRepository.findByRoleName(roleName);
-    }
+        // Kiểm tra mật khẩu
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new EntityNotFoundException("Tên người dùng hoặc mật khẩu không đúng");
+        }
 
-    /**
-     * Find all active drivers
-     * @return List of active driver users
-     */
-    @Transactional(readOnly = true)
-    public List<User> findActiveDrivers() {
-        return userJpaRepository.findActiveDrivers();
-    }
+        // Tạo token JWT
+        String accessToken = jwtService.generateAccessToken(user);
 
-    public List<User> getAllUsers() {
-        return userJpaRepository.findAll();
-    }
-
-    public User getUserById(Long id) {
-        return userJpaRepository.findById(id).orElseThrow();
-    }
-
-    public User createUser(User user) {
-        return userJpaRepository.save(user);
-    }
-
-    public User updateUser(User user) {
-        return userJpaRepository.save(user);
-    }
-
-    public void deleteUser(Long id) {
-        userJpaRepository.deleteById(id);
-    }
-
-    /**
-     * Check if user exists by username
-     * @param username the username to check
-     * @return true if user exists, false otherwise
-     */
-    @Transactional(readOnly = true)
-    public boolean existsByUsername(String username) {
-        return userJpaRepository.existsByUsername(username);
-    }
-
-    /**
-     * Check if user exists by email
-     * @param email the email to check
-     * @return true if user exists, false otherwise
-     */
-    @Transactional(readOnly = true)
-    public boolean existsByEmail(String email) {
-        return userJpaRepository.existsByEmail(email);
-    }
-
-    /**
-     * Count users by role name
-     * @param roleName the role name to count
-     * @return number of users with the specified role
-     */
-    @Transactional(readOnly = true)
-    public long countByRoleName(String roleName) {
-        return userJpaRepository.countByRoleName(roleName);
+        return LoginResponseDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .accessToken(accessToken)
+                .build();
     }
 }
