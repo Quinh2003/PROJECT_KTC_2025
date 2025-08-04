@@ -15,36 +15,45 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    @Column(name = "product_card_id", nullable = false, unique = true, length = 50)
     private String productCardId;
 
+    @Column(name = "product_code", nullable = false, unique = true, length = 50)
     private String productCode;
 
+    @Column(nullable = false, length = 255)
     private String name;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "unit_price", precision = 15, scale = 2, nullable = false)
     private BigDecimal unitPrice;
 
-
+    @Column(precision = 10, scale = 3)
     private BigDecimal weight;
 
+    @Column(precision = 10, scale = 3)
     private BigDecimal volume;
 
+    @Column(name = "is_fragile", nullable = false)
     private Boolean isFragile;
 
+    @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity;
 
-
+    @Column(name = "product_image", length = 500)
     private String productImage;
 
+
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(name = "product_status")
+    @Column(name = "product_status", nullable = false)
     private Integer productStatus;
 
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     @ManyToOne

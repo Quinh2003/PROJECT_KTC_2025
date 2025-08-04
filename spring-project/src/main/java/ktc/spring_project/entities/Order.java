@@ -15,20 +15,20 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String orderId;
-
-
+    @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "total_amount", precision = 15, scale = 2)
     private BigDecimal totalAmount;
 
+    @Column(name = "benefit_per_order", precision = 15, scale = 2)
     private BigDecimal benefitPerOrder;
 
+    @Column(name = "order_profit_per_order", precision = 15, scale = 2)
     private BigDecimal orderProfitPerOrder;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
-
 
     @ManyToOne
     @JoinColumn(name = "status_id")
@@ -56,10 +56,6 @@ public class Order {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-
-    public String getOrderId() { return orderId; }
-    public void setOrderId(String orderId) { this.orderId = orderId; }
-
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
@@ -72,6 +68,9 @@ public class Order {
     public BigDecimal getOrderProfitPerOrder() { return orderProfitPerOrder; }
     public void setOrderProfitPerOrder(BigDecimal orderProfitPerOrder) { this.orderProfitPerOrder = orderProfitPerOrder; }
 
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
 
@@ -80,9 +79,6 @@ public class Order {
 
     public User getCreatedBy() { return createdBy; }
     public void setCreatedBy(User createdBy) { this.createdBy = createdBy; }
-
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
 
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }

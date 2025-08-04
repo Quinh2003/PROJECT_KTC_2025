@@ -19,7 +19,7 @@ public class Store {
     @Column(length = 255)
     private String email;
 
-    @Column(length = 50)
+    @Column(length = 20, nullable = false)
     private String phone;
 
     @Column(columnDefinition = "TEXT", nullable = false)

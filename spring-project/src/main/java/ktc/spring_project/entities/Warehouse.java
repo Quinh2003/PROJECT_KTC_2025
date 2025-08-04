@@ -15,22 +15,28 @@ public class Warehouse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    @Column(name = "warehouse_code", length = 50, nullable = false, unique = true)
     private String warehouseCode;
 
+    @Column(length = 255, nullable = false)
     private String name;
 
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String address;
 
-
+    @Column(precision = 10, scale = 8)
     private BigDecimal latitude;
 
+    @Column(precision = 11, scale = 8)
     private BigDecimal longitude;
 
+    @Column(name = "capacity_m3", precision = 10, scale = 2, nullable = false)
     private BigDecimal capacityM3;
 
+    @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     @ManyToOne
