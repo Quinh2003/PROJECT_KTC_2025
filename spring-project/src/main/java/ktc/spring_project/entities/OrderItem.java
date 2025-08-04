@@ -19,11 +19,6 @@ public class OrderItem {
 
     private BigDecimal unitPrice;
 
-    private BigDecimal subtotal;
-
-    private BigDecimal weightKg;
-
-    private BigDecimal actualDistanceKm;
 
     private BigDecimal shippingFee;
 
