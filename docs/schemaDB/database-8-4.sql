@@ -262,7 +262,6 @@ CREATE TABLE IF NOT EXISTS `activity_logs` (
 -- =====================================================================================
 CREATE TABLE IF NOT EXISTS `orders` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của đơn hàng',
-    `order_id` VARCHAR(100) NOT NULL UNIQUE COMMENT 'Mã đơn hàng nghiệp vụ (dễ đọc)',
     `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái đơn hàng (chờ xử lý, đang xử lý, hoàn thành, hủy)',
     `store_id` BIGINT COMMENT 'ID cửa hàng liên kết, NULL cho đơn hàng online',
     `description` TEXT COMMENT 'Mô tả và chi tiết đơn hàng',

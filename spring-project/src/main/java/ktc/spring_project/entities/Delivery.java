@@ -1,6 +1,9 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import ktc.spring_project.enums.TransportMode;
+import ktc.spring_project.enums.ServiceType;
+import ktc.spring_project.enums.DeliveryStatus;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
@@ -19,9 +22,26 @@ public class Delivery {
 
     private BigDecimal deliveryFee;
 
-    private String transportMode;
+    @Enumerated(EnumType.STRING)
+    private TransportMode transportMode;
 
-    private String serviceType;
+    @Enumerated(EnumType.STRING)
+    private ServiceType serviceType;
+
+    private Timestamp pickupDate;
+
+    private Timestamp scheduleDeliveryTime;
+
+    private Timestamp actualDeliveryTime;
+
+    private Boolean lateDeliveryRisk;
+
+    @Enumerated(EnumType.STRING)
+    private DeliveryStatus deliveryStatus;
+
+    private Integer deliveryAttempts;
+
+    private String deliveryNotes;
 
     private Timestamp orderDate;
 
@@ -59,11 +79,32 @@ public class Delivery {
     public BigDecimal getDeliveryFee() { return deliveryFee; }
     public void setDeliveryFee(BigDecimal deliveryFee) { this.deliveryFee = deliveryFee; }
 
-    public String getTransportMode() { return transportMode; }
-    public void setTransportMode(String transportMode) { this.transportMode = transportMode; }
+    public TransportMode getTransportMode() { return transportMode; }
+    public void setTransportMode(TransportMode transportMode) { this.transportMode = transportMode; }
 
-    public String getServiceType() { return serviceType; }
-    public void setServiceType(String serviceType) { this.serviceType = serviceType; }
+    public ServiceType getServiceType() { return serviceType; }
+    public void setServiceType(ServiceType serviceType) { this.serviceType = serviceType; }
+
+    public Timestamp getPickupDate() { return pickupDate; }
+    public void setPickupDate(Timestamp pickupDate) { this.pickupDate = pickupDate; }
+
+    public Timestamp getScheduleDeliveryTime() { return scheduleDeliveryTime; }
+    public void setScheduleDeliveryTime(Timestamp scheduleDeliveryTime) { this.scheduleDeliveryTime = scheduleDeliveryTime; }
+
+    public Timestamp getActualDeliveryTime() { return actualDeliveryTime; }
+    public void setActualDeliveryTime(Timestamp actualDeliveryTime) { this.actualDeliveryTime = actualDeliveryTime; }
+
+    public Boolean getLateDeliveryRisk() { return lateDeliveryRisk; }
+    public void setLateDeliveryRisk(Boolean lateDeliveryRisk) { this.lateDeliveryRisk = lateDeliveryRisk; }
+
+    public DeliveryStatus getDeliveryStatus() { return deliveryStatus; }
+    public void setDeliveryStatus(DeliveryStatus deliveryStatus) { this.deliveryStatus = deliveryStatus; }
+
+    public Integer getDeliveryAttempts() { return deliveryAttempts; }
+    public void setDeliveryAttempts(Integer deliveryAttempts) { this.deliveryAttempts = deliveryAttempts; }
+
+    public String getDeliveryNotes() { return deliveryNotes; }
+    public void setDeliveryNotes(String deliveryNotes) { this.deliveryNotes = deliveryNotes; }
 
     public Timestamp getOrderDate() { return orderDate; }
     public void setOrderDate(Timestamp orderDate) { this.orderDate = orderDate; }

@@ -1,6 +1,7 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import ktc.spring_project.enums.ProofType;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
