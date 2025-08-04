@@ -1,12 +1,14 @@
 package ktc.spring_project.enums;
 
-public enum TokenType {
-    PASSWORD_RESET("Password Reset"),
-    REFRESH("Refresh");
+public enum StatusType {
+    VEHICLE("Vehicle"),
+    ORDER("Order"),
+    PAYMENT("Payment"),
+    USER("User");
 
     private final String displayName;
 
-    TokenType(String displayName) {
+    StatusType(String displayName) {
         this.displayName = displayName;
     }
 

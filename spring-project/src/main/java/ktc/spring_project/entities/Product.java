@@ -15,6 +15,9 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    private String productCardId;
+
     private String productCode;
 
     private String name;
@@ -23,13 +26,25 @@ public class Product {
 
     private BigDecimal unitPrice;
 
+
     private BigDecimal weight;
 
-    private Boolean fragile;
+    private BigDecimal volume;
+
+    private Boolean isFragile;
 
     private Integer stockQuantity;
 
-    private Boolean temporary;
+
+    private String productImage;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "product_status")
+    private Status productStatus;
 
     private String notes;
 
@@ -99,12 +114,53 @@ public class Product {
         this.weight = weight;
     }
 
-    public Boolean getFragile() {
-        return fragile;
+
+    public BigDecimal getVolume() {
+        return volume;
     }
 
-    public void setFragile(Boolean fragile) {
-        this.fragile = fragile;
+    public void setVolume(BigDecimal volume) {
+        this.volume = volume;
+    }
+
+    public Boolean getIsFragile() {
+        return isFragile;
+    }
+
+    public void setIsFragile(Boolean isFragile) {
+        this.isFragile = isFragile;
+    }
+
+    public String getProductCardId() {
+        return productCardId;
+    }
+
+    public void setProductCardId(String productCardId) {
+        this.productCardId = productCardId;
+    }
+
+    public String getProductImage() {
+        return productImage;
+    }
+
+    public void setProductImage(String productImage) {
+        this.productImage = productImage;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Status getProductStatus() {
+        return productStatus;
+    }
+
+    public void setProductStatus(Status productStatus) {
+        this.productStatus = productStatus;
     }
 
     public Integer getStockQuantity() {
