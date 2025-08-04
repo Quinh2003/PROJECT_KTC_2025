@@ -15,6 +15,12 @@ public class VehicleService {
     private VehicleRepository vehicleRepository;
 
     public Vehicle createVehicle(Vehicle vehicle) {
+        if (vehicle.getCapacityWeightKg() != null && vehicle.getCapacityWeightKg().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Capacity weight cannot be negative");
+        }
+        if (vehicle.getCapacityVolumeM3() != null && vehicle.getCapacityVolumeM3().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Capacity volume cannot be negative");
+        }
         return vehicleRepository.save(vehicle);
     }
 
@@ -29,6 +35,12 @@ public class VehicleService {
 
     public Vehicle updateVehicle(Long id, Vehicle vehicleDetails) {
         Vehicle vehicle = getVehicleById(id);
+        if (vehicle.getCapacityWeightKg() != null && vehicle.getCapacityWeightKg().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Capacity weight cannot be negative");
+        }
+        if (vehicle.getCapacityVolumeM3() != null && vehicle.getCapacityVolumeM3().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Capacity volume cannot be negative");
+        }
         vehicle.setLicensePlate(vehicleDetails.getLicensePlate());
         vehicle.setVehicleType(vehicleDetails.getVehicleType());
         vehicle.setCapacityWeightKg(vehicleDetails.getCapacityWeightKg());
