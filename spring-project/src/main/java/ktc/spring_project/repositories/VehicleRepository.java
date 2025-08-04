@@ -1,6 +1,7 @@
 package ktc.spring_project.repositories;
 
 import ktc.spring_project.entities.Vehicle;
+import ktc.spring_project.enums.VehicleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,18 +15,23 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     
     Optional<Vehicle> findByLicensePlate(String licensePlate);
     
-    List<Vehicle> findByVehicleType(String vehicleType);
+    List<Vehicle> findByVehicleType(VehicleType vehicleType);
     
-    List<Vehicle> findByStatusId(Long statusId);
+    List<Vehicle> findByStatusId(Short statusId);
     
-    @Query("SELECT v FROM Vehicle v WHERE v.status.code = :statusCode")
-    List<Vehicle> findByStatusCode(@Param("statusCode") String statusCode);
+    List<Vehicle> findByCurrentDriverId(Long driverId);
     
-    @Query("SELECT v FROM Vehicle v WHERE v.capacity >= :minCapacity")
-    List<Vehicle> findByMinCapacity(@Param("minCapacity") Double minCapacity);
-    
-    @Query("SELECT v FROM Vehicle v WHERE v.status.code = 'AVAILABLE'")
+    @Query("SELECT v FROM Vehicle v WHERE v.currentDriver IS NULL AND v.status.name = 'AVAILABLE'")
     List<Vehicle> findAvailableVehicles();
     
+    @Query("SELECT v FROM Vehicle v WHERE v.status.name = 'ACTIVE' ORDER BY v.licensePlate")
+    List<Vehicle> findActiveVehiclesOrderByLicense();
+    
+    @Query("SELECT v FROM Vehicle v WHERE v.vehicleType = :type AND v.status.name = 'AVAILABLE'")
+    List<Vehicle> findAvailableVehiclesByType(@Param("type") VehicleType type);
+    
     boolean existsByLicensePlate(String licensePlate);
+    
+    @Query("SELECT COUNT(v) FROM Vehicle v WHERE v.status.name = 'ACTIVE'")
+    long countActiveVehicles();
 }
