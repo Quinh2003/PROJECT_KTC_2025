@@ -1,7 +1,6 @@
 package ktc.spring_project.dtos.user;
 
-import ktc.spring_project.enums.UserRole;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 /**
  * DTO for User response data
@@ -12,21 +11,27 @@ public class UserResponseDTO {
     private Long id;
     private String name;
     private String email;
-    private UserRole role;
     private String phone;
     private String address;
     private Boolean isActive;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private String notes;
+    
+    // Role information
+    private Long roleId;
+    private String roleName;
+    private String roleDescription;
+    
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     
     // Constructors
     public UserResponseDTO() {}
     
-    public UserResponseDTO(Long id, String name, String email, UserRole role, Boolean isActive) {
+    public UserResponseDTO(Long id, String name, String email, String roleName, Boolean isActive) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.role = role;
+        this.roleName = roleName;
         this.isActive = isActive;
     }
     
@@ -40,9 +45,6 @@ public class UserResponseDTO {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     
-    public UserRole getRole() { return role; }
-    public void setRole(UserRole role) { this.role = role; }
-    
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
     
@@ -52,14 +54,30 @@ public class UserResponseDTO {
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
     
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
     
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public Long getRoleId() { return roleId; }
+    public void setRoleId(Long roleId) { this.roleId = roleId; }
     
-    // Utility method to get role display name
-    public String getRoleDisplayName() {
-        return role != null ? role.getDisplayName() : null;
+    public String getRoleName() { return roleName; }
+    public void setRoleName(String roleName) { this.roleName = roleName; }
+    
+    public String getRoleDescription() { return roleDescription; }
+    public void setRoleDescription(String roleDescription) { this.roleDescription = roleDescription; }
+    
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+    
+    public Timestamp getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
+    
+    // Utility methods
+    public String getDisplayName() {
+        return name != null ? name : email;
+    }
+    
+    public boolean isActiveUser() {
+        return Boolean.TRUE.equals(isActive);
     }
 }

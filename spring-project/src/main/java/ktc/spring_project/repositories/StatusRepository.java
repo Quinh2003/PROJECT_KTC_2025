@@ -10,16 +10,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface StatusRepository extends JpaRepository<Status, Long> {
-    
-    Optional<Status> findByTypeAndCode(String type, String code);
+public interface StatusRepository extends JpaRepository<Status, Short> {
     
     List<Status> findByType(String type);
     
-    List<Status> findByCode(String code);
+    Optional<Status> findByTypeAndName(String type, String name);
     
-    @Query("SELECT s FROM Status s WHERE s.type = :type")
-    List<Status> findAllByType(@Param("type") String type);
+    @Query("SELECT s FROM Status s WHERE s.type = :type ORDER BY s.name")
+    List<Status> findByTypeOrderByName(@Param("type") String type);
     
-    boolean existsByTypeAndCode(String type, String code);
+    boolean existsByTypeAndName(String type, String name);
 }
+
