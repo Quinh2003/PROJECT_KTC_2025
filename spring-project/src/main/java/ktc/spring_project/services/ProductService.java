@@ -1,7 +1,7 @@
 package ktc.spring_project.services;
 
 import ktc.spring_project.entities.Product;
-import ktc.spring_project.repository.ProductRepository;
+import ktc.spring_project.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-    private final ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     public List<Product> findAll() {
         return productRepository.findAll();
