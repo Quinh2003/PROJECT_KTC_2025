@@ -20,13 +20,15 @@ public class Route {
     @Column(columnDefinition = "json")
     private String waypoints;
 
-    private BigDecimal estimatedDistance;
 
-    private Integer estimatedDuration;
+    private BigDecimal estimatedDistanceKm;
+
+    private Integer estimatedDurationMinutes;
 
     private BigDecimal estimatedCost;
 
-    private Boolean aiOptimized;
+    @Column(name = "completed_at")
+    private Timestamp completedAt;
 
     private String notes;
 
@@ -72,20 +74,21 @@ public class Route {
         this.waypoints = waypoints;
     }
 
-    public BigDecimal getEstimatedDistance() {
-        return estimatedDistance;
+
+    public BigDecimal getEstimatedDistanceKm() {
+        return estimatedDistanceKm;
     }
 
-    public void setEstimatedDistance(BigDecimal estimatedDistance) {
-        this.estimatedDistance = estimatedDistance;
+    public void setEstimatedDistanceKm(BigDecimal estimatedDistanceKm) {
+        this.estimatedDistanceKm = estimatedDistanceKm;
     }
 
-    public Integer getEstimatedDuration() {
-        return estimatedDuration;
+    public Integer getEstimatedDurationMinutes() {
+        return estimatedDurationMinutes;
     }
 
-    public void setEstimatedDuration(Integer estimatedDuration) {
-        this.estimatedDuration = estimatedDuration;
+    public void setEstimatedDurationMinutes(Integer estimatedDurationMinutes) {
+        this.estimatedDurationMinutes = estimatedDurationMinutes;
     }
 
     public BigDecimal getEstimatedCost() {
@@ -96,12 +99,13 @@ public class Route {
         this.estimatedCost = estimatedCost;
     }
 
-    public Boolean getAiOptimized() {
-        return aiOptimized;
+
+    public Timestamp getCompletedAt() {
+        return completedAt;
     }
 
-    public void setAiOptimized(Boolean aiOptimized) {
-        this.aiOptimized = aiOptimized;
+    public void setCompletedAt(Timestamp completedAt) {
+        this.completedAt = completedAt;
     }
 
     public String getNotes() {

@@ -17,7 +17,6 @@ public class Order {
 
     private String orderId;
 
-    private String orderCustomerId;
 
     private String description;
 
@@ -26,6 +25,9 @@ public class Order {
     private BigDecimal benefitPerOrder;
 
     private BigDecimal orderProfitPerOrder;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
 
 
     @ManyToOne
@@ -58,17 +60,11 @@ public class Order {
     public String getOrderId() { return orderId; }
     public void setOrderId(String orderId) { this.orderId = orderId; }
 
-    public String getOrderCustomerId() { return orderCustomerId; }
-    public void setOrderCustomerId(String orderCustomerId) { this.orderCustomerId = orderCustomerId; }
-
-
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
     public BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
-
-
 
     public BigDecimal getBenefitPerOrder() { return benefitPerOrder; }
     public void setBenefitPerOrder(BigDecimal benefitPerOrder) { this.benefitPerOrder = benefitPerOrder; }
@@ -85,17 +81,8 @@ public class Order {
     public User getCreatedBy() { return createdBy; }
     public void setCreatedBy(User createdBy) { this.createdBy = createdBy; }
 
-    public Vehicle getVehicle() { return vehicle; }
-    public void setVehicle(Vehicle vehicle) { this.vehicle = vehicle; }
-
-    public User getDriver() { return driver; }
-    public void setDriver(User driver) { this.driver = driver; }
-
-    public DeliveryTracking getTracking() { return tracking; }
-    public void setTracking(DeliveryTracking tracking) { this.tracking = tracking; }
-
-    public Route getRoute() { return route; }
-    public void setRoute(Route route) { this.route = route; }
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
 
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
