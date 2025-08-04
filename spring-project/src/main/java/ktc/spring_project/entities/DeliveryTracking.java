@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "delivery_tracking")
@@ -14,13 +15,11 @@ public class DeliveryTracking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double latitude;
+    private BigDecimal latitude;
 
-    private Double longitude;
+    private BigDecimal longitude;
 
     private String location;
-
-    private Timestamp arrivedAt;
 
     private String notes;
 
@@ -52,19 +51,19 @@ public class DeliveryTracking {
         this.id = id;
     }
 
-    public Double getLatitude() {
+    public BigDecimal getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(BigDecimal latitude) {
         this.latitude = latitude;
     }
 
-    public Double getLongitude() {
+    public BigDecimal getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
     }
 
@@ -76,13 +75,6 @@ public class DeliveryTracking {
         this.location = location;
     }
 
-    public Timestamp getArrivedAt() {
-        return arrivedAt;
-    }
-
-    public void setArrivedAt(Timestamp arrivedAt) {
-        this.arrivedAt = arrivedAt;
-    }
 
     public String getNotes() {
         return notes;
