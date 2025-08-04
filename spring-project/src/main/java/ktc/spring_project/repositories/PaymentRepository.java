@@ -51,3 +51,4 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("SELECT AVG(p.amount) FROM Payment p WHERE p.status.name = 'SUCCESS'")
     BigDecimal getAverageSuccessfulPaymentAmount();
 }
+
