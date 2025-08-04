@@ -1,9 +1,10 @@
 package ktc.spring_project.enums;
 
 public enum TransportMode {
-    STANDARD("Standard"),
-    EXPRESS("Express"),
-    PRIORITY("Priority");
+    ROAD("Road"),
+    AIR("Air"),
+    SEA("Sea"),
+    RAIL("Rail");
 
     private final String displayName;
 
