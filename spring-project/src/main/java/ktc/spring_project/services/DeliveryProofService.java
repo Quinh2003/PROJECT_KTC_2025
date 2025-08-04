@@ -1,7 +1,7 @@
 package ktc.spring_project.services;
 
 import ktc.spring_project.entities.DeliveryProof;
-import ktc.spring_project.repository.DeliveryProofRepository;
+import ktc.spring_project.repositories.DeliveryProofRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class DeliveryProofService {
-    private final DeliveryProofRepository deliveryProofRepository;
+    private DeliveryProofRepository deliveryProofRepository;
 
     public List<DeliveryProof> findAll() {
         return deliveryProofRepository.findAll();

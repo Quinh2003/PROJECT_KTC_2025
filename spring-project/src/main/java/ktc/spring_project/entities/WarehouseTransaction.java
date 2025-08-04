@@ -1,21 +1,23 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import ktc.spring_project.enums.TransactionType;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "inventory_transactions")
-public class InventoryTransaction {
+@Table(name = "warehouse_transactions")
+public class WarehouseTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
-    private String transactionType;
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
 
     private Integer quantity;
 
@@ -48,14 +50,14 @@ public class InventoryTransaction {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    public InventoryTransaction() {}
+    public WarehouseTransaction() {}
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
 
-    public String getTransactionType() { return transactionType; }
-    public void setTransactionType(String transactionType) { this.transactionType = transactionType; }
+    public TransactionType getTransactionType() { return transactionType; }
+    public void setTransactionType(TransactionType transactionType) { this.transactionType = transactionType; }
 
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }

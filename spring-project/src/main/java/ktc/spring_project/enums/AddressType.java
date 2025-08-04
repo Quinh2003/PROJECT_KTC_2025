@@ -1,14 +1,13 @@
 package ktc.spring_project.enums;
 
-public enum DeliveryStatus {
-    PENDING("Pending"),
-    IN_PROGRESS("In Progress"),
-    COMPLETED("Completed"),
-    FAILED("Failed");
+public enum AddressType {
+    DELIVERY("Delivery"),
+    PICKUP("Pickup"),
+    RETURN("Return");
 
     private final String displayName;
 
-    DeliveryStatus(String displayName) {
+    AddressType(String displayName) {
         this.displayName = displayName;
     }
 

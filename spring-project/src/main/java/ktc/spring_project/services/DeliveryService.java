@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -41,7 +42,7 @@ public class DeliveryService {
         if (delivery.getDeliveryFee() != null && delivery.getDeliveryFee().compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Delivery fee cannot be negative");
         }
-        delivery.setOrderId(deliveryDetails.getOrderId());
+        delivery.setOrder(deliveryDetails.getOrder());
         delivery.setDeliveryFee(deliveryDetails.getDeliveryFee());
         delivery.setTransportMode(deliveryDetails.getTransportMode());
         delivery.setServiceType(deliveryDetails.getServiceType());
@@ -51,10 +52,10 @@ public class DeliveryService {
         delivery.setActualDeliveryTime(deliveryDetails.getActualDeliveryTime());
         delivery.setLateDeliveryRisk(deliveryDetails.getLateDeliveryRisk());
         delivery.setDeliveryStatus(deliveryDetails.getDeliveryStatus());
-        delivery.setVehicleId(deliveryDetails.getVehicleId());
-        delivery.setDriverId(deliveryDetails.getDriverId());
-        delivery.setTrackingId(deliveryDetails.getTrackingId());
-        delivery.setRouteId(deliveryDetails.getRouteId());
+        delivery.setVehicle(deliveryDetails.getVehicle());
+        delivery.setDriver(deliveryDetails.getDriver());
+        delivery.setTracking(deliveryDetails.getTracking());
+        delivery.setRoute(deliveryDetails.getRoute());
         delivery.setDeliveryAttempts(deliveryDetails.getDeliveryAttempts());
         delivery.setDeliveryNotes(deliveryDetails.getDeliveryNotes());
         return deliveryRepository.save(delivery);
