@@ -100,7 +100,6 @@ CREATE TABLE IF NOT EXISTS `addresses` (
 -- =====================================================================================
 CREATE TABLE IF NOT EXISTS `products` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của sản phẩm',
-    `product_card_id` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã thẻ sản phẩm cho catalog',
     `product_code` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã SKU/mã nội bộ sản phẩm',
     `name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị sản phẩm',
     `description` TEXT COMMENT 'Mô tả chi tiết sản phẩm',
@@ -283,7 +282,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
 CREATE TABLE IF NOT EXISTS `payments` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của thanh toán',
     `order_id` BIGINT NOT NULL COMMENT 'Mã đơn hàng được thanh toán',
-    `amount` DECIMAL(15,2) NOT NULL 'Tổng số tiền thanh toán',
+    `amount` DECIMAL(15,2) NOT NULL COMMENT 'Tổng số tiền thanh toán',
     `payment_method` VARCHAR(50) NOT NULL DEFAULT 'CASH' COMMENT 'Phương thức thanh toán (tiền mặt, thẻ, chuyển khoản)',
     `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái thanh toán (thành công, thất bại, chờ xử lý)',
     `transaction_id` VARCHAR(255) COMMENT 'Mã giao dịch từ cổng thanh toán',
@@ -467,7 +466,6 @@ ALTER TABLE deliveries ADD CONSTRAINT chk_delivery_attempts
 
 -- Indexes cho bảng ORDERS (truy vấn nhiều nhất)
 CREATE INDEX idx_orders_status ON orders(status_id) COMMENT 'Tìm đơn hàng theo trạng thái';
-CREATE INDEX idx_orders_customer ON orders(order_customer_id) COMMENT 'Tìm đơn hàng theo khách hàng';
 CREATE INDEX idx_orders_status_created ON orders(status_id, created_at) COMMENT 'Sắp xếp đơn hàng theo trạng thái và thời gian';
 CREATE INDEX idx_orders_store ON orders(store_id) COMMENT 'Tìm đơn hàng theo cửa hàng';
 CREATE INDEX idx_orders_created_by ON orders(created_by) COMMENT 'Tìm đơn hàng theo người tạo';
@@ -491,7 +489,6 @@ CREATE INDEX idx_products_category ON products(category_id) COMMENT 'Tìm sản 
 CREATE INDEX idx_products_warehouse ON products(warehouse_id) COMMENT 'Tìm sản phẩm theo kho';
 CREATE INDEX idx_products_status ON products(product_status) COMMENT 'Tìm sản phẩm theo trạng thái';
 CREATE INDEX idx_products_code ON products(product_code) COMMENT 'Tìm sản phẩm theo mã SKU';
-CREATE INDEX idx_products_card_id ON products(product_card_id) COMMENT 'Tìm sản phẩm theo mã thẻ';
 
 -- Indexes cho bảng ORDER_ITEMS (order details)
 CREATE INDEX idx_order_items_order ON order_items(order_id) COMMENT 'Tìm items theo đơn hàng';
