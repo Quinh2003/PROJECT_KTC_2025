@@ -467,7 +467,6 @@ ALTER TABLE deliveries ADD CONSTRAINT chk_delivery_attempts
 
 -- Indexes cho bảng ORDERS (truy vấn nhiều nhất)
 CREATE INDEX idx_orders_status ON orders(status_id) COMMENT 'Tìm đơn hàng theo trạng thái';
-CREATE INDEX idx_orders_customer ON orders(order_customer_id) COMMENT 'Tìm đơn hàng theo khách hàng';
 CREATE INDEX idx_orders_status_created ON orders(status_id, created_at) COMMENT 'Sắp xếp đơn hàng theo trạng thái và thời gian';
 CREATE INDEX idx_orders_store ON orders(store_id) COMMENT 'Tìm đơn hàng theo cửa hàng';
 CREATE INDEX idx_orders_created_by ON orders(created_by) COMMENT 'Tìm đơn hàng theo người tạo';
