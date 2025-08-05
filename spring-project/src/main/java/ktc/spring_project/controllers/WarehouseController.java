@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +36,42 @@ public class WarehouseController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String search) {
 
-        List<Warehouse> warehouses = warehouseService.getFilteredWarehouses(status, search);
-        return ResponseEntity.ok(warehouses);
+        // Retrieve all warehouses
+        List<Warehouse> allWarehouses = warehouseService.getAllWarehouses();
+
+        // Manual filtering since getFilteredWarehouses is not implemented in service
+        if (status != null || search != null) {
+            List<Warehouse> filteredWarehouses = new ArrayList<>();
+
+            for (Warehouse warehouse : allWarehouses) {
+                boolean statusMatch = true;
+                boolean searchMatch = true;
+
+                // Filter by status if provided
+                if (status != null) {
+                    boolean isActiveStatus = "1".equals(status) || "true".equalsIgnoreCase(status);
+                    statusMatch = (warehouse.getIsActive() == isActiveStatus);
+                }
+
+                // Filter by search term if provided
+                if (search != null && !search.isEmpty()) {
+                    String searchLower = search.toLowerCase();
+                    searchMatch = warehouse.getName().toLowerCase().contains(searchLower) ||
+                            warehouse.getWarehouseCode().toLowerCase().contains(searchLower) ||
+                            (warehouse.getAddress() != null && warehouse.getAddress().toLowerCase().contains(searchLower));
+                }
+
+                // Add to filtered list if both conditions match
+                if (statusMatch && searchMatch) {
+                    filteredWarehouses.add(warehouse);
+                }
+            }
+
+            return ResponseEntity.ok(filteredWarehouses);
+        }
+
+        // Return all warehouses if no filters applied
+        return ResponseEntity.ok(allWarehouses);
     }
 
     /**
