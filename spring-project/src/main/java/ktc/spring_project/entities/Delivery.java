@@ -17,15 +17,14 @@ public class Delivery {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @Column(name = "delivery_fee")
     private BigDecimal deliveryFee;
-
 
     @Column(name = "transport_mode", length = 50)
     private String transportMode;
 
     @Column(name = "service_type", length = 50)
     private String serviceType;
-
 
     @Column(name = "pickup_date")
     private Timestamp pickupDate;
@@ -48,7 +47,6 @@ public class Delivery {
     @Column(name = "order_date", nullable = false)
     private Timestamp orderDate;
 
-
     @ManyToOne
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
@@ -66,10 +64,12 @@ public class Delivery {
     private Route route;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
-    private Timestamp updatedAt;
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;    
 
     public Delivery() {}
 

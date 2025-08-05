@@ -25,7 +25,10 @@ public class Store {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String address;
 
+    @Column(precision = 10, scale = 8)
     private Double latitude;
+
+    @Column(precision = 11, scale = 8)
     private Double longitude;
 
     @Column(name = "is_active")

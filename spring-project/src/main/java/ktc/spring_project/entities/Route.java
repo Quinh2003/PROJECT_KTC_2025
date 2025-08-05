@@ -15,11 +15,10 @@ public class Route {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @Column(name = "name", nullable = false, length = 255)
+    @Column(length = 255)
     private String name;
 
-    @Column(name = "waypoints", columnDefinition = "json", nullable = false)
+    @Column(columnDefinition = "json", nullable = false)
     private String waypoints;
 
     @Column(name = "estimated_distance_km", precision = 10, scale = 2)
@@ -31,7 +30,7 @@ public class Route {
     @Column(name = "estimated_cost", precision = 15, scale = 2)
     private BigDecimal estimatedCost;
 
-    @Column(name = "notes", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     @Column(name = "completed_at")
@@ -42,9 +41,11 @@ public class Route {
     private User createdBy;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
 

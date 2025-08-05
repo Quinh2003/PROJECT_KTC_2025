@@ -14,23 +14,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @Column(name = "username", nullable = false, unique = true, length = 100)
+    @Column(nullable = false, unique = true, length = 100)
     private String username;
 
     @Column(name = "full_name", length = 255)
     private String fullName;
 
-
-    @Column(name = "email", nullable = false, unique = true, length = 255)
+    @Column(nullable = false, unique = true, length = 255)
     private String email;
 
-    @Column(name = "password", nullable = false, length = 255)
+    @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(name = "phone", length = 20)
+    @Column(length = 20)
     private String phone;
-
 
     @Column(columnDefinition = "TEXT")
     private String notes;
@@ -44,9 +41,11 @@ public class User {
     private Status status;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     public User() {}

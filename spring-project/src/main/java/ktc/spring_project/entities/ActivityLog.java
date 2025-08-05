@@ -12,6 +12,7 @@ public class ActivityLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "actor_id")
     private Long actorId;
 
     @ManyToOne
@@ -22,14 +23,17 @@ public class ActivityLog {
     @JoinColumn(name = "status_id")
     private Status status;
 
-
     @Enumerated(EnumType.STRING)
+    @Column(name = "action_type")
     private ActionType actionType;
 
+    @Column(name = "table_name")
     private String tableName;
 
+    @Column(name = "record_id")
     private Long recordId;
 
+    @Column(name = "action_timestamp")
     private Timestamp actionTimestamp;
 
     @Column(columnDefinition = "json")
