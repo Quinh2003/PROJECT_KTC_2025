@@ -45,7 +45,6 @@ public class Product {
     @Column(name = "product_image", length = 500)
     private String productImage;
 
-
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
@@ -65,9 +64,11 @@ public class Product {
     private User createdBy;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     public Product() {}

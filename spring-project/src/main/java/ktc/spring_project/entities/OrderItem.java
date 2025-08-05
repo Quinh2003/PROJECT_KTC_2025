@@ -17,12 +17,14 @@ public class OrderItem {
 
     private Integer quantity;
 
+    @Column(name = "unit_price")    
     private BigDecimal unitPrice;
 
-
+    @Column(name = "shipping_fee")
     private BigDecimal shippingFee;
 
-    private String notes;
+    @Column(columnDefinition = "TEXT")
+    private String notes;   
 
     @ManyToOne
     @JoinColumn(name = "order_id")
@@ -33,9 +35,11 @@ public class OrderItem {
     private Product product;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     public OrderItem() {

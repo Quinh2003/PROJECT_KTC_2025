@@ -15,12 +15,16 @@ public class DeliveryTracking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(precision = 10, scale = 8)
     private BigDecimal latitude;
 
+    @Column(precision = 11, scale = 8)
     private BigDecimal longitude;
 
+    @Column(length = 255)
     private String location;
 
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     @ManyToOne
@@ -34,9 +38,11 @@ public class DeliveryTracking {
     private Timestamp timestamp;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     public DeliveryTracking() {}

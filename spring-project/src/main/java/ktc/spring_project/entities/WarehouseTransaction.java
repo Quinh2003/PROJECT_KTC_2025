@@ -52,6 +52,7 @@ public class WarehouseTransaction {
     private User createdBy;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     public WarehouseTransaction() {}

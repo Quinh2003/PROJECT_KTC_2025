@@ -20,7 +20,10 @@ public class Address {
     @Column(name = "address", nullable = false, length = 500)
     private String address;
 
+    @Column(precision = 10, scale = 8)
     private Double latitude;
+
+    @Column(precision = 11, scale = 8)
     private Double longitude;
 
     @Column(length = 100)

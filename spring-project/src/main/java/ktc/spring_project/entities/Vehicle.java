@@ -28,10 +28,12 @@ public class Vehicle {
 
     @Column(name = "capacity_volume_m3", precision = 10, scale = 2, nullable = false)
     private BigDecimal capacityVolumeM3;
+
     @ManyToOne
     @JoinColumn(name = "current_driver_id")
     private User currentDriver;
 
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     @ManyToOne
@@ -39,9 +41,11 @@ public class Vehicle {
     private Status status;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     // Constructor mặc định
