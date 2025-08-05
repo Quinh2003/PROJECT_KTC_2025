@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  */
 public class CreateWarehouseRequestDTO {
     
-    private String warehouseCode;
+
     private String name;
     private String address;
     private BigDecimal latitude;
@@ -19,22 +19,18 @@ public class CreateWarehouseRequestDTO {
     // Constructors
     public CreateWarehouseRequestDTO() {}
     
-    public CreateWarehouseRequestDTO(String warehouseCode, String name, String address) {
-        this.warehouseCode = warehouseCode;
+    public CreateWarehouseRequestDTO(String name, String address) {
         this.name = name;
         this.address = address;
     }
     
-    public CreateWarehouseRequestDTO(String warehouseCode, String name, String address, BigDecimal capacityM3) {
-        this.warehouseCode = warehouseCode;
+    public CreateWarehouseRequestDTO(String name, String address, BigDecimal capacityM3) {
         this.name = name;
         this.address = address;
         this.capacityM3 = capacityM3;
     }
     
     // Getters and Setters
-    public String getWarehouseCode() { return warehouseCode; }
-    public void setWarehouseCode(String warehouseCode) { this.warehouseCode = warehouseCode; }
     
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -59,8 +55,7 @@ public class CreateWarehouseRequestDTO {
     
     // Validation methods
     public boolean isValid() {
-        return warehouseCode != null && !warehouseCode.trim().isEmpty() &&
-               name != null && !name.trim().isEmpty() &&
+        return name != null && !name.trim().isEmpty() &&
                address != null && !address.trim().isEmpty();
     }
     
@@ -73,7 +68,7 @@ public class CreateWarehouseRequestDTO {
     }
     
     public String getDisplayName() {
-        return String.format("%s - %s", warehouseCode, name);
+        return name;
     }
     
     public boolean isCapacityValid() {

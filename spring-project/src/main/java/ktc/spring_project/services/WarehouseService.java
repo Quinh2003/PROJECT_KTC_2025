@@ -41,7 +41,7 @@ public class WarehouseService {
 
     public Warehouse updateWarehouse(Long id, Warehouse warehouseDetails) {
         Warehouse warehouse = getWarehouseById(id);
-        warehouse.setWarehouseCode(warehouseDetails.getWarehouseCode());
+
         warehouse.setName(warehouseDetails.getName());
         warehouse.setAddress(warehouseDetails.getAddress());
         warehouse.setLatitude(warehouseDetails.getLatitude());
