@@ -83,11 +83,11 @@ public class Delivery {
     public BigDecimal getDeliveryFee() { return deliveryFee; }
     public void setDeliveryFee(BigDecimal deliveryFee) { this.deliveryFee = deliveryFee; }
 
-    public TransportMode getTransportMode() { return transportMode; }
-    public void setTransportMode(TransportMode transportMode) { this.transportMode = transportMode; }
+    public String getTransportMode() { return transportMode; }
+    public void setTransportMode(String transportMode) { this.transportMode = transportMode; }
 
-    public ServiceType getServiceType() { return serviceType; }
-    public void setServiceType(ServiceType serviceType) { this.serviceType = serviceType; }
+    public String getServiceType() { return serviceType; }
+    public void setServiceType(String serviceType) { this.serviceType = serviceType; }
 
     public Timestamp getPickupDate() { return pickupDate; }
     public void setPickupDate(Timestamp pickupDate) { this.pickupDate = pickupDate; }
