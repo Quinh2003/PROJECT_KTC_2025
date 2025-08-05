@@ -1,7 +1,7 @@
 package ktc.spring_project.services;
 
 import ktc.spring_project.entities.User;
-import ktc.spring_project.repositories.UserRepository;
+import ktc.spring_project.repositories.UserJpaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserJpaRepository userRepository;
 
     public User createUser(User user) {
         return userRepository.save(user);
