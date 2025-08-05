@@ -44,7 +44,7 @@ public class Address {
     @Column(name = "contact_name", length = 255)
     private String contactName;
 
-    @Column(name = "contact_phone", length = 50)
+    @Column(name = "contact_phone", length = 20)
     private String contactPhone;
 
     @Column(name = "contact_email", length = 255)
