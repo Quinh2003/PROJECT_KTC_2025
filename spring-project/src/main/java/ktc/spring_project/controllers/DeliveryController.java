@@ -9,6 +9,7 @@ import ktc.spring_project.services.DeliveryTrackingService;
 import ktc.spring_project.services.UserService;
 import ktc.spring_project.services.VehicleService;
 import ktc.spring_project.services.StatusService;
+import ktc.spring_project.services.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,6 @@ import java.util.Map;
 @RequestMapping("/api/deliveries")
 public class DeliveryController {
 
-    // Assume these services are implemented later
     @Autowired
     private DeliveryService deliveryService;
 
@@ -41,6 +41,12 @@ public class DeliveryController {
 
     @Autowired
     private DeliveryTrackingService deliveryTrackingService;
+
+    @Autowired
+    private StatusService statusService;
+
+    @Autowired
+    private RouteService routeService;
 
     /**
      * Get all deliveries with optional filters
@@ -69,15 +75,17 @@ public class DeliveryController {
             deliveryMap.put("pickupDate", delivery.getPickupDate());
             deliveryMap.put("scheduleDeliveryTime", delivery.getScheduleDeliveryTime());
             deliveryMap.put("actualDeliveryTime", delivery.getActualDeliveryTime());
-            deliveryMap.put("deliveryStatus", delivery.getDeliveryStatus());
+            // Order status used instead of non-existent deliveryStatus
+            deliveryMap.put("orderStatus", delivery.getOrder() != null && delivery.getOrder().getStatus() != null ?
+                delivery.getOrder().getStatus().getName() : null);
             deliveryMap.put("driverId", delivery.getDriver() != null ? delivery.getDriver().getId() : null);
             deliveryMap.put("vehicleId", delivery.getVehicle() != null ? delivery.getVehicle().getId() : null);
 
             // Lọc theo tiêu chí nếu có
             boolean matchesFilter = true;
 
-            if (status != null && delivery.getDeliveryStatus() != null) {
-                matchesFilter = matchesFilter && delivery.getDeliveryStatus().getName().equalsIgnoreCase(status);
+            if (status != null && delivery.getOrder() != null && delivery.getOrder().getStatus() != null) {
+                matchesFilter = matchesFilter && delivery.getOrder().getStatus().getName().equalsIgnoreCase(status);
             }
 
             if (driverId != null && delivery.getDriver() != null) {
@@ -117,7 +125,8 @@ public class DeliveryController {
         deliveryMap.put("pickupDate", delivery.getPickupDate());
         deliveryMap.put("scheduleDeliveryTime", delivery.getScheduleDeliveryTime());
         deliveryMap.put("actualDeliveryTime", delivery.getActualDeliveryTime());
-        deliveryMap.put("deliveryStatus", delivery.getDeliveryStatus() != null ? delivery.getDeliveryStatus().getName() : null);
+        deliveryMap.put("orderStatus", delivery.getOrder() != null && delivery.getOrder().getStatus() != null ?
+            delivery.getOrder().getStatus().getName() : null);
         deliveryMap.put("driverId", delivery.getDriver() != null ? delivery.getDriver().getId() : null);
         deliveryMap.put("vehicleId", delivery.getVehicle() != null ? delivery.getVehicle().getId() : null);
         deliveryMap.put("deliveryAttempts", delivery.getDeliveryAttempts());
@@ -136,6 +145,7 @@ public class DeliveryController {
 
         // Tạo đối tượng Delivery từ dữ liệu đầu vào
         Delivery delivery = new Delivery();
+        // TO-DO: Implement proper mapping from request data to Delivery entity
         // Thiết lập các thuộc tính từ deliveryData
         // Đây là giải pháp tạm thời, trong thực tế cần mapping chi tiết từ Map sang Entity
 
@@ -162,6 +172,7 @@ public class DeliveryController {
         // Lấy thông tin giao hàng hiện tại
         Delivery existingDelivery = deliveryService.getDeliveryById(id);
 
+        // TO-DO: Implement proper mapping from request data to Delivery entity
         // Cập nhật các thuộc tính từ deliveryData
         // Đây là giải pháp tạm thời, trong thực tế cần mapping chi tiết từ Map sang Entity
 
@@ -241,7 +252,8 @@ public class DeliveryController {
     }
 
     /**
-     * Update delivery status
+     * Update order status for a delivery
+     * TO-DO: This should properly update the order status in the OrderService
      */
     @PatchMapping("/{id}/status")
     public ResponseEntity<Map<String, Object>> updateDeliveryStatus(
@@ -252,37 +264,49 @@ public class DeliveryController {
         String statusName = (String) statusData.get("status");
         String notes = (String) statusData.get("notes");
 
-        // Lấy thông tin giao hàng
+        // Get delivery information
         Delivery delivery = deliveryService.getDeliveryById(id);
 
-        // Lấy hoặc tạo mới đối tượng Status dựa trên tên status
-        Status status = new Status();
-        status.setName(statusName);
+        if (delivery.getOrder() == null) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "message", "Delivery does not have an associated order"
+            ));
+        }
 
-        // Cập nhật trạng thái và ghi chú cho giao hàng
-        delivery.setDeliveryStatus(status);
+        // TO-DO: This is a temporary implementation.
+        // In the future, status should be retrieved from StatusService
+        // Status status = statusService.findByName(statusName);
+
+        // TO-DO: The proper implementation should be:
+        // orderService.updateOrderStatus(delivery.getOrder().getId(), statusName);
+
+        // For now, we're updating the delivery notes only
         delivery.setDeliveryNotes(notes);
 
-        // Lưu giao hàng đã cập nhật
+        // Save the updated delivery with new notes
         Delivery updatedDelivery = deliveryService.updateDelivery(id, delivery);
 
-        // Chuyển đổi kết quả thành Map
+        // Convert result to Map
         Map<String, Object> result = new HashMap<>();
         result.put("id", updatedDelivery.getId());
-        result.put("status", statusName);
+        result.put("orderId", updatedDelivery.getOrder().getId());
         result.put("notes", notes);
-        result.put("message", "Delivery status updated successfully");
+        result.put("message", "Delivery notes updated. Order status update requires OrderService implementation.");
 
         return ResponseEntity.ok(result);
     }
 
     /**
      * Get delivery tracking information
+     * TO-DO: Implement getDeliveryTrackingHistory method in DeliveryTrackingService
      */
     @GetMapping("/{id}/tracking")
     public ResponseEntity<List<Map<String, Object>>> getDeliveryTracking(@PathVariable Long id) {
-        List<Map<String, Object>> trackingData = deliveryTrackingService.getDeliveryTrackingHistory(id);
-        return ResponseEntity.ok(trackingData);
+        // TO-DO: This is a temporary implementation.
+        // DeliveryTrackingService doesn't have getDeliveryTrackingHistory method yet.
+
+        // Return empty list until the proper tracking service method is implemented
+        return ResponseEntity.ok(new ArrayList<>());
     }
 
     /**
@@ -314,6 +338,7 @@ public class DeliveryController {
     /**
      * Get delivery stats by vehicle type
      * TO-DO: Implement analytics service to calculate actual statistics from delivery data
+     * Future implementation will use AI for analytics predictions
      */
     @GetMapping("/stats/by-vehicle-type")
     public ResponseEntity<List<Map<String, Object>>> getStatsByVehicleType(
@@ -323,6 +348,7 @@ public class DeliveryController {
         // TO-DO: This is a temporary implementation.
         // In the future, this will analyze actual delivery data and calculate real statistics
         // based on vehicle type, time period, and other relevant factors
+        // External AI model will be used for predictive analytics
 
         // Return minimal placeholder message instead of sample data
         return ResponseEntity.ok(List.of(
@@ -339,6 +365,7 @@ public class DeliveryController {
     /**
      * Get delivery stats by service type
      * TO-DO: Implement analytics service to calculate actual statistics from delivery data
+     * Future implementation will use AI for analytics predictions
      */
     @GetMapping("/stats/by-service-type")
     public ResponseEntity<List<Map<String, Object>>> getStatsByServiceType(
@@ -348,6 +375,7 @@ public class DeliveryController {
         // TO-DO: This is a temporary implementation.
         // In the future, this will analyze actual delivery data and calculate real statistics
         // based on service type, revenue, customer satisfaction, and other metrics
+        // External AI model will be used for predictive analytics
 
         // Return minimal placeholder message instead of sample data
         return ResponseEntity.ok(List.of(
