@@ -57,7 +57,6 @@ public class WarehouseController {
                 if (search != null && !search.isEmpty()) {
                     String searchLower = search.toLowerCase();
                     searchMatch = warehouse.getName().toLowerCase().contains(searchLower) ||
-                            warehouse.getWarehouseCode().toLowerCase().contains(searchLower) ||
                             (warehouse.getAddress() != null && warehouse.getAddress().toLowerCase().contains(searchLower));
                 }
 
