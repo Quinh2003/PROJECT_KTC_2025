@@ -58,7 +58,7 @@ public class WarehouseTransactionService {
         // Filter logic would go here in a real implementation
         // For now, we'll just return all transactions related to the productId
         for (WarehouseTransaction transaction : allTransactions) {
-            if (transaction.getProductId().equals(productId)) {
+            if (transaction.getProduct().equals(productId)) {
                 // Apply additional filters here (date range, transaction type)
                 filteredTransactions.add(transaction);
             }
