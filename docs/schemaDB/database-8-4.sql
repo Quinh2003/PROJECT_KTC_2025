@@ -243,7 +243,7 @@ CREATE TABLE IF NOT EXISTS `warehouse_transactions` (
 CREATE TABLE IF NOT EXISTS `activity_logs` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của nhật ký hoạt động',
     `actor_id` BIGINT COMMENT 'ID người dùng thực hiện hành động',
-    `role_id` BIGINT NOT NULL COMMENT 'Vai trò của người dùng tại thời điểm thực hiện',
+    `role_id` BIGINT COMMENT 'Vai trò của người dùng tại thời điểm thực hiện',
     `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái hoàn thành hành động',
     `action_type` VARCHAR(50) NOT NULL COMMENT 'Loại hành động (TẠO, CẬP NHẬT, XÓA, ĐĂNG NHẬP, v.v.)',
     `table_name` VARCHAR(64) COMMENT 'Bảng cơ sở dữ liệu bị ảnh hưởng bởi hành động',
@@ -384,7 +384,8 @@ CREATE TABLE IF NOT EXISTS `delivery_tracking` (
 ALTER TABLE `addresses` ADD CONSTRAINT `fk_addresses_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`);
 ALTER TABLE `categories` ADD CONSTRAINT `fk_categories_parent_id` FOREIGN KEY(`parent_id`) REFERENCES `categories`(`id`);
 ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`);
-ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_role_id` FOREIGN KEY(`role_id`) REFERENCES `roles`(`id`);
+ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_actor_id` FOREIGN KEY(`actor_id`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_role_id` FOREIGN KEY(`role_id`) REFERENCES `roles`(`id`) ON DELETE SET NULL;
 ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_status_id` FOREIGN KEY(`status_id`) REFERENCES `status`(`id`);
 ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_route_id` FOREIGN KEY(`route_id`) REFERENCES `routes`(`id`);
 ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_tracking_id` FOREIGN KEY(`tracking_id`) REFERENCES `delivery_tracking`(`id`);
