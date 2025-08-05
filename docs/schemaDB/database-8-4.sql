@@ -100,7 +100,6 @@ CREATE TABLE IF NOT EXISTS `addresses` (
 -- =====================================================================================
 CREATE TABLE IF NOT EXISTS `products` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của sản phẩm',
-    `product_card_id` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã thẻ sản phẩm cho catalog',
     `product_code` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã SKU/mã nội bộ sản phẩm',
     `name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị sản phẩm',
     `description` TEXT COMMENT 'Mô tả chi tiết sản phẩm',
@@ -490,7 +489,6 @@ CREATE INDEX idx_products_category ON products(category_id) COMMENT 'Tìm sản 
 CREATE INDEX idx_products_warehouse ON products(warehouse_id) COMMENT 'Tìm sản phẩm theo kho';
 CREATE INDEX idx_products_status ON products(product_status) COMMENT 'Tìm sản phẩm theo trạng thái';
 CREATE INDEX idx_products_code ON products(product_code) COMMENT 'Tìm sản phẩm theo mã SKU';
-CREATE INDEX idx_products_card_id ON products(product_card_id) COMMENT 'Tìm sản phẩm theo mã thẻ';
 
 -- Indexes cho bảng ORDER_ITEMS (order details)
 CREATE INDEX idx_order_items_order ON order_items(order_id) COMMENT 'Tìm items theo đơn hàng';
