@@ -1,7 +1,7 @@
 package ktc.spring_project.controllers;
 
-import ktc.spring_project.services.KPIService;
-import ktc.spring_project.services.AnalyticsService;
+import ktc.spring_project.services.OrderService;
+import ktc.spring_project.services.DeliveryService;
 import ktc.spring_project.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +23,10 @@ import java.util.Map;
 public class DashboardController {
 
     @Autowired
-    private KPIService kpiService;
+    private OrderService orderService;
 
     @Autowired
-    private AnalyticsService analyticsService;
+    private DeliveryService deliveryService;
 
     @Autowired
     private UserService userService;
@@ -34,6 +34,7 @@ public class DashboardController {
     /**
      * Get real-time KPIs
      * US-OPS-KPI-01
+     * TO-DO: Future integration with AI service for real-time KPI calculation
      */
     @GetMapping("/kpis")
     public ResponseEntity<Map<String, Object>> getRealTimeKPIs(
@@ -41,26 +42,50 @@ public class DashboardController {
             @RequestParam(required = false) String dateTo,
             @RequestParam(required = false) String period) {
 
-        Map<String, Object> kpis = kpiService.getRealTimeKPIs(dateFrom, dateTo, period);
-        return ResponseEntity.ok(kpis);
+        // TO-DO: This is a temporary implementation.
+        // When AI model is deployed to separate server,
+        // this endpoint will call the AI service to generate accurate KPIs for operational monitoring
+
+        // Return minimal placeholder message
+        return ResponseEntity.ok(Map.of(
+                "message", "Real-time KPI calculations will be implemented in a future AI integration",
+                "requestedParameters", Map.of(
+                        "dateFrom", dateFrom != null ? dateFrom : "",
+                        "dateTo", dateTo != null ? dateTo : "",
+                        "period", period != null ? period : "daily"
+                )
+        ));
     }
 
     /**
      * Get delivery performance metrics
      * US-OPS-KPI-01
+     * TO-DO: Future integration with AI service for delivery performance metrics
      */
     @GetMapping("/delivery-performance")
     public ResponseEntity<Map<String, Object>> getDeliveryPerformance(
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
 
-        Map<String, Object> performance = kpiService.getDeliveryPerformanceMetrics(dateFrom, dateTo);
-        return ResponseEntity.ok(performance);
+        // TO-DO: This is a temporary implementation.
+        // When AI model is deployed to separate server,
+        // this endpoint will call the AI service to analyze delivery data and calculate
+        // performance metrics such as on-time delivery rate, average delivery time, and customer satisfaction
+
+        // Return minimal placeholder message
+        return ResponseEntity.ok(Map.of(
+            "message", "Delivery performance metrics will be implemented in a future AI integration",
+            "requestedDateRange", Map.of(
+                "from", dateFrom != null ? dateFrom : "",
+                "to", dateTo != null ? dateTo : ""
+            )
+        ));
     }
 
     /**
      * Get driver performance analytics
      * US-OPS-ANALYTICS-01
+     * TO-DO: Future integration with AI service for driver performance metrics
      */
     @GetMapping("/driver-analytics")
     public ResponseEntity<List<Map<String, Object>>> getDriverAnalytics(
@@ -68,14 +93,28 @@ public class DashboardController {
             @RequestParam(required = false) String dateTo,
             @RequestParam(required = false) Long driverId) {
 
-        List<Map<String, Object>> analytics = analyticsService.getDriverPerformanceAnalytics(
-                dateFrom, dateTo, driverId);
-        return ResponseEntity.ok(analytics);
+        // TO-DO: This is a temporary implementation.
+        // When AI model is deployed to separate server,
+        // this endpoint will call the AI service to analyze historical delivery data
+        // to generate insights about driver performance and efficiency
+
+        // Return minimal placeholder message
+        return ResponseEntity.ok(List.of(
+            Map.of(
+                "message", "Driver performance analytics will be implemented in a future AI integration",
+                "requestedParameters", Map.of(
+                    "driverId", driverId != null ? driverId : "all",
+                    "dateFrom", dateFrom != null ? dateFrom : "",
+                    "dateTo", dateTo != null ? dateTo : ""
+                )
+            )
+        ));
     }
 
     /**
      * Get route performance analytics
      * US-OPS-ANALYTICS-01
+     * TO-DO: Future integration with AI service for route performance metrics
      */
     @GetMapping("/route-analytics")
     public ResponseEntity<List<Map<String, Object>>> getRouteAnalytics(
@@ -83,13 +122,27 @@ public class DashboardController {
             @RequestParam(required = false) String dateTo,
             @RequestParam(required = false) Long routeId) {
 
-        List<Map<String, Object>> analytics = analyticsService.getRoutePerformanceAnalytics(
-                dateFrom, dateTo, routeId);
-        return ResponseEntity.ok(analytics);
+        // TO-DO: This is a temporary implementation.
+        // When AI model is deployed to separate server,
+        // this endpoint will call the AI service to analyze historical route data
+        // to generate insights about route efficiency and optimization opportunities
+
+        // Return minimal placeholder message
+        return ResponseEntity.ok(List.of(
+            Map.of(
+                "message", "Route performance analytics will be implemented in a future AI integration",
+                "requestedParameters", Map.of(
+                    "routeId", routeId != null ? routeId : "all",
+                    "dateFrom", dateFrom != null ? dateFrom : "",
+                    "dateTo", dateTo != null ? dateTo : ""
+                )
+            )
+        ));
     }
 
     /**
      * Get vehicle utilization metrics
+     * TO-DO: Future integration with AI service for vehicle utilization tracking
      */
     @GetMapping("/vehicle-utilization")
     public ResponseEntity<List<Map<String, Object>>> getVehicleUtilization(
@@ -97,14 +150,28 @@ public class DashboardController {
             @RequestParam(required = false) String dateTo,
             @RequestParam(required = false) Long vehicleId) {
 
-        List<Map<String, Object>> utilization = analyticsService.getVehicleUtilization(
-                dateFrom, dateTo, vehicleId);
-        return ResponseEntity.ok(utilization);
+        // TO-DO: This is a temporary implementation.
+        // When AI model is deployed to separate server,
+        // this endpoint will call the AI service to analyze fleet data to calculate utilization metrics
+        // such as active hours, idle time, maintenance periods, and fuel efficiency
+
+        // Return minimal placeholder message
+        return ResponseEntity.ok(List.of(
+            Map.of(
+                "message", "Vehicle utilization metrics will be implemented in a future AI integration",
+                "requestedParameters", Map.of(
+                    "vehicleId", vehicleId != null ? vehicleId : "all",
+                    "dateFrom", dateFrom != null ? dateFrom : "",
+                    "dateTo", dateTo != null ? dateTo : ""
+                )
+            )
+        ));
     }
 
     /**
      * Export dashboard reports
      * US-OPS-EXPORT-01
+     * TO-DO: Implement exportReport method in DeliveryService
      */
     @PostMapping("/export")
     public ResponseEntity<byte[]> exportReport(
@@ -116,26 +183,36 @@ public class DashboardController {
         String dateFrom = (String) exportRequest.get("dateFrom");
         String dateTo = (String) exportRequest.get("dateTo");
 
-        byte[] reportData = analyticsService.exportReport(reportType, format, dateFrom, dateTo);
+        // TO-DO: Replace with actual implementation when exportReport is implemented in DeliveryService
+        // byte[] reportData = deliveryService.exportReport(reportType, format, dateFrom, dateTo);
 
+        // Temporary empty response with header
         return ResponseEntity.ok()
                 .header("Content-Disposition", "attachment; filename=report." + format.toLowerCase())
-                .body(reportData);
+                .body(new byte[0]);
     }
 
     /**
      * Get summary statistics for dashboard overview
+     * TO-DO: Implement getDashboardSummary method in OrderService
      */
     @GetMapping("/summary")
     public ResponseEntity<Map<String, Object>> getDashboardSummary(
             @RequestParam(required = false) String period) {
 
-        Map<String, Object> summary = kpiService.getDashboardSummary(period);
-        return ResponseEntity.ok(summary);
+        // TO-DO: Replace with actual implementation when getDashboardSummary is implemented in OrderService
+        // Map<String, Object> summary = orderService.getDashboardSummary(period);
+
+        // Return temporary placeholder data
+        return ResponseEntity.ok(Map.of(
+            "message", "Dashboard summary statistics will be implemented in a future update",
+            "period", period != null ? period : "daily"
+        ));
     }
 
     /**
      * Get chart data for dashboard visualization
+     * TO-DO: Implement getChartData method in DeliveryService
      */
     @GetMapping("/charts/{chartType}")
     public ResponseEntity<Map<String, Object>> getChartData(
@@ -144,7 +221,18 @@ public class DashboardController {
             @RequestParam(required = false) String dateTo,
             @RequestParam(required = false) String groupBy) {
 
-        Map<String, Object> chartData = analyticsService.getChartData(chartType, dateFrom, dateTo, groupBy);
-        return ResponseEntity.ok(chartData);
+        // TO-DO: Replace with actual implementation when getChartData is implemented in DeliveryService
+        // Map<String, Object> chartData = deliveryService.getChartData(chartType, dateFrom, dateTo, groupBy);
+
+        // Return temporary placeholder data
+        return ResponseEntity.ok(Map.of(
+            "message", "Chart data visualization will be implemented in a future update",
+            "chartType", chartType,
+            "parameters", Map.of(
+                "dateFrom", dateFrom != null ? dateFrom : "",
+                "dateTo", dateTo != null ? dateTo : "",
+                "groupBy", groupBy != null ? groupBy : "daily"
+            )
+        ));
     }
 }

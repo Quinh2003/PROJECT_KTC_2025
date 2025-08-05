@@ -1,5 +1,8 @@
 package ktc.spring_project.controllers;
 
+import ktc.spring_project.services.OrderService;
+import ktc.spring_project.services.DeliveryService;
+import ktc.spring_project.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -19,12 +22,11 @@ import java.util.Map;
 @RequestMapping("/api/reports")
 public class ReportController {
 
-    // Assume these services are implemented later
     @Autowired
-    private ReportService reportService;
+    private OrderService orderService;
 
     @Autowired
-    private AnalyticsService analyticsService;
+    private DeliveryService deliveryService;
 
     @Autowired
     private UserService userService;
@@ -36,7 +38,7 @@ public class ReportController {
     public ResponseEntity<Map<String, Object>> getDailyDeliverySummary(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-        Map<String, Object> report = reportService.getDailyDeliverySummary(date);
+        Map<String, Object> report = orderService.getDailyDeliverySummary(date);
         return ResponseEntity.ok(report);
     }
 
@@ -49,7 +51,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) Long driverId) {
 
-        List<Map<String, Object>> report = reportService.getDriverPerformanceReport(dateFrom, dateTo, driverId);
+        List<Map<String, Object>> report = orderService.getDriverPerformanceReport(dateFrom, dateTo, driverId);
         return ResponseEntity.ok(report);
     }
 
@@ -62,7 +64,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) Long vehicleId) {
 
-        List<Map<String, Object>> report = reportService.getVehicleUtilizationReport(dateFrom, dateTo, vehicleId);
+        List<Map<String, Object>> report = orderService.getVehicleUtilizationReport(dateFrom, dateTo, vehicleId);
         return ResponseEntity.ok(report);
     }
 
@@ -74,7 +76,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo) {
 
-        Map<String, Object> report = reportService.getOnTimeDeliveryReport(dateFrom, dateTo);
+        Map<String, Object> report = orderService.getOnTimeDeliveryReport(dateFrom, dateTo);
         return ResponseEntity.ok(report);
     }
 
@@ -86,7 +88,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo) {
 
-        List<Map<String, Object>> report = reportService.getRevenueByServiceReport(dateFrom, dateTo);
+        List<Map<String, Object>> report = orderService.getRevenueByServiceReport(dateFrom, dateTo);
         return ResponseEntity.ok(report);
     }
 
@@ -99,7 +101,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(defaultValue = "10") int limit) {
 
-        List<Map<String, Object>> report = reportService.getCustomerFrequencyReport(dateFrom, dateTo, limit);
+        List<Map<String, Object>> report = orderService.getCustomerFrequencyReport(dateFrom, dateTo, limit);
         return ResponseEntity.ok(report);
     }
 
@@ -114,7 +116,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             Authentication authentication) {
 
-        byte[] reportContent = reportService.generateReportFile(reportType, format, dateFrom, dateTo, authentication);
+        byte[] reportContent = orderService.generateReportFile(reportType, format, dateFrom, dateTo, authentication);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=" + reportType + "." + format.toLowerCase());
@@ -145,7 +147,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo) {
 
-        List<Map<String, Object>> report = reportService.getDeliveryTimeByRegion(dateFrom, dateTo);
+        List<Map<String, Object>> report = orderService.getDeliveryTimeByRegion(dateFrom, dateTo);
         return ResponseEntity.ok(report);
     }
 
@@ -158,7 +160,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) String costType) {
 
-        Map<String, Object> report = reportService.getOperationalCostAnalysis(dateFrom, dateTo, costType);
+        Map<String, Object> report = orderService.getOperationalCostAnalysis(dateFrom, dateTo, costType);
         return ResponseEntity.ok(report);
     }
 }
