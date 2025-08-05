@@ -8,10 +8,10 @@ import java.sql.Timestamp;
  */
 public class CreateActivityLogRequestDTO {
     
-    @NotNull(message = "Actor ID is required")
+    // Actor ID có thể NULL cho system actions
     private Long actorId;
     
-    @NotNull(message = "Role ID is required")
+    // Role ID có thể NULL khi actorId là NULL
     private Long roleId;
     
     private Long statusId;
