@@ -19,13 +19,16 @@ public class Store {
     @Column(length = 255)
     private String email;
 
-    @Column(length = 50)
+    @Column(length = 20, nullable = false)
     private String phone;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String address;
 
+    @Column(precision = 10, scale = 8)
     private Double latitude;
+
+    @Column(precision = 11, scale = 8)
     private Double longitude;
 
     @Column(name = "is_active")
