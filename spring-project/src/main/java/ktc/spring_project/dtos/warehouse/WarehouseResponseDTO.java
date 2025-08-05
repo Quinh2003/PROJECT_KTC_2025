@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 public class WarehouseResponseDTO {
     
     private Long id;
-    private String warehouseCode;
+
     private String name;
     private String address;
     private BigDecimal latitude;
@@ -34,9 +34,8 @@ public class WarehouseResponseDTO {
     // Constructors
     public WarehouseResponseDTO() {}
     
-    public WarehouseResponseDTO(Long id, String warehouseCode, String name, String address, Boolean isActive) {
+    public WarehouseResponseDTO(Long id, String name, String address, Boolean isActive) {
         this.id = id;
-        this.warehouseCode = warehouseCode;
         this.name = name;
         this.address = address;
         this.isActive = isActive;
@@ -46,8 +45,7 @@ public class WarehouseResponseDTO {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
-    public String getWarehouseCode() { return warehouseCode; }
-    public void setWarehouseCode(String warehouseCode) { this.warehouseCode = warehouseCode; }
+
     
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -96,7 +94,7 @@ public class WarehouseResponseDTO {
     
     // Utility methods
     public String getDisplayName() {
-        return String.format("%s - %s", warehouseCode, name);
+        return name;
     }
     
     public boolean isActiveWarehouse() {

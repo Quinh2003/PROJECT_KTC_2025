@@ -29,7 +29,7 @@ public class StoreService {
 
     public Store updateStore(Long id, Store storeDetails) {
         Store store = getStoreById(id);
-        store.setStoreCode(storeDetails.getStoreCode());
+        store.setId(storeDetails.getId());
         store.setStoreName(storeDetails.getStoreName());
         store.setEmail(storeDetails.getEmail());
         store.setPhone(storeDetails.getPhone());

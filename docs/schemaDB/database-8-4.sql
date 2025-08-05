@@ -100,8 +100,7 @@ CREATE TABLE IF NOT EXISTS `addresses` (
 -- =====================================================================================
 CREATE TABLE IF NOT EXISTS `products` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của sản phẩm',
-    `product_card_id` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã thẻ sản phẩm cho catalog',
-    `product_code` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã SKU/mã nội bộ sản phẩm',
+
     `name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị sản phẩm',
     `description` TEXT COMMENT 'Mô tả chi tiết sản phẩm',
     `category_id` BIGINT NOT NULL COMMENT 'Phân loại danh mục sản phẩm',
@@ -127,7 +126,7 @@ CREATE TABLE IF NOT EXISTS `products` (
 -- =====================================================================================
 CREATE TABLE IF NOT EXISTS `categories` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của danh mục',
-    `category_id` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã danh mục nghiệp vụ (dễ đọc)',
+
     `name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị của danh mục',
     `description` TEXT COMMENT 'Mô tả chi tiết về danh mục',
     `parent_id` BIGINT COMMENT 'ID danh mục cha (cho cấu trúc cây)',
@@ -145,7 +144,6 @@ CREATE TABLE IF NOT EXISTS `categories` (
 -- =====================================================================================
 CREATE TABLE IF NOT EXISTS `stores` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của cửa hàng',
-    `store_code` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã cửa hàng nghiệp vụ (dễ đọc)',
     `store_name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị của cửa hàng',
     `email` VARCHAR(255) COMMENT 'Email liên hệ của cửa hàng',
     `phone` VARCHAR(20) NOT NULL COMMENT 'Số điện thoại liên hệ cửa hàng',
@@ -245,7 +243,7 @@ CREATE TABLE IF NOT EXISTS `warehouse_transactions` (
 CREATE TABLE IF NOT EXISTS `activity_logs` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của nhật ký hoạt động',
     `actor_id` BIGINT COMMENT 'ID người dùng thực hiện hành động',
-    `role_id` BIGINT NOT NULL COMMENT 'Vai trò của người dùng tại thời điểm thực hiện',
+    `role_id` BIGINT COMMENT 'Vai trò của người dùng tại thời điểm thực hiện',
     `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái hoàn thành hành động',
     `action_type` VARCHAR(50) NOT NULL COMMENT 'Loại hành động (TẠO, CẬP NHẬT, XÓA, ĐĂNG NHẬP, v.v.)',
     `table_name` VARCHAR(64) COMMENT 'Bảng cơ sở dữ liệu bị ảnh hưởng bởi hành động',
@@ -283,7 +281,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
 CREATE TABLE IF NOT EXISTS `payments` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của thanh toán',
     `order_id` BIGINT NOT NULL COMMENT 'Mã đơn hàng được thanh toán',
-    `amount` DECIMAL(15,2) NOT NULL 'Tổng số tiền thanh toán',
+    `amount` DECIMAL(15,2) NOT NULL COMMENT 'Tổng số tiền thanh toán',
     `payment_method` VARCHAR(50) NOT NULL DEFAULT 'CASH' COMMENT 'Phương thức thanh toán (tiền mặt, thẻ, chuyển khoản)',
     `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái thanh toán (thành công, thất bại, chờ xử lý)',
     `transaction_id` VARCHAR(255) COMMENT 'Mã giao dịch từ cổng thanh toán',
@@ -344,7 +342,6 @@ CREATE TABLE IF NOT EXISTS `roles` (
 -- =====================================================================================
 CREATE TABLE IF NOT EXISTS `warehouses` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của kho bãi',
-    `warehouse_code` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã kho nghiệp vụ (dễ đọc)',
     `name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị của kho bãi',
     `address` TEXT NOT NULL COMMENT 'Địa chỉ đầy đủ của kho bãi',
     `latitude` DECIMAL(10,8) COMMENT 'Tọa độ vĩ độ kho bãi',
@@ -387,7 +384,8 @@ CREATE TABLE IF NOT EXISTS `delivery_tracking` (
 ALTER TABLE `addresses` ADD CONSTRAINT `fk_addresses_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`);
 ALTER TABLE `categories` ADD CONSTRAINT `fk_categories_parent_id` FOREIGN KEY(`parent_id`) REFERENCES `categories`(`id`);
 ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`);
-ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_role_id` FOREIGN KEY(`role_id`) REFERENCES `roles`(`id`);
+ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_actor_id` FOREIGN KEY(`actor_id`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_role_id` FOREIGN KEY(`role_id`) REFERENCES `roles`(`id`) ON DELETE SET NULL;
 ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_status_id` FOREIGN KEY(`status_id`) REFERENCES `status`(`id`);
 ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_route_id` FOREIGN KEY(`route_id`) REFERENCES `routes`(`id`);
 ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_tracking_id` FOREIGN KEY(`tracking_id`) REFERENCES `delivery_tracking`(`id`);
@@ -467,7 +465,6 @@ ALTER TABLE deliveries ADD CONSTRAINT chk_delivery_attempts
 
 -- Indexes cho bảng ORDERS (truy vấn nhiều nhất)
 CREATE INDEX idx_orders_status ON orders(status_id) COMMENT 'Tìm đơn hàng theo trạng thái';
-CREATE INDEX idx_orders_customer ON orders(order_customer_id) COMMENT 'Tìm đơn hàng theo khách hàng';
 CREATE INDEX idx_orders_status_created ON orders(status_id, created_at) COMMENT 'Sắp xếp đơn hàng theo trạng thái và thời gian';
 CREATE INDEX idx_orders_store ON orders(store_id) COMMENT 'Tìm đơn hàng theo cửa hàng';
 CREATE INDEX idx_orders_created_by ON orders(created_by) COMMENT 'Tìm đơn hàng theo người tạo';
@@ -490,8 +487,7 @@ CREATE INDEX idx_delivery_tracking_timestamp ON delivery_tracking(timestamp DESC
 CREATE INDEX idx_products_category ON products(category_id) COMMENT 'Tìm sản phẩm theo danh mục';
 CREATE INDEX idx_products_warehouse ON products(warehouse_id) COMMENT 'Tìm sản phẩm theo kho';
 CREATE INDEX idx_products_status ON products(product_status) COMMENT 'Tìm sản phẩm theo trạng thái';
-CREATE INDEX idx_products_code ON products(product_code) COMMENT 'Tìm sản phẩm theo mã SKU';
-CREATE INDEX idx_products_card_id ON products(product_card_id) COMMENT 'Tìm sản phẩm theo mã thẻ';
+
 
 -- Indexes cho bảng ORDER_ITEMS (order details)
 CREATE INDEX idx_order_items_order ON order_items(order_id) COMMENT 'Tìm items theo đơn hàng';
@@ -547,16 +543,15 @@ CREATE INDEX idx_activity_logs_record ON activity_logs(table_name, record_id) CO
 -- Indexes cho bảng CATEGORIES (product categorization)
 CREATE INDEX idx_categories_parent ON categories(parent_id) COMMENT 'Danh mục theo danh mục cha';
 CREATE INDEX idx_categories_active ON categories(is_active) COMMENT 'Danh mục đang hoạt động';
-CREATE INDEX idx_categories_category_id ON categories(category_id) COMMENT 'Tìm theo mã danh mục';
+
 
 -- Indexes cho bảng STORES (store operations)
 CREATE INDEX idx_stores_active ON stores(is_active) COMMENT 'Cửa hàng đang hoạt động';
-CREATE INDEX idx_stores_code ON stores(store_code) COMMENT 'Tìm cửa hàng theo mã';
 CREATE INDEX idx_stores_coordinates ON stores(latitude, longitude) COMMENT 'Tìm cửa hàng theo tọa độ';
 
 -- Indexes cho bảng WAREHOUSES (warehouse operations)
 CREATE INDEX idx_warehouses_active ON warehouses(is_active) COMMENT 'Kho đang hoạt động';
-CREATE INDEX idx_warehouses_code ON warehouses(warehouse_code) COMMENT 'Tìm kho theo mã';
+-- Đã xóa index idx_warehouses_code vì warehouse_code không còn sử dụng
 CREATE INDEX idx_warehouses_coordinates ON warehouses(latitude, longitude) COMMENT 'Tìm kho theo tọa độ';
 
 -- Indexes cho bảng ROUTES (route optimization)

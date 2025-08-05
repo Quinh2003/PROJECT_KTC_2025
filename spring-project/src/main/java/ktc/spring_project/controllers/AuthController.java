@@ -2,6 +2,9 @@ package ktc.spring_project.controllers;
 
 import ktc.spring_project.services.AuthService;
 import ktc.spring_project.services.UserService;
+import ktc.spring_project.dtos.auth.GoogleLoginRequestDto;
+import ktc.spring_project.dtos.auth.GoogleLoginWithCredentialRequestDto;
+import ktc.spring_project.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -129,5 +132,51 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> getCurrentUser(Authentication authentication) {
         Map<String, Object> userInfo = authService.getCurrentUserInfo(authentication);
         return ResponseEntity.ok(userInfo);
+    }
+
+    /**
+     * Google Login with Access Token
+     * Validates Google access token and authenticates/creates user
+     */
+    @PostMapping("/google-login")
+    public ResponseEntity<Map<String, Object>> googleLogin(
+            @Valid @RequestBody GoogleLoginRequestDto request) {
+
+        try {
+            // Authenticate user via Google
+            User user = userService.googleLogin(request);
+
+            // Generate JWT token for the user
+            Map<String, Object> response = authService.generateTokenForUser(user);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Google login failed", "message", e.getMessage()));
+        }
+    }
+
+    /**
+     * Google Login with Credential (JWT from Google)
+     * Validates Google credential and authenticates/creates user
+     */
+    @PostMapping("/google-login-credential")
+    public ResponseEntity<Map<String, Object>> googleLoginWithCredential(
+            @Valid @RequestBody GoogleLoginWithCredentialRequestDto request) {
+
+        try {
+            // Authenticate user via Google credential
+            User user = userService.googleLoginWithCredential(request);
+
+            // Generate JWT token for the user
+            Map<String, Object> response = authService.generateTokenForUser(user);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Google credential login failed", "message", e.getMessage()));
+        }
     }
 }

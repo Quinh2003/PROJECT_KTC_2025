@@ -5,7 +5,7 @@ package ktc.spring_project.dtos.category;
  */
 public class CreateCategoryRequestDTO {
     
-    private String categoryId;
+
     private String name;
     private String description;
     private Long parentId;
@@ -15,21 +15,18 @@ public class CreateCategoryRequestDTO {
     // Constructors
     public CreateCategoryRequestDTO() {}
     
-    public CreateCategoryRequestDTO(String categoryId, String name) {
-        this.categoryId = categoryId;
+    public CreateCategoryRequestDTO(String name) {
         this.name = name;
     }
     
-    public CreateCategoryRequestDTO(String categoryId, String name, String description, Long parentId) {
-        this.categoryId = categoryId;
+    public CreateCategoryRequestDTO(String name, String description, Long parentId) {
         this.name = name;
         this.description = description;
         this.parentId = parentId;
     }
     
     // Getters and Setters
-    public String getCategoryId() { return categoryId; }
-    public void setCategoryId(String categoryId) { this.categoryId = categoryId; }
+
     
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -48,8 +45,7 @@ public class CreateCategoryRequestDTO {
     
     // Validation methods
     public boolean isValid() {
-        return categoryId != null && !categoryId.trim().isEmpty() &&
-               name != null && !name.trim().isEmpty();
+        return name != null && !name.trim().isEmpty();
     }
     
     public boolean isRootCategory() {
@@ -61,6 +57,6 @@ public class CreateCategoryRequestDTO {
     }
     
     public String getDisplayName() {
-        return name != null ? name : categoryId;
+        return name != null ? name : "New Category";
     }
 }

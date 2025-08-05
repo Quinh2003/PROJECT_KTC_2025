@@ -16,7 +16,7 @@ public class OrderItemResponseDTO {
     
     // Product information
     private Long productId;
-    private String productCode;
+
     private String productName;
     private String productDescription;
     private String productImage;
@@ -68,8 +68,7 @@ public class OrderItemResponseDTO {
     public Long getProductId() { return productId; }
     public void setProductId(Long productId) { this.productId = productId; }
     
-    public String getProductCode() { return productCode; }
-    public void setProductCode(String productCode) { this.productCode = productCode; }
+
     
     public String getProductName() { return productName; }
     public void setProductName(String productName) { this.productName = productName; }
@@ -158,8 +157,7 @@ public class OrderItemResponseDTO {
     }
     
     public String getDisplayName() {
-        return productCode != null ? 
-            String.format("%s - %s", productCode, productName) : productName;
+        return productName;
     }
     
     public String getFormattedUnitPrice() {

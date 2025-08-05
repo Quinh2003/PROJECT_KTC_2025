@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  */
 public class StatusResponseDTO {
     
-    private Long id;
+    private Short id;
     private String type;
     private String code;
     private String description;
@@ -17,7 +17,7 @@ public class StatusResponseDTO {
     // Constructors
     public StatusResponseDTO() {}
     
-    public StatusResponseDTO(Long id, String type, String code, String description) {
+    public StatusResponseDTO(Short id, String type, String code, String description) {
         this.id = id;
         this.type = type;
         this.code = code;
@@ -25,8 +25,8 @@ public class StatusResponseDTO {
     }
     
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Short getId() { return id; }
+    public void setId(Short id) { this.id = id; }
     
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
