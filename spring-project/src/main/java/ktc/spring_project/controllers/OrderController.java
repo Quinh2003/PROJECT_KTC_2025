@@ -7,7 +7,7 @@ import ktc.spring_project.entities.User;
 import ktc.spring_project.entities.Vehicle;
 import ktc.spring_project.entities.Status;
 import ktc.spring_project.entities.Route;
-import ktc.spring_project.services.DeliveryOrderService;
+import ktc.spring_project.services.OrderService;
 import ktc.spring_project.services.UserService;
 import ktc.spring_project.services.VehicleService;
 import ktc.spring_project.services.DeliveryTrackingService;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class OrderController {
 
     @Autowired
-    private DeliveryOrderService deliveryOrderService;
+    private OrderService orderService;
 
     @Autowired
     private UserService userService;
@@ -59,7 +59,7 @@ public class OrderController {
         User currentUser = userService.getCurrentUser(authentication);
 
         // Create order and return response
-        DeliveryOrderResponseDTO responseDTO = deliveryOrderService.createOrder(requestDTO, currentUser);
+        DeliveryOrderResponseDTO responseDTO = orderService.createOrder(requestDTO, currentUser);
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
@@ -74,7 +74,7 @@ public class OrderController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
 
-        List<DeliveryOrderResponseDTO> orders = deliveryOrderService.getFilteredOrders(
+        List<DeliveryOrderResponseDTO> orders = orderService.getFilteredOrders(
                 status, driverId, vehicleId, dateFrom, dateTo);
 
         return ResponseEntity.ok(orders);
@@ -85,7 +85,7 @@ public class OrderController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<DeliveryOrderResponseDTO> getOrderById(@PathVariable Long id) {
-        DeliveryOrderResponseDTO order = deliveryOrderService.getOrderById(id);
+        DeliveryOrderResponseDTO order = orderService.getOrderById(id);
         return ResponseEntity.ok(order);
     }
 
@@ -103,14 +103,14 @@ public class OrderController {
         Long driverId = assignmentData.get("driverId");
 
         // Check if there are scheduling conflicts
-        boolean hasConflicts = deliveryOrderService.checkSchedulingConflicts(id, vehicleId, driverId);
+        boolean hasConflicts = orderService.checkSchedulingConflicts(id, vehicleId, driverId);
 
         if (hasConflicts) {
             return ResponseEntity.badRequest().build();
         }
 
         User currentUser = userService.getCurrentUser(authentication);
-        DeliveryOrderResponseDTO updatedOrder = deliveryOrderService.assignVehicleAndDriver(
+        DeliveryOrderResponseDTO updatedOrder = orderService.assignVehicleAndDriver(
                 id, vehicleId, driverId, currentUser);
 
         return ResponseEntity.ok(updatedOrder);
@@ -154,7 +154,7 @@ public class OrderController {
         Long statusId = statusData.get("statusId");
         User currentUser = userService.getCurrentUser(authentication);
 
-        DeliveryOrderResponseDTO updatedOrder = deliveryOrderService.updateOrderStatus(id, statusId, currentUser);
+        DeliveryOrderResponseDTO updatedOrder = orderService.updateOrderStatus(id, statusId, currentUser);
         return ResponseEntity.ok(updatedOrder);
     }
 
@@ -180,7 +180,7 @@ public class OrderController {
         String cancelReason = cancelData != null ? cancelData.get("reason") : null;
         User currentUser = userService.getCurrentUser(authentication);
 
-        DeliveryOrderResponseDTO cancelledOrder = deliveryOrderService.cancelOrder(id, cancelReason, currentUser);
+        DeliveryOrderResponseDTO cancelledOrder = orderService.cancelOrder(id, cancelReason, currentUser);
         return ResponseEntity.ok(cancelledOrder);
     }
 }
