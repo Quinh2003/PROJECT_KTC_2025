@@ -21,6 +21,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByStoreId(Long storeId);
     
     List<Order> findByCreatedBy(Long createdBy);
+
+    List<Order> findActiveOrdersByDriverId(Long driverId);
+
+    List<Order> findAvailableOrdersForVehicle(BigDecimal weightCapacity, BigDecimal volumeCapacity, Long vehicleId);
     
     @Query("SELECT o FROM Order o WHERE o.status.name = :statusName ORDER BY o.createdAt DESC")
     List<Order> findByStatusNameOrderByCreatedAtDesc(@Param("statusName") String statusName);
@@ -46,5 +50,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     
     @Query("SELECT COUNT(o) FROM Order o WHERE DATE(o.createdAt) = CURRENT_DATE")
     long countTodayOrders();
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.driver.id = :driverId AND o.status = 'DELIVERED' AND DATE(o.deliveryDate) = CURRENT_DATE")
+    int countDeliveredOrdersByDriverIdToday(Long driverId);
 }
 

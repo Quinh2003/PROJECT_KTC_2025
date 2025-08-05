@@ -39,7 +39,8 @@ public class DriverService {
      * @return Currently assigned vehicle or null
      */
     public Vehicle getCurrentVehicle(Long driverId) {
-        return vehicleRepository.findByCurrentDriverId(driverId);
+        List<Vehicle> vehicles = vehicleRepository.findByCurrentDriverId(driverId);
+        return vehicles.isEmpty() ? null : vehicles.get(0);
     }
 
     /**
@@ -108,7 +109,7 @@ public class DriverService {
             .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
         // Check if vehicle is already assigned
-        if (vehicle.getCurrentDriverId() != null && !vehicle.getCurrentDriverId().equals(driverId)) {
+        if (vehicle.getCurrentDriver() != null && !vehicle.getCurrentDriver().equals(driverId)) {
             throw new RuntimeException("Vehicle already assigned to another driver");
         }
 
@@ -116,7 +117,7 @@ public class DriverService {
         vehicleRepository.clearDriverAssignment(driverId);
 
         // Assign to new vehicle
-        vehicle.setCurrentDriverId(driverId);
+        vehicle.setCurrentDriver(userRepository.findById(driverId).orElseThrow(() -> new RuntimeException("Driver not found")));
         return vehicleRepository.save(vehicle);
     }
 }
