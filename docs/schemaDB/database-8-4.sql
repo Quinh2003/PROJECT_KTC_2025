@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `addresses` (
 -- =====================================================================================
 CREATE TABLE IF NOT EXISTS `products` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của sản phẩm',
-    `product_code` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã SKU/mã nội bộ sản phẩm',
+
     `name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị sản phẩm',
     `description` TEXT COMMENT 'Mô tả chi tiết sản phẩm',
     `category_id` BIGINT NOT NULL COMMENT 'Phân loại danh mục sản phẩm',
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS `products` (
 -- =====================================================================================
 CREATE TABLE IF NOT EXISTS `categories` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của danh mục',
-    `category_id` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã danh mục nghiệp vụ (dễ đọc)',
+
     `name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị của danh mục',
     `description` TEXT COMMENT 'Mô tả chi tiết về danh mục',
     `parent_id` BIGINT COMMENT 'ID danh mục cha (cho cấu trúc cây)',
@@ -487,7 +487,7 @@ CREATE INDEX idx_delivery_tracking_timestamp ON delivery_tracking(timestamp DESC
 CREATE INDEX idx_products_category ON products(category_id) COMMENT 'Tìm sản phẩm theo danh mục';
 CREATE INDEX idx_products_warehouse ON products(warehouse_id) COMMENT 'Tìm sản phẩm theo kho';
 CREATE INDEX idx_products_status ON products(product_status) COMMENT 'Tìm sản phẩm theo trạng thái';
-CREATE INDEX idx_products_code ON products(product_code) COMMENT 'Tìm sản phẩm theo mã SKU';
+
 
 -- Indexes cho bảng ORDER_ITEMS (order details)
 CREATE INDEX idx_order_items_order ON order_items(order_id) COMMENT 'Tìm items theo đơn hàng';
@@ -543,7 +543,7 @@ CREATE INDEX idx_activity_logs_record ON activity_logs(table_name, record_id) CO
 -- Indexes cho bảng CATEGORIES (product categorization)
 CREATE INDEX idx_categories_parent ON categories(parent_id) COMMENT 'Danh mục theo danh mục cha';
 CREATE INDEX idx_categories_active ON categories(is_active) COMMENT 'Danh mục đang hoạt động';
-CREATE INDEX idx_categories_category_id ON categories(category_id) COMMENT 'Tìm theo mã danh mục';
+
 
 -- Indexes cho bảng STORES (store operations)
 CREATE INDEX idx_stores_active ON stores(is_active) COMMENT 'Cửa hàng đang hoạt động';
