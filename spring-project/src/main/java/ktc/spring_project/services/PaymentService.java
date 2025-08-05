@@ -2,15 +2,16 @@ package ktc.spring_project.services;
 
 import ktc.spring_project.entities.Payment;
 import ktc.spring_project.repositories.PaymentRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class PaymentService {
+
+    @Autowired
     private PaymentRepository paymentRepository;
 
     public List<Payment> findAll() {

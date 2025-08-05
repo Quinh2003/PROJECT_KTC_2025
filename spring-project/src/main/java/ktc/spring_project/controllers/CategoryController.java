@@ -1,6 +1,7 @@
 package ktc.spring_project.controllers;
 
 import ktc.spring_project.entities.Category;
+import ktc.spring_project.services.CategoryService;
 import ktc.spring_project.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  * Controller responsible for managing product categories
@@ -36,8 +40,22 @@ public class CategoryController {
             @RequestParam(required = false) Long parentId,
             @RequestParam(required = false) String search) {
 
-        List<Category> categories = categoryService.getFilteredCategories(status, parentId, search);
-        return ResponseEntity.ok(categories);
+        // Lấy tất cả danh mục từ service
+        List<Category> allCategories = categoryService.getAllCategories();
+
+        // Lọc danh mục theo các tiêu chí nếu cần
+        if (status != null || parentId != null || search != null) {
+            List<Category> filteredCategories = allCategories.stream()
+                .filter(category ->
+                    (status == null || (Boolean.valueOf(category.getIsActive()) == Boolean.valueOf(status.equals("1") || status.equalsIgnoreCase("true"))))
+                    && (parentId == null || (category.getParent() != null && category.getParent().getId().equals(parentId)))
+                    && (search == null || category.getName().toLowerCase().contains(search.toLowerCase()))
+                )
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(filteredCategories);
+        }
+
+        return ResponseEntity.ok(allCategories);
     }
 
     /**
@@ -47,8 +65,59 @@ public class CategoryController {
     public ResponseEntity<List<Map<String, Object>>> getCategoryTree(
             @RequestParam(required = false) String status) {
 
-        List<Map<String, Object>> categoryTree = categoryService.getCategoryTree(status);
+        // Lấy tất cả danh mục
+        List<Category> allCategories = categoryService.getAllCategories();
+
+        // Lọc theo trạng thái nếu cần
+        if (status != null) {
+            boolean isActiveStatus = "1".equals(status) || "true".equalsIgnoreCase(status);
+            allCategories = allCategories.stream()
+                .filter(category -> category.getIsActive() != null && category.getIsActive() == isActiveStatus)
+                .collect(Collectors.toList());
+        }
+
+        // Tạo cấu trúc cây danh mục
+        List<Map<String, Object>> categoryTree = buildCategoryTree(allCategories);
+
         return ResponseEntity.ok(categoryTree);
+    }
+
+    /**
+     * Helper method to build category tree
+     */
+    private List<Map<String, Object>> buildCategoryTree(List<Category> categories) {
+        // Tìm các danh mục gốc (không có parent)
+        List<Category> rootCategories = categories.stream()
+            .filter(category -> category.getParent() == null)
+            .collect(Collectors.toList());
+
+        // Tạo cây danh mục từ các danh mục gốc
+        return rootCategories.stream()
+            .map(rootCategory -> buildCategoryNode(rootCategory, categories))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Helper method to build a single category node with its children
+     */
+    private Map<String, Object> buildCategoryNode(Category category, List<Category> allCategories) {
+        Map<String, Object> node = new HashMap<>();
+        node.put("id", category.getId());
+        node.put("name", category.getName());
+        node.put("isActive", category.getIsActive());
+
+        // Tìm tất cả các danh mục con
+        List<Category> children = allCategories.stream()
+            .filter(c -> c.getParent() != null && c.getParent().getId().equals(category.getId()))
+            .collect(Collectors.toList());
+
+        if (!children.isEmpty()) {
+            node.put("children", children.stream()
+                .map(child -> buildCategoryNode(child, allCategories))
+                .collect(Collectors.toList()));
+        }
+
+        return node;
     }
 
     /**
@@ -68,7 +137,11 @@ public class CategoryController {
             @Valid @RequestBody Category category,
             Authentication authentication) {
 
-        Category createdCategory = categoryService.createCategory(category, authentication);
+        // Lấy thông tin người dùng hiện tại nếu cần
+        // User currentUser = userService.getCurrentUser(authentication);
+
+        // Tạo danh mục mới
+        Category createdCategory = categoryService.createCategory(category);
         return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
@@ -81,7 +154,11 @@ public class CategoryController {
             @Valid @RequestBody Category category,
             Authentication authentication) {
 
-        Category updatedCategory = categoryService.updateCategory(id, category, authentication);
+        // Lấy thông tin người dùng hiện tại nếu cần
+        // User currentUser = userService.getCurrentUser(authentication);
+
+        // Cập nhật danh mục
+        Category updatedCategory = categoryService.updateCategory(id, category);
         return ResponseEntity.ok(updatedCategory);
     }
 
@@ -93,7 +170,11 @@ public class CategoryController {
             @PathVariable Long id,
             Authentication authentication) {
 
-        categoryService.deleteCategory(id, authentication);
+        // Lấy thông tin người dùng hiện tại nếu cần
+        // User currentUser = userService.getCurrentUser(authentication);
+
+        // Xóa danh mục
+        categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -107,7 +188,13 @@ public class CategoryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
-        List<Map<String, Object>> products = categoryService.getCategoryProducts(id, status, page, size);
+        // Kiểm tra xem danh mục có tồn tại không
+        Category category = categoryService.getCategoryById(id);
+
+        // Trả về danh sách trống tạm thời
+        // Trong thực tế, sẽ lấy danh sách sản phẩm thuộc danh mục này từ ProductService
+        List<Map<String, Object>> products = new ArrayList<>();
+
         return ResponseEntity.ok(products);
     }
 
@@ -116,7 +203,17 @@ public class CategoryController {
      */
     @GetMapping("/{id}/statistics")
     public ResponseEntity<Map<String, Object>> getCategoryStatistics(@PathVariable Long id) {
-        Map<String, Object> statistics = categoryService.getCategoryStatistics(id);
+        // Kiểm tra xem danh mục có tồn tại không
+        Category category = categoryService.getCategoryById(id);
+
+        // Tạo thống kê giả tạm thời
+        Map<String, Object> statistics = new HashMap<>();
+        statistics.put("categoryId", id);
+        statistics.put("categoryName", category.getName());
+        statistics.put("totalProducts", 0);
+        statistics.put("activeProducts", 0);
+        statistics.put("averagePrice", 0.0);
+
         return ResponseEntity.ok(statistics);
     }
 }
