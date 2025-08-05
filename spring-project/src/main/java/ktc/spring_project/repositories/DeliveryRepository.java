@@ -1,7 +1,6 @@
 package ktc.spring_project.repositories;
 
 import ktc.spring_project.entities.Delivery;
-import ktc.spring_project.enums.DeliveryStatus;
 import ktc.spring_project.enums.ServiceType;
 import ktc.spring_project.enums.TransportMode;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,7 +20,6 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
     
     List<Delivery> findByDriverId(Long driverId);
     
-    List<Delivery> findByDeliveryStatus(DeliveryStatus status);
     
     List<Delivery> findByTransportMode(TransportMode transportMode);
     
@@ -42,10 +40,7 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
     
     @Query("SELECT d FROM Delivery d WHERE d.vehicle.id = :vehicleId AND d.deliveryStatus IN ('ASSIGNED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY')")
     List<Delivery> findActiveDeliveriesByVehicle(@Param("vehicleId") Long vehicleId);
-    
-    @Query("SELECT COUNT(d) FROM Delivery d WHERE d.deliveryStatus = :status")
-    long countByDeliveryStatus(@Param("status") DeliveryStatus status);
-    
+      
     @Query("SELECT COUNT(d) FROM Delivery d WHERE DATE(d.actualDeliveryTime) = CURRENT_DATE")
     long countTodayDeliveries();
     
