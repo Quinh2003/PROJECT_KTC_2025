@@ -144,7 +144,6 @@ CREATE TABLE IF NOT EXISTS `categories` (
 -- =====================================================================================
 CREATE TABLE IF NOT EXISTS `stores` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của cửa hàng',
-    `store_code` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã cửa hàng nghiệp vụ (dễ đọc)',
     `store_name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị của cửa hàng',
     `email` VARCHAR(255) COMMENT 'Email liên hệ của cửa hàng',
     `phone` VARCHAR(20) NOT NULL COMMENT 'Số điện thoại liên hệ cửa hàng',
@@ -548,7 +547,6 @@ CREATE INDEX idx_categories_category_id ON categories(category_id) COMMENT 'Tìm
 
 -- Indexes cho bảng STORES (store operations)
 CREATE INDEX idx_stores_active ON stores(is_active) COMMENT 'Cửa hàng đang hoạt động';
-CREATE INDEX idx_stores_code ON stores(store_code) COMMENT 'Tìm cửa hàng theo mã';
 CREATE INDEX idx_stores_coordinates ON stores(latitude, longitude) COMMENT 'Tìm cửa hàng theo tọa độ';
 
 -- Indexes cho bảng WAREHOUSES (warehouse operations)
