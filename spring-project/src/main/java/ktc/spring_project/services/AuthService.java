@@ -280,4 +280,27 @@ public class AuthService {
         userDto.put("role", user.getRole().getRoleName());
         return userDto;
     }
+
+    /**
+     * Generate JWT token for a specific user (used for Google Login)
+     */
+    public Map<String, Object> generateTokenForUser(User user) {
+        // Load user details for token generation
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+
+        // Generate JWT and refresh tokens
+        String jwt = generateToken(userDetails);
+        String refreshToken = generateRefreshToken(userDetails);
+
+        // Log activity
+        activityLogService.logUserActivity(user.getId(), "GOOGLE_LOGIN", "User logged in via Google");
+
+        // Return token response
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", jwt);
+        response.put("refreshToken", refreshToken);
+        response.put("user", mapUserToDto(user));
+        response.put("tokenType", "Bearer");
+        return response;
+    }
 }
