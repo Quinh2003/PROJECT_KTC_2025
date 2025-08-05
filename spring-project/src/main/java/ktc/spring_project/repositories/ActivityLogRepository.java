@@ -16,6 +16,9 @@ public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> 
     // Tìm theo actor ID
     List<ActivityLog> findByActorId(Long actorId);
 
+    // Tìm system activities (không có actor)
+    List<ActivityLog> findByActorIdIsNull();
+
     // Tìm theo loại hành động
     List<ActivityLog> findByActionType(ActionType actionType);
 

@@ -284,7 +284,7 @@ CREATE TABLE IF NOT EXISTS `payments` (
     `amount` DECIMAL(15,2) NOT NULL COMMENT 'Tổng số tiền thanh toán',
     `payment_method` VARCHAR(50) NOT NULL DEFAULT 'CASH' COMMENT 'Phương thức thanh toán (tiền mặt, thẻ, chuyển khoản)',
     `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái thanh toán (thành công, thất bại, chờ xử lý)',
-    `transaction_id` VARCHAR(255) COMMENT 'Mã giao dịch từ cổng thanh toán',
+    `transaction_id` VARCHAR(255) NOT NULL COMMENT 'Mã giao dịch từ cổng thanh toán',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo bản ghi thanh toán',
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật thanh toán cuối cùng',
     `created_by` BIGINT COMMENT 'ID người dùng tạo bản ghi thanh toán',
@@ -310,7 +310,6 @@ CREATE TABLE IF NOT EXISTS `deliveries` (
     `late_delivery_risk` tinyint NOT NULL DEFAULT 0 COMMENT 'Cờ rủi ro giao hàng trễ: 0=Không, 1=Có',
     `vehicle_id` BIGINT NOT NULL COMMENT 'Phương tiện được phân công cho giao hàng này',
     `driver_id` BIGINT COMMENT 'Tài xế được phân công cho giao hàng này',
-    `tracking_id` BIGINT COMMENT 'Bản ghi theo dõi GPS cho giao hàng này',
     `route_id` BIGINT COMMENT 'Tuyến đường tối ưu cho giao hàng này',
     `delivery_attempts` INT DEFAULT 0 COMMENT 'Số lần thử giao hàng đã thực hiện',
     `delivery_notes` TEXT COMMENT 'Hướng dẫn đặc biệt và ghi chú cho giao hàng',
@@ -362,6 +361,7 @@ CREATE TABLE IF NOT EXISTS `warehouses` (
 -- =====================================================================================
 CREATE TABLE IF NOT EXISTS `delivery_tracking` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của điểm theo dõi',
+    `delivery_id` BIGINT NOT NULL COMMENT 'Mã giao hàng được theo dõi',
     `vehicle_id` BIGINT NOT NULL COMMENT 'Mã phương tiện đang được theo dõi',
     `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái giao hàng tại thời điểm này',
     `latitude` DECIMAL(10,8) COMMENT 'Tọa độ vĩ độ hiện tại',
@@ -388,8 +388,8 @@ ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_actor_id` FOREIGN K
 ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_role_id` FOREIGN KEY(`role_id`) REFERENCES `roles`(`id`) ON DELETE SET NULL;
 ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_status_id` FOREIGN KEY(`status_id`) REFERENCES `status`(`id`);
 ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_route_id` FOREIGN KEY(`route_id`) REFERENCES `routes`(`id`);
-ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_tracking_id` FOREIGN KEY(`tracking_id`) REFERENCES `delivery_tracking`(`id`);
 ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_vehicle_id` FOREIGN KEY(`vehicle_id`) REFERENCES `vehicles`(`id`);
+ALTER TABLE `delivery_tracking` ADD CONSTRAINT `fk_delivery_tracking_delivery_id` FOREIGN KEY(`delivery_id`) REFERENCES `deliveries`(`id`) ON DELETE CASCADE;
 ALTER TABLE `delivery_proofs` ADD CONSTRAINT `fk_delivery_proofs_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`);
 ALTER TABLE `delivery_tracking` ADD CONSTRAINT `fk_delivery_tracking_status_id` FOREIGN KEY(`status_id`) REFERENCES `status`(`id`);
 ALTER TABLE `delivery_tracking` ADD CONSTRAINT `fk_delivery_tracking_vehicle_id` FOREIGN KEY(`vehicle_id`) REFERENCES `vehicles`(`id`);
@@ -475,11 +475,12 @@ CREATE INDEX idx_deliveries_driver ON deliveries(driver_id) COMMENT 'Tìm giao h
 CREATE INDEX idx_deliveries_schedule_time ON deliveries(schedule_delivery_time) COMMENT 'Sắp xếp theo thời gian giao hàng dự kiến';
 CREATE INDEX idx_deliveries_route ON deliveries(route_id) COMMENT 'Tìm giao hàng theo tuyến đường';
 CREATE INDEX idx_deliveries_order ON deliveries(order_id) COMMENT 'Tìm giao hàng theo đơn hàng';
-CREATE INDEX idx_deliveries_tracking ON deliveries(tracking_id) COMMENT 'Tìm giao hàng theo tracking';
 
 -- Indexes cho bảng DELIVERY_TRACKING (real-time tracking)
+CREATE INDEX idx_delivery_tracking_delivery ON delivery_tracking(delivery_id) COMMENT 'Tracking theo giao hàng';
 CREATE INDEX idx_delivery_tracking_vehicle ON delivery_tracking(vehicle_id) COMMENT 'Tracking theo phương tiện';
 CREATE INDEX idx_delivery_tracking_vehicle_time ON delivery_tracking(vehicle_id, timestamp DESC) COMMENT 'Tracking theo thời gian mới nhất';
+CREATE INDEX idx_delivery_tracking_delivery_time ON delivery_tracking(delivery_id, timestamp DESC) COMMENT 'Lịch sử tracking theo giao hàng';
 CREATE INDEX idx_delivery_tracking_status ON delivery_tracking(status_id) COMMENT 'Tracking theo trạng thái';
 CREATE INDEX idx_delivery_tracking_timestamp ON delivery_tracking(timestamp DESC) COMMENT 'Sắp xếp tracking theo thời gian';
 

@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "deliveries")
@@ -55,9 +56,8 @@ public class Delivery {
     @JoinColumn(name = "driver_id")
     private User driver;
 
-    @ManyToOne
-    @JoinColumn(name = "tracking_id")
-    private DeliveryTracking tracking;
+    @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DeliveryTracking> trackingPoints;
 
     @ManyToOne
     @JoinColumn(name = "route_id")
@@ -116,8 +116,8 @@ public class Delivery {
     public User getDriver() { return driver; }
     public void setDriver(User driver) { this.driver = driver; }
 
-    public DeliveryTracking getTracking() { return tracking; }
-    public void setTracking(DeliveryTracking tracking) { this.tracking = tracking; }
+    public List<DeliveryTracking> getTrackingPoints() { return trackingPoints; }
+    public void setTrackingPoints(List<DeliveryTracking> trackingPoints) { this.trackingPoints = trackingPoints; }
 
     public Route getRoute() { return route; }
     public void setRoute(Route route) { this.route = route; }
