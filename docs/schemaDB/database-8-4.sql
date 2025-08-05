@@ -284,7 +284,7 @@ CREATE TABLE IF NOT EXISTS `payments` (
     `amount` DECIMAL(15,2) NOT NULL COMMENT 'Tổng số tiền thanh toán',
     `payment_method` VARCHAR(50) NOT NULL DEFAULT 'CASH' COMMENT 'Phương thức thanh toán (tiền mặt, thẻ, chuyển khoản)',
     `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái thanh toán (thành công, thất bại, chờ xử lý)',
-    `transaction_id` VARCHAR(255) NOT NULL COMMENT 'Mã giao dịch từ cổng thanh toán',
+    `transaction_id` VARCHAR(255)  NOT NULL UNIQUE COMMENT 'Mã giao dịch từ cổng thanh toán',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo bản ghi thanh toán',
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật thanh toán cuối cùng',
     `created_by` BIGINT COMMENT 'ID người dùng tạo bản ghi thanh toán',
@@ -379,45 +379,59 @@ CREATE TABLE IF NOT EXISTS `delivery_tracking` (
 -- CÁC RÀNG BUỘC KHÓA NGOẠI (FOREIGN KEY CONSTRAINTS)
 -- =====================================================================================
 -- Thiết lập mối quan hệ tham chiếu giữa các bảng để đảm bảo tính toàn vẹn dữ liệu
--- Tự động xóa/cập nhật cascading khi cần thiết
+-- Cascading behavior được thiết kế theo business logic của hệ thống logistics
 -- =====================================================================================
-ALTER TABLE `addresses` ADD CONSTRAINT `fk_addresses_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`);
-ALTER TABLE `categories` ADD CONSTRAINT `fk_categories_parent_id` FOREIGN KEY(`parent_id`) REFERENCES `categories`(`id`);
-ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`);
+
+-- CASCADE: Parent-child relationships - child không có ý nghĩa khi parent bị xóa
+ALTER TABLE `addresses` ADD CONSTRAINT `fk_addresses_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`) ON DELETE CASCADE;
+ALTER TABLE `order_items` ADD CONSTRAINT `fk_order_items_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`) ON DELETE CASCADE;
+ALTER TABLE `payments` ADD CONSTRAINT `fk_payments_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`) ON DELETE CASCADE;
+ALTER TABLE `delivery_proofs` ADD CONSTRAINT `fk_delivery_proofs_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`) ON DELETE CASCADE;
+ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`) ON DELETE CASCADE;
+ALTER TABLE `warehouse_transactions` ADD CONSTRAINT `fk_warehouse_transactions_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`) ON DELETE SET NULL;
+
+-- SET NULL: Self-reference cho hierarchical data
+ALTER TABLE `categories` ADD CONSTRAINT `fk_categories_parent_id` FOREIGN KEY(`parent_id`) REFERENCES `categories`(`id`) ON DELETE SET NULL;
+
+-- SET NULL: Optional relationships - preserve audit trail và flexibility
 ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_actor_id` FOREIGN KEY(`actor_id`) REFERENCES `users`(`id`) ON DELETE SET NULL;
 ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_role_id` FOREIGN KEY(`role_id`) REFERENCES `roles`(`id`) ON DELETE SET NULL;
-ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_status_id` FOREIGN KEY(`status_id`) REFERENCES `status`(`id`);
-ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_route_id` FOREIGN KEY(`route_id`) REFERENCES `routes`(`id`);
-ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_vehicle_id` FOREIGN KEY(`vehicle_id`) REFERENCES `vehicles`(`id`);
+ALTER TABLE `vehicles` ADD CONSTRAINT `fk_vehicles_current_driver_id` FOREIGN KEY(`current_driver_id`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_driver_id` FOREIGN KEY(`driver_id`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_route_id` FOREIGN KEY(`route_id`) REFERENCES `routes`(`id`) ON DELETE SET NULL;
+ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_vehicle_id` FOREIGN KEY(`vehicle_id`) REFERENCES `vehicles`(`id`) ON DELETE SET NULL;
+ALTER TABLE `delivery_tracking` ADD CONSTRAINT `fk_delivery_tracking_vehicle_id` FOREIGN KEY(`vehicle_id`) REFERENCES `vehicles`(`id`) ON DELETE SET NULL;
+ALTER TABLE `products` ADD CONSTRAINT `fk_products_warehouse_id` FOREIGN KEY(`warehouse_id`) REFERENCES `warehouses`(`id`) ON DELETE SET NULL;
+ALTER TABLE `orders` ADD CONSTRAINT `fk_orders_store_id` FOREIGN KEY(`store_id`) REFERENCES `stores`(`id`) ON DELETE SET NULL;
+ALTER TABLE `delivery_proofs` ADD CONSTRAINT `fk_delivery_proofs_uploaded_by` FOREIGN KEY(`uploaded_by`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+
+-- SET NULL: Created_by audit fields - preserve audit trail khi user bị xóa
+ALTER TABLE `orders` ADD CONSTRAINT `fk_orders_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+ALTER TABLE `products` ADD CONSTRAINT `fk_products_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+ALTER TABLE `stores` ADD CONSTRAINT `fk_stores_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+ALTER TABLE `routes` ADD CONSTRAINT `fk_routes_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+ALTER TABLE `warehouse_transactions` ADD CONSTRAINT `fk_warehouse_transactions_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+ALTER TABLE `payments` ADD CONSTRAINT `fk_payments_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+ALTER TABLE `warehouses` ADD CONSTRAINT `fk_warehouses_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL;
+
+-- CASCADE: Parent-child tight coupling
 ALTER TABLE `delivery_tracking` ADD CONSTRAINT `fk_delivery_tracking_delivery_id` FOREIGN KEY(`delivery_id`) REFERENCES `deliveries`(`id`) ON DELETE CASCADE;
-ALTER TABLE `delivery_proofs` ADD CONSTRAINT `fk_delivery_proofs_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`);
+
+-- RESTRICT: Critical business relationships - không cho phép xóa parent khi có child
+ALTER TABLE `products` ADD CONSTRAINT `fk_products_category_id` FOREIGN KEY(`category_id`) REFERENCES `categories`(`id`) ON DELETE RESTRICT;
+ALTER TABLE `order_items` ADD CONSTRAINT `fk_order_items_product_id` FOREIGN KEY(`product_id`) REFERENCES `products`(`id`) ON DELETE RESTRICT;
+ALTER TABLE `warehouse_transactions` ADD CONSTRAINT `fk_warehouse_transactions_product_id` FOREIGN KEY(`product_id`) REFERENCES `products`(`id`) ON DELETE RESTRICT;
+ALTER TABLE `warehouse_transactions` ADD CONSTRAINT `fk_warehouse_transactions_warehouse_id` FOREIGN KEY(`warehouse_id`) REFERENCES `warehouses`(`id`) ON DELETE RESTRICT;
+ALTER TABLE `users` ADD CONSTRAINT `fk_users_role_id` FOREIGN KEY(`role_id`) REFERENCES `roles`(`id`) ON DELETE RESTRICT;
+
+-- DEFAULT (NO ACTION): Status references - tránh xóa status đang được sử dụng
+ALTER TABLE `activity_logs` ADD CONSTRAINT `fk_activity_logs_status_id` FOREIGN KEY(`status_id`) REFERENCES `status`(`id`);
 ALTER TABLE `delivery_tracking` ADD CONSTRAINT `fk_delivery_tracking_status_id` FOREIGN KEY(`status_id`) REFERENCES `status`(`id`);
-ALTER TABLE `delivery_tracking` ADD CONSTRAINT `fk_delivery_tracking_vehicle_id` FOREIGN KEY(`vehicle_id`) REFERENCES `vehicles`(`id`);
-ALTER TABLE `warehouse_transactions` ADD CONSTRAINT `fk_warehouse_transactions_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`);
-ALTER TABLE `warehouse_transactions` ADD CONSTRAINT `fk_warehouse_transactions_product_id` FOREIGN KEY(`product_id`) REFERENCES `products`(`id`);
 ALTER TABLE `warehouse_transactions` ADD CONSTRAINT `fk_warehouse_transactions_status_id` FOREIGN KEY(`status_id`) REFERENCES `status`(`id`);
-ALTER TABLE `warehouse_transactions` ADD CONSTRAINT `fk_warehouse_transactions_warehouse_id` FOREIGN KEY(`warehouse_id`) REFERENCES `warehouses`(`id`);
-ALTER TABLE `order_items` ADD CONSTRAINT `fk_order_items_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`);
-ALTER TABLE `order_items` ADD CONSTRAINT `fk_order_items_product_id` FOREIGN KEY(`product_id`) REFERENCES `products`(`id`);
 ALTER TABLE `orders` ADD CONSTRAINT `fk_orders_status_id` FOREIGN KEY(`status_id`) REFERENCES `status`(`id`);
-ALTER TABLE `orders` ADD CONSTRAINT `fk_orders_store_id` FOREIGN KEY(`store_id`) REFERENCES `stores`(`id`);
-ALTER TABLE `payments` ADD CONSTRAINT `fk_payments_order_id` FOREIGN KEY(`order_id`) REFERENCES `orders`(`id`);
 ALTER TABLE `payments` ADD CONSTRAINT `fk_payments_status_id` FOREIGN KEY(`status_id`) REFERENCES `status`(`id`);
-ALTER TABLE `products` ADD CONSTRAINT `fk_products_category_id` FOREIGN KEY(`category_id`) REFERENCES `categories`(`id`);
-ALTER TABLE `products` ADD CONSTRAINT `fk_products_warehouse_id` FOREIGN KEY(`warehouse_id`) REFERENCES `warehouses`(`id`);
 ALTER TABLE `vehicles` ADD CONSTRAINT `fk_vehicles_status_id` FOREIGN KEY(`status_id`) REFERENCES `status`(`id`);
-ALTER TABLE `users` ADD CONSTRAINT `fk_users_role_id` FOREIGN KEY(`role_id`) REFERENCES `roles`(`id`);
 ALTER TABLE `users` ADD CONSTRAINT `fk_users_status_id` FOREIGN KEY(`status_id`) REFERENCES `status`(`id`);
-ALTER TABLE `vehicles` ADD CONSTRAINT `fk_vehicles_current_driver_id` FOREIGN KEY(`current_driver_id`) REFERENCES `users`(`id`);
-ALTER TABLE `delivery_proofs` ADD CONSTRAINT `fk_delivery_proofs_uploaded_by` FOREIGN KEY(`uploaded_by`) REFERENCES `users`(`id`);
-ALTER TABLE `orders` ADD CONSTRAINT `fk_orders_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`);
-ALTER TABLE `deliveries` ADD CONSTRAINT `fk_deliveries_driver_id` FOREIGN KEY(`driver_id`) REFERENCES `users`(`id`);
-ALTER TABLE `products` ADD CONSTRAINT `fk_products_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`);
-ALTER TABLE `stores` ADD CONSTRAINT `fk_stores_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`);
-ALTER TABLE `routes` ADD CONSTRAINT `fk_routes_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`);
-ALTER TABLE `warehouse_transactions` ADD CONSTRAINT `fk_warehouse_transactions_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`);
-ALTER TABLE `payments` ADD CONSTRAINT `fk_payments_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`);
-ALTER TABLE `warehouses` ADD CONSTRAINT `fk_warehouses_created_by` FOREIGN KEY(`created_by`) REFERENCES `users`(`id`);
 
 -- =====================================================================================
 -- DATA VALIDATION CONSTRAINTS - Ràng buộc kiểm tra tính hợp lệ của dữ liệu
