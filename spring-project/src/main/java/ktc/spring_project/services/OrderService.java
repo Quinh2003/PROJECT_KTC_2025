@@ -50,7 +50,6 @@ public class OrderService {
         if (orderDetails.getOrderProfitPerOrder() != null && orderDetails.getOrderProfitPerOrder().compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Order profit per order cannot be negative");
         }
-        order.setOrderId(orderDetails.getOrderId());
         order.setStatus(orderDetails.getStatus());
         order.setStore(orderDetails.getStore());
         order.setDescription(orderDetails.getDescription());
