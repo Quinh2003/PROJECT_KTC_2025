@@ -14,16 +14,21 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 50)
     private String type;
 
+    @Column(length = 100)
     private String name;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     public Status() {}

@@ -74,13 +74,13 @@ public class ProductService {
 
         if (category != null) {
             // Assume category is a category ID string
-            return productRepository.findActiveByCategoryId(category);
+            return productRepository.findActiveByCategoryId(Long.valueOf(category));
         }
 
         if (status != null) {
             // Convert status string to boolean (e.g., "active" -> true)
             boolean isActive = "active".equalsIgnoreCase(status);
-            return productRepository.findByProductStatus(isActive);
+            return productRepository.findByProductStatus(isActive ? ktc.spring_project.enums.ProductStatus.ACTIVE : ktc.spring_project.enums.ProductStatus.INACTIVE);
         }
 
         if (search != null && !search.trim().isEmpty()) {
