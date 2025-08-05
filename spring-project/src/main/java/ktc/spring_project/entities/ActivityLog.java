@@ -15,8 +15,12 @@ public class ActivityLog {
     @Column(name = "actor_id")
     private Long actorId;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "actor_id", insertable = false, updatable = false)
+    private User actor;
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "role_id", nullable = true)
     private Role role;
 
     @ManyToOne
@@ -57,6 +61,14 @@ public class ActivityLog {
 
     public void setActorId(Long actorId) {
         this.actorId = actorId;
+    }
+
+    public User getActor() {
+        return actor;
+    }
+
+    public void setActor(User actor) {
+        this.actor = actor;
     }
 
     public Role getRole() {
