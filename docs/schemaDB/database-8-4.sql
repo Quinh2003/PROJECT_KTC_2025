@@ -283,7 +283,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
 CREATE TABLE IF NOT EXISTS `payments` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của thanh toán',
     `order_id` BIGINT NOT NULL COMMENT 'Mã đơn hàng được thanh toán',
-    `amount` DECIMAL(15,2) NOT NULL 'Tổng số tiền thanh toán',
+    `amount` DECIMAL(15,2) NOT NULL COMMENT 'Tổng số tiền thanh toán',
     `payment_method` VARCHAR(50) NOT NULL DEFAULT 'CASH' COMMENT 'Phương thức thanh toán (tiền mặt, thẻ, chuyển khoản)',
     `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái thanh toán (thành công, thất bại, chờ xử lý)',
     `transaction_id` VARCHAR(255) COMMENT 'Mã giao dịch từ cổng thanh toán',
