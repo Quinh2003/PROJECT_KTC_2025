@@ -342,7 +342,6 @@ CREATE TABLE IF NOT EXISTS `roles` (
 -- =====================================================================================
 CREATE TABLE IF NOT EXISTS `warehouses` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của kho bãi',
-    `warehouse_code` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã kho nghiệp vụ (dễ đọc)',
     `name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị của kho bãi',
     `address` TEXT NOT NULL COMMENT 'Địa chỉ đầy đủ của kho bãi',
     `latitude` DECIMAL(10,8) COMMENT 'Tọa độ vĩ độ kho bãi',
@@ -551,7 +550,7 @@ CREATE INDEX idx_stores_coordinates ON stores(latitude, longitude) COMMENT 'Tìm
 
 -- Indexes cho bảng WAREHOUSES (warehouse operations)
 CREATE INDEX idx_warehouses_active ON warehouses(is_active) COMMENT 'Kho đang hoạt động';
-CREATE INDEX idx_warehouses_code ON warehouses(warehouse_code) COMMENT 'Tìm kho theo mã';
+-- Đã xóa index idx_warehouses_code vì warehouse_code không còn sử dụng
 CREATE INDEX idx_warehouses_coordinates ON warehouses(latitude, longitude) COMMENT 'Tìm kho theo tọa độ';
 
 -- Indexes cho bảng ROUTES (route optimization)
