@@ -31,11 +31,9 @@ public interface WarehouseTransactionRepository extends JpaRepository<WarehouseT
     List<WarehouseTransaction> findByProductAndWarehouse(@Param("productId") Long productId, 
                                                        @Param("warehouseId") Long warehouseId);
     
-    @Query("SELECT wt FROM WarehouseTransaction wt WHERE wt.product.productCode = :productCode ORDER BY wt.transactionDate DESC")
-    List<WarehouseTransaction> findByProductCode(@Param("productCode") String productCode);
+
     
-    @Query("SELECT wt FROM WarehouseTransaction wt WHERE wt.warehouse.warehouseCode = :warehouseCode ORDER BY wt.transactionDate DESC")
-    List<WarehouseTransaction> findByWarehouseCode(@Param("warehouseCode") String warehouseCode);
+
     
     @Query("SELECT SUM(wt.quantity) FROM WarehouseTransaction wt WHERE wt.product.id = :productId " +
            "AND wt.warehouse.id = :warehouseId AND wt.transactionType = :type AND wt.status.name = 'SUCCESS'")

@@ -15,8 +15,7 @@ public class Warehouse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "warehouse_code", length = 50, nullable = false, unique = true)
-    private String warehouseCode;
+
 
     @Column(length = 255, nullable = false)
     private String name;
@@ -80,13 +79,7 @@ public class Warehouse {
     }
 
 
-    public String getWarehouseCode() {
-        return warehouseCode;
-    }
 
-    public void setWarehouseCode(String warehouseCode) {
-        this.warehouseCode = warehouseCode;
-    }
 
     public BigDecimal getLatitude() {
         return latitude;

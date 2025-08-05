@@ -15,11 +15,9 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "product_card_id", nullable = false, unique = true, length = 50)
-    private String productCardId;
 
-    @Column(name = "product_code", nullable = false, unique = true, length = 50)
-    private String productCode;
+
+
 
     @Column(nullable = false, length = 255)
     private String name;
@@ -83,13 +81,7 @@ public class Product {
         this.id = id;
     }
 
-    public String getProductCode() {
-        return productCode;
-    }
 
-    public void setProductCode(String productCode) {
-        this.productCode = productCode;
-    }
 
     public String getName() {
         return name;
@@ -140,13 +132,7 @@ public class Product {
         this.isFragile = isFragile;
     }
 
-    public String getProductCardId() {
-        return productCardId;
-    }
 
-    public void setProductCardId(String productCardId) {
-        this.productCardId = productCardId;
-    }
 
     public String getProductImage() {
         return productImage;

@@ -61,7 +61,6 @@ public class StoreController {
                 if (search != null && !search.isEmpty()) {
                     String searchLower = search.toLowerCase();
                     searchMatch = store.getStoreName().toLowerCase().contains(searchLower) ||
-                            store.getStoreCode().toLowerCase().contains(searchLower) ||
                             (store.getAddress() != null && store.getAddress().toLowerCase().contains(searchLower));
                 }
 
