@@ -33,7 +33,7 @@ public class Address {
     private String state;
 
     @Column(length = 100)
-    private String country;
+    private String country = "Vietnam";
 
     @Column(length = 100)
     private String region;
