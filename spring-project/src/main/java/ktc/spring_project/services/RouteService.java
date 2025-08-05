@@ -2,15 +2,16 @@ package ktc.spring_project.services;
 
 import ktc.spring_project.entities.Route;
 import ktc.spring_project.repositories.RouteRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class RouteService {
+
+    @Autowired
     private RouteRepository routeRepository;
 
     public List<Route> findAll() {
