@@ -16,13 +16,17 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(precision = 15, scale = 2, nullable = false)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
 
+    @Column(name = "transaction_id")
     private String transactionId;
 
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     @ManyToOne
@@ -38,9 +42,11 @@ public class Payment {
     private User createdBy;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     public Payment() {}

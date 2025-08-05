@@ -15,29 +15,37 @@ public class Route {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 255)
     private String name;
 
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "json", nullable = false)
     private String waypoints;
 
-    private BigDecimal estimatedDistance;
+    @Column(name = "estimated_distance_km", precision = 10, scale = 2)
+    private BigDecimal estimatedDistanceKm;
 
-    private Integer estimatedDuration;
+    @Column(name = "estimated_duration_minutes")
+    private Integer estimatedDurationMinutes;
 
+    @Column(name = "estimated_cost", precision = 15, scale = 2)
     private BigDecimal estimatedCost;
 
-    private Boolean aiOptimized;
-
+    @Column(columnDefinition = "TEXT")
     private String notes;
+
+    @Column(name = "completed_at")
+    private Timestamp completedAt;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
     private User createdBy;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
 
@@ -72,20 +80,21 @@ public class Route {
         this.waypoints = waypoints;
     }
 
-    public BigDecimal getEstimatedDistance() {
-        return estimatedDistance;
+
+    public BigDecimal getEstimatedDistanceKm() {
+        return estimatedDistanceKm;
     }
 
-    public void setEstimatedDistance(BigDecimal estimatedDistance) {
-        this.estimatedDistance = estimatedDistance;
+    public void setEstimatedDistanceKm(BigDecimal estimatedDistanceKm) {
+        this.estimatedDistanceKm = estimatedDistanceKm;
     }
 
-    public Integer getEstimatedDuration() {
-        return estimatedDuration;
+    public Integer getEstimatedDurationMinutes() {
+        return estimatedDurationMinutes;
     }
 
-    public void setEstimatedDuration(Integer estimatedDuration) {
-        this.estimatedDuration = estimatedDuration;
+    public void setEstimatedDurationMinutes(Integer estimatedDurationMinutes) {
+        this.estimatedDurationMinutes = estimatedDurationMinutes;
     }
 
     public BigDecimal getEstimatedCost() {
@@ -96,12 +105,13 @@ public class Route {
         this.estimatedCost = estimatedCost;
     }
 
-    public Boolean getAiOptimized() {
-        return aiOptimized;
+
+    public Timestamp getCompletedAt() {
+        return completedAt;
     }
 
-    public void setAiOptimized(Boolean aiOptimized) {
-        this.aiOptimized = aiOptimized;
+    public void setCompletedAt(Timestamp completedAt) {
+        this.completedAt = completedAt;
     }
 
     public String getNotes() {
