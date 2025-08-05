@@ -9,14 +9,14 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
+
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    Optional<Product> findByProductCode(String productCode);
 
-    Optional<Product> findByProductCardId(String productCardId);
+
+
 
     List<Product> findByCategoryId(Long categoryId);
 
@@ -39,9 +39,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.categoryId = :categoryId AND p.productStatus = ktc.spring_project.enums.ProductStatus.AVAILABLE")
     List<Product> findActiveByCategoryId(@Param("categoryId") Long categoryId);
 
-    boolean existsByProductCode(String productCode);
 
-    boolean existsByProductCardId(String productCardId);
+
+
 
     @Query("SELECT COUNT(p) FROM Product p WHERE p.productStatus = ktc.spring_project.enums.ProductStatus.AVAILABLE")
     long countActiveProducts();
