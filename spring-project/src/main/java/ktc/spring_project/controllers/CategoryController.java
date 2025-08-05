@@ -47,7 +47,7 @@ public class CategoryController {
         if (status != null || parentId != null || search != null) {
             List<Category> filteredCategories = allCategories.stream()
                 .filter(category ->
-                    (status == null || (Boolean.valueOf(category.getIsActive()) == Boolean.valueOf(status.equals("1") || status.equalsIgnoreCase("true"))))
+                    (status == null || (category.getIsActive() == ("1".equals(status) || "true".equalsIgnoreCase(status))))
                     && (parentId == null || (category.getParent() != null && category.getParent().getId().equals(parentId)))
                     && (search == null || category.getName().toLowerCase().contains(search.toLowerCase()))
                 )
@@ -72,7 +72,7 @@ public class CategoryController {
         if (status != null) {
             boolean isActiveStatus = "1".equals(status) || "true".equalsIgnoreCase(status);
             allCategories = allCategories.stream()
-                .filter(category -> category.getIsActive() != null && category.getIsActive() == isActiveStatus)
+                .filter(category -> category.getIsActive() == isActiveStatus)
                 .collect(Collectors.toList());
         }
 

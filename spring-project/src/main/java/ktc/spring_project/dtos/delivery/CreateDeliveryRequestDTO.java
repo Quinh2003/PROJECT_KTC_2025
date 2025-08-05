@@ -2,7 +2,6 @@ package ktc.spring_project.dtos.delivery;
 
 import ktc.spring_project.enums.TransportMode;
 import ktc.spring_project.enums.ServiceType;
-import ktc.spring_project.enums.DeliveryStatus;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -18,7 +17,6 @@ public class CreateDeliveryRequestDTO {
     private Timestamp pickupDate;
     private Timestamp scheduleDeliveryTime;
     private Boolean lateDeliveryRisk = false;
-    private DeliveryStatus deliveryStatus = DeliveryStatus.PENDING;
     private String deliveryNotes;
     private Timestamp orderDate;
     private Long vehicleId;
@@ -55,9 +53,6 @@ public class CreateDeliveryRequestDTO {
     
     public Boolean getLateDeliveryRisk() { return lateDeliveryRisk; }
     public void setLateDeliveryRisk(Boolean lateDeliveryRisk) { this.lateDeliveryRisk = lateDeliveryRisk; }
-    
-    public DeliveryStatus getDeliveryStatus() { return deliveryStatus; }
-    public void setDeliveryStatus(DeliveryStatus deliveryStatus) { this.deliveryStatus = deliveryStatus; }
     
     public String getDeliveryNotes() { return deliveryNotes; }
     public void setDeliveryNotes(String deliveryNotes) { this.deliveryNotes = deliveryNotes; }
