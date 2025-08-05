@@ -1,6 +1,6 @@
 package ktc.spring_project.dtos.user;
 
-import ktc.spring_project.enums.UserRole;
+
 import jakarta.validation.constraints.*;
 
 /**
@@ -16,7 +16,10 @@ public class UpdateUserRequestDTO {
     @Size(max = 150, message = "Email must not exceed 150 characters")
     private String email;
     
-    private UserRole role;
+    private Long roleId;
+    
+    @Size(max = 500, message = "Notes must not exceed 500 characters")
+    private String notes;
     
     @Pattern(regexp = "^[+]?[0-9\\s\\-\\(\\)]{0,20}$", message = "Invalid phone number format")
     private String phone;
@@ -36,14 +39,17 @@ public class UpdateUserRequestDTO {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     
-    public UserRole getRole() { return role; }
-    public void setRole(UserRole role) { this.role = role; }
+    public Long getRoleId() { return roleId; }
+    public void setRoleId(Long roleId) { this.roleId = roleId; }
     
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
     
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
+    
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
     
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
