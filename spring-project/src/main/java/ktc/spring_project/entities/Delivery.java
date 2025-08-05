@@ -84,7 +84,7 @@ public class Delivery {
     public void setDeliveryFee(BigDecimal deliveryFee) { this.deliveryFee = deliveryFee; }
 
     public String getTransportMode() { return transportMode; }
-public void setTransportMode(String transportMode) { this.transportMode = transportMode; }
+    public void setTransportMode(String transportMode) { this.transportMode = transportMode; }
 
     public String getServiceType() { return serviceType; }
     public void setServiceType(String serviceType) { this.serviceType = serviceType; }
