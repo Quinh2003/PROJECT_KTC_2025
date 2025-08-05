@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 public class ProductResponseDTO {
     
     private Long id;
-    private String productCode;
+
     private String name;
     private String description;
     private BigDecimal unitPrice;
@@ -36,9 +36,8 @@ public class ProductResponseDTO {
     // Constructors
     public ProductResponseDTO() {}
     
-    public ProductResponseDTO(Long id, String productCode, String name, BigDecimal unitPrice, Integer stockQuantity) {
+    public ProductResponseDTO(Long id, String name, BigDecimal unitPrice, Integer stockQuantity) {
         this.id = id;
-        this.productCode = productCode;
         this.name = name;
         this.unitPrice = unitPrice;
         this.stockQuantity = stockQuantity;
@@ -48,8 +47,7 @@ public class ProductResponseDTO {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
-    public String getProductCode() { return productCode; }
-    public void setProductCode(String productCode) { this.productCode = productCode; }
+
     
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -101,7 +99,7 @@ public class ProductResponseDTO {
     
     // Utility methods
     public String getDisplayName() {
-        return String.format("%s - %s", productCode, name);
+        return name;
     }
     
     public boolean isInStock() {

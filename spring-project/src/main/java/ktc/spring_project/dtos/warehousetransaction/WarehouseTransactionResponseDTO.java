@@ -13,7 +13,7 @@ public class WarehouseTransactionResponseDTO {
     
     // Product information
     private Long productId;
-    private String productCode;
+
     private String productName;
     
     // Warehouse information
@@ -65,8 +65,7 @@ public class WarehouseTransactionResponseDTO {
     public Long getProductId() { return productId; }
     public void setProductId(Long productId) { this.productId = productId; }
     
-    public String getProductCode() { return productCode; }
-    public void setProductCode(String productCode) { this.productCode = productCode; }
+
     
     public String getProductName() { return productName; }
     public void setProductName(String productName) { this.productName = productName; }
@@ -163,9 +162,6 @@ public class WarehouseTransactionResponseDTO {
     }
     
     public String getProductDisplay() {
-        if (productCode != null && productName != null) {
-            return String.format("%s - %s", productCode, productName);
-        }
         return productName != null ? productName : "Unknown Product";
     }
     

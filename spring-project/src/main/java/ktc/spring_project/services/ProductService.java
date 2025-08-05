@@ -117,15 +117,9 @@ public class ProductService {
         // In a real implementation, would extract user ID from authentication
         // and set it as the created_by value
 
-        // Check if product code already exists
-        if (productRepository.existsByProductCode(product.getProductCode())) {
-            throw new IllegalArgumentException("Product code already exists: " + product.getProductCode());
-        }
 
-        // Check if product card ID already exists
-        if (productRepository.existsByProductCardId(product.getProductCardId())) {
-            throw new IllegalArgumentException("Product card ID already exists: " + product.getProductCardId());
-        }
+
+
 
         // Save the product
         Product savedProduct = save(product);
@@ -161,8 +155,6 @@ public class ProductService {
         existingProduct.setNotes(productDetails.getNotes());
 
         // Don't update immutable or sensitive fields like:
-        // - productCode
-        // - productCardId
         // - stockQuantity (should be updated through warehouse transactions)
         // - createdBy
         // - createdAt
@@ -187,7 +179,7 @@ public class ProductService {
         // Soft delete by setting status to inactive
         Status inactiveStatus = statusRepository.findById((short)0)
             .orElseThrow(() -> new EntityNotFoundException("Inactive status not found"));
-        product.setProductStatus(inactiveStatus);
+        product.setProductStatus(inactiveStatus.getId().intValue());
         save(product);
 
         // Log the activity (in a real implementation)
