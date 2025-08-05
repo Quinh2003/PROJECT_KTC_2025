@@ -47,4 +47,15 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
     
     @Query("SELECT DISTINCT u FROM User u JOIN FETCH u.role r WHERE r.isActive = true")
     List<User> findUsersWithActiveRole();
+
+    // Methods for filtering support
+    @Query("SELECT u FROM User u WHERE u.role.roleName = :roleName")
+    List<User> findByRoleRoleName(@Param("roleName") String roleName);
+
+    @Query("SELECT u FROM User u WHERE u.status.name = :statusName")
+    List<User> findByStatusName(@Param("statusName") String statusName);
+
+    List<User> findByUsernameContainingIgnoreCase(String username);
+
+    List<User> findByFullNameContainingIgnoreCase(String fullName);
 }

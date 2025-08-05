@@ -29,6 +29,9 @@ public class User {
     @Column(length = 20)
     private String phone;
 
+    @Column(name = "google_id", length = 100)
+    private String googleId;
+
     @Column(columnDefinition = "TEXT")
     private String notes;
 
@@ -99,6 +102,14 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getGoogleId() {
+        return googleId;
+    }
+
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
     }
 
     public Status getStatus() {

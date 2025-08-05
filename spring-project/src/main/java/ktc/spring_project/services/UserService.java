@@ -138,7 +138,7 @@ public class UserService {
             headers.set("Authorization", "Bearer " + request.getAccessToken());
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            // Gọi Google API
+            // Gọi Google API với proper type safety
             ResponseEntity<Map> response = restTemplate.exchange(
                 googleApiUrl,
                 HttpMethod.GET,
@@ -146,11 +146,20 @@ public class UserService {
                 Map.class
             );
 
-            // 2. Extract thông tin user từ Google API response
-            Map<String, Object> userInfo = response.getBody();
+            // 2. Extract thông tin user từ Google API response với null checks
+            @SuppressWarnings("unchecked")
+            Map<String, Object> userInfo = (Map<String, Object>) response.getBody();
+            if (userInfo == null) {
+                throw new RuntimeException("Google API returned null response");
+            }
+
             String email = (String) userInfo.get("email");
             String name = (String) userInfo.get("name");
             String googleId = (String) userInfo.get("id");
+
+            if (email == null || name == null || googleId == null) {
+                throw new RuntimeException("Missing required fields from Google API response");
+            }
 
             // 3. Kiểm tra user đã tồn tại trong database chưa
             Optional<User> existingUser = userRepository.findByEmail(email);
@@ -215,12 +224,21 @@ public class UserService {
             String googleTokenInfoUrl = "https://oauth2.googleapis.com/tokeninfo?id_token=" + credential;
 
             ResponseEntity<Map> response = restTemplate.getForEntity(googleTokenInfoUrl, Map.class);
-            Map<String, Object> tokenInfo = response.getBody();
+            @SuppressWarnings("unchecked")
+            Map<String, Object> tokenInfo = (Map<String, Object>) response.getBody();
 
-            // 2. Extract thông tin user từ validated token
+            if (tokenInfo == null) {
+                throw new RuntimeException("Google token validation returned null response");
+            }
+
+            // 2. Extract thông tin user từ validated token với null checks
             String email = (String) tokenInfo.get("email");
             String name = (String) tokenInfo.get("name");
             String googleId = (String) tokenInfo.get("sub"); // 'sub' là user ID trong JWT
+
+            if (email == null || name == null || googleId == null) {
+                throw new RuntimeException("Missing required fields from Google token response");
+            }
 
             // Optional: Validate client_id nếu được provide
             if (request.getClientId() != null) {
