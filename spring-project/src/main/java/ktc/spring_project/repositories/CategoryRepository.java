@@ -16,7 +16,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     
     List<Category> findByIsActive(Boolean isActive);
     
-    List<Category> findByParentId(Long parentId);
+    List<Category> findByParent_Id(Long parentId); // ✅ Tìm theo parent.id
     
     @Query("SELECT c FROM Category c WHERE c.parent IS NULL AND c.isActive = true")
     List<Category> findRootCategories();
