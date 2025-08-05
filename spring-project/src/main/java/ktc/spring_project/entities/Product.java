@@ -16,36 +16,42 @@ public class Product {
     private Long id;
 
 
-    private String productCardId;
 
+    @Column(name = "product_code", nullable = false, unique = true, length = 50)
     private String productCode;
 
+    @Column(nullable = false, length = 255)
     private String name;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "unit_price", precision = 15, scale = 2, nullable = false)
     private BigDecimal unitPrice;
 
-
+    @Column(precision = 10, scale = 3)
     private BigDecimal weight;
 
+    @Column(precision = 10, scale = 3)
     private BigDecimal volume;
 
+    @Column(name = "is_fragile", nullable = false)
     private Boolean isFragile;
 
+    @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity;
 
-
+    @Column(name = "product_image", length = 500)
     private String productImage;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "product_status")
-    private Status productStatus;
+    @Column(name = "product_status", nullable = false)
+    private Integer productStatus;
 
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     @ManyToOne
@@ -57,9 +63,11 @@ public class Product {
     private User createdBy;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     public Product() {}
@@ -131,13 +139,7 @@ public class Product {
         this.isFragile = isFragile;
     }
 
-    public String getProductCardId() {
-        return productCardId;
-    }
 
-    public void setProductCardId(String productCardId) {
-        this.productCardId = productCardId;
-    }
 
     public String getProductImage() {
         return productImage;
@@ -155,11 +157,11 @@ public class Product {
         this.category = category;
     }
 
-    public Status getProductStatus() {
+    public Integer getProductStatus() {
         return productStatus;
     }
 
-    public void setProductStatus(Status productStatus) {
+    public void setProductStatus(Integer productStatus) {
         this.productStatus = productStatus;
     }
 
@@ -171,13 +173,6 @@ public class Product {
         this.stockQuantity = stockQuantity;
     }
 
-    public Boolean getTemporary() {
-        return temporary;
-    }
-
-    public void setTemporary(Boolean temporary) {
-        this.temporary = temporary;
-    }
 
     public String getNotes() {
         return notes;
