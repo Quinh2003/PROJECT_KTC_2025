@@ -50,7 +50,7 @@ public class Product {
     private Category category;
 
     @Column(name = "product_status", nullable = false)
-    private Integer productStatus;
+    private Status productStatus;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
@@ -164,11 +164,11 @@ public class Product {
         this.category = category;
     }
 
-    public Integer getProductStatus() {
+    public Status getProductStatus() {
         return productStatus;
-    }
+    };
 
-    public void setProductStatus(Integer productStatus) {
+    public void setProductStatus(Status productStatus) {
         this.productStatus = productStatus;
     }
 
