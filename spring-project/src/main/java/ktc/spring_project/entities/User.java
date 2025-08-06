@@ -51,9 +51,6 @@ public class User {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
-    @Column(name = "google_id", length = 255)
-    private String googleId;
-
     public User() {}
 
     // Getters and setters
