@@ -10,7 +10,7 @@ public class CreateUserRequestDTO {
     
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
-    private String name;
+    private String fullName;
     
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
@@ -40,8 +40,8 @@ public class CreateUserRequestDTO {
     // Constructors
     public CreateUserRequestDTO() {}
     
-    public CreateUserRequestDTO(String name, String email, String password, Long roleId) {
-        this.name = name;
+    public CreateUserRequestDTO(String fullName, String email, String password, Long roleId) {
+        this.fullName = fullName;
         this.email = email;
         this.password = password;
         this.roleId = roleId;
@@ -49,8 +49,8 @@ public class CreateUserRequestDTO {
     }
     
     // Getters and Setters
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
     
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
