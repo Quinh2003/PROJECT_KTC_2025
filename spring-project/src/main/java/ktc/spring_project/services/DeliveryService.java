@@ -53,7 +53,7 @@ public class DeliveryService {
         delivery.setLateDeliveryRisk(deliveryDetails.getLateDeliveryRisk());
         delivery.setVehicle(deliveryDetails.getVehicle());
         delivery.setDriver(deliveryDetails.getDriver());
-        delivery.setTracking(deliveryDetails.getTracking());
+delivery.setTrackingPoints(deliveryDetails.getTrackingPoints());
         delivery.setRoute(deliveryDetails.getRoute());
         delivery.setDeliveryAttempts(deliveryDetails.getDeliveryAttempts());
         delivery.setDeliveryNotes(deliveryDetails.getDeliveryNotes());
