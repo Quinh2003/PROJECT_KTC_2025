@@ -65,9 +65,17 @@ public class CreateRoleRequestDTO {
         return roleName != null && roleName.toLowerCase().contains("operations_manager");
     }
     
+    public boolean isCustomerRole() {
+        return roleName != null && roleName.toLowerCase().contains("customer");
+    }
+    
     public boolean isSystemRole() {
         return isAdminRole() || isDispatcherRole() || isDriverRole() || 
                isFleetManagerRole() || isOperationsManagerRole();
+    }
+    
+    public boolean isExternalRole() {
+        return isCustomerRole();
     }
     
     public String getDefaultPermissions() {
@@ -81,6 +89,8 @@ public class CreateRoleRequestDTO {
             return "{\"vehicles\": [\"create\", \"read\", \"update\", \"delete\"], \"maintenance\": [\"schedule\", \"track\"], \"inspections\": [\"manage\"]}";
         } else if (isOperationsManagerRole()) {
             return "{\"dashboard\": [\"view_all\"], \"reports\": [\"generate\", \"export\"], \"analytics\": [\"view\", \"analyze\"]}";
+        } else if (isCustomerRole()) {
+            return "{\"orders\": [\"create\", \"read\"], \"tracking\": [\"read\"], \"profile\": [\"read\", \"update\"], \"invoices\": [\"view\"]}";
         }
         return "{}";
     }
