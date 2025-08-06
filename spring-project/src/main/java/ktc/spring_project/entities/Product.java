@@ -49,7 +49,7 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Enumerated(EnumType.ORDINAL) // hoặc EnumType.STRING nếu bạn muốn lưu bằng tên
+    @Enumerated(EnumType.STRING) // hoặc EnumType.ORDINAL nếu bạn muốn lưu bằng tên
 @Column(name = "product_status", nullable = false)
 private ProductStatus productStatus = ProductStatus.ACTIVE;
 
