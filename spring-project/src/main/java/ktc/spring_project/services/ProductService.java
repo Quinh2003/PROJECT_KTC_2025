@@ -179,7 +179,7 @@ public class ProductService {
         // Soft delete by setting status to inactive
         Status inactiveStatus = statusRepository.findById((short)0)
             .orElseThrow(() -> new EntityNotFoundException("Inactive status not found"));
-        product.setProductStatus(inactiveStatus.getId().intValue());
+        product.setProductStatus(inactiveStatus);
         save(product);
 
         // Log the activity (in a real implementation)

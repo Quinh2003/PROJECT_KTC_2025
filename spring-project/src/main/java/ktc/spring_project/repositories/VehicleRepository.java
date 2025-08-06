@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Modifying;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,8 @@ import java.util.Optional;
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     
     Optional<Vehicle> findByLicensePlate(String licensePlate);
+
+    Optional<Vehicle> findFirstByCurrentDriverId(Long driverId);
     
     List<Vehicle> findByVehicleType(VehicleType vehicleType);
     
@@ -34,5 +37,9 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     
     @Query("SELECT COUNT(v) FROM Vehicle v WHERE v.status.name = 'ACTIVE'")
     long countActiveVehicles();
+
+    @Modifying
+    @Query("UPDATE Vehicle v SET v.currentDriverId = NULL WHERE v.currentDriverId = :driverId")
+    void clearDriverAssignment(Long driverId);
 }
 

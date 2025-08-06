@@ -4,7 +4,8 @@ public enum ActionType {
     CREATE("Create"),
     UPDATE("Update"),
     DELETE("Delete"),
-    LOGIN("Login");
+    LOGIN("Login"),
+    LOGOUT("Logout");
 
     private final String displayName;
 

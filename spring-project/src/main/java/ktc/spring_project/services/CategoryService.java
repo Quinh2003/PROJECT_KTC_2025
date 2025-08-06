@@ -29,7 +29,7 @@ public class CategoryService {
 
     public Category updateCategory(Long id, Category categoryDetails) {
         Category category = getCategoryById(id);
-        category.setCategoryId(categoryDetails.getCategoryId());
+        category.setId(categoryDetails.getId());
         category.setName(categoryDetails.getName());
         category.setDescription(categoryDetails.getDescription());
         category.setParent(categoryDetails.getParent());
