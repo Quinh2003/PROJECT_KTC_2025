@@ -56,4 +56,33 @@ public class CreateRoleRequestDTO {
     public boolean isDispatcherRole() {
         return roleName != null && roleName.toLowerCase().contains("dispatcher");
     }
+    
+    public boolean isFleetManagerRole() {
+        return roleName != null && roleName.toLowerCase().contains("fleet_manager");
+    }
+    
+    public boolean isOperationsManagerRole() {
+        return roleName != null && roleName.toLowerCase().contains("operations_manager");
+    }
+    
+    public boolean isSystemRole() {
+        return isAdminRole() || isDispatcherRole() || isDriverRole() || 
+               isFleetManagerRole() || isOperationsManagerRole();
+    }
+    
+    public String getDefaultPermissions() {
+        if (isAdminRole()) {
+            return "{\"users\": [\"create\", \"read\", \"update\", \"delete\"], \"system\": [\"configure\", \"logs\", \"reports\"], \"data\": [\"manage\"]}";
+        } else if (isDispatcherRole()) {
+            return "{\"orders\": [\"create\", \"read\", \"update\"], \"assignments\": [\"create\", \"update\"], \"tracking\": [\"read\", \"update\"]}";
+        } else if (isDriverRole()) {
+            return "{\"orders\": [\"read\", \"update_status\"], \"deliveries\": [\"update\", \"proof_upload\"], \"mobile\": [\"access\"]}";
+        } else if (isFleetManagerRole()) {
+            return "{\"vehicles\": [\"create\", \"read\", \"update\", \"delete\"], \"maintenance\": [\"schedule\", \"track\"], \"inspections\": [\"manage\"]}";
+        } else if (isOperationsManagerRole()) {
+            return "{\"dashboard\": [\"view_all\"], \"reports\": [\"generate\", \"export\"], \"analytics\": [\"view\", \"analyze\"]}";
+        }
+        return "{}";
+    }
+    
 }

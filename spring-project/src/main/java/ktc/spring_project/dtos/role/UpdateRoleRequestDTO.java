@@ -87,12 +87,45 @@ public class UpdateRoleRequestDTO {
         return roleName != null && roleName.toLowerCase().contains("dispatcher");
     }
     
-    public boolean isManagerRole() {
-        return roleName != null && roleName.toLowerCase().contains("manager");
+    public boolean isFleetManagerRole() {
+        return roleName != null && roleName.toLowerCase().contains("fleet_manager");
+    }
+    
+    public boolean isOperationsManagerRole() {
+        return roleName != null && roleName.toLowerCase().contains("operations_manager");
     }
     
     public boolean isSystemRole() {
-        return isAdminRole() || isDriverRole() || isDispatcherRole() || isManagerRole();
+        return isAdminRole() || isDriverRole() || isDispatcherRole() || 
+               isFleetManagerRole() || isOperationsManagerRole();
+    }
+    
+    public String getDefaultPermissions() {
+        if (roleName == null) return null;
+        
+        if (isAdminRole()) {
+            return "{\"users\": [\"create\", \"read\", \"update\", \"delete\"], \"system\": [\"configure\", \"logs\", \"reports\"], \"data\": [\"manage\"]}";
+        } else if (isDispatcherRole()) {
+            return "{\"orders\": [\"create\", \"read\", \"update\"], \"assignments\": [\"create\", \"update\"], \"tracking\": [\"read\", \"update\"]}";
+        } else if (isDriverRole()) {
+            return "{\"orders\": [\"read\", \"update_status\"], \"deliveries\": [\"update\", \"proof_upload\"], \"mobile\": [\"access\"]}";
+        } else if (isFleetManagerRole()) {
+            return "{\"vehicles\": [\"create\", \"read\", \"update\", \"delete\"], \"maintenance\": [\"schedule\", \"track\"], \"inspections\": [\"manage\"]}";
+        } else if (isOperationsManagerRole()) {
+            return "{\"dashboard\": [\"view_all\"], \"reports\": [\"generate\", \"export\"], \"analytics\": [\"view\", \"analyze\"]}";
+        }
+        return null;
+    }
+    
+    public String getRoleTypeDescription() {
+        if (roleName == null) return null;
+        
+        if (isAdminRole()) return "Administrator - Người có toàn quyền cấu hình và giám sát hệ thống";
+        if (isDriverRole()) return "Driver - Người thực hiện vận chuyển và cập nhật trạng thái đơn hàng";
+        if (isDispatcherRole()) return "Dispatcher - Người lên kế hoạch và điều hành các chuyến giao hàng";
+        if (isFleetManagerRole()) return "Fleet Manager - Người chịu trách nhiệm quản lý và bảo trì phương tiện";
+        if (isOperationsManagerRole()) return "Operations Manager - Người giám sát toàn hệ thống, tối ưu hiệu suất vận hành";
+        return "Custom Role - Vai trò tùy chỉnh";
     }
     
     public boolean isCustomRole() {
