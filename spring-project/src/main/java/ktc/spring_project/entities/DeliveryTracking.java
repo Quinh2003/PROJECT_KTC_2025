@@ -28,6 +28,10 @@ public class DeliveryTracking {
     private String notes;
 
     @ManyToOne
+    @JoinColumn(name = "delivery_id", nullable = false)
+    private Delivery delivery;
+
+    @ManyToOne
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 
@@ -88,6 +92,14 @@ public class DeliveryTracking {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public Delivery getDelivery() {
+        return delivery;
+    }
+
+    public void setDelivery(Delivery delivery) {
+        this.delivery = delivery;
     }
 
     public Vehicle getVehicle() {

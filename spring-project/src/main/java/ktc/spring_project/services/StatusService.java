@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import ktc.spring_project.enums.StatusType;
+
 
 @Service
 public class StatusService {
@@ -17,20 +19,24 @@ public class StatusService {
     }
 
     public List<Status> getStatusesByType(String type) {
-        return statusRepository.findByType(type);
-    }
+    StatusType statusType = StatusType.valueOf(type.toUpperCase());
+    return statusRepository.findByStatusType(statusType);
+}
 
-    public Optional<Status> getStatusByTypeAndName(String type, String name) {
-        return statusRepository.findByTypeAndName(type, name);
-    }
+public Optional<Status> getStatusByTypeAndName(String type, String name) {
+    StatusType statusType = StatusType.valueOf(type.toUpperCase());
+    return statusRepository.findByStatusTypeAndName(statusType, name);
+}
 
-    public List<Status> getStatusesByTypeOrderByName(String type) {
-        return statusRepository.findByTypeOrderByName(type);
-    }
+public List<Status> getStatusesByTypeOrderByName(String type) {
+    StatusType statusType = StatusType.valueOf(type.toUpperCase());
+    return statusRepository.findByStatusTypeOrderByName(statusType);
+}
 
-    public boolean existsByTypeAndName(String type, String name) {
-        return statusRepository.existsByTypeAndName(type, name);
-    }
+public boolean existsByTypeAndName(String type, String name) {
+    StatusType statusType = StatusType.valueOf(type.toUpperCase());
+    return statusRepository.existsByStatusTypeAndName(statusType, name);
+}
 
     public Status saveStatus(Status status) {
         return statusRepository.save(status);

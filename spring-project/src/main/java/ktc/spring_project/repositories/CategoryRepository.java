@@ -12,11 +12,10 @@ import java.util.Optional;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     
-    Optional<Category> findByCategoryId(String categoryId);
-    
+Optional<Category> findById(Long id);     
     List<Category> findByIsActive(Boolean isActive);
     
-    List<Category> findByParent_Id(Long parentId); // ✅ Tìm theo parent.id
+    List<Category> findByParent_Id(Long parentId); 
     
     @Query("SELECT c FROM Category c WHERE c.parent IS NULL AND c.isActive = true")
     List<Category> findRootCategories();
@@ -27,7 +26,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query("SELECT c FROM Category c WHERE c.isActive = true ORDER BY c.name")
     List<Category> findActiveCategoriesOrderByName();
     
-    boolean existsByCategoryId(String categoryId);
+    boolean existsById(Long id);
     
     @Query("SELECT COUNT(c) FROM Category c WHERE c.parent.id = :parentId")
     long countChildCategories(@Param("parentId") Long parentId);
