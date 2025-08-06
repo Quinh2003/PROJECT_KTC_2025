@@ -11,9 +11,9 @@ public class CreateStatusRequestDTO {
     @Size(max = 50, message = "Status type must not exceed 50 characters")
     private String type;
     
-    @NotBlank(message = "Status code is required")
-    @Size(max = 20, message = "Status code must not exceed 20 characters")
-    private String code;
+    @NotBlank(message = "Status name is required")
+    @Size(max = 100, message = "Status name must not exceed 100 characters")
+    private String name;
     
     @NotBlank(message = "Description is required")
     @Size(max = 255, message = "Description must not exceed 255 characters")
@@ -22,9 +22,9 @@ public class CreateStatusRequestDTO {
     // Constructors
     public CreateStatusRequestDTO() {}
     
-    public CreateStatusRequestDTO(String type, String code, String description) {
+    public CreateStatusRequestDTO(String type, String name, String description) {
         this.type = type;
-        this.code = code;
+        this.name = name;
         this.description = description;
     }
     
@@ -32,8 +32,8 @@ public class CreateStatusRequestDTO {
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
     
-    public String getCode() { return code; }
-    public void setCode(String code) { this.code = code; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
     
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
