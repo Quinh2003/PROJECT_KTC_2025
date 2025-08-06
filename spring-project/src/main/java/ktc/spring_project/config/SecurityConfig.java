@@ -57,16 +57,14 @@ public class SecurityConfig {
 
     /**
      * Authentication Provider để xác thực user
-     * Sử dụng DAO (Database Access Object) pattern để load user từ database
+     * Sử dụng modern approach cho Spring Security 6.x
      *
      * @return DaoAuthenticationProvider instance
      */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        // Set service để load user details
         authProvider.setUserDetailsService(userDetailsService);
-        // Set password encoder để verify password
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

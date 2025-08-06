@@ -24,28 +24,26 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByProductStatus(ProductStatus status);
 
-    @Query("SELECT p FROM Product p WHERE p.productStatus = ktc.spring_project.enums.ProductStatus.AVAILABLE ORDER BY p.name")
+    // Sửa lỗi: loại bỏ full path enum, chỉ sử dụng enum value
+    @Query("SELECT p FROM Product p WHERE p.productStatus = 'AVAILABLE' ORDER BY p.name")
     List<Product> findActiveProductsOrderByName();
 
-    @Query("SELECT p FROM Product p WHERE p.stockQuantity <= :threshold AND p.productStatus = ktc.spring_project.enums.ProductStatus.AVAILABLE")
+    @Query("SELECT p FROM Product p WHERE p.stockQuantity <= :threshold AND p.productStatus = 'AVAILABLE'")
     List<Product> findProductsWithLowStock(@Param("threshold") Integer threshold);
 
-    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')) AND p.productStatus = ktc.spring_project.enums.ProductStatus.AVAILABLE")
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')) AND p.productStatus = 'AVAILABLE'")
     List<Product> findByNameContainingIgnoreCase(@Param("name") String name);
 
-    @Query("SELECT p FROM Product p WHERE p.unitPrice BETWEEN :minPrice AND :maxPrice AND p.productStatus = ktc.spring_project.enums.ProductStatus.AVAILABLE")
+    @Query("SELECT p FROM Product p WHERE p.unitPrice BETWEEN :minPrice AND :maxPrice AND p.productStatus = 'AVAILABLE'")
     List<Product> findByPriceRange(@Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice);
 
-   @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId AND p.productStatus = ktc.spring_project.enums.ProductStatus.AVAILABLE")
-List<Product> findActiveByCategoryId(@Param("categoryId") Long categoryId);
+    @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId AND p.productStatus = 'AVAILABLE'")
+    List<Product> findActiveByCategoryId(@Param("categoryId") Long categoryId);
 
-
-
-
-
-    @Query("SELECT COUNT(p) FROM Product p WHERE p.productStatus = ktc.spring_project.enums.ProductStatus.AVAILABLE")
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.productStatus = 'AVAILABLE'")
     long countActiveProducts();
 
-    @Query("SELECT SUM(p.stockQuantity) FROM Product p WHERE p.productStatus = ktc.spring_project.enums.ProductStatus.AVAILABLE")
+    @Query("SELECT SUM(p.stockQuantity) FROM Product p WHERE p.productStatus = 'AVAILABLE'")
     Long getTotalStockQuantity();
+
 }
