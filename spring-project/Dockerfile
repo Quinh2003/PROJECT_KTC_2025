@@ -3,10 +3,19 @@
 FROM gradle:8.7.0-jdk21 AS build
 # Đặt thư mục làm việc trong container là /app.
 WORKDIR /app
-# Copy toàn bộ mã nguồn từ máy host vào thư mục /app trong container.
-COPY . .
+# Copy gradle wrapper và build files trước để tận dụng Docker cache
+COPY gradle ./gradle
+COPY gradlew ./
+COPY gradlew.bat ./
+COPY build.gradle ./
+COPY settings.gradle ./
+COPY gradle.properties ./
+# Download dependencies trước (tận dụng cache layer)
+RUN ./gradlew dependencies --no-daemon
+# Copy source code
+COPY src ./src
 # Chạy lệnh Gradle để build file jar của ứng dụng Spring Boot.
-RUN gradle clean bootJar --no-daemon
+RUN ./gradlew clean bootJar --no-daemon
 
 # ---- Run Stage ----
 # Sử dụng image Amazon Corretto JDK 21 để chạy ứng dụng.
