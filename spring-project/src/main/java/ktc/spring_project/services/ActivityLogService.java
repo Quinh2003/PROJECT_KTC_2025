@@ -49,6 +49,7 @@ public class ActivityLogService {
     public ActivityLog updateActivityLog(Long id, ActivityLog activityLogDetails) {
         ActivityLog activityLog = getActivityLogById(id);
         activityLog.setActorId(activityLogDetails.getActorId());
+        activityLog.setActor(activityLogDetails.getActor());
         activityLog.setRole(activityLogDetails.getRole());
         activityLog.setStatus(activityLogDetails.getStatus());
         activityLog.setActionType(activityLogDetails.getActionType());
@@ -57,6 +58,19 @@ public class ActivityLogService {
         activityLog.setActionTimestamp(activityLogDetails.getActionTimestamp());
         activityLog.setMetadata(activityLogDetails.getMetadata());
         return activityLogRepository.save(activityLog);
+    }
+
+    // Utility methods cho relationships
+    public List<ActivityLog> getActivityLogsByActor(Long actorId) {
+        return activityLogRepository.findByActorId(actorId);
+    }
+
+    public List<ActivityLog> getActivityLogsByRole(Long roleId) {
+        return activityLogRepository.findByRoleId(roleId);
+    }
+
+    public List<ActivityLog> getSystemActivityLogs() {
+        return activityLogRepository.findByActorIdIsNull();
     }
 
     public void deleteActivityLog(Long id) {
