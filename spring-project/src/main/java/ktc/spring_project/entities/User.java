@@ -48,6 +48,9 @@ public class User {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
+    @Column(name = "google_id", length = 255)
+    private String googleId;
+
     public User() {}
 
     // Getters and setters
@@ -140,4 +143,6 @@ public class User {
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+
 }
