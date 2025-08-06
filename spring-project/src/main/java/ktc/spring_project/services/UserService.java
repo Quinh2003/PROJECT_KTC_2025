@@ -75,18 +75,13 @@ public class UserService {
 
         // Filter by role if specified
         if (role != null && !role.isEmpty()) {
-            return userRepository.findByRoleRoleName(role);
+            return userRepository.findByRoleName(role);
         }
 
-        // Filter by status if specified
-        if (status != null && !status.isEmpty()) {
-            return userRepository.findByStatusName(status);
-        }
-
-        // Search by username or full name
+        // Search by username or email
         if (search != null && !search.isEmpty()) {
-            filteredUsers.addAll(userRepository.findByUsernameContainingIgnoreCase(search));
-            filteredUsers.addAll(userRepository.findByFullNameContainingIgnoreCase(search));
+            Optional<User> userOpt = userRepository.findByUsernameOrEmail(search, search);
+            return userOpt.map(List::of).orElseGet(ArrayList::new);
         }
 
         return filteredUsers;
