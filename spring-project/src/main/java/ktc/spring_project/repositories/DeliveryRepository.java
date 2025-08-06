@@ -32,13 +32,13 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
     @Query("SELECT d FROM Delivery d WHERE d.actualDeliveryTime IS NULL AND d.scheduleDeliveryTime < :currentTime")
     List<Delivery> findOverdueDeliveries(@Param("currentTime") LocalDateTime currentTime);
     
-    @Query("SELECT d FROM Delivery d WHERE d.lateDeliveryRisk = true AND d.deliveryStatus NOT IN ('DELIVERED', 'CANCELLED')")
+    @Query("SELECT d FROM Delivery d WHERE d.lateDeliveryRisk = 1 AND d.actualDeliveryTime IS NULL")
     List<Delivery> findAtRiskDeliveries();
     
-    @Query("SELECT d FROM Delivery d WHERE d.driver.id = :driverId AND d.deliveryStatus IN ('ASSIGNED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY')")
+    @Query("SELECT d FROM Delivery d WHERE d.driver.id = :driverId AND d.actualDeliveryTime IS NULL")
     List<Delivery> findActiveDeliveriesByDriver(@Param("driverId") Long driverId);
     
-    @Query("SELECT d FROM Delivery d WHERE d.vehicle.id = :vehicleId AND d.deliveryStatus IN ('ASSIGNED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY')")
+    @Query("SELECT d FROM Delivery d WHERE d.vehicle.id = :vehicleId AND d.actualDeliveryTime IS NULL")
     List<Delivery> findActiveDeliveriesByVehicle(@Param("vehicleId") Long vehicleId);
       
     @Query("SELECT COUNT(d) FROM Delivery d WHERE DATE(d.actualDeliveryTime) = CURRENT_DATE")
@@ -46,6 +46,5 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
     
     @Query("SELECT d FROM Delivery d WHERE d.deliveryAttempts > :attempts")
     List<Delivery> findDeliveriesWithMultipleAttempts(@Param("attempts") Integer attempts);
-    
-}
 
+}
