@@ -53,5 +53,12 @@ List<Order> findAvailableOrdersForVehicle(@Param("weightCapacity") BigDecimal we
     @Query("SELECT COUNT(o) FROM Order o WHERE DATE(o.createdAt) = CURRENT_DATE")
     long countTodayOrders();
 
+    @Query("SELECT o FROM Order o WHERE o.driver.id = :driverId AND o.status = 'IN_PROGRESS'")
+    List<Order> findActiveOrdersByDriverId(@Param("driverId") Long driverId);
+
+    // Đếm số đơn đã giao hôm nay
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.driver.id = :driverId AND o.status = 'DELIVERED' AND FUNCTION('DATE', o.updatedAt) = CURRENT_DATE")
+    int countDeliveredOrdersByDriverIdToday(@Param("driverId") Long driverId);
+
 }
 
