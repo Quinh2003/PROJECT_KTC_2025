@@ -95,9 +95,17 @@ public class UpdateRoleRequestDTO {
         return roleName != null && roleName.toLowerCase().contains("operations_manager");
     }
     
+    public boolean isCustomerRole() {
+        return roleName != null && roleName.toLowerCase().contains("customer");
+    }
+    
     public boolean isSystemRole() {
         return isAdminRole() || isDriverRole() || isDispatcherRole() || 
                isFleetManagerRole() || isOperationsManagerRole();
+    }
+    
+    public boolean isExternalRole() {
+        return isCustomerRole();
     }
     
     public String getDefaultPermissions() {
@@ -113,6 +121,8 @@ public class UpdateRoleRequestDTO {
             return "{\"vehicles\": [\"create\", \"read\", \"update\", \"delete\"], \"maintenance\": [\"schedule\", \"track\"], \"inspections\": [\"manage\"]}";
         } else if (isOperationsManagerRole()) {
             return "{\"dashboard\": [\"view_all\"], \"reports\": [\"generate\", \"export\"], \"analytics\": [\"view\", \"analyze\"]}";
+        } else if (isCustomerRole()) {
+            return "{\"orders\": [\"create\", \"read\"], \"tracking\": [\"read\"], \"profile\": [\"read\", \"update\"], \"invoices\": [\"view\"]}";
         }
         return null;
     }
@@ -125,6 +135,7 @@ public class UpdateRoleRequestDTO {
         if (isDispatcherRole()) return "Dispatcher - Người lên kế hoạch và điều hành các chuyến giao hàng";
         if (isFleetManagerRole()) return "Fleet Manager - Người chịu trách nhiệm quản lý và bảo trì phương tiện";
         if (isOperationsManagerRole()) return "Operations Manager - Người giám sát toàn hệ thống, tối ưu hiệu suất vận hành";
+        if (isCustomerRole()) return "Customer (B2B) - Khách hàng doanh nghiệp có thể đặt yêu cầu vận chuyển";
         return "Custom Role - Vai trò tùy chỉnh";
     }
     
