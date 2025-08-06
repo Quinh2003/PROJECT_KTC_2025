@@ -1,6 +1,8 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import java.sql.Timestamp;
 
 @Entity
@@ -53,9 +55,11 @@ public class Address {
     @Column(name = "floor_number", length = 10)
     private String floorNumber;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private Timestamp createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
