@@ -1,0 +1,36 @@
+# docker-compose.yml
+# This file is used to define and run multi-container Docker applications.
+# It sets up a Spring Boot application with a MySQL database.
+services:
+  app:
+    image: thanhtungo/vku-java-spring-boot-demo:latest
+    ports:
+      - '8080:8080'
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/spring
+      SPRING_DATASOURCE_USERNAME: developer
+      SPRING_DATASOURCE_PASSWORD: developer_password
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: spring
+      MYSQL_USER: developer
+      MYSQL_PASSWORD: developer_password
+    ports:
+      - '3306:3306'
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      # This healthcheck ensures that the MySQL service is ready before the app starts.
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-proot_password']
+      timeout: 20s
+      retries: 10
+      interval: 10s
+      start_period: 30s
+volumes:
+  db_data:
