@@ -19,9 +19,9 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     
     List<Address> findByCity(String city);
     
-    @Query("SELECT a FROM Address a WHERE a.order.orderId = :orderId")
-    List<Address> findByOrderOrderId(@Param("orderId") String orderId);
-    
+    @Query("SELECT a FROM Address a WHERE a.order.id = :orderId")
+    List<Address> findByOrderOrderId(@Param("orderId") Long orderId);
+
     @Query("SELECT a FROM Address a WHERE a.order.id = :orderId AND a.addressType = :type")
     List<Address> findByOrderIdAndType(@Param("orderId") Long orderId, @Param("type") AddressType type);
     
