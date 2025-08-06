@@ -94,23 +94,6 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
             </button>
           </form>
           <div className="text-center mt-3">
-            <button
-              type="button"
-              className="btn btn-link text-decoration-none text-primary"
-              onClick={() => setShowDemo(!showDemo)}
-            >
-              {showDemo ? "Ẩn tài khoản demo" : "Quên mật khẩu?"}
-            </button>
-            <div className="text-muted">
-              Chưa có tài khoản?{" "}
-              <button
-                type="button"
-                className="btn btn-link text-decoration-none text-primary fw-semibold"
-                onClick={() => setShowDemo(!showDemo)}
-              >
-                Đăng ký ngay
-              </button>
-            </div>
           </div>
           {showDemo && (
             <div className="mt-4 pt-3 border-top">
