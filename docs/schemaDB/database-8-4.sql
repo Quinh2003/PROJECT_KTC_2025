@@ -284,7 +284,7 @@ CREATE TABLE IF NOT EXISTS `payments` (
     `amount` DECIMAL(15,2) NOT NULL COMMENT 'Tổng số tiền thanh toán',
     `payment_method` VARCHAR(50) NOT NULL DEFAULT 'CASH' COMMENT 'Phương thức thanh toán (tiền mặt, thẻ, chuyển khoản)',
     `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái thanh toán (thành công, thất bại, chờ xử lý)',
-    `transaction_id` VARCHAR(255) NOT NULL COMMENT 'Mã giao dịch từ cổng thanh toán',
+    `transaction_id` VARCHAR(255) COMMENT 'Mã giao dịch từ cổng thanh toán',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo bản ghi thanh toán',
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật thanh toán cuối cùng',
     `created_by` BIGINT COMMENT 'ID người dùng tạo bản ghi thanh toán',
