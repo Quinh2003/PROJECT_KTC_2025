@@ -37,9 +37,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByTotalAmountRange(@Param("minAmount") BigDecimal minAmount, 
                                      @Param("maxAmount") BigDecimal maxAmount);
     
-    @Query("SELECT o FROM Order o WHERE o.store.storeCode = :storeCode ORDER BY o.createdAt DESC")
-    List<Order> findByStoreCodeOrderByCreatedAtDesc(@Param("storeCode") String storeCode);
-    
+
     @Query("SELECT COUNT(o) FROM Order o WHERE o.status.name = :statusName")
     long countByStatusName(@Param("statusName") String statusName);
     
