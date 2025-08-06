@@ -13,14 +13,7 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [showDemo, setShowDemo] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  const handleDemoClick = (account: User) => {
-    setEmail(account.email);
-    setPassword(account.password);
-    setError("");
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,27 +88,7 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
           </form>
           <div className="text-center mt-3">
           </div>
-          {showDemo && (
-            <div className="mt-4 pt-3 border-top">
-              <div className="fw-semibold text-secondary mb-2 text-center">Tài khoản demo</div>
-              <div className="d-grid gap-2">
-                {demoAccounts.map((acc, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    className="btn btn-light border d-flex justify-content-between align-items-center"
-                    onClick={() => handleDemoClick(acc)}
-                  >
-                    <div>
-                      <div className="fw-semibold">{acc.name}</div>
-                      <div className="text-muted small">{acc.email}</div>
-                    </div>
-                    <span className="badge bg-primary">{acc.role.replace("_", " ")}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          
         </div>
         <div className="text-center mt-3 text-muted small">
           © 2025 KTC Logistics. All rights reserved.
