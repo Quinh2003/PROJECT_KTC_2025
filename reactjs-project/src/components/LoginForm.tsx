@@ -13,14 +13,7 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [showDemo, setShowDemo] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  const handleDemoClick = (account: User) => {
-    setEmail(account.email);
-    setPassword(account.password);
-    setError("");
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,108 +29,94 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
   };
 
   return (
-    <div className="bg-light min-vh-100 d-flex align-items-center justify-content-center" style={{background: "linear-gradient(135deg, #e9d5ff 0%, #f3e8ff 100%)"}}>
-      <div className="container" style={{maxWidth: 400}}>
-        <div className="card shadow-lg rounded-4 p-4 border-0">
-          <div className="text-center mb-4">
-            <div className="bg-gradient p-3 rounded-circle mx-auto mb-3" style={{width: 64, height: 64, background: "linear-gradient(135deg, #a78bfa 0%, #c4b5fd 100%)"}}>
-              <span style={{fontSize: 32}}>📦</span>
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-purple-100 flex items-center justify-center p-5">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 backdrop-blur-sm border border-white/20">
+          {/* Logo & Header */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-gradient-to-r from-purple-400 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                📦
+              </div>
             </div>
-            <h2 className="fw-bold text-primary mb-1" style={{fontSize: 28}}>KTC Logistics</h2>
-            <div className="text-muted mb-2">Đăng nhập vào hệ thống</div>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent mb-2">
+              KTC Logistics
+            </h2>
+            <p className="text-gray-500 text-sm">
+              Đăng nhập vào hệ thống
+            </p>
           </div>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label className="form-label text-primary fw-semibold">Email</label>
-              <div className="input-group">
-                <span className="input-group-text bg-white border-end-0"><span style={{fontSize: 18}}>✉️</span></span>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-purple-700 mb-2">
+                Email
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-400 text-lg">✉️</span>
+                </div>
                 <input
                   type="email"
-                  className="form-control border-start-0"
-                  placeholder="Nhập email của bạn"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 border-2 border-purple-100 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all placeholder-gray-400"
+                  placeholder="Nhập email của bạn"
                   required
                 />
               </div>
             </div>
-            <div className="mb-3">
-              <label className="form-label text-primary fw-semibold">Mật khẩu</label>
-              <div className="input-group">
-                <span className="input-group-text bg-white border-end-0"><span style={{fontSize: 18}}>🔒</span></span>
+
+            <div>
+              <label className="block text-sm font-medium text-purple-700 mb-2">
+                Mật khẩu
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-400 text-lg">🔒</span>
+                </div>
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="form-control border-start-0"
-                  placeholder="Nhập mật khẩu"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
+                  className="w-full pl-12 pr-12 py-3 border-2 border-purple-100 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all placeholder-gray-400"
+                  placeholder="Nhập mật khẩu"
                   required
                 />
                 <button
                   type="button"
-                  className="btn btn-outline-secondary"
-                  tabIndex={-1}
                   onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-purple-600 transition-colors"
                 >
-                  {showPassword ? "👁️" : "👁️‍🗨️"}
+                  <span className="text-lg">{showPassword ? '👁️' : '👁️‍🗨️'}</span>
                 </button>
               </div>
             </div>
+
             {error && (
-              <div className="alert alert-danger py-2 px-3 mb-3 d-flex align-items-center gap-2">
-                <span>⚠️</span>
-                <span>{error}</span>
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center space-x-2">
+                <span className="text-red-500">⚠️</span>
+                <span className="text-red-600 text-sm">{error}</span>
               </div>
             )}
-            <button type="submit" className="btn btn-primary w-100 py-2 fw-bold mb-2" style={{fontSize: 18}}>
+
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 px-4 rounded-xl font-semibold text-lg hover:from-purple-600 hover:to-purple-700 focus:ring-4 focus:ring-purple-200 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+            >
               Đăng nhập
             </button>
           </form>
-          <div className="text-center mt-3">
-            <button
-              type="button"
-              className="btn btn-link text-decoration-none text-primary"
-              onClick={() => setShowDemo(!showDemo)}
-            >
-              {showDemo ? "Ẩn tài khoản demo" : "Quên mật khẩu?"}
-            </button>
-            <div className="text-muted">
-              Chưa có tài khoản?{" "}
-              <button
-                type="button"
-                className="btn btn-link text-decoration-none text-primary fw-semibold"
-                onClick={() => setShowDemo(!showDemo)}
-              >
-                Đăng ký ngay
-              </button>
-            </div>
+
+          {/* Footer */}
+          <div className="text-center mt-6">
+            <p className="text-gray-400 text-xs">
+              © 2025 KTC Logistics. All rights reserved.
+            </p>
           </div>
-          {showDemo && (
-            <div className="mt-4 pt-3 border-top">
-              <div className="fw-semibold text-secondary mb-2 text-center">Tài khoản demo</div>
-              <div className="d-grid gap-2">
-                {demoAccounts.map((acc, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    className="btn btn-light border d-flex justify-content-between align-items-center"
-                    onClick={() => handleDemoClick(acc)}
-                  >
-                    <div>
-                      <div className="fw-semibold">{acc.name}</div>
-                      <div className="text-muted small">{acc.email}</div>
-                    </div>
-                    <span className="badge bg-primary">{acc.role.replace("_", " ")}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="text-center mt-3 text-muted small">
-          © 2025 KTC Logistics. All rights reserved.
         </div>
       </div>
     </div>
-  );
+    );
 }
