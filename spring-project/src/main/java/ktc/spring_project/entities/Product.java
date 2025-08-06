@@ -34,11 +34,11 @@ public class Product {
     @Column(precision = 10, scale = 3)
     private BigDecimal volume;
 
-    @Column(name = "is_fragile", nullable = false)
-    private Boolean isFragile;
+    @Column(name = "is_fragile", nullable = false, columnDefinition = "tinyint DEFAULT 0")
+    private Boolean isFragile = false;
 
-    @Column(name = "stock_quantity", nullable = false)
-    private Integer stockQuantity;
+    @Column(name = "stock_quantity", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer stockQuantity = 0;
 
     @Column(name = "product_image", length = 500)
     private String productImage;
@@ -47,8 +47,8 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(name = "product_status", nullable = false)
-    private Integer productStatus;
+    @Column(name = "product_status", nullable = false, columnDefinition = "tinyint DEFAULT 1")
+    private Integer productStatus = 1;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
