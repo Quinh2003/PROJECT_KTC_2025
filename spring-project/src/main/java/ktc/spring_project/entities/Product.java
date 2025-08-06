@@ -1,6 +1,8 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import ktc.spring_project.enums.ProductStatus;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -34,11 +36,11 @@ public class Product {
     @Column(precision = 10, scale = 3)
     private BigDecimal volume;
 
-    @Column(name = "is_fragile", nullable = false)
-    private Boolean isFragile;
+    @Column(name = "is_fragile", nullable = false, columnDefinition = "tinyint DEFAULT 0")
+    private Boolean isFragile = false;
 
-    @Column(name = "stock_quantity", nullable = false)
-    private Integer stockQuantity;
+    @Column(name = "stock_quantity", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer stockQuantity = 0;
 
     @Column(name = "product_image", length = 500)
     private String productImage;
@@ -47,8 +49,10 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(name = "product_status", nullable = false)
-    private Status productStatus;
+    @Enumerated(EnumType.STRING) // hoặc EnumType.ORDINAL nếu bạn muốn lưu bằng tên
+@Column(name = "product_status", nullable = false)
+private ProductStatus productStatus = ProductStatus.ACTIVE;
+
 
     @Column(columnDefinition = "TEXT")
     private String notes;
@@ -132,6 +136,13 @@ public class Product {
         this.isFragile = isFragile;
     }
 
+public ProductStatus getProductStatus() {
+    return productStatus;
+}
+
+public void setProductStatus(ProductStatus productStatus) {
+    this.productStatus = productStatus;
+}
 
 
     public String getProductImage() {
@@ -148,14 +159,6 @@ public class Product {
 
     public void setCategory(Category category) {
         this.category = category;
-    }
-
-    public Status getProductStatus() {
-        return productStatus;
-    };
-
-    public void setProductStatus(Status productStatus) {
-        this.productStatus = productStatus;
     }
 
     public Integer getStockQuantity() {

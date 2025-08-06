@@ -36,8 +36,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.unitPrice BETWEEN :minPrice AND :maxPrice AND p.productStatus = ktc.spring_project.enums.ProductStatus.AVAILABLE")
     List<Product> findByPriceRange(@Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice);
 
-    @Query("SELECT p FROM Product p WHERE p.categoryId = :categoryId AND p.productStatus = ktc.spring_project.enums.ProductStatus.AVAILABLE")
-    List<Product> findActiveByCategoryId(@Param("categoryId") Long categoryId);
+   @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId AND p.productStatus = ktc.spring_project.enums.ProductStatus.AVAILABLE")
+List<Product> findActiveByCategoryId(@Param("categoryId") Long categoryId);
 
 
 

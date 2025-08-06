@@ -20,14 +20,14 @@ public class Vehicle {
     private String licensePlate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "vehicle_type", length = 50, nullable = false)
-    private VehicleType vehicleType;
+    @Column(name = "vehicle_type", length = 50, nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'TRUCK'")
+    private VehicleType vehicleType = VehicleType.TRUCK;
 
-    @Column(name = "capacity_weight_kg", precision = 10, scale = 2, nullable = false)
-    private BigDecimal capacityWeightKg;
+    @Column(name = "capacity_weight_kg", precision = 10, scale = 2, columnDefinition = "DECIMAL(10,2) DEFAULT 0.00")
+    private BigDecimal capacityWeightKg = BigDecimal.ZERO;
 
-    @Column(name = "capacity_volume_m3", precision = 10, scale = 2, nullable = false)
-    private BigDecimal capacityVolumeM3;
+    @Column(name = "capacity_volume_m3", precision = 10, scale = 2, columnDefinition = "DECIMAL(10,2) DEFAULT 0.00")
+    private BigDecimal capacityVolumeM3 = BigDecimal.ZERO;
 
     @ManyToOne
     @JoinColumn(name = "current_driver_id")

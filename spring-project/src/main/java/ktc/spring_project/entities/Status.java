@@ -1,6 +1,8 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import ktc.spring_project.enums.StatusType;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -14,8 +16,9 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Short id;
 
-    @Column(length = 50)
-    private String type;
+    @Enumerated(EnumType.STRING)
+@Column(name = "type")
+private StatusType statusType;
 
     @Column(length = 100)
     private String name;
@@ -43,13 +46,14 @@ public class Status {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
-    }
+   public StatusType getStatusType() {
+    return statusType;
+}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+public void setStatusType(StatusType statusType) {
+    this.statusType = statusType;
+}
+
 
     public String getName() {
         return name;
