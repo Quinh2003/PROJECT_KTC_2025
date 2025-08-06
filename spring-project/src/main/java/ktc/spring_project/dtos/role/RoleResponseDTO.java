@@ -102,6 +102,10 @@ public class RoleResponseDTO {
         return roleName != null && roleName.toLowerCase().contains("operations_manager");
     }
     
+    public boolean isCustomerRole() {
+        return roleName != null && roleName.toLowerCase().contains("customer");
+    }
+    
     public String getUserSummary() {
         if (userCount == null) {
             return "No user data";
@@ -115,6 +119,7 @@ public class RoleResponseDTO {
         if (isDispatcherRole()) return "Dispatcher";
         if (isFleetManagerRole()) return "Fleet Manager";
         if (isOperationsManagerRole()) return "Operations Manager";
+        if (isCustomerRole()) return "Customer (B2B)";
         return "Custom Role";
     }
     
@@ -124,12 +129,21 @@ public class RoleResponseDTO {
         if (isDispatcherRole()) return "Người lên kế hoạch và điều hành các chuyến giao hàng";
         if (isFleetManagerRole()) return "Người chịu trách nhiệm quản lý và bảo trì phương tiện";
         if (isOperationsManagerRole()) return "Người giám sát toàn hệ thống, tối ưu hiệu suất vận hành";
+        if (isCustomerRole()) return "Khách hàng doanh nghiệp (B2B) có thể đặt yêu cầu vận chuyển";
         return description != null ? description : "Custom role";
     }
     
     public boolean isSystemRole() {
         return isAdminRole() || isDispatcherRole() || isDriverRole() || 
                isFleetManagerRole() || isOperationsManagerRole();
+    }
+    
+    public boolean isExternalRole() {
+        return isCustomerRole();
+    }
+    
+    public boolean isInternalRole() {
+        return isSystemRole();
     }
     
     public String getPermissionSummary() {
