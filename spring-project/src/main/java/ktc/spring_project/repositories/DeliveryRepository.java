@@ -46,5 +46,6 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
     
     @Query("SELECT d FROM Delivery d WHERE d.deliveryAttempts > :attempts")
     List<Delivery> findDeliveriesWithMultipleAttempts(@Param("attempts") Integer attempts);
+    
 }
 
