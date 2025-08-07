@@ -1,6 +1,6 @@
 import AdminDashboard from "./AdminDashboard/AdminDashboard";
 import DispatcherDashboard from "./DispatcherDashboard/DispatcherDashboard";
-import FleetDashboard from "./FleetDashboard/FleetDashboard";
+import FleetDashboard from "./FleetDashboard/index";
 import DriverDashboard from "./DriverDashboard/DriverDashboard";
 import OperationsDashboard from "./OperationsDashboard/OperationsDashboard";
 import type { User } from "../types/User";
