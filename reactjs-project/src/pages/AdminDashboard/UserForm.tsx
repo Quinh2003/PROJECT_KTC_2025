@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
+import { FaTools, FaChartBar, FaTruck } from "react-icons/fa";
+import { FaBellConcierge } from "react-icons/fa6";
 
 interface UserFormProps {
   onAdd: (user: {
     name: string;
     email: string;
     role: string;
-    roleIcon: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    roleIcon: any;
     status: string;
     lastLogin: string;
   }) => void;
@@ -14,16 +17,18 @@ interface UserFormProps {
     name: string;
     email: string;
     role: string;
-    roleIcon: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    roleIcon: any;
     status: string;
     lastLogin: string;
   } | null;
 }
 
 const roles = [
-  { label: "Dispatcher", value: "Dispatcher", icon: "🛎️" },
-  { label: "Fleet Manager", value: "Fleet Manager", icon: "🛠️" },
-  { label: "Driver", value: "Driver", icon: "🚚" },
+  { label: "Dispatcher", value: "Dispatcher", icon: <FaBellConcierge className="inline mr-1" /> },
+  { label: "Fleet Manager", value: "Fleet Manager", icon: <FaTools className="inline mr-1" /> },
+  { label: "Driver", value: "Driver", icon: <FaTruck className="inline mr-1" /> },
+  { label: "Operations Manager", value: "Operations Manager", icon: <FaChartBar className="inline mr-1" /> },
 ];
 
 export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
@@ -32,7 +37,6 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
   const [role, setRole] = useState(user?.role || roles[0].value);
   const [status, setStatus] = useState(user?.status || "active");
 
-  // Khi user thay đổi (bấm edit user khác), cập nhật lại form
   useEffect(() => {
     setName(user?.name || "");
     setEmail(user?.email || "");
@@ -42,19 +46,14 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const icon =
-      role === "Dispatcher"
-        ? "🛎️"
-        : role === "Fleet Manager"
-        ? "🛠️"
-        : "🚚";
+    const selectedRole = roles.find(r => r.value === role) || roles[0];
     onAdd({
       name,
       email,
       role,
-      roleIcon: icon,
+      roleIcon: selectedRole.icon,
       status,
-      lastLogin: user?.lastLogin || "-", // giữ nguyên lastLogin nếu edit
+      lastLogin: user?.lastLogin || "-",
     });
     onClose();
   };
@@ -66,10 +65,10 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
         onSubmit={handleSubmit}
       >
         <h2 className="text-xl font-bold mb-2">
-          {user ? "Chỉnh sửa người dùng" : "Thêm người dùng mới"}
+          {user ? "Edit User" : "Add New User"}
         </h2>
         <div>
-          <label className="block mb-1 font-semibold">Họ tên</label>
+          <label className="block mb-1 font-semibold">Full Name</label>
           <input
             className="border rounded px-3 py-2 w-full"
             value={name}
@@ -85,11 +84,11 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
-            disabled={!!user} // Không cho sửa email khi edit
+            disabled={!!user}
           />
         </div>
         <div>
-          <label className="block mb-1 font-semibold">Vai trò</label>
+          <label className="block mb-1 font-semibold">Role</label>
           <select
             className="border rounded px-3 py-2 w-full"
             value={role}
@@ -97,20 +96,24 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
           >
             {roles.map(r => (
               <option key={r.value} value={r.value}>
-                {r.icon} {r.label}
+                {r.label}
               </option>
             ))}
           </select>
+          <div className="mt-1">
+            {roles.find(r => r.value === role)?.icon}
+            <span className="ml-1">{roles.find(r => r.value === role)?.label}</span>
+          </div>
         </div>
         <div>
-          <label className="block mb-1 font-semibold">Trạng thái</label>
+          <label className="block mb-1 font-semibold">Status</label>
           <select
             className="border rounded px-3 py-2 w-full"
             value={status}
             onChange={e => setStatus(e.target.value)}
           >
-            <option value="active">Hoạt động</option>
-            <option value="inactive">Không hoạt động</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
           </select>
         </div>
         <div className="flex gap-2 justify-end pt-2">
@@ -119,13 +122,13 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
             className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
             onClick={onClose}
           >
-            Hủy
+            Cancel
           </button>
           <button
             type="submit"
             className="px-4 py-2 rounded bg-teal-600 text-white font-bold hover:bg-blue-700"
           >
-            {user ? "Lưu" : "Thêm"}
+            {user ? "Save" : "Add"}
           </button>
         </div>
       </form>

@@ -1,28 +1,31 @@
 import { useState } from "react";
 import UserForm from "./UserForm";
+import { FaBellConcierge } from "react-icons/fa6";
+import { FaTruck } from "react-icons/fa6";
+import { FaTools } from "react-icons/fa";
 
 const initialUsers = [
   {
-    name: "Nguyễn Văn A",
+    name: "Nguyen Van A",
     email: "nguyenvana@company.com",
     role: "Dispatcher",
-    roleIcon: "🛎️",
+    roleIcon: <FaBellConcierge className="inline mr-1" />,
     status: "active",
     lastLogin: "2024-01-15 09:30",
   },
   {
-    name: "Trần Thị B",
+    name: "Tran Thi B",
     email: "tranthib@company.com",
     role: "Fleet Manager",
-    roleIcon: "🛠️",
+    roleIcon: <FaTools className="inline mr-1" />,
     status: "active",
     lastLogin: "2024-01-15 08:45",
   },
   {
-    name: "Lê Văn C",
+    name: "Le Van C",
     email: "levanc@company.com",
     role: "Driver",
-    roleIcon: "🚚",
+    roleIcon: <FaTruck className="inline mr-1" />,
     status: "inactive",
     lastLogin: "2024-01-10 16:20",
   },
@@ -36,7 +39,8 @@ export default function UserTable() {
     name: string;
     email: string;
     role: string;
-    roleIcon: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    roleIcon: any;
     status: string;
     lastLogin: string;
   } | null>(null);
@@ -44,7 +48,8 @@ export default function UserTable() {
     name: string;
     email: string;
     role: string;
-    roleIcon: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    roleIcon: any;
     status: string;
     lastLogin: string;
   } | null>(null);
@@ -55,23 +60,26 @@ export default function UserTable() {
       u.email.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleAddUser = (user: { name: string; email: string; role: string; roleIcon: string; status: string; lastLogin: string; }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleAddUser = (user: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
     setUsers([...users, user]);
   };
 
-  const handleEditUser = (user: { name: string; email: string; role: string; roleIcon: string; status: string; lastLogin: string; }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleEditUser = (user: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
     setEditUser(user);
     setShowForm(true);
   };
 
-  const handleUpdateUser = (updatedUser: { name: string; email: string; role: string; roleIcon: string; status: string; lastLogin: string; }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleUpdateUser = (updatedUser: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
     setUsers(users.map(u => (u.email === updatedUser.email ? updatedUser : u)));
     setShowForm(false);
     setEditUser(null);
   };
 
   const handleDeleteUser = (email: string) => {
-    if (window.confirm("Bạn có chắc muốn xoá người dùng này?")) {
+    if (window.confirm("Are you sure you want to delete this user?")) {
       setUsers(users.filter(u => u.email !== email));
     }
   };
@@ -81,7 +89,7 @@ export default function UserTable() {
       <div className="flex justify-between items-center mb-4">
         <input
           className="border rounded px-4 py-2 w-72"
-          placeholder="Tìm kiếm người dùng..."
+          placeholder="Search user..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -92,7 +100,7 @@ export default function UserTable() {
             setEditUser(null);
           }}
         >
-          <span className="text-xl">+</span> Thêm người dùng
+          <span className="text-xl">+</span> Add User
         </button>
       </div>
       {showForm && (
@@ -106,17 +114,17 @@ export default function UserTable() {
         />
       )}
       <div>
-        <h2 className="text-2xl font-bold mb-5">Danh sách người dùng</h2>
+        <h2 className="text-2xl font-bold mb-5">User List</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
               <tr className="text-left text-gray-600 border-b">
-                <th className="py-2 pr-4">Người dùng</th>
+                <th className="py-2 pr-4">Name</th>
                 <th className="py-2 pr-4">Email</th>
-                <th className="py-2 pr-4">Vai trò</th>
-                <th className="py-2 pr-4">Trạng thái</th>
-                <th className="py-2 pr-4">Đăng nhập cuối</th>
-                <th className="py-2 pr-4">Thao tác</th>
+                <th className="py-2 pr-4">Role</th>
+                <th className="py-2 pr-4">Status</th>
+                <th className="py-2 pr-4">Last Login</th>
+                <th className="py-2 pr-4">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -131,7 +139,11 @@ export default function UserTable() {
                           ? "bg-black text-white"
                           : u.role === "Fleet Manager"
                           ? "bg-gray-100 text-black"
-                          : "bg-yellow-50 text-black border"
+                          : u.role === "Driver"
+                          ? "bg-yellow-50 text-black"
+                          : u.role === "Operations Manager"
+                          ? "bg-orange-100 text-black"
+                          : ""
                       }`}
                     >
                       <span>{u.roleIcon}</span>
@@ -139,27 +151,27 @@ export default function UserTable() {
                     </span>
                   </td>
                   <td className="py-3 pr-4">
-                    {u.status === "active" ? (
-                      <span className="inline-flex items-center px-6 py-2 rounded-full bg-[#22c55e] text-white text-base font-semibold gap-2 shadow-sm">
-                        <span className="w-4 h-4 rounded-full bg-white flex items-center justify-center">
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e] block"></span>
-                        </span>
-                        Hoạt động
+                  {u.status === "active" ? (
+                    <span className="inline-flex items-center px-4 py-1 rounded-full bg-white border border-green-300 text-green-700 text-sm font-semibold gap-2">
+                      <span className="w-4 h-4 rounded-full border border-green-300 flex items-center justify-center">
+                        <span className="w-2.5 h-2.5 rounded-full bg-green-400 block"></span>
                       </span>
-                    ) : (
-                      <span className="inline-flex items-center px-6 py-2 rounded-full bg-gray-100 text-gray-700 text-base font-semibold gap-2 shadow-sm">
-                        <span className="w-4 h-4 rounded-full bg-white flex items-center justify-center">
-                          <span className="w-2.5 h-2.5 rounded-full bg-gray-400 block"></span>
-                        </span>
-                        Không hoạt động
+                      Active
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-4 py-1 rounded-full bg-white border border-gray-300 text-gray-500 text-sm font-semibold gap-2">
+                      <span className="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center">
+                        <span className="w-2.5 h-2.5 rounded-full bg-gray-400 block"></span>
                       </span>
-                    )}
-                  </td>
+                      Inactive
+                    </span>
+                  )}
+                </td>
                   <td className="py-3 pr-4">{u.lastLogin}</td>
                   <td className="py-3 pr-4 flex gap-2">
                     <button
                       className="p-2 rounded hover:bg-gray-200"
-                      title="Sửa"
+                      title="Edit"
                       onClick={() => handleEditUser(u)}
                     >
                       <svg width="20" height="20" fill="none">
@@ -181,7 +193,7 @@ export default function UserTable() {
                     </button>
                     <button
                       className="p-2 rounded hover:bg-gray-200"
-                      title="Xem"
+                      title="View"
                       onClick={() => setViewUser(u)}
                     >
                       <svg width="20" height="20" fill="none">
@@ -203,7 +215,7 @@ export default function UserTable() {
                     </button>
                     <button
                       className="p-2 rounded hover:bg-red-100"
-                      title="Xoá"
+                      title="Delete"
                       onClick={() => handleDeleteUser(u.email)}
                     >
                       <svg width="20" height="20" fill="none">
@@ -229,7 +241,7 @@ export default function UserTable() {
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={6} className="py-6 text-center text-gray-400">
-                    Không có người dùng nào.
+                    No users found.
                   </td>
                 </tr>
               )}
@@ -237,18 +249,18 @@ export default function UserTable() {
           </table>
         </div>
       </div>
-      {/* Modal xem chi tiết người dùng */}
+      {/* User detail modal */}
       {viewUser && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-2">Thông tin người dùng</h2>
-            <div><b>Họ tên:</b> {viewUser.name}</div>
+            <h2 className="text-xl font-bold mb-2">User Information</h2>
+            <div><b>Name:</b> {viewUser.name}</div>
             <div><b>Email:</b> {viewUser.email}</div>
-            <div><b>Vai trò:</b> {viewUser.role}</div>
-            <div><b>Trạng thái:</b> {viewUser.status === "active" ? "Hoạt động" : "Không hoạt động"}</div>
-            <div><b>Đăng nhập cuối:</b> {viewUser.lastLogin}</div>
+            <div><b>Role:</b> {viewUser.role}</div>
+            <div><b>Status:</b> {viewUser.status === "active" ? "Active" : "Inactive"}</div>
+            <div><b>Last Login:</b> {viewUser.lastLogin}</div>
             <button className="mt-4 px-4 py-2 rounded bg-teal-600 text-white" onClick={() => setViewUser(null)}>
-              Đóng
+              Close
             </button>
           </div>
         </div>
