@@ -1,6 +1,8 @@
 package ktc.spring_project.repositories;
 
 import ktc.spring_project.entities.Route;
+import ktc.spring_project.entities.User;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,9 +14,8 @@ import java.util.List;
 
 @Repository
 public interface RouteRepository extends JpaRepository<Route, Long> {
-    
-    List<Route> findByCreatedBy(Long createdBy);
-    
+    List<Route> findByCreatedBy(User createdBy);
+
     @Query("SELECT r FROM Route r WHERE r.completedAt IS NOT NULL ORDER BY r.completedAt DESC")
     List<Route> findCompletedRoutesOrderByCompletedAt();
     

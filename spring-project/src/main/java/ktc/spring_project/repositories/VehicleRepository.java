@@ -39,7 +39,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     long countActiveVehicles();
 
     @Modifying
-    @Query("UPDATE Vehicle v SET v.currentDriverId = NULL WHERE v.currentDriverId = :driverId")
-    void clearDriverAssignment(Long driverId);
+@Query("UPDATE Vehicle v SET v.currentDriver = NULL WHERE v.currentDriver.id = :driverId")
+void clearDriverAssignment(@Param("driverId") Long driverId);
+
 }
 

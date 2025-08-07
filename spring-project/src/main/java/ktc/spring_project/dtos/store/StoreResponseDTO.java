@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 public class StoreResponseDTO {
     
     private Long id;
-    private String storeCode;
+
     private String storeName;
     private String email;
     private String phone;
@@ -33,9 +33,8 @@ public class StoreResponseDTO {
     // Constructors
     public StoreResponseDTO() {}
     
-    public StoreResponseDTO(Long id, String storeCode, String storeName, String phone, Boolean isActive) {
+    public StoreResponseDTO(Long id, String storeName, String phone, Boolean isActive) {
         this.id = id;
-        this.storeCode = storeCode;
         this.storeName = storeName;
         this.phone = phone;
         this.isActive = isActive;
@@ -45,8 +44,7 @@ public class StoreResponseDTO {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
-    public String getStoreCode() { return storeCode; }
-    public void setStoreCode(String storeCode) { this.storeCode = storeCode; }
+
     
     public String getStoreName() { return storeName; }
     public void setStoreName(String storeName) { this.storeName = storeName; }
@@ -95,7 +93,7 @@ public class StoreResponseDTO {
     
     // Utility methods
     public String getDisplayName() {
-        return String.format("%s - %s", storeCode, storeName);
+        return storeName != null ? storeName : "Store #" + id;
     }
     
     public boolean isActiveStore() {
