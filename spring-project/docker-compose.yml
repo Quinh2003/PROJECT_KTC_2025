@@ -5,7 +5,7 @@
 services:
   app:
     # Updated to use proper repository name
-    image: fanglee2003/ktc-logistics-backend:latest
+    image: quinh2003/ktc-logistics-backend:latest
     ports:
       - '8080:8080'
     environment:
