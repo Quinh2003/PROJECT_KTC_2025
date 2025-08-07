@@ -13,14 +13,7 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [showDemo] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  const handleDemoClick = (account: User) => {
-    setEmail(account.email);
-    setPassword(account.password);
-    setError("");
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,93 +29,99 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-teal-100">
-      <div className="w-full max-w-md px-4">
-        <div className="bg-white shadow-xl rounded-2xl p-8 border-0">
-          <div className="text-center mb-6">
-            <div className="bg-gradient-to-br from-blue-400 to-teal-300 p-4 rounded-full mx-auto mb-4 w-16 h-16 flex items-center justify-center">
-              <span className="text-3xl">📦</span>
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-purple-100 flex items-center justify-center p-5 relative overflow-hidden">
+      {/* Animated background circles */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
+        <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-purple-200 rounded-full opacity-40 blur-2xl animate-bg-move"></div>
+        <div className="absolute bottom-[-120px] right-[-120px] w-[350px] h-[350px] bg-pink-200 rounded-full opacity-30 blur-2xl animate-bg-move-reverse"></div>
+        <div className="absolute top-1/2 left-1/2 w-[180px] h-[180px] bg-purple-300 rounded-full opacity-20 blur-2xl animate-bg-move"></div>
+      </div>
+      <div className="w-full max-w-5xl h-[700px] bg-white rounded-2xl shadow-2xl flex overflow-hidden border border-white/20 relative z-10 animate-fade-in">
+        {/* Bên trái: Ảnh minh họa */}
+        <div className="hidden md:flex w-1/2 h-full">
+          <img
+            src="/login.jpg"
+            alt="Logistics Illustration"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        {/* Bên phải: Form login */}
+        <div className="w-full md:w-1/2 flex flex-col justify-center p-8">
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-gradient-to-r from-purple-400 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                📦
+              </div>
             </div>
-            <h2 className="font-bold text-blue-700 mb-1 text-2xl">KTC Logistics</h2>
-            <div className="text-teal-500 mb-2">Đăng nhập vào hệ thống</div>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent mb-2">
+              Đăng nhập hệ thống
+            </h2>
+            <p className="text-gray-500 text-sm">
+              Vui lòng nhập thông tin để đăng nhập
+            </p>
           </div>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-blue-700 font-semibold mb-1">Email</label>
-              <div className="flex items-center border rounded-lg bg-white">
-                <span className="px-3 text-lg">✉️</span>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-purple-700 mb-2">
+                Email
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-400 text-lg">✉️</span>
+                </div>
                 <input
                   type="email"
-                  className="flex-1 py-2 px-3 rounded-r-lg outline-none bg-transparent"
-                  placeholder="Nhập email của bạn"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 border-2 border-purple-100 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all duration-300 placeholder-gray-400"
+                  placeholder="Nhập email của bạn"
                   required
                 />
               </div>
             </div>
-            <div className="mb-4">
-              <label className="block text-blue-700 font-semibold mb-1">Mật khẩu</label>
-              <div className="flex items-center border rounded-lg bg-white">
-                <span className="px-3 text-lg">🔒</span>
+            <div>
+              <label className="block text-sm font-medium text-purple-700 mb-2">
+                Mật khẩu
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-400 text-lg">🔒</span>
+                </div>
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="flex-1 py-2 px-3 rounded-r-lg outline-none bg-transparent"
-                  placeholder="Nhập mật khẩu"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
+                  className="w-full pl-12 pr-12 py-3 border-2 border-purple-100 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all duration-300 placeholder-gray-400"
+                  placeholder="Nhập mật khẩu"
                   required
                 />
                 <button
                   type="button"
-                  className="px-3 text-gray-500 hover:text-blue-700 focus:outline-none"
-                  tabIndex={-1}
                   onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-purple-600 transition-colors"
                 >
-                  {showPassword ? "👁️" : "👁️‍🗨️"}
+                  <span className="text-lg">{showPassword ? '👁️' : '👁️‍🗨️'}</span>
                 </button>
               </div>
             </div>
             {error && (
-              <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg mb-4 flex items-center gap-2">
-                <span>⚠️</span>
-                <span>{error}</span>
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center space-x-2 animate-fade-in">
+                <span className="text-red-500">⚠️</span>
+                <span className="text-red-600 text-sm">{error}</span>
               </div>
             )}
             <button
               type="submit"
-              className="w-full py-2 font-bold mb-2 text-lg rounded-lg bg-blue-600 text-white hover:bg-teal-600 transition"
+              className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 px-4 rounded-xl font-semibold text-lg hover:from-purple-600 hover:to-purple-700 focus:ring-4 focus:ring-purple-200 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
             >
               Đăng nhập
             </button>
           </form>
-          <div className="text-center mt-3"></div>
-          {showDemo && (
-            <div className="mt-6 pt-4 border-t">
-              <div className="font-semibold text-teal-500 mb-2 text-center">Tài khoản demo</div>
-              <div className="grid gap-2">
-                {demoAccounts.map((acc, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    className="bg-blue-50 border flex justify-between items-center px-4 py-2 rounded-lg hover:bg-teal-50 transition"
-                    onClick={() => handleDemoClick(acc)}
-                  >
-                    <div>
-                      <div className="font-semibold">{acc.name}</div>
-                      <div className="text-teal-500 text-sm">{acc.email}</div>
-                    </div>
-                    <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">
-                      {acc.role.replace("_", " ")}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="text-center mt-3 text-teal-400 text-xs">
-          © 2025 KTC Logistics. All rights reserved.
+          <div className="text-center mt-6">
+            <p className="text-gray-400 text-xs">
+              © 2025 KTC Logistics. All rights reserved.
+            </p>
+          </div>
         </div>
       </div>
     </div>

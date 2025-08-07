@@ -18,7 +18,7 @@ public interface DeliveryTrackingRepository extends JpaRepository<DeliveryTracki
     
     List<DeliveryTracking> findByDeliveryId(Long deliveryId);
     
-    List<DeliveryTracking> findByStatusId(Short statusId);
+List<DeliveryTracking> findByStatus_Id(Short statusId);
     
     @Query("SELECT dt FROM DeliveryTracking dt WHERE dt.vehicle.id = :vehicleId ORDER BY dt.timestamp DESC")
     List<DeliveryTracking> findByVehicleIdOrderByTimestampDesc(@Param("vehicleId") Long vehicleId);

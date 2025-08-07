@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 public class UserResponseDTO {
     
     private Long id;
-    private String name;
+    private String fullName;
     private String email;
     private String phone;
     private String address;
@@ -27,9 +27,9 @@ public class UserResponseDTO {
     // Constructors
     public UserResponseDTO() {}
     
-    public UserResponseDTO(Long id, String name, String email, String roleName, Boolean isActive) {
+    public UserResponseDTO(Long id, String fullName, String email, String roleName, Boolean isActive) {
         this.id = id;
-        this.name = name;
+        this.fullName = fullName;
         this.email = email;
         this.roleName = roleName;
         this.isActive = isActive;
@@ -39,8 +39,8 @@ public class UserResponseDTO {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
     
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
@@ -74,7 +74,7 @@ public class UserResponseDTO {
     
     // Utility methods
     public String getDisplayName() {
-        return name != null ? name : email;
+        return fullName != null ? fullName : email;
     }
     
     public boolean isActiveUser() {

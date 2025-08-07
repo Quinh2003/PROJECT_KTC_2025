@@ -1,6 +1,8 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import ktc.spring_project.enums.AddressType;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -18,8 +20,10 @@ public class Address {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Column(name = "address_type", nullable = false, length = 50)
-    private String addressType;
+    @Enumerated(EnumType.STRING)
+@Column(name = "address_type", nullable = false, length = 50)
+private AddressType addressType;
+
 
     @Column(nullable = false, length = 500)
     private String address;
@@ -71,8 +75,14 @@ public class Address {
     public Order getOrder() { return order; }
     public void setOrder(Order order) { this.order = order; }
   
-    public String getAddressType() { return addressType; }
-    public void setAddressType(String addressType) { this.addressType = addressType; }
+public AddressType getAddressType() {
+    return addressType;
+}
+
+public void setAddressType(AddressType addressType) {
+    this.addressType = addressType;
+}
+
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
     public BigDecimal getLatitude() { return latitude; }

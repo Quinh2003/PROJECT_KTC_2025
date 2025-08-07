@@ -1,0 +1,50 @@
+# docker-compose.yml
+# This file is used to define and run multi-container Docker applications.
+# It sets up a Spring Boot application with a MySQL database.
+
+services:
+  app:
+    # Updated to use proper repository name
+    image: fanglee2003/ktc-logistics-backend:latest
+    ports:
+      - '8080:8080'
+    environment:
+      # Remote database configuration (from teacher Tung)
+      # Server: server.aptech.io:3307
+      # User: fastroute_user / Password: fastroute_password
+      SPRING_DATASOURCE_URL: jdbc:mysql://server.aptech.io:3307/fastroute?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: fastroute_user
+      SPRING_DATASOURCE_PASSWORD: fastroute_password
+
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
+
+  # Local MySQL service
+  # Uncomment this section if you want to use local MySQL instead of remote
+  # db:
+  #   image: fanglee2003/ktc-logistics-backend:latest
+  #   restart: always
+  #   environment:
+  #     # Updated to match teacher's database name and credentials
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: fastroute
+  #     MYSQL_USER: fastroute_user
+  #     MYSQL_PASSWORD: fastroute_password
+  #   ports:
+  #     - '3306:3306'
+  #   volumes:
+  #     - db_data:/var/lib/mysql
+  #     # Import initial database schema
+  #     - ./docs/schemaDB/database-8-4.sql:/docker-entrypoint-initdb.d/init.sql
+  #   healthcheck:
+  #     # This healthcheck ensures that the MySQL service is ready before the app starts.
+  #     test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-pPhanquynh2003@']
+  #     timeout: 20s
+  #     retries: 10
+  #     interval: 10s
+  #     start_period: 30s
+
+  # Commented volumes for future use with local MySQL
+  # volumes:
+  #   db_data:
