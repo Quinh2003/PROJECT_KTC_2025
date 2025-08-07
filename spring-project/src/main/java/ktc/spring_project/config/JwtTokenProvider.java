@@ -63,6 +63,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(new Date())                  // Thời gian tạo token
                 .setExpiration(expiryDate)               // Thời gian hết hạn
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)  // Ký token với HMAC SHA512
+                //.signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();                              // Tạo token string
     }
 
