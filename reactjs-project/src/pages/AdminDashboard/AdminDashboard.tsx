@@ -5,7 +5,10 @@ interface AdminDashboardProps {
   onLogout: () => void;
 }
 
+
+
 export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
+
   return (
     <div>
       <h2>Admin Dashboard</h2>
@@ -13,4 +16,4 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
       <button onClick={onLogout}>Đăng xuất</button>
     </div>
   );
-}
+} 
