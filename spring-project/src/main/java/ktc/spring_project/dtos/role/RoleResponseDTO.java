@@ -94,12 +94,16 @@ public class RoleResponseDTO {
         return roleName != null && roleName.toLowerCase().contains("dispatcher");
     }
     
-    public boolean isManagerRole() {
-        return roleName != null && roleName.toLowerCase().contains("manager");
+    public boolean isFleetManagerRole() {
+        return roleName != null && roleName.toLowerCase().contains("fleet_manager");
     }
     
-    public boolean isViewerRole() {
-        return roleName != null && roleName.toLowerCase().contains("viewer");
+    public boolean isOperationsManagerRole() {
+        return roleName != null && roleName.toLowerCase().contains("operations_manager");
+    }
+    
+    public boolean isCustomerRole() {
+        return roleName != null && roleName.toLowerCase().contains("customer");
     }
     
     public String getUserSummary() {
@@ -113,9 +117,33 @@ public class RoleResponseDTO {
         if (isAdminRole()) return "Administrator";
         if (isDriverRole()) return "Driver";
         if (isDispatcherRole()) return "Dispatcher";
-        if (isManagerRole()) return "Manager";
-        if (isViewerRole()) return "Viewer";
+        if (isFleetManagerRole()) return "Fleet Manager";
+        if (isOperationsManagerRole()) return "Operations Manager";
+        if (isCustomerRole()) return "Customer (B2B)";
         return "Custom Role";
+    }
+    
+    public String getRoleDescription() {
+        if (isAdminRole()) return "Người có toàn quyền cấu hình và giám sát hệ thống";
+        if (isDriverRole()) return "Người thực hiện vận chuyển và cập nhật trạng thái đơn hàng";
+        if (isDispatcherRole()) return "Người lên kế hoạch và điều hành các chuyến giao hàng";
+        if (isFleetManagerRole()) return "Người chịu trách nhiệm quản lý và bảo trì phương tiện";
+        if (isOperationsManagerRole()) return "Người giám sát toàn hệ thống, tối ưu hiệu suất vận hành";
+        if (isCustomerRole()) return "Khách hàng doanh nghiệp (B2B) có thể đặt yêu cầu vận chuyển";
+        return description != null ? description : "Custom role";
+    }
+    
+    public boolean isSystemRole() {
+        return isAdminRole() || isDispatcherRole() || isDriverRole() || 
+               isFleetManagerRole() || isOperationsManagerRole();
+    }
+    
+    public boolean isExternalRole() {
+        return isCustomerRole();
+    }
+    
+    public boolean isInternalRole() {
+        return isSystemRole();
     }
     
     public String getPermissionSummary() {

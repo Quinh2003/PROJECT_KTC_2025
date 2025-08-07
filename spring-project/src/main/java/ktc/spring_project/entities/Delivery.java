@@ -1,6 +1,9 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import ktc.spring_project.enums.ServiceType;
+import ktc.spring_project.enums.TransportMode;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
@@ -21,11 +24,14 @@ public class Delivery {
     @Column(name = "delivery_fee")
     private BigDecimal deliveryFee;
 
-    @Column(name = "transport_mode", length = 50)
-    private String transportMode;
+    @Enumerated(EnumType.STRING)
+@Column(name = "transport_mode", length = 50)
+private TransportMode transportMode;
 
-    @Column(name = "service_type", length = 50)
-    private String serviceType;
+@Enumerated(EnumType.STRING)
+@Column(name = "service_type", length = 50)
+private ServiceType serviceType;
+
 
     @Column(name = "pickup_date")
     private Timestamp pickupDate;
@@ -83,11 +89,21 @@ public class Delivery {
     public BigDecimal getDeliveryFee() { return deliveryFee; }
     public void setDeliveryFee(BigDecimal deliveryFee) { this.deliveryFee = deliveryFee; }
 
-    public String getTransportMode() { return transportMode; }
-    public void setTransportMode(String transportMode) { this.transportMode = transportMode; }
+    public TransportMode getTransportMode() {
+    return transportMode;
+}
 
-    public String getServiceType() { return serviceType; }
-    public void setServiceType(String serviceType) { this.serviceType = serviceType; }
+public void setTransportMode(TransportMode transportMode) {
+    this.transportMode = transportMode;
+}
+
+public ServiceType getServiceType() {
+    return serviceType;
+}
+
+public void setServiceType(ServiceType serviceType) {
+    this.serviceType = serviceType;
+}
 
     public Timestamp getPickupDate() { return pickupDate; }
     public void setPickupDate(Timestamp pickupDate) { this.pickupDate = pickupDate; }
