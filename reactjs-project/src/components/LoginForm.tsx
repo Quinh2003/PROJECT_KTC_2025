@@ -29,10 +29,24 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-purple-100 flex items-center justify-center p-5">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 backdrop-blur-sm border border-white/20">
-          {/* Logo & Header */}
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-purple-100 flex items-center justify-center p-5 relative overflow-hidden">
+      {/* Animated background circles */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
+        <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-purple-200 rounded-full opacity-40 blur-2xl animate-bg-move"></div>
+        <div className="absolute bottom-[-120px] right-[-120px] w-[350px] h-[350px] bg-pink-200 rounded-full opacity-30 blur-2xl animate-bg-move-reverse"></div>
+        <div className="absolute top-1/2 left-1/2 w-[180px] h-[180px] bg-purple-300 rounded-full opacity-20 blur-2xl animate-bg-move"></div>
+      </div>
+      <div className="w-full max-w-5xl h-[700px] bg-white rounded-2xl shadow-2xl flex overflow-hidden border border-white/20 relative z-10 animate-fade-in">
+        {/* Bên trái: Ảnh minh họa */}
+        <div className="hidden md:flex w-1/2 h-full">
+          <img
+            src="/login.jpg"
+            alt="Logistics Illustration"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        {/* Bên phải: Form login */}
+        <div className="w-full md:w-1/2 flex flex-col justify-center p-8">
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-gradient-to-r from-purple-400 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
               <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
@@ -40,14 +54,12 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
               </div>
             </div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent mb-2">
-              KTC Logistics
+              Đăng nhập hệ thống
             </h2>
             <p className="text-gray-500 text-sm">
-              Đăng nhập vào hệ thống
+              Vui lòng nhập thông tin để đăng nhập
             </p>
           </div>
-
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-purple-700 mb-2">
@@ -61,13 +73,12 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-purple-100 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all placeholder-gray-400"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-purple-100 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all duration-300 placeholder-gray-400"
                   placeholder="Nhập email của bạn"
                   required
                 />
               </div>
             </div>
-
             <div>
               <label className="block text-sm font-medium text-purple-700 mb-2">
                 Mật khẩu
@@ -80,7 +91,7 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 border-2 border-purple-100 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all placeholder-gray-400"
+                  className="w-full pl-12 pr-12 py-3 border-2 border-purple-100 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all duration-300 placeholder-gray-400"
                   placeholder="Nhập mật khẩu"
                   required
                 />
@@ -93,14 +104,12 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
                 </button>
               </div>
             </div>
-
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center space-x-2">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center space-x-2 animate-fade-in">
                 <span className="text-red-500">⚠️</span>
                 <span className="text-red-600 text-sm">{error}</span>
               </div>
             )}
-
             <button
               type="submit"
               className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 px-4 rounded-xl font-semibold text-lg hover:from-purple-600 hover:to-purple-700 focus:ring-4 focus:ring-purple-200 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
@@ -108,8 +117,6 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
               Đăng nhập
             </button>
           </form>
-
-          {/* Footer */}
           <div className="text-center mt-6">
             <p className="text-gray-400 text-xs">
               © 2025 KTC Logistics. All rights reserved.
@@ -118,5 +125,5 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
         </div>
       </div>
     </div>
-    );
+  );
 }
