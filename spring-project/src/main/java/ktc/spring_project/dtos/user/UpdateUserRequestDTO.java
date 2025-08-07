@@ -10,7 +10,7 @@ import jakarta.validation.constraints.*;
 public class UpdateUserRequestDTO {
     
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
-    private String name;
+    private String fullName;
     
     @Email(message = "Email should be valid")
     @Size(max = 150, message = "Email must not exceed 150 characters")
@@ -33,8 +33,8 @@ public class UpdateUserRequestDTO {
     public UpdateUserRequestDTO() {}
     
     // Getters and Setters
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
     
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }

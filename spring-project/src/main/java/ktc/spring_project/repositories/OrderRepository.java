@@ -14,18 +14,26 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     
-    Optional<Order> findByOrderId(String orderId);
-    
-    List<Order> findByStatusId(Short statusId);
+Optional<Order> findById(Long id);     
+List<Order> findByStatus_Id(Short statusId);
     
     List<Order> findByStoreId(Long storeId);
     
-    List<Order> findByCreatedBy(Long createdBy);
+List<Order> findByCreatedBy_Id(Long createdBy);
 
-    List<Order> findActiveOrdersByDriverId(Long driverId);
+// Loại bỏ query sai - Order không có vehicle, weight, volume
+// @Query("SELECT o FROM Order o WHERE o.status.name = 'AVAILABLE' " +
+//        "AND o.vehicle.id = :vehicleId " +
+//        "AND o.weight <= :weightCapacity " +
+//        "AND o.volume <= :volumeCapacity")
+// List<Order> findAvailableOrdersForVehicle(@Param("weightCapacity") BigDecimal weightCapacity,
+//                                           @Param("volumeCapacity") BigDecimal volumeCapacity,
+//                                           @Param("vehicleId") Long vehicleId);
 
-    List<Order> findAvailableOrdersForVehicle(BigDecimal weightCapacity, BigDecimal volumeCapacity, Long vehicleId);
-    
+// Query đúng - chỉ sử dụng các field có trong Order entity
+@Query("SELECT o FROM Order o WHERE o.status.name = 'AVAILABLE'")
+List<Order> findAvailableOrders();
+
     @Query("SELECT o FROM Order o WHERE o.status.name = :statusName ORDER BY o.createdAt DESC")
     List<Order> findByStatusNameOrderByCreatedAtDesc(@Param("statusName") String statusName);
     
@@ -37,9 +45,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByTotalAmountRange(@Param("minAmount") BigDecimal minAmount, 
                                      @Param("maxAmount") BigDecimal maxAmount);
     
-    @Query("SELECT o FROM Order o WHERE o.store.storeCode = :storeCode ORDER BY o.createdAt DESC")
-    List<Order> findByStoreCodeOrderByCreatedAtDesc(@Param("storeCode") String storeCode);
-    
+
     @Query("SELECT COUNT(o) FROM Order o WHERE o.status.name = :statusName")
     long countByStatusName(@Param("statusName") String statusName);
     
@@ -51,7 +57,20 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT COUNT(o) FROM Order o WHERE DATE(o.createdAt) = CURRENT_DATE")
     long countTodayOrders();
 
-    @Query("SELECT COUNT(o) FROM Order o WHERE o.driver.id = :driverId AND o.status = 'DELIVERED' AND DATE(o.deliveryDate) = CURRENT_DATE")
-    int countDeliveredOrdersByDriverIdToday(Long driverId);
-}
+    @Query("SELECT o FROM Order o WHERE o.status.name = 'IN_PROGRESS'")
+    List<Order> findActiveOrders();
 
+    // Đếm số đơn đã giao hôm nay (sửa lỗi: Order không có driver field)
+    // Thay vì dùng driver, có thể dùng deliveries table hoặc status
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.status.name = 'DELIVERED' AND DATE(o.updatedAt) = CURRENT_DATE")
+    int countDeliveredOrdersToday();
+
+    // Nếu cần đếm theo driver, cần join với delivery table
+    @Query("SELECT COUNT(DISTINCT o) FROM Order o " +
+           "JOIN Delivery d ON d.order = o " +
+           "WHERE d.driver.id = :driverId " +
+           "AND o.status.name = 'DELIVERED' " +
+           "AND DATE(o.updatedAt) = CURRENT_DATE")
+    int countDeliveredOrdersByDriverIdToday(@Param("driverId") Long driverId);
+
+}

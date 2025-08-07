@@ -174,17 +174,16 @@ public class ProductService {
      * @param authentication User authentication for audit
      */
     public void deleteProduct(Long id, Authentication authentication) {
-        Product product = getProductById(id);
+    Product product = getProductById(id);
 
-        // Soft delete by setting status to inactive
-        Status inactiveStatus = statusRepository.findById((short)0)
-            .orElseThrow(() -> new EntityNotFoundException("Inactive status not found"));
-        product.setProductStatus(inactiveStatus);
-        save(product);
+    // Soft delete bằng cách đặt status là INACTIVE (enum)
+    product.setProductStatus(ktc.spring_project.enums.ProductStatus.INACTIVE);
+    save(product);
 
-        // Log the activity (in a real implementation)
-        // activityLogService.logActivity(authentication, "DELETE", "products", id);
-    }
+    // Ghi log nếu cần
+    // activityLogService.logActivity(authentication, "DELETE", "products", id);
+}
+
 
     /**
      * Update product stock quantity
