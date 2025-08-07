@@ -50,10 +50,15 @@ public class SecurityConfig {
      *
      * @return PasswordEncoder instance
      */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    // @Bean
+    // public PasswordEncoder passwordEncoder() {
+    //     return new BCryptPasswordEncoder();
+    // }
+
+      @Bean
+public PasswordEncoder passwordEncoder() {
+    return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
+}
 
     /**
      * Authentication Provider để xác thực user
@@ -105,25 +110,46 @@ public class SecurityConfig {
 
             // Cấu hình session management là STATELESS (không lưu session)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+//-----------------------------------------
             // Cấu hình authorization rules cho các endpoints
+            // .authorizeHttpRequests(authz -> authz
+            //     // Public endpoints - không cần authentication
+            //     .requestMatchers("/api/auth/**").permitAll()        // Login, register, forgot password
+            //     .requestMatchers("/api/public/**").permitAll()      // Public APIs
+
+
+            //     //tEST 
+            //     .requestMatchers("/actuator/**").permitAll()
+
+
+
+            //     // Role-based endpoints - cần authentication + specific role
+            //     .requestMatchers("/api/admin/**").hasRole("ADMIN")              // Chỉ ADMIN
+            //     .requestMatchers("/api/dispatcher/**").hasAnyRole("ADMIN", "DISPATCHER")  // ADMIN hoặc DISPATCHER
+            //     .requestMatchers("/api/driver/**").hasAnyRole("ADMIN", "DRIVER")          // ADMIN hoặc DRIVER
+            //     .requestMatchers("/api/customer/**").hasAnyRole("ADMIN", "CUSTOMER")      // ADMIN hoặc CUSTOMER
+
+            //     // Protected endpoints - cần authentication nhưng không cần role cụ thể
+            //     .requestMatchers("/api/protected/**").authenticated()
+
+            //     // Tất cả endpoints khác đều cần authentication
+            //     .anyRequest().authenticated()
+            // )
+//---------------------------------------------------------
             .authorizeHttpRequests(authz -> authz
-                // Public endpoints - không cần authentication
-                .requestMatchers("/api/auth/**").permitAll()        // Login, register, forgot password
-                .requestMatchers("/api/public/**").permitAll()      // Public APIs
+    .requestMatchers("/", "/index.html", "/favicon.ico", "/static/**").permitAll()
+    .requestMatchers("/api/auth/**").permitAll()
+    .requestMatchers("/api/public/**").permitAll()
+    .requestMatchers("/actuator/**").permitAll()
+    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+    .requestMatchers("/api/dispatcher/**").hasAnyRole("ADMIN", "DISPATCHER")
+    .requestMatchers("/api/driver/**").hasAnyRole("ADMIN", "DRIVER")
+    .requestMatchers("/api/customer/**").hasAnyRole("ADMIN", "CUSTOMER")
+    .requestMatchers("/api/protected/**").authenticated()
+    .anyRequest().authenticated()
+)
 
-                // Role-based endpoints - cần authentication + specific role
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")              // Chỉ ADMIN
-                .requestMatchers("/api/dispatcher/**").hasAnyRole("ADMIN", "DISPATCHER")  // ADMIN hoặc DISPATCHER
-                .requestMatchers("/api/driver/**").hasAnyRole("ADMIN", "DRIVER")          // ADMIN hoặc DRIVER
-                .requestMatchers("/api/customer/**").hasAnyRole("ADMIN", "CUSTOMER")      // ADMIN hoặc CUSTOMER
 
-                // Protected endpoints - cần authentication nhưng không cần role cụ thể
-                .requestMatchers("/api/protected/**").authenticated()
-
-                // Tất cả endpoints khác đều cần authentication
-                .anyRequest().authenticated()
-            )
 
             // Set custom authentication provider
             .authenticationProvider(authenticationProvider())
@@ -148,7 +174,7 @@ public class SecurityConfig {
         org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
 
         // Cho phép frontend từ các domain này truy cập API
-        configuration.setAllowedOriginPatterns(java.util.List.of("http://localhost:3000", "http://localhost:3001"));
+        configuration.setAllowedOriginPatterns(java.util.List.of("http://localhost:3000", "http://localhost:3001", "http://localhost:5173"));
 
         // Cho phép các HTTP methods
         configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
