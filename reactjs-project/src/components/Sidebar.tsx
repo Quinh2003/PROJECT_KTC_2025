@@ -1,30 +1,73 @@
-import { MdInventory2, MdLocalShipping } from "react-icons/md";
+import { MdInventory2, MdLocalShipping, MdDashboard, MdBarChart, MdPeople, MdSettings } from "react-icons/md";
 import { FaUserCog } from "react-icons/fa";
 import logo from "../assets/logo.png";
 
-interface SidebarProps {
-    activeTab: "orders" | "resources" | "assignment";
-    onTabChange: (tab: "orders" | "resources" | "assignment") => void;
+// Define tab types for different dashboard roles
+export type DispatcherTab = "orders" | "resources" | "assignment";
+export type OperationsTab = "overview" | "performance" | "monitoring" | "staff";
+
+export type TabType = DispatcherTab | OperationsTab;
+
+interface MenuItem<T extends TabType> {
+    key: T;
+    icon: React.ComponentType<{className?: string}>;
+    label: string;
 }
 
-export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
-    const menuItems = [
-        {
-            key: "orders" as const,
-            icon: MdInventory2,
-            label: "Order Management"
-        },
-        {
-            key: "assignment" as const,
-            icon: FaUserCog,
-            label: "Driver Assignment"
-        },
-        {
-            key: "resources" as const,
-            icon: MdLocalShipping,
-            label: "Resources"
+interface SidebarProps<T extends TabType> {
+    activeTab: T;
+    onTabChange: (tab: T) => void;
+    dashboardType: "dispatcher" | "operations";
+}
+
+export default function Sidebar<T extends TabType>({ activeTab, onTabChange, dashboardType }: SidebarProps<T>) {
+    // Menu items for different dashboard types
+    const getMenuItems = (): MenuItem<T>[] => {
+        if (dashboardType === "dispatcher") {
+            return [
+                {
+                    key: "orders" as T,
+                    icon: MdInventory2,
+                    label: "Order Management"
+                },
+                {
+                    key: "assignment" as T,
+                    icon: FaUserCog,
+                    label: "Driver Assignment"
+                },
+                {
+                    key: "resources" as T,
+                    icon: MdLocalShipping,
+                    label: "Resources"
+                }
+            ];
+        } else {
+            return [
+                {
+                    key: "overview" as T,
+                    icon: MdDashboard,
+                    label: "Operations Overview"
+                },
+                {
+                    key: "performance" as T,
+                    icon: MdBarChart,
+                    label: "Performance Analytics"
+                },
+                {
+                    key: "monitoring" as T,
+                    icon: MdSettings,
+                    label: "Resource Monitoring"
+                },
+                {
+                    key: "staff" as T,
+                    icon: MdPeople,
+                    label: "Staff Management"
+                }
+            ];
         }
-    ];
+    };
+
+    const menuItems = getMenuItems();
 
     return (
         <aside className="group flex-shrink-0 w-20 hover:w-64 transition-all duration-300 bg-white/20 backdrop-blur-lg border-r border-white/30 text-gray-800 flex flex-col py-6 px-4 overflow-hidden h-screen sticky top-0">
@@ -49,7 +92,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
                     return (
                         <button
                             key={item.key}
-                            className={`flex items-center gap-3 font-semibold transition-all duration-300 rounded-xl p-4 ${activeTab === item.key
+                            className={`flex items-center gap-4 font-semibold transition-all duration-300 rounded-xl p-4 ${activeTab === item.key
                                     ? "text-blue-600 bg-white/40 backdrop-blur-sm border border-white/50 shadow-lg"
                                     : "hover:text-blue-600 hover:bg-white/20 backdrop-blur-sm"
                                 }`}
