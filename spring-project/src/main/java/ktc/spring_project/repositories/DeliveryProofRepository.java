@@ -19,9 +19,9 @@ public interface DeliveryProofRepository extends JpaRepository<DeliveryProof, Lo
     
     List<DeliveryProof> findByUploadedById(Long uploadedById);
     
-    @Query("SELECT dp FROM DeliveryProof dp WHERE dp.order.orderId = :orderId")
-    List<DeliveryProof> findByOrderOrderId(@Param("orderId") String orderId);
-    
+    @Query("SELECT dp FROM DeliveryProof dp WHERE dp.order.id = :orderId")
+List<DeliveryProof> findByOrderOrderId(@Param("orderId") Long orderId);
+
     @Query("SELECT dp FROM DeliveryProof dp WHERE dp.capturedAt BETWEEN :startDate AND :endDate ORDER BY dp.capturedAt DESC")
     List<DeliveryProof> findProofsCapturedBetween(@Param("startDate") LocalDateTime startDate, 
                                                 @Param("endDate") LocalDateTime endDate);
