@@ -2,8 +2,6 @@
 
 ## ✅ Vấn đề đã được giải quyết hoàn toàn
 
-**Chuyên gia Database Senior (20 năm kinh nghiệm)** đã fix toàn bộ lỗi AUTO_INCREMENT trong DataCo Pipeline.
-
 ---
 
 ## 🔧 Files đã được sửa
@@ -186,8 +184,6 @@ python3 deploy_import.py
 ## 🎉 Summary
 
 **✅ PROBLEM SOLVED COMPLETELY**
-
-Với 20 năm kinh nghiệm database engineering, tôi đã:
 
 1. **Phân tích** toàn bộ pipeline và xác định 13 tables có AUTO_INCREMENT conflicts
 2. **Thiết kế** giải pháp external_id mapping strategy
