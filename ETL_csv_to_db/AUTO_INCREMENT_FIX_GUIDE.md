@@ -1,7 +1,7 @@
 # 🔧 AUTO_INCREMENT Fix Guide - DataCo Pipeline
 
 ## Tổng quan
-Tài liệu hướng dẫn sửa lỗi AUTO_INCREMENT trong DataCo ETL Pipeline. Được tạo bởi chuyên gia database 20 năm kinh nghiệm.
+Tài liệu hướng dẫn sửa lỗi AUTO_INCREMENT trong DataCo ETL Pipeline.
 
 **Vấn đề**: Pipeline ban đầu insert trực tiếp vào ID columns của các bảng có AUTO_INCREMENT, gây ra conflicts và lỗi.
 
