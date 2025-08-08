@@ -4,6 +4,8 @@ import UserTable from "./UserTable";
 import RoleTable from "./RoleTable";
 import SystemConfigForm from "./SystemConfigForm";
 import AuditLogTable from "./AuditLogTable";
+import logo from "../../assets/logo.png";
+import Navbar from "../../components/Navbar";
 import { FiActivity, FiSettings } from "react-icons/fi";
 import { AiOutlineSafetyCertificate, AiOutlineSetting } from "react-icons/ai";
 import { MdManageAccounts } from "react-icons/md";
@@ -16,10 +18,26 @@ interface AdminDashboardProps {
 }
 
 const MENU = [
-  { key: "users", label: "User Management", icon: <MdManageAccounts className="text-xl" /> },
-  { key: "roles", label: "Role Permissions", icon: <RiShieldKeyholeLine className="text-xl" /> },
-  { key: "settings", label: "System Configuration", icon: <FiSettings className="text-xl" /> },
-  { key: "logs", label: "System Logs", icon: <HiOutlineDocumentReport className="text-xl" /> },
+  {
+    key: "users",
+    label: "User Management",
+    icon: <MdManageAccounts className="text-xl" />,
+  },
+  {
+    key: "roles",
+    label: "Role Permissions",
+    icon: <RiShieldKeyholeLine className="text-xl" />,
+  },
+  {
+    key: "settings",
+    label: "System Configuration",
+    icon: <FiSettings className="text-xl" />,
+  },
+  {
+    key: "logs",
+    label: "System Logs",
+    icon: <HiOutlineDocumentReport className="text-xl" />,
+  },
 ];
 
 export default function AdminDashboard({
@@ -53,34 +71,38 @@ export default function AdminDashboard({
   ];
 
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
       {/* Sidebar */}
-      <aside className="group flex-shrink-0 w-16 md:w-20 hover:w-56 md:hover:w-64 transition-all duration-200 bg-[#23272f] dark:bg-[#181c23] flex flex-col overflow-hidden">
-        <div className="flex items-center gap-3 px-2 md:px-4 py-6 border-b border-[#23272f]">
-          <div className="bg-teal-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold">
-            K
+      <aside className="group flex-shrink-0 w-20 hover:w-64 transition-all duration-300 bg-white/20 backdrop-blur-lg border-r border-white/30 text-gray-800 flex flex-col py-6 px-4 overflow-hidden h-screen sticky top-0">
+        <div className="mb-5 flex items-center -mt-3 -ml-3 gap-1">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden bg-white/30 backdrop-blur-sm border border-white/50">
+            <img
+              src={logo}
+              alt="Logo"
+              className="w-12 h-12 rounded-full object-cover"
+            />
           </div>
           <span
-            className="hidden group-hover:inline-block font-bold text-lg text-white transition-all duration-200 whitespace-nowrap overflow-hidden"
+            className="hidden group-hover:inline-block font-bold text-lg tracking-wide transition-all duration-300 whitespace-nowrap overflow-hidden text-gray-700"
             style={{ maxWidth: "200px" }}
           >
             Fast Route
           </span>
         </div>
-        <nav className="flex-1 flex flex-col gap-1 mt-4">
+        <nav className="flex-1 flex flex-col gap-4">
           {MENU.map((item) => (
             <button
               key={item.key}
-              className={`flex items-center gap-3 px-2 md:px-4 py-3 ml-3 text-base font-medium transition text-left ${
+              className={`flex items-center gap-3 font-semibold transition-all duration-300 rounded-xl p-4 ${
                 active === item.key
-                  ? "bg-[#2d3643] text-teal-400"
-                  : "text-white hover:bg-[#2d3643]"
+                  ? "text-blue-600 bg-white/40 backdrop-blur-sm border border-white/50 shadow-lg"
+                  : "hover:text-blue-600 hover:bg-white/20 backdrop-blur-sm"
               }`}
               onClick={() => setActive(item.key)}
             >
-              <span className="text-xl">{item.icon}</span>
+              <span className="text-2xl flex-shrink-0">{item.icon}</span>
               <span
-                className="hidden group-hover:inline transition-all duration-200 whitespace-nowrap overflow-hidden"
+                className="hidden group-hover:inline transition-all duration-300 whitespace-nowrap overflow-hidden"
                 style={{ maxWidth: "160px" }}
               >
                 {item.label}
@@ -90,45 +112,48 @@ export default function AdminDashboard({
         </nav>
       </aside>
       {/* Main content */}
-      <main className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-y-auto h-screen">
+      <main className="flex-1 flex flex-col bg-transparent overflow-y-auto h-screen">
         {/* Header */}
-        <header className="flex flex-col md:flex-row items-start md:items-center justify-between px-6 py-4 bg-white dark:bg-gray-800 border-b">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-              {active === "users" && "User Management Dashboard"}
-              {active === "roles" && "Role Permissions Dashboard"}
-              {active === "settings" && "System Configuration Dashboard"}
-              {active === "logs" && "System Logs Dashboard"}
-            </h1>
-            <p className="text-gray-500 text-sm md:text-base mt-1">
-              {active === "users" && "Create, edit, and delete user accounts"}
-              {active === "roles" && "Manage access permissions for each role"}
-              {active === "settings" && "Configure system parameters"}
-              {active === "logs" && "Monitor system activities"}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 md:gap-4 mt-4 md:mt-0">
-            <span className="text-gray-600 text-sm md:text-base">
-              Hello, <span className="font-semibold">{user.name}</span>
-            </span>
-            <button
-              onClick={onLogout}
-              className="px-3 md:px-4 py-2 rounded bg-gray-100 text-gray-700 font-bold hover:bg-blue-100 transition text-sm md:text-base"
-            >
-              Logout
-            </button>
-          </div>
-        </header>
+        <Navbar
+          user={user}
+          onLogout={onLogout}
+          title={
+            active === "users"
+              ? "User Management Dashboard"
+              : active === "roles"
+              ? "Role Permissions Dashboard"
+              : active === "settings"
+              ? "System Configuration Dashboard"
+              : active === "logs"
+              ? "System Logs Dashboard"
+              : "Admin Dashboard"
+          }
+          subtitle={
+            active === "users"
+              ? "Create, edit, and delete user accounts"
+              : active === "roles"
+              ? "Manage access permissions for each role"
+              : active === "settings"
+              ? "Configure system parameters"
+              : active === "logs"
+              ? "Monitor system activities"
+              : ""
+          }
+        />
         {/* Stats cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6 md:mt-8 px-4 md:px-10">
           {stats.map((s, idx) => (
             <div
               key={idx}
-              className="bg-white rounded-xl shadow px-6 py-5 flex flex-col justify-between h-full"
+              className="bg-white/40 backdrop-blur-lg border border-white/50 shadow-lg rounded-xl px-6 py-5 flex flex-col justify-between h-full transition-all duration-200 hover:scale-[1.03] hover:shadow-xl"
             >
-              <div className="text-gray-600 text-base mb-2">{s.label}</div>
+              <div className="text-gray-700 text-base mb-2 font-medium drop-shadow-sm">
+                {s.label}
+              </div>
               <div className="flex items-center justify-between">
-                <div className="text-2xl font-bold">{s.value}</div>
+                <div className="text-2xl font-bold text-blue-900 drop-shadow-sm">
+                  {s.value}
+                </div>
                 <div className="flex items-center">{s.icon}</div>
               </div>
             </div>
