@@ -5,8 +5,6 @@ interface AdminDashboardProps {
   onLogout: () => void;
 }
 
-
-
 export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
 
   return (
