@@ -1,5 +1,11 @@
-// MaintenanceForm.tsx
 import React, { useState } from 'react';
+
+interface Vehicle {
+  id: number;
+  type: string;
+  licensePlate: string;
+  status: string;
+}
 
 interface Maintenance {
   id: number;
@@ -9,109 +15,78 @@ interface Maintenance {
 }
 
 interface MaintenanceFormProps {
-  vehicles: { id: number; licensePlate: string }[];
+  vehicles: Vehicle[];
   onAddMaintenance: (maintenance: Maintenance) => void;
 }
 
 const MaintenanceForm: React.FC<MaintenanceFormProps> = ({ vehicles, onAddMaintenance }) => {
-  const [selectedVehicleId, setSelectedVehicleId] = useState<number>(vehicles[0]?.id || 0);
+  const [vehicleId, setVehicleId] = useState<number>(0);
   const [date, setDate] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [maintenanceHistory, setMaintenanceHistory] = useState<Maintenance[]>([
-    { id: 1, vehicleId: 1, date: '2025-08-01', description: 'Thay dầu máy' },
-    { id: 2, vehicleId: 1, date: '2025-07-15', description: 'Kiểm tra phanh' },
-  ]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newMaintenance = {
-      id: Date.now(),
-      vehicleId: selectedVehicleId,
-      date,
-      description,
-    };
-    onAddMaintenance(newMaintenance);
-    setMaintenanceHistory([...maintenanceHistory, newMaintenance]);
-    setDate('');
-    setDescription('');
+    if (vehicleId && date && description) {
+      onAddMaintenance({
+        id: Math.random(),
+        vehicleId,
+        date,
+        description,
+      });
+      setVehicleId(0);
+      setDate('');
+      setDescription('');
+    }
   };
 
-  // Cảnh báo bảo trì sắp tới (giả định: trong 7 ngày tới)
-  const upcomingMaintenance = maintenanceHistory.filter(
-    (m) => new Date(m.date) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-  );
-
   return (
-    <div className="p-4 bg-white shadow-md rounded-lg">
-      <h2 className="text-xl font-bold mb-4">Quản lý bảo trì</h2>
-      
-      {/* Form tạo lịch bảo trì */}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">Chọn xe</label>
-          <select
-            value={selectedVehicleId}
-            onChange={(e) => setSelectedVehicleId(Number(e.target.value))}
-            className="w-full p-2 border rounded"
-          >
-            {vehicles.map((vehicle) => (
-              <option key={vehicle.id} value={vehicle.id}>
-                {vehicle.licensePlate}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Ngày bảo trì</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Mô tả</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Chọn xe</label>
+        <select
+          value={vehicleId}
+          onChange={(e) => setVehicleId(Number(e.target.value))}
+          className="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-200/50 focus:border-blue-500/50 focus:ring focus:ring-blue-200/50 transition-all duration-300"
+          required
         >
-          Thêm lịch bảo trì
-        </button>
-      </form>
-
-      {/* Cảnh báo bảo trì sắp tới */}
-      {upcomingMaintenance.length > 0 && (
-        <div className="mt-4 p-4 bg-yellow-100 border border-yellow-400 rounded">
-          <h3 className="font-bold">Cảnh báo bảo trì sắp tới</h3>
-          <ul className="list-disc pl-5">
-            {upcomingMaintenance.map((m) => (
-              <li key={m.id}>{`${vehicles.find((v) => v.id === m.vehicleId)?.licensePlate}: ${m.date} - ${m.description}`}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Lịch sử bảo trì */}
-      <div className="mt-4">
-        <h3 className="font-bold">Lịch sử bảo trì</h3>
-        <ul className="list-disc pl-5">
-          {maintenanceHistory
-            .filter((m) => m.vehicleId === selectedVehicleId)
-            .map((m) => (
-              <li key={m.id}>{`${m.date} - ${m.description}`}</li>
-            ))}
-        </ul>
+          <option value={0}>Chọn xe cần bảo trì</option>
+          {vehicles.map((vehicle) => (
+            <option key={vehicle.id} value={vehicle.id}>
+              {vehicle.licensePlate} - {vehicle.type}
+            </option>
+          ))}
+        </select>
       </div>
-    </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Ngày bảo trì</label>
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-200/50 focus:border-blue-500/50 focus:ring focus:ring-blue-200/50 transition-all duration-300"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả công việc</label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-200/50 focus:border-blue-500/50 focus:ring focus:ring-blue-200/50 transition-all duration-300"
+          rows={4}
+          required
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="w-full px-6 py-3 bg-blue-500/80 backdrop-blur-sm text-white rounded-lg hover:bg-blue-600/90 transition-all duration-300 hover:shadow-lg"
+      >
+        Thêm lịch bảo trì
+      </button>
+    </form>
   );
 };
 
