@@ -26,7 +26,7 @@ export default function Dashboard({
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
-    fetch("http://localhost:8080/api/protected-endpoint", {
+    fetch("http://localhost:8080/api/protected/profile", {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

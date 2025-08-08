@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
+import java.lang.reflect.Field;
 
+import org.springframework.util.ReflectionUtils;
 @Service
 public class UserService {
 
@@ -33,10 +35,6 @@ public class UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-    }
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
     }
 
     public User updateUser(Long id, User userDetails) {
@@ -102,6 +100,30 @@ public class UserService {
         return userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
+
+
+    // ...existing code...
+public User updatePartial(Long id, Map<String, Object> updates) {
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+    updates.forEach((key, value) -> {
+        Field field = ReflectionUtils.findField(User.class, key);
+        if (field != null) {
+            field.setAccessible(true);
+            ReflectionUtils.setField(field, user, value);
+        }
+    });
+
+    return userRepository.save(user);
+}
+
+// ...existing code...
+
+public List<User> getAllUsers() {
+    return userRepository.findAll();
+}
+// ...existing code...
 
     @Autowired
     private RestTemplate restTemplate;
