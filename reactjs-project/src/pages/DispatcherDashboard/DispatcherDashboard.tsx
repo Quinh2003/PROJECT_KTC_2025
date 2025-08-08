@@ -4,7 +4,7 @@ import OrderList from "./OrderList";
 import ResourceOverview from "./ResourceOverview";
 import RouteMap from "./RouteMap";
 import OrderAssignment from "./OrderAssignment";
-import Sidebar from "../../components/Sidebar";
+import Sidebar, { type DispatcherTab } from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import type { User } from "../../types/User";
 
@@ -18,11 +18,15 @@ export default function DispatcherDashboard({
   onLogout,
 }: DispatcherDashboardProps) {
   // Thêm "assignment" vào state tab
-  const [tab, setTab] = useState<"orders" | "resources" | "assignment">("orders");
+  const [tab, setTab] = useState<DispatcherTab>("orders");
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
-      <Sidebar activeTab={tab} onTabChange={setTab} />
+      <Sidebar<DispatcherTab> 
+        activeTab={tab} 
+        onTabChange={setTab} 
+        dashboardType="dispatcher"
+      />
 
       {/* Main content */}
       <div className="flex-1 flex flex-col">
