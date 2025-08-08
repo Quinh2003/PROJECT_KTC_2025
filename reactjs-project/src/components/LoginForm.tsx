@@ -37,40 +37,83 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-center bg-cover bg-center relative"
+      className="min-h-screen w-full flex items-center justify-center bg-cover bg-center relative overflow-hidden"
       style={{
         backgroundImage: "url('/login.jpg')",
       }}
     >
-      <div className="absolute inset-0 bg-black/10 backdrop-blur-sm z-0"></div>
-      <div className="relative z-10 flex flex-col items-center w-full max-w-md">
+      {/* Animated Background Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-purple-900/20 to-indigo-900/30 backdrop-blur-sm z-0"></div>
+      
+      {/* Floating Animation Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-pulse delay-700"></div>
+        <div className="absolute top-3/4 left-3/4 w-64 h-64 bg-indigo-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center w-full max-w-md px-6">
+        {/* Logo/Brand Section */}
+        <div className="mb-8 text-center">
+          <div className="w-20 h-20 mx-auto mb-4 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center border border-white/30 shadow-xl">
+            <span className="text-3xl font-bold text-white">🚛</span>
+          </div>
+          <h1 className="text-4xl font-bold text-white drop-shadow-lg tracking-wide">
+            Fast Route
+          </h1>
+          <p className="text-white/80 text-sm mt-2 drop-shadow">
+            Logistics Management System
+          </p>
+        </div>
+
         <form
           onSubmit={handleSubmit}
-          className="w-full h-[450px] bg-white/10 backdrop-blur-lg justify-center rounded-2xl border border-white/30 shadow-xl px-10 py-10 flex flex-col gap-6"
+          className="w-full bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl px-8 py-10 space-y-6 transform transition-all duration-500 hover:scale-105 hover:shadow-3xl"
         >
-          <h2 className="text-3xl font-bold text-center text-white mb-6 drop-shadow">
-            Login
-          </h2>
-          <div>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full bg-transparent border-0 border-b border-white/70 focus:border-blue-300 focus:ring-0 text-white placeholder-gray-200 py-2 mb-2 transition"
-              placeholder="Enter your email"
-              required
-              autoComplete="username"
-            />
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-semibold text-white drop-shadow-lg">
+              Welcome Back
+            </h2>
+            <p className="text-white/70 text-sm mt-2">
+              Sign in to continue to your dashboard
+            </p>
           </div>
-          <div>
-            <div className="relative">
+          {/* Email Input */}
+          <div className="space-y-2">
+            <label htmlFor="email" className="block text-white/90 text-sm font-medium drop-shadow">
+              Email Address
+            </label>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                className="relative w-full bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300 hover:bg-white/15"
+                placeholder="Enter your email address"
+                required
+                autoComplete="username"
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                <span className="text-white/40">✉️</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Password Input */}
+          <div className="space-y-2">
+            <label htmlFor="password" className="block text-white/90 text-sm font-medium drop-shadow">
+              Password
+            </label>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full bg-transparent border-0 border-b border-white/70 focus:border-blue-300 focus:ring-0 text-white placeholder-gray-200 py-2 mb-2 transition"
+                className="relative w-full bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-3 pr-12 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300 hover:bg-white/15"
                 placeholder="Enter your password"
                 required
                 autoComplete="current-password"
@@ -78,27 +121,64 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-white/60 hover:text-white transition-colors duration-200"
                 tabIndex={-1}
-                aria-label="Show password"
+                aria-label="Toggle password visibility"
               >
-                {showPassword ? "👁️" : "👁️‍🗨️"}
+                {showPassword ? "🙈" : "🐵"}
               </button>
             </div>
           </div>
+          {/* Error Message */}
           {error && (
-            <div className="bg-red-100 border border-red-300 text-red-700 rounded px-4 py-2 text-sm">
+            <div className="bg-red-500/20 backdrop-blur-sm border border-red-400/30 text-red-100 rounded-xl px-4 py-3 text-sm flex items-center gap-2 animate-shake">
+              <span>⚠️</span>
               {error}
             </div>
           )}
+
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-white text-blue-900 font-semibold py-3 rounded-lg shadow hover:bg-blue-50 transition"
             disabled={loading}
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group"
           >
-            {loading ? "Đang đăng nhập..." : "Log In"}
+            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+            <span className="relative flex items-center justify-center gap-2">
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Signing In...
+                </>
+              ) : (
+                <>
+                  <span>🔐</span>
+                  Sign In
+                </>
+              )}
+            </span>
           </button>
+
+          {/* Additional Links */}
+          <div className="text-center space-y-2 pt-4">
+            <p className="text-white/60 text-sm">
+              Need help accessing your account?
+            </p>
+            <button
+              type="button"
+              className="text-blue-300 hover:text-blue-200 text-sm font-medium transition-colors duration-200 underline decoration-dotted"
+            >
+              Contact Administrator
+            </button>
+          </div>
         </form>
+
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-white/50 text-xs">
+            © 2025 Fast Route Logistics. All rights reserved.
+          </p>
+        </div>
       </div>
     </div>
   );
