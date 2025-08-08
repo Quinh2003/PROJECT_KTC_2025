@@ -100,4 +100,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
+ @Override
+protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    String path = request.getRequestURI();
+    // Bỏ qua filter cho các endpoint public (tùy chỉnh theo API của bạn)
+    return path.startsWith("/api/auth/");
+}
 }
