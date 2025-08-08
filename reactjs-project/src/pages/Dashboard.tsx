@@ -43,78 +43,78 @@ export default function Dashboard({
 
   // Phân quyền giao diện theo role
   if (!user) {
-    return <div style={{ padding: 40 }}>Bạn chưa đăng nhập!</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
+        <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-8 border border-white/30 shadow-xl text-center">
+          <div className="text-2xl font-bold text-gray-800 mb-2">⚠️ Chưa đăng nhập</div>
+          <div className="text-gray-600">Bạn cần đăng nhập để truy cập dashboard!</div>
+        </div>
+      </div>
+    );
   }
-
-  const LogoutButton = (
-    <div className="flex gap-4">
-      <button
-        onClick={onLogout}
-        className="absolute top-4 right-4 bg-red-100 text-red-700 px-4 py-2 rounded shadow hover:bg-red-200"
-        style={{ position: "fixed", top: 20, right: 20, zIndex: 1000 }}
-      >
-        Đăng xuất
-      </button>
-    </div>
-  );
 
   if (user.role === "ADMIN")
     return (
-      <>
-        {LogoutButton}
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
         <AdminDashboard user={user} onLogout={onLogout} />
         <ProtectedInfo data={protectedData} error={error} />
-      </>
+      </div>
     );
   if (user.role === "DISPATCHER")
     return (
-      <>
-        {LogoutButton}
+      <div className="min-h-screen">
         <DispatcherDashboard user={user} onLogout={onLogout} />
         <ProtectedInfo data={protectedData} error={error} />
-      </>
+      </div>
     );
   if (user.role === "FLEET_MANAGER")
     return (
-      <>
-        {LogoutButton}
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
         <FleetDashboard user={user} onLogout={onLogout} />
         <ProtectedInfo data={protectedData} error={error} />
-      </>
+      </div>
     );
   if (user.role === "DRIVER")
     return (
-      <>
-        {LogoutButton}
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
         <DriverDashboard user={user} onLogout={onLogout} />
         <ProtectedInfo data={protectedData} error={error} />
-      </>
+      </div>
     );
   if (user.role === "OPERATIONS_MANAGER")
     return (
-      <>
-        {LogoutButton}
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
         <OperationsDashboard user={user} onLogout={onLogout} />
         <ProtectedInfo data={protectedData} error={error} />
-      </>
+      </div>
     );
 
-  return <div style={{ padding: 40 }}>Không xác định role!</div>;
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
+      <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-8 border border-white/30 shadow-xl text-center">
+        <div className="text-2xl font-bold text-gray-800 mb-2">❌ Role không hợp lệ</div>
+        <div className="text-gray-600">Không xác định được quyền truy cập của bạn!</div>
+      </div>
+    </div>
+  );
 }
 
 // Component phụ để hiển thị dữ liệu protected (có thể bỏ nếu không cần)
 function ProtectedInfo({ data, error }: { data: any; error: string }) {
   if (error)
     return (
-      <div className="bg-red-100 border border-red-300 text-red-700 rounded px-4 py-2 m-4">
-        {error}
+      <div className="fixed bottom-5 right-5 z-40 bg-red-200/60 backdrop-blur-sm border border-red-300/50 text-red-800 rounded-xl px-4 py-3 shadow-lg max-w-md">
+        <div className="font-semibold mb-1">⚠️ Lỗi API:</div>
+        <div className="text-sm">{error}</div>
       </div>
     );
   if (!data) return null;
   return (
-    <div className="bg-blue-50 border border-blue-200 text-blue-900 rounded px-4 py-2 m-4">
-      <div className="font-bold mb-1">Protected API Data:</div>
-      <pre className="text-xs">{JSON.stringify(data, null, 2)}</pre>
+    <div className="fixed bottom-5 left-5 z-40 bg-blue-200/60 backdrop-blur-sm border border-blue-300/50 text-blue-900 rounded-xl px-4 py-3 shadow-lg max-w-md">
+      <div className="font-semibold mb-2">🔒 Protected API Data:</div>
+      <pre className="text-xs overflow-auto max-h-32 bg-white/30 rounded p-2">
+        {JSON.stringify(data, null, 2)}
+      </pre>
     </div>
   );
 }
