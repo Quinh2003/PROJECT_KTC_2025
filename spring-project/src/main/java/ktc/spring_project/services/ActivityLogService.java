@@ -13,6 +13,8 @@ import java.util.List;
 public class ActivityLogService {
 
     private final ActivityLogRepository activityLogRepository;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     public ActivityLogService(ActivityLogRepository activityLogRepository) {
@@ -32,9 +34,13 @@ public class ActivityLogService {
             // Chuyển đổi String action thành ActionType
             ActionType actionType = ActionType.valueOf(action);
             ActivityLog log = new ActivityLog(userId, actionType );
+            // Lấy user từ userId để lấy role
+            var user = userService.getUserById(userId);
+            log.setRole(user.getRole());
+            log.setStatus(user.getStatus());
             // Có thể đặt thêm các trường nếu cần
-            // log.setTableName("users"); // Ví dụ: đặt tableName nếu cần
-            // log.setRecordId(userId);   // Nếu recordId là ID của bản ghi liên quan
+            // log.setTableName("users");
+            // log.setRecordId(userId);
             activityLogRepository.save(log);
         } catch (IllegalArgumentException e) {
             // Xử lý trường hợp action không hợp lệ
