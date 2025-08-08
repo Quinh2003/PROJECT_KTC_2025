@@ -146,6 +146,9 @@ public PasswordEncoder passwordEncoder() {
     .requestMatchers("/api/driver/**").hasAnyRole("ADMIN", "DRIVER")
     .requestMatchers("/api/customer/**").hasAnyRole("ADMIN", "CUSTOMER")
     .requestMatchers("/api/protected/**").authenticated()
+    // Cho phép truy cập cả danh sách và từng user theo id
+.requestMatchers("/api/auth/users/**").permitAll()
+.requestMatchers("/api/auth/users").permitAll()
     .anyRequest().authenticated()
 )
 

@@ -1,12 +1,16 @@
-import { MdInventory2, MdLocalShipping, MdDashboard, MdBarChart, MdPeople, MdSettings } from "react-icons/md";
+import { MdInventory2, MdLocalShipping, MdDashboard, MdBarChart, MdPeople, MdSettings, MdManageAccounts } from "react-icons/md";
 import { FaUserCog } from "react-icons/fa";
 import logo from "../assets/logo.png";
+import { RiShieldKeyholeLine } from "react-icons/ri";
+import { AiOutlineSafetyCertificate } from "react-icons/ai";
+import { HiOutlineDocumentReport } from "react-icons/hi";
 
 // Define tab types for different dashboard roles
 export type DispatcherTab = "orders" | "resources" | "assignment";
+export type AdminTab = "users" | "roles" | "settings" | "logs";
 export type OperationsTab = "overview" | "performance" | "monitoring" | "staff";
 
-export type TabType = DispatcherTab | OperationsTab;
+export type TabType = DispatcherTab | OperationsTab | AdminTab;
 
 interface MenuItem<T extends TabType> {
     key: T;
@@ -17,7 +21,7 @@ interface MenuItem<T extends TabType> {
 interface SidebarProps<T extends TabType> {
     activeTab: T;
     onTabChange: (tab: T) => void;
-    dashboardType: "dispatcher" | "operations";
+    dashboardType: "dispatcher" | "operations" | "admin";
 }
 
 export default function Sidebar<T extends TabType>({ activeTab, onTabChange, dashboardType }: SidebarProps<T>) {
@@ -41,7 +45,30 @@ export default function Sidebar<T extends TabType>({ activeTab, onTabChange, das
                     label: "Resources"
                 }
             ];
-        } else {
+        } else if(dashboardType === "admin"){
+            return [
+                {
+                    key: "users" as T,
+                    icon: MdManageAccounts ,
+                    label: "User Management"
+                },
+                {
+                    key: "roles" as T,
+                    icon: RiShieldKeyholeLine ,
+                    label: "Role Permissions"
+                },
+                {
+                    key: "settings" as T,
+                    icon: AiOutlineSafetyCertificate ,
+                    label: "System Settings"
+                },
+                {
+                    key: "logs" as T,
+                    icon: HiOutlineDocumentReport ,
+                    label: "Audit Logs"
+                }
+            ];
+        }else {
             return [
                 {
                     key: "overview" as T,
