@@ -21,7 +21,7 @@ export default function Navbar({ user, onLogout, title, subtitle }: NavbarProps)
       <div className="flex items-center gap-4">
         <span className="text-gray-700 font-medium">Hello, {user.name}</span>
         <button
-          className="px-4 py-2 bg-white/40 backdrop-blur-sm border border-white/50 text-red-700 rounded-lg hover:bg-white/60 transition-all duration-300 shadow-lg hover:shadow-xl"
+          className="px-4 py-2 bg-gradient-to-r from-red-400/20 to-pink-400/20 backdrop-blur-lg border border-red-300/30 text-red-700 rounded-lg hover:from-red-400/30 hover:to-pink-400/30 hover:border-red-300/50 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 font-medium"
           onClick={onLogout}
         >
           Logout
