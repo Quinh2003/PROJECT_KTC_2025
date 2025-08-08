@@ -54,17 +54,7 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
 
       <div className="relative z-10 flex flex-col items-center w-full max-w-md px-6">
         {/* Logo/Brand Section */}
-        <div className="mb-8 text-center">
-          <div className="w-20 h-20 mx-auto mb-4 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center border border-white/30 shadow-xl">
-            <span className="text-3xl font-bold text-white">🚛</span>
-          </div>
-          <h1 className="text-4xl font-bold text-white drop-shadow-lg tracking-wide">
-            Fast Route
-          </h1>
-          <p className="text-white/80 text-sm mt-2 drop-shadow">
-            Logistics Management System
-          </p>
-        </div>
+       
 
         <form
           onSubmit={handleSubmit}
@@ -152,7 +142,6 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
                 </>
               ) : (
                 <>
-                  <span>🔐</span>
                   Sign In
                 </>
               )}
