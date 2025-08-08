@@ -2,7 +2,7 @@ import { MdInventory2, MdLocalShipping, MdDashboard, MdBarChart, MdPeople, MdSet
 import { FaUserCog } from "react-icons/fa";
 import logo from "../assets/logo.png";
 import { RiShieldKeyholeLine } from "react-icons/ri";
-import { AiOutlineSafetyCertificate } from "react-icons/ai";
+import { AiTwotoneSetting } from "react-icons/ai";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 
 // Define tab types for different dashboard roles
@@ -59,7 +59,7 @@ export default function Sidebar<T extends TabType>({ activeTab, onTabChange, das
                 },
                 {
                     key: "settings" as T,
-                    icon: AiOutlineSafetyCertificate ,
+                    icon: AiTwotoneSetting  ,
                     label: "System Settings"
                 },
                 {
@@ -97,9 +97,9 @@ export default function Sidebar<T extends TabType>({ activeTab, onTabChange, das
     const menuItems = getMenuItems();
 
     return (
-        <aside className="group flex-shrink-0 w-20 hover:w-64 transition-all duration-300 bg-white/20 backdrop-blur-lg border-r border-white/30 text-gray-800 flex flex-col py-6 px-4 overflow-hidden h-screen sticky top-0">
-            <div className="mb-5 flex items-center -mt-3 -ml-3 gap-1">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden bg-white/30 backdrop-blur-sm border border-white/50">
+        <aside className="group ml-3 flex-shrink-0 w-20 hover:w-64 transition-all duration-300 bg-white/20 backdrop-blur-lg border-r border-white/30 text-gray-800 flex flex-col py-6 px-4 overflow-hidden h-screen sticky top-0">
+            <div className="mb-5 flex items-center -mt-3 -ml-4 gap-1">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden ">
                     <img
                         src={logo}
                         alt="Logo"
@@ -119,7 +119,7 @@ export default function Sidebar<T extends TabType>({ activeTab, onTabChange, das
                     return (
                         <button
                             key={item.key}
-                            className={`flex items-center gap-4 font-semibold transition-all duration-300 rounded-xl p-4 ${activeTab === item.key
+                            className={`flex -ml-3 items-center gap-4 font-semibold transition-all duration-300 rounded-xl p-4 ${activeTab === item.key
                                     ? "text-blue-600 bg-white/40 backdrop-blur-sm border border-white/50 shadow-lg"
                                     : "hover:text-blue-600 hover:bg-white/20 backdrop-blur-sm"
                                 }`}
