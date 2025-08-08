@@ -28,3 +28,8 @@ COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 8080
 # Thiết lập lệnh khởi chạy ứng dụng khi container start.
 ENTRYPOINT ["java","-jar","app.jar"]
+
+
+# docker build -t quinh2003/ktc-logistics-backend:latest .
+# docker-compose up --build
+
