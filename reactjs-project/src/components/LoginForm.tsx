@@ -1,122 +1,105 @@
 import { useState } from "react";
 import type { User } from "../types/User";
 
-const demoAccounts: User[] = [
-  { role: "ADMIN", email: "admin@ktc.com", password: "123456", name: "Admin" },
-  { role: "DISPATCHER", email: "dispatcher@ktc.com", password: "123456", name: "Dispatcher" },
-  { role: "FLEET_MANAGER", email: "fleet@ktc.com", password: "123456", name: "Fleet Manager" },
-  { role: "DRIVER", email: "driver@ktc.com", password: "123456", name: "Driver" },
-  { role: "OPERATIONS_MANAGER", email: "operations@ktc.com", password: "123456", name: "Operations" },
-];
-
 export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const found = demoAccounts.find(
-      (acc) => acc.email === email && acc.password === password
-    );
-    if (found) {
-      setError("");
-      onLogin(found);
-    } else {
-      setError("Sai tài khoản hoặc mật khẩu demo!");
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!res.ok) {
+        setError("Sai tài khoản hoặc mật khẩu!");
+        setLoading(false);
+        return;
+      }
+      const data = await res.json();
+      // Lưu token và user vào localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      onLogin(data.user);
+    } catch (err) {
+      setError("Không thể kết nối tới máy chủ!");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-purple-100 flex items-center justify-center p-5">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 backdrop-blur-sm border border-white/20">
-          {/* Logo & Header */}
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-gradient-to-r from-purple-400 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                📦
-              </div>
-            </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent mb-2">
-              KTC Logistics
-            </h2>
-            <p className="text-gray-500 text-sm">
-              Đăng nhập vào hệ thống
-            </p>
+    <div
+      className="min-h-screen w-full flex items-center justify-center bg-cover bg-center relative"
+      style={{
+        backgroundImage: "url('/login.jpg')",
+      }}
+    >
+      <div className="absolute inset-0 bg-black/10 backdrop-blur-sm z-0"></div>
+      <div className="relative z-10 flex flex-col items-center w-full max-w-md">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full h-[450px] bg-white/10 backdrop-blur-lg justify-center rounded-2xl border border-white/30 shadow-xl px-10 py-10 flex flex-col gap-6"
+        >
+          <h2 className="text-3xl font-bold text-center text-white mb-6 drop-shadow">
+            Login
+          </h2>
+          <div>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="w-full bg-transparent border-0 border-b border-white/70 focus:border-blue-300 focus:ring-0 text-white placeholder-gray-200 py-2 mb-2 transition"
+              placeholder="Enter your email"
+              required
+              autoComplete="username"
+            />
           </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-purple-700 mb-2">
-                Email
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-gray-400 text-lg">✉️</span>
-                </div>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-purple-100 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all placeholder-gray-400"
-                  placeholder="Nhập email của bạn"
-                  required
-                />
-              </div>
+          <div>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="w-full bg-transparent border-0 border-b border-white/70 focus:border-blue-300 focus:ring-0 text-white placeholder-gray-200 py-2 mb-2 transition"
+                placeholder="Enter your password"
+                required
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white"
+                tabIndex={-1}
+                aria-label="Show password"
+              >
+                {showPassword ? "👁️" : "👁️‍🗨️"}
+              </button>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-purple-700 mb-2">
-                Mật khẩu
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-gray-400 text-lg">🔒</span>
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 border-2 border-purple-100 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all placeholder-gray-400"
-                  placeholder="Nhập mật khẩu"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-purple-600 transition-colors"
-                >
-                  <span className="text-lg">{showPassword ? '👁️' : '👁️‍🗨️'}</span>
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center space-x-2">
-                <span className="text-red-500">⚠️</span>
-                <span className="text-red-600 text-sm">{error}</span>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 px-4 rounded-xl font-semibold text-lg hover:from-purple-600 hover:to-purple-700 focus:ring-4 focus:ring-purple-200 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
-            >
-              Đăng nhập
-            </button>
-          </form>
-
-          {/* Footer */}
-          <div className="text-center mt-6">
-            <p className="text-gray-400 text-xs">
-              © 2025 KTC Logistics. All rights reserved.
-            </p>
           </div>
-        </div>
+          {error && (
+            <div className="bg-red-100 border border-red-300 text-red-700 rounded px-4 py-2 text-sm">
+              {error}
+            </div>
+          )}
+          <button
+            type="submit"
+            className="w-full bg-white text-blue-900 font-semibold py-3 rounded-lg shadow hover:bg-blue-50 transition"
+            disabled={loading}
+          >
+            {loading ? "Đang đăng nhập..." : "Log In"}
+          </button>
+        </form>
       </div>
     </div>
-    );
+  );
 }
