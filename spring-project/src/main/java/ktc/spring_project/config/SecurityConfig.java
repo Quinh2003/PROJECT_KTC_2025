@@ -146,6 +146,7 @@ public PasswordEncoder passwordEncoder() {
     .requestMatchers("/api/driver/**").hasAnyRole("ADMIN", "DRIVER")
     .requestMatchers("/api/customer/**").hasAnyRole("ADMIN", "CUSTOMER")
     .requestMatchers("/api/protected/**").authenticated()
+
     .anyRequest().authenticated()
 )
 
