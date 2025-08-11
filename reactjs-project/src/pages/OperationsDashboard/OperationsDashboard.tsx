@@ -17,10 +17,10 @@ export default function OperationsDashboard({ user, onLogout }: OperationsDashbo
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
-      <Sidebar<OperationsTab> 
-        activeTab={tab} 
-        onTabChange={setTab} 
-        dashboardType="operations"
+      <Sidebar<OperationsTab>
+        activeTab={tab}
+        onTabChange={tab => setTab(tab as OperationsTab)}
+        role="operations"
       />
 
       {/* Main content */}

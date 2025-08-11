@@ -9,7 +9,7 @@ interface NavbarProps {
 
 export default function Navbar({ user, onLogout, title, subtitle }: NavbarProps) {
   return (
-    <header className="bg-white/30 backdrop-blur-lg border-b border-white/30 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+    <header className="bg-white backdrop-blur-lg border-b border-white/30 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
       <div>
         <h1 className="text-3xl font-bold text-gray-800 mb-1">
           {title}
