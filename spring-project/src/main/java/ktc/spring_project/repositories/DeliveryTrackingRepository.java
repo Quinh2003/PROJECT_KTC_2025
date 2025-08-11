@@ -16,7 +16,9 @@ public interface DeliveryTrackingRepository extends JpaRepository<DeliveryTracki
     
     List<DeliveryTracking> findByVehicleId(Long vehicleId);
     
-    List<DeliveryTracking> findByStatusId(Short statusId);
+    List<DeliveryTracking> findByDeliveryId(Long deliveryId);
+    
+List<DeliveryTracking> findByStatus_Id(Short statusId);
     
     @Query("SELECT dt FROM DeliveryTracking dt WHERE dt.vehicle.id = :vehicleId ORDER BY dt.timestamp DESC")
     List<DeliveryTracking> findByVehicleIdOrderByTimestampDesc(@Param("vehicleId") Long vehicleId);
@@ -47,5 +49,16 @@ public interface DeliveryTrackingRepository extends JpaRepository<DeliveryTracki
     
     @Query("SELECT DISTINCT dt.vehicle.id FROM DeliveryTracking dt WHERE dt.timestamp >= :since")
     List<Long> findActiveVehicleIdsSince(@Param("since") LocalDateTime since);
+    
+    // Delivery-specific methods
+    @Query("SELECT dt FROM DeliveryTracking dt WHERE dt.delivery.id = :deliveryId ORDER BY dt.timestamp DESC")
+    List<DeliveryTracking> findByDeliveryIdOrderByTimestampDesc(@Param("deliveryId") Long deliveryId);
+    
+    @Query("SELECT dt FROM DeliveryTracking dt WHERE dt.delivery.id = :deliveryId AND dt.timestamp = " +
+           "(SELECT MAX(dt2.timestamp) FROM DeliveryTracking dt2 WHERE dt2.delivery.id = :deliveryId)")
+    Optional<DeliveryTracking> findLatestByDeliveryId(@Param("deliveryId") Long deliveryId);
+    
+    @Query("SELECT COUNT(dt) FROM DeliveryTracking dt WHERE dt.delivery.id = :deliveryId")
+    long countTrackingPointsByDelivery(@Param("deliveryId") Long deliveryId);
 }
 

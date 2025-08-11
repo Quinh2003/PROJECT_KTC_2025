@@ -1,6 +1,8 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
@@ -23,7 +25,11 @@ public class Store {
     private String address;
 
     @Column(precision = 10, scale = 8)
-    private Double latitude;
+
+
+    @Column(precision = 11, scale = 8)
+    private BigDecimal longitude;
+
 
     @Column(precision = 11, scale = 8)
     private Double longitude;
@@ -55,10 +61,10 @@ public class Store {
     public void setPhone(String phone) { this.phone = phone; }
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
-    public Double getLatitude() { return latitude; }
-    public void setLatitude(Double latitude) { this.latitude = latitude; }
-    public Double getLongitude() { return longitude; }
-    public void setLongitude(Double longitude) { this.longitude = longitude; }
+    public BigDecimal getLatitude() { return latitude; }
+    public void setLatitude(BigDecimal latitude) { this.latitude = latitude; }
+    public BigDecimal getLongitude() { return longitude; }
+    public void setLongitude(BigDecimal longitude) { this.longitude = longitude; }
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
     public Timestamp getCreatedAt() { return createdAt; }

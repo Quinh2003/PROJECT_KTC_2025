@@ -15,13 +15,21 @@ public class DeliveryTracking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(precision = 10, scale = 8)
     private BigDecimal latitude;
 
+    @Column(precision = 11, scale = 8)
     private BigDecimal longitude;
 
+    @Column(length = 255)
     private String location;
 
+    @Column(columnDefinition = "TEXT")
     private String notes;
+
+    @ManyToOne
+    @JoinColumn(name = "delivery_id", nullable = false)
+    private Delivery delivery;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id")
@@ -34,9 +42,11 @@ public class DeliveryTracking {
     private Timestamp timestamp;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     public DeliveryTracking() {}
@@ -82,6 +92,14 @@ public class DeliveryTracking {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public Delivery getDelivery() {
+        return delivery;
+    }
+
+    public void setDelivery(Delivery delivery) {
+        this.delivery = delivery;
     }
 
     public Vehicle getVehicle() {

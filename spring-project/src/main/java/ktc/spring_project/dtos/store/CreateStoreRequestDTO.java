@@ -5,7 +5,7 @@ package ktc.spring_project.dtos.store;
  */
 public class CreateStoreRequestDTO {
     
-    private String storeCode;
+
     private String storeName;
     private String email;
     private String phone;
@@ -18,16 +18,14 @@ public class CreateStoreRequestDTO {
     // Constructors
     public CreateStoreRequestDTO() {}
     
-    public CreateStoreRequestDTO(String storeCode, String storeName, String phone, String address) {
-        this.storeCode = storeCode;
+    public CreateStoreRequestDTO(String storeName, String phone, String address) {
         this.storeName = storeName;
         this.phone = phone;
         this.address = address;
     }
     
     // Getters and Setters
-    public String getStoreCode() { return storeCode; }
-    public void setStoreCode(String storeCode) { this.storeCode = storeCode; }
+
     
     public String getStoreName() { return storeName; }
     public void setStoreName(String storeName) { this.storeName = storeName; }
@@ -55,8 +53,7 @@ public class CreateStoreRequestDTO {
     
     // Validation methods
     public boolean isValid() {
-        return storeCode != null && !storeCode.trim().isEmpty() &&
-               storeName != null && !storeName.trim().isEmpty() &&
+        return storeName != null && !storeName.trim().isEmpty() &&
                phone != null && !phone.trim().isEmpty() &&
                address != null && !address.trim().isEmpty();
     }
@@ -70,7 +67,7 @@ public class CreateStoreRequestDTO {
     }
     
     public String getDisplayName() {
-        return String.format("%s - %s", storeCode, storeName);
+        return storeName != null ? storeName : "New Store";
     }
     
     public boolean isEmailValid() {

@@ -3,6 +3,7 @@ package ktc.spring_project.entities;
 import jakarta.persistence.*;
 import ktc.spring_project.enums.ActionType;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "activity_logs")
@@ -12,30 +13,44 @@ public class ActivityLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "actor_id")
     private Long actorId;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "actor_id", insertable = false, updatable = false)
+    private User actor;
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "role_id", nullable = true)
     private Role role;
 
     @ManyToOne
     @JoinColumn(name = "status_id")
     private Status status;
 
-
     @Enumerated(EnumType.STRING)
+    @Column(name = "action_type")
     private ActionType actionType;
 
+    @Column(name = "table_name")
     private String tableName;
 
+    @Column(name = "record_id")
     private Long recordId;
 
+    @Column(name = "action_timestamp")
     private Timestamp actionTimestamp;
 
     @Column(columnDefinition = "json")
     private String metadata;
 
     public ActivityLog() {}
+
+    public ActivityLog(Long actorId, ActionType actionType) {
+        this.actorId = actorId;
+        this.actionType = actionType;
+        this.actionTimestamp = Timestamp.valueOf(LocalDateTime.now());
+    }
 
     // Getters and setters
 
@@ -53,6 +68,14 @@ public class ActivityLog {
 
     public void setActorId(Long actorId) {
         this.actorId = actorId;
+    }
+
+    public User getActor() {
+        return actor;
+    }
+
+    public void setActor(User actor) {
+        this.actor = actor;
     }
 
     public Role getRole() {

@@ -3,5 +3,29 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  "compilerOptions": {
+    "target": "esnext", // Điều chỉnh target theo yêu cầu của bạn (esnext hoặc es6)
+    "module": "esnext", // Điều chỉnh module
+    "jsx": "react-jsx", // Đảm bảo sử dụng React JSX mới nhất
+    "moduleResolution": "node", // Đảm bảo module được giải quyết theo cách node
+    "strict": true, // Tăng cường kiểm tra chính xác của TypeScript
+    "esModuleInterop": true,
+    "skipLibCheck": true, // Giúp bỏ qua các kiểm tra thư viện nếu không cần thiết
+    "resolveJsonModule": true, // Hỗ trợ nhập khẩu JSON
+    "baseUrl": "./src", // Đảm bảo baseUrl chính xác
+    "paths": {
+      "@/*": ["*"], // Alias cho @
+      "@assets/*": ["src/*"] // Alias cho @assets
+    },
+    "outDir": "./dist", // Chỉ định thư mục đầu ra cho file JS biên dịch
+    "declaration": true, // Bật tạo file .d.ts
+    "declarationDir": "./types", // Chỉ định thư mục lưu trữ các file .d.ts
+    "allowJs": true, // Cho phép biên dịch cả file JS
+    "composite": true
+  },
+  "include": [
+    "src/**/*" // Đảm bảo include tất cả tệp trong src
+  ],
+  "exclude": ["node_modules"]
 }

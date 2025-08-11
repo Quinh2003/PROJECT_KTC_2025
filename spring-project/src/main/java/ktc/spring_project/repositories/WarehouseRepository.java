@@ -8,12 +8,12 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
+
 
 @Repository
 public interface WarehouseRepository extends JpaRepository<Warehouse, Long> {
     
-    Optional<Warehouse> findByWarehouseCode(String warehouseCode);
+
     
     List<Warehouse> findByIsActive(Boolean isActive);
     
@@ -27,7 +27,7 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, Long> {
                                        @Param("minLng") BigDecimal minLng,
                                        @Param("maxLng") BigDecimal maxLng);
     
-    boolean existsByWarehouseCode(String warehouseCode);
+
     
     @Query("SELECT COUNT(w) FROM Warehouse w WHERE w.isActive = true")
     long countActiveWarehouses();

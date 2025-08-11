@@ -4,6 +4,8 @@ public enum ProofType {
     PHOTO("Photo"),
     SIGNATURE("Signature"),
     AUDIO("Audio"),
+    VIDEO("Video"),
+    DOCUMENT("Document"),
     RECEIPT("Receipt");
 
     private final String displayName;

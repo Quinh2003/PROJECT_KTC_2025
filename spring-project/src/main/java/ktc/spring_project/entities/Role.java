@@ -14,19 +14,24 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "role_name", nullable = false, unique = true, length = 50)
     private String roleName;
 
     @Column(columnDefinition = "json")
     private String permission;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     public Role() {}

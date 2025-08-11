@@ -15,11 +15,10 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     
     List<OrderItem> findByProductId(Long productId);
     
-    @Query("SELECT oi FROM OrderItem oi WHERE oi.order.orderId = :orderId")
-    List<OrderItem> findByOrderOrderId(@Param("orderId") String orderId);
-    
-    @Query("SELECT oi FROM OrderItem oi WHERE oi.product.productCode = :productCode")
-    List<OrderItem> findByProductCode(@Param("productCode") String productCode);
+   @Query("SELECT oi FROM OrderItem oi WHERE oi.order.id = :orderId")
+List<OrderItem> findByOrderIdUsingQuery(@Param("orderId") Long orderId);
+
+
     
     @Query("SELECT SUM(oi.quantity) FROM OrderItem oi WHERE oi.product.id = :productId")
     Long getTotalQuantityByProductId(@Param("productId") Long productId);

@@ -15,18 +15,25 @@ public class DeliveryProof {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "proof_type")
     private ProofType proofType;
 
+    @Column(name = "file_path")
     private String filePath;
 
+    @Column(name = "file_name")
     private String fileName;
 
+    @Column(name = "recipient_name")
     private String recipientName;
 
+    @Column(name = "recipient_signature")
     private String recipientSignature;
 
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
+    @Column(name = "captured_at")
     private Timestamp capturedAt;
 
     @ManyToOne
@@ -38,6 +45,7 @@ public class DeliveryProof {
     private User uploadedBy;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     public DeliveryProof() {
