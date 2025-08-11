@@ -1,12 +1,18 @@
 package ktc.spring_project.controllers;
 
+import ktc.spring_project.entities.Store;
+import ktc.spring_project.services.StoreService;
+import ktc.spring_project.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
 import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,21 +35,59 @@ public class StoreController {
      * Get all stores with optional filters
      */
     @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> getAllStores(
+    public ResponseEntity<List<Store>> getAllStores(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String region) {
 
-        List<Map<String, Object>> stores = storeService.getFilteredStores(status, search, region);
-        return ResponseEntity.ok(stores);
+        // Get all stores from service
+        List<Store> allStores = storeService.getAllStores();
+
+        // Manual filtering since getFilteredStores is not implemented in service
+        // TO-DO: Implement proper filtering in StoreService
+        if (status != null || search != null || region != null) {
+            List<Store> filteredStores = new ArrayList<>();
+
+            for (Store store : allStores) {
+                boolean statusMatch = true;
+                boolean searchMatch = true;
+                boolean regionMatch = true;
+
+                // Filter by status if provided
+                if (status != null) {
+                    boolean isActiveStatus = "1".equals(status) || "true".equalsIgnoreCase(status);
+                    statusMatch = (store.getIsActive() == isActiveStatus);
+                }
+
+                // Filter by search term if provided
+                if (search != null && !search.isEmpty()) {
+                    String searchLower = search.toLowerCase();
+                    searchMatch = store.getStoreName().toLowerCase().contains(searchLower) ||
+                            (store.getAddress() != null && store.getAddress().toLowerCase().contains(searchLower));
+                }
+
+                // Region filtering would be implemented here
+                // Currently just passing through since region field might not exist in entity
+
+                // Add to filtered list if all conditions match
+                if (statusMatch && searchMatch && regionMatch) {
+                    filteredStores.add(store);
+                }
+            }
+
+            return ResponseEntity.ok(filteredStores);
+        }
+
+        // Return all stores if no filters applied
+        return ResponseEntity.ok(allStores);
     }
 
     /**
      * Get store by ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getStoreById(@PathVariable Long id) {
-        Map<String, Object> store = storeService.getStoreById(id);
+    public ResponseEntity<Store> getStoreById(@PathVariable Long id) {
+        Store store = storeService.getStoreById(id);
         return ResponseEntity.ok(store);
     }
 
@@ -51,11 +95,12 @@ public class StoreController {
      * Create a new store
      */
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createStore(
-            @Valid @RequestBody Map<String, Object> storeData,
+    public ResponseEntity<Store> createStore(
+            @Valid @RequestBody Store store,
             Authentication authentication) {
 
-        Map<String, Object> createdStore = storeService.createStore(storeData, authentication);
+        // TO-DO: Add authentication handling once implemented in service
+        Store createdStore = storeService.createStore(store);
         return new ResponseEntity<>(createdStore, HttpStatus.CREATED);
     }
 
@@ -63,29 +108,26 @@ public class StoreController {
      * Update store information
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateStore(
+    public ResponseEntity<Store> updateStore(
             @PathVariable Long id,
-            @Valid @RequestBody Map<String, Object> storeData,
+            @Valid @RequestBody Store storeDetails,
             Authentication authentication) {
 
-        Map<String, Object> updatedStore = storeService.updateStore(id, storeData, authentication);
+        // TO-DO: Add authentication handling once implemented in service
+        Store updatedStore = storeService.updateStore(id, storeDetails);
         return ResponseEntity.ok(updatedStore);
     }
 
     /**
      * Delete store (soft delete)
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStore(
-            @PathVariable Long id,
-            Authentication authentication) {
-
-        storeService.deleteStore(id, authentication);
-        return ResponseEntity.noContent().build();
-    }
+    /**
+ * Delete store (soft delete)
+ */
 
     /**
      * Get orders for a store
+     * TO-DO: Implement getStoreOrders method in StoreService
      */
     @GetMapping("/{id}/orders")
     public ResponseEntity<List<Map<String, Object>>> getStoreOrders(
@@ -96,12 +138,27 @@ public class StoreController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
-        List<Map<String, Object>> orders = storeService.getStoreOrders(id, status, dateFrom, dateTo, page, size);
-        return ResponseEntity.ok(orders);
+        // TO-DO: Replace with actual implementation when getStoreOrders is implemented in StoreService
+        // List<Map<String, Object>> orders = storeService.getStoreOrders(id, status, dateFrom, dateTo, page, size);
+
+        return ResponseEntity.ok(List.of(
+                Map.of(
+                        "message", "Store orders listing will be implemented in a future update",
+                        "storeId", id,
+                        "parameters", Map.of(
+                                "status", status != null ? status : "",
+                                "dateFrom", dateFrom != null ? dateFrom : "",
+                                "dateTo", dateTo != null ? dateTo : "",
+                                "page", page,
+                                "size", size
+                        )
+                )
+        ));
     }
 
     /**
      * Get store performance statistics
+     * TO-DO: Implement getStoreStatistics method in StoreService
      */
     @GetMapping("/{id}/statistics")
     public ResponseEntity<Map<String, Object>> getStoreStatistics(
@@ -109,12 +166,22 @@ public class StoreController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
 
-        Map<String, Object> statistics = storeService.getStoreStatistics(id, dateFrom, dateTo);
-        return ResponseEntity.ok(statistics);
+        // TO-DO: Replace with actual implementation when getStoreStatistics is implemented in StoreService
+        // Map<String, Object> statistics = storeService.getStoreStatistics(id, dateFrom, dateTo);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Store statistics will be implemented in a future update",
+                "storeId", id,
+                "dateRange", Map.of(
+                        "from", dateFrom != null ? dateFrom : "",
+                        "to", dateTo != null ? dateTo : ""
+                )
+        ));
     }
 
     /**
      * Get nearby stores
+     * TO-DO: Implement getNearbyStores method in StoreService
      */
     @GetMapping("/nearby")
     public ResponseEntity<List<Map<String, Object>>> getNearbyStores(
@@ -122,14 +189,33 @@ public class StoreController {
             @RequestParam Double longitude,
             @RequestParam(defaultValue = "10") Double radiusKm) {
 
-        List<Map<String, Object>> nearbyStores = storeService.getNearbyStores(latitude, longitude, radiusKm);
-        return ResponseEntity.ok(nearbyStores);
-    }
+        // TO-DO: Replace with actual implementation when getNearbyStores is implemented in StoreService
+        // List<Map<String, Object>> nearbyStores = storeService.getNearbyStores(latitude, longitude, radiusKm);
 
-    /**
-     * Update store status (active/inactive)
-     */
-    @PatchMapping("/{id}/status")
+        return ResponseEntity.ok(List.of(
+                Map.of(
+                        "message", "Nearby stores search will be implemented in a future update",
+                        "parameters", Map.of(
+                                "latitude", latitude,
+                                "longitude", longitude,
+                                "radiusKm", radiusKm
+                        )
+                )
+        ));
+    }
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> deleteStore(
+        @PathVariable Long id,
+        Authentication authentication) {
+    storeService.deleteStore(id);
+    return ResponseEntity.noContent().build();
+}
+
+/**
+ * Update store status (active/inactive)
+ * TO-DO: Implement updateStoreStatus method in StoreService
+ */
+@PatchMapping("/{id}/status")
     public ResponseEntity<Map<String, Object>> updateStoreStatus(
             @PathVariable Long id,
             @RequestBody Map<String, Boolean> statusData,
@@ -137,7 +223,36 @@ public class StoreController {
 
         Boolean isActive = statusData.get("isActive");
 
-        Map<String, Object> updatedStore = storeService.updateStoreStatus(id, isActive, authentication);
-        return ResponseEntity.ok(updatedStore);
+        // TO-DO: Replace with actual implementation when updateStoreStatus is implemented in StoreService
+        // Map<String, Object> updatedStore = storeService.updateStoreStatus(id, isActive, authentication);
+
+        // Temporary implementation using existing service method
+        Store store = storeService.getStoreById(id);
+        store.setIsActive(isActive);
+        Store updatedStore = storeService.updateStore(id, store);
+
+        return ResponseEntity.ok(Map.of(
+                "id", updatedStore.getId(),
+                "storeName", updatedStore.getStoreName(),
+                "isActive", updatedStore.getIsActive(),
+                "message", "Store status updated successfully"
+        ));
     }
+
+    @PatchMapping("/{id}")
+public ResponseEntity<Store> patchStore(
+        @PathVariable Long id,
+        @RequestBody Map<String, Object> updates,
+        Authentication authentication) {
+
+    Store store = storeService.getStoreById(id);
+    if (updates.containsKey("storeName")) {
+        store.setStoreName((String) updates.get("storeName"));
+    }
+    // Thêm các trường khác nếu cần PATCH
+
+    Store updatedStore = storeService.updateStore(id, store);
+    return ResponseEntity.ok(updatedStore);
+}
+
 }

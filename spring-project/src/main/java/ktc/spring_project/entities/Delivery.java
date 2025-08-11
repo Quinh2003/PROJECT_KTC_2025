@@ -1,13 +1,14 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
-import ktc.spring_project.enums.TransportMode;
 import ktc.spring_project.enums.ServiceType;
-import ktc.spring_project.enums.DeliveryStatus;
+import ktc.spring_project.enums.TransportMode;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "deliveries")
@@ -20,52 +21,61 @@ public class Delivery {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @Column(name = "delivery_fee")
     private BigDecimal deliveryFee;
 
     @Enumerated(EnumType.STRING)
-    private TransportMode transportMode;
+@Column(name = "transport_mode", length = 50)
+private TransportMode transportMode;
 
-    @Enumerated(EnumType.STRING)
-    private ServiceType serviceType;
+@Enumerated(EnumType.STRING)
+@Column(name = "service_type", length = 50)
+private ServiceType serviceType;
 
+
+    @Column(name = "pickup_date")
     private Timestamp pickupDate;
 
+    @Column(name = "schedule_delivery_time")
     private Timestamp scheduleDeliveryTime;
 
+    @Column(name = "actual_delivery_time")
     private Timestamp actualDeliveryTime;
 
-    private Boolean lateDeliveryRisk;
+    @Column(name = "late_delivery_risk", nullable = false)
+    private Integer lateDeliveryRisk;
 
-    @Enumerated(EnumType.STRING)
-    private DeliveryStatus deliveryStatus;
-
+    @Column(name = "delivery_attempts")
     private Integer deliveryAttempts;
 
+    @Column(name = "delivery_notes", columnDefinition = "TEXT")
     private String deliveryNotes;
 
+    @Column(name = "order_date", nullable = false)
     private Timestamp orderDate;
 
     @ManyToOne
-    @JoinColumn(name = "vehicle_id")
+    @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
     @ManyToOne
     @JoinColumn(name = "driver_id")
     private User driver;
 
-    @ManyToOne
-    @JoinColumn(name = "tracking_id")
-    private DeliveryTracking tracking;
+    @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DeliveryTracking> trackingPoints;
 
     @ManyToOne
     @JoinColumn(name = "route_id")
     private Route route;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
-    private Timestamp updatedAt;
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;    
 
     public Delivery() {}
 
@@ -79,11 +89,21 @@ public class Delivery {
     public BigDecimal getDeliveryFee() { return deliveryFee; }
     public void setDeliveryFee(BigDecimal deliveryFee) { this.deliveryFee = deliveryFee; }
 
-    public TransportMode getTransportMode() { return transportMode; }
-    public void setTransportMode(TransportMode transportMode) { this.transportMode = transportMode; }
+    public TransportMode getTransportMode() {
+    return transportMode;
+}
 
-    public ServiceType getServiceType() { return serviceType; }
-    public void setServiceType(ServiceType serviceType) { this.serviceType = serviceType; }
+public void setTransportMode(TransportMode transportMode) {
+    this.transportMode = transportMode;
+}
+
+public ServiceType getServiceType() {
+    return serviceType;
+}
+
+public void setServiceType(ServiceType serviceType) {
+    this.serviceType = serviceType;
+}
 
     public Timestamp getPickupDate() { return pickupDate; }
     public void setPickupDate(Timestamp pickupDate) { this.pickupDate = pickupDate; }
@@ -94,11 +114,8 @@ public class Delivery {
     public Timestamp getActualDeliveryTime() { return actualDeliveryTime; }
     public void setActualDeliveryTime(Timestamp actualDeliveryTime) { this.actualDeliveryTime = actualDeliveryTime; }
 
-    public Boolean getLateDeliveryRisk() { return lateDeliveryRisk; }
-    public void setLateDeliveryRisk(Boolean lateDeliveryRisk) { this.lateDeliveryRisk = lateDeliveryRisk; }
-
-    public DeliveryStatus getDeliveryStatus() { return deliveryStatus; }
-    public void setDeliveryStatus(DeliveryStatus deliveryStatus) { this.deliveryStatus = deliveryStatus; }
+    public Integer getLateDeliveryRisk() { return lateDeliveryRisk; }
+    public void setLateDeliveryRisk(Integer lateDeliveryRisk) { this.lateDeliveryRisk = lateDeliveryRisk; }
 
     public Integer getDeliveryAttempts() { return deliveryAttempts; }
     public void setDeliveryAttempts(Integer deliveryAttempts) { this.deliveryAttempts = deliveryAttempts; }
@@ -115,8 +132,8 @@ public class Delivery {
     public User getDriver() { return driver; }
     public void setDriver(User driver) { this.driver = driver; }
 
-    public DeliveryTracking getTracking() { return tracking; }
-    public void setTracking(DeliveryTracking tracking) { this.tracking = tracking; }
+    public List<DeliveryTracking> getTrackingPoints() { return trackingPoints; }
+    public void setTrackingPoints(List<DeliveryTracking> trackingPoints) { this.trackingPoints = trackingPoints; }
 
     public Route getRoute() { return route; }
     public void setRoute(Route route) { this.route = route; }

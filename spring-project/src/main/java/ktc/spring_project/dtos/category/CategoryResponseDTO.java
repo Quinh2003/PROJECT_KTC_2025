@@ -9,14 +9,14 @@ import java.util.List;
 public class CategoryResponseDTO {
     
     private Long id;
-    private String categoryId;
+
     private String name;
     private String description;
     
     // Parent category information
     private Long parentId;
     private String parentName;
-    private String parentCategoryId;
+
     
     // Child categories
     private List<CategoryResponseDTO> children;
@@ -34,9 +34,8 @@ public class CategoryResponseDTO {
     // Constructors
     public CategoryResponseDTO() {}
     
-    public CategoryResponseDTO(Long id, String categoryId, String name, Boolean isActive) {
+    public CategoryResponseDTO(Long id, String name, Boolean isActive) {
         this.id = id;
-        this.categoryId = categoryId;
         this.name = name;
         this.isActive = isActive;
     }
@@ -45,8 +44,7 @@ public class CategoryResponseDTO {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
-    public String getCategoryId() { return categoryId; }
-    public void setCategoryId(String categoryId) { this.categoryId = categoryId; }
+
     
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -60,8 +58,7 @@ public class CategoryResponseDTO {
     public String getParentName() { return parentName; }
     public void setParentName(String parentName) { this.parentName = parentName; }
     
-    public String getParentCategoryId() { return parentCategoryId; }
-    public void setParentCategoryId(String parentCategoryId) { this.parentCategoryId = parentCategoryId; }
+
     
     public List<CategoryResponseDTO> getChildren() { return children; }
     public void setChildren(List<CategoryResponseDTO> children) { this.children = children; }
@@ -89,7 +86,7 @@ public class CategoryResponseDTO {
     
     // Utility methods
     public String getDisplayName() {
-        return name != null ? name : categoryId;
+        return name != null ? name : "Category #" + id;
     }
     
     public boolean isRootCategory() {
@@ -126,9 +123,9 @@ public class CategoryResponseDTO {
     }
     
     public String getCategoryHierarchy() {
-        if (parentCategoryId != null) {
-            return String.format("%s > %s", parentCategoryId, categoryId);
+        if (parentName != null) {
+            return String.format("%s > %s", parentName, name);
         }
-        return categoryId;
+        return name;
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +36,41 @@ public class WarehouseController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String search) {
 
-        List<Warehouse> warehouses = warehouseService.getFilteredWarehouses(status, search);
-        return ResponseEntity.ok(warehouses);
+        // Retrieve all warehouses
+        List<Warehouse> allWarehouses = warehouseService.getAllWarehouses();
+
+        // Manual filtering since getFilteredWarehouses is not implemented in service
+        if (status != null || search != null) {
+            List<Warehouse> filteredWarehouses = new ArrayList<>();
+
+            for (Warehouse warehouse : allWarehouses) {
+                boolean statusMatch = true;
+                boolean searchMatch = true;
+
+                // Filter by status if provided
+                if (status != null) {
+                    boolean isActiveStatus = "1".equals(status) || "true".equalsIgnoreCase(status);
+                    statusMatch = (warehouse.getIsActive() == isActiveStatus);
+                }
+
+                // Filter by search term if provided
+                if (search != null && !search.isEmpty()) {
+                    String searchLower = search.toLowerCase();
+                    searchMatch = warehouse.getName().toLowerCase().contains(searchLower) ||
+                            (warehouse.getAddress() != null && warehouse.getAddress().toLowerCase().contains(searchLower));
+                }
+
+                // Add to filtered list if both conditions match
+                if (statusMatch && searchMatch) {
+                    filteredWarehouses.add(warehouse);
+                }
+            }
+
+            return ResponseEntity.ok(filteredWarehouses);
+        }
+
+        // Return all warehouses if no filters applied
+        return ResponseEntity.ok(allWarehouses);
     }
 
     /**
@@ -186,53 +220,53 @@ public class WarehouseController {
     }
 
     /**
-     * Get inventory movement report
+     * Get warehouse movement report
      */
     @GetMapping("/movement")
-    public ResponseEntity<List<Map<String, Object>>> getInventoryMovementReport(
+    public ResponseEntity<List<Map<String, Object>>> getWarehouseMovementReport(
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo,
             @RequestParam(required = false) Long productId,
             @RequestParam(required = false) Long warehouseId) {
 
-        List<Map<String, Object>> movementReport = warehouseService.getInventoryMovementReport(
+        List<Map<String, Object>> movementReport = warehouseService.getWarehouseMovementReport(
                 dateFrom, dateTo, productId, warehouseId);
         return ResponseEntity.ok(movementReport);
     }
 
     /**
-     * Adjust inventory quantity
+     * Adjust warehouse quantity
      */
     @PostMapping("/adjust")
-    public ResponseEntity<Map<String, Object>> adjustInventory(
+    public ResponseEntity<Map<String, Object>> adjustWarehouse(
             @Valid @RequestBody Map<String, Object> adjustmentData,
             Authentication authentication) {
 
-        Map<String, Object> adjustment = warehouseService.adjustInventory(adjustmentData, authentication);
+        Map<String, Object> adjustment = warehouseService.adjustWarehouse(adjustmentData, authentication);
         return new ResponseEntity<>(adjustment, HttpStatus.CREATED);
     }
 
     /**
-     * Get inventory valuation report
+     * Get warehouse valuation report
      */
     @GetMapping("/valuation")
-    public ResponseEntity<Map<String, Object>> getInventoryValuation(
+    public ResponseEntity<Map<String, Object>> getWarehouseValuation(
             @RequestParam(required = false) Long warehouseId) {
 
-        Map<String, Object> valuation = warehouseService.getInventoryValuation(warehouseId);
+        Map<String, Object> valuation = warehouseService.getWarehouseValuation(warehouseId);
         return ResponseEntity.ok(valuation);
     }
 
     /**
-     * Get inventory turnover report
+     * Get warehouse turnover report
      */
     @GetMapping("/turnover")
-    public ResponseEntity<List<Map<String, Object>>> getInventoryTurnover(
+    public ResponseEntity<List<Map<String, Object>>> getWarehouseTurnover(
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo,
             @RequestParam(required = false) Long categoryId) {
 
-        List<Map<String, Object>> turnoverReport = warehouseService.getInventoryTurnover(dateFrom, dateTo, categoryId);
+        List<Map<String, Object>> turnoverReport = warehouseService.getWarehouseTurnover(dateFrom, dateTo, categoryId);
         return ResponseEntity.ok(turnoverReport);
     }
 }

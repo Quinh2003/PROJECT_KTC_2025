@@ -2,8 +2,10 @@ package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
 import ktc.spring_project.enums.AddressType;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -19,13 +21,17 @@ public class Address {
     private Order order;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "address_type", nullable = false, length = 50)
-    private AddressType addressType;
+@Column(name = "address_type", nullable = false, length = 50)
+private AddressType addressType;
+
 
     @Column(nullable = false, length = 500)
     private String address;
 
+    @Column(precision = 10, scale = 8)
     private BigDecimal latitude;
+
+    @Column(precision = 11, scale = 8)
     private BigDecimal longitude;
 
     @Column(length = 100)
@@ -35,7 +41,7 @@ public class Address {
     private String state;
 
     @Column(length = 100)
-    private String country;
+    private String country = "Vietnam";
 
     @Column(length = 100)
     private String region;
@@ -46,7 +52,7 @@ public class Address {
     @Column(name = "contact_name", length = 255)
     private String contactName;
 
-    @Column(name = "contact_phone", length = 50)
+    @Column(name = "contact_phone", length = 20)
     private String contactPhone;
 
     @Column(name = "contact_email", length = 255)
@@ -68,14 +74,22 @@ public class Address {
     public void setId(Long id) { this.id = id; }
     public Order getOrder() { return order; }
     public void setOrder(Order order) { this.order = order; }
-    public AddressType getAddressType() { return addressType; }
-    public void setAddressType(AddressType addressType) { this.addressType = addressType; }
+  
+public AddressType getAddressType() {
+    return addressType;
+}
+
+public void setAddressType(AddressType addressType) {
+    this.addressType = addressType;
+}
+
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
     public BigDecimal getLatitude() { return latitude; }
     public void setLatitude(BigDecimal latitude) { this.latitude = latitude; }
     public BigDecimal getLongitude() { return longitude; }
     public void setLongitude(BigDecimal longitude) { this.longitude = longitude; }
+
     public String getCity() { return city; }
     public void setCity(String city) { this.city = city; }
     public String getState() { return state; }

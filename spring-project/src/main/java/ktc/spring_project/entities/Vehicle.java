@@ -16,28 +16,36 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "license_plate", length = 20, nullable = false, unique = true)
     private String licensePlate;
 
     @Enumerated(EnumType.STRING)
-    private VehicleType vehicleType;
+    @Column(name = "vehicle_type", length = 50, nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'TRUCK'")
+    private VehicleType vehicleType = VehicleType.TRUCK;
 
-    private BigDecimal capacityWeightKg;
+    @Column(name = "capacity_weight_kg", precision = 10, scale = 2, columnDefinition = "DECIMAL(10,2) DEFAULT 0.00")
+    private BigDecimal capacityWeightKg = BigDecimal.ZERO;
 
-    private BigDecimal capacityVolumeM3;
+    @Column(name = "capacity_volume_m3", precision = 10, scale = 2, columnDefinition = "DECIMAL(10,2) DEFAULT 0.00")
+    private BigDecimal capacityVolumeM3 = BigDecimal.ZERO;
+
     @ManyToOne
     @JoinColumn(name = "current_driver_id")
     private User currentDriver;
 
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     @ManyToOne
-    @JoinColumn(name = "status_id")
+    @JoinColumn(name = "status_id", nullable = false)
     private Status status;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     // Constructor mặc định

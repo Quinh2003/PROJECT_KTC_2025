@@ -51,10 +51,9 @@ public class DeliveryService {
         delivery.setScheduleDeliveryTime(deliveryDetails.getScheduleDeliveryTime());
         delivery.setActualDeliveryTime(deliveryDetails.getActualDeliveryTime());
         delivery.setLateDeliveryRisk(deliveryDetails.getLateDeliveryRisk());
-        delivery.setDeliveryStatus(deliveryDetails.getDeliveryStatus());
         delivery.setVehicle(deliveryDetails.getVehicle());
         delivery.setDriver(deliveryDetails.getDriver());
-        delivery.setTracking(deliveryDetails.getTracking());
+delivery.setTrackingPoints(deliveryDetails.getTrackingPoints());
         delivery.setRoute(deliveryDetails.getRoute());
         delivery.setDeliveryAttempts(deliveryDetails.getDeliveryAttempts());
         delivery.setDeliveryNotes(deliveryDetails.getDeliveryNotes());

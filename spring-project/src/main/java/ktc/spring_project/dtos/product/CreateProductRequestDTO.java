@@ -8,9 +8,7 @@ import java.math.BigDecimal;
  */
 public class CreateProductRequestDTO {
     
-    @NotBlank(message = "Product code is required")
-    @Size(max = 50, message = "Product code must not exceed 50 characters")
-    private String productCode;
+
     
     @NotBlank(message = "Product name is required")
     @Size(max = 100, message = "Product name must not exceed 100 characters")
@@ -45,8 +43,7 @@ public class CreateProductRequestDTO {
     // Constructors
     public CreateProductRequestDTO() {}
     
-    public CreateProductRequestDTO(String productCode, String name, BigDecimal unitPrice, Long warehouseId, Long createdByUserId) {
-        this.productCode = productCode;
+    public CreateProductRequestDTO(String name, BigDecimal unitPrice, Long warehouseId, Long createdByUserId) {
         this.name = name;
         this.unitPrice = unitPrice;
         this.warehouseId = warehouseId;
@@ -57,8 +54,6 @@ public class CreateProductRequestDTO {
     }
     
     // Getters and Setters
-    public String getProductCode() { return productCode; }
-    public void setProductCode(String productCode) { this.productCode = productCode; }
     
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

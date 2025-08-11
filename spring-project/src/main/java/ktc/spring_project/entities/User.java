@@ -14,24 +14,26 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @Column(name = "username", nullable = false, unique = true, length = 100)
+    @Column(nullable = false, unique = true, length = 100)
     private String username;
 
     @Column(name = "full_name", length = 255)
     private String fullName;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true, length = 255)
     private String email;
 
+    @Column(nullable = false, length = 255)
     private String password;
 
+    @Column(length = 20)
     private String phone;
 
+    @Column(name = "google_id", length = 100)
+    private String googleId;
 
-
+    @Column(columnDefinition = "TEXT")
     private String notes;
-
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
@@ -42,9 +44,11 @@ public class User {
     private Status status;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     public User() {}
@@ -100,14 +104,13 @@ public class User {
         this.phone = phone;
     }
 
-    public String getAddress() {
-        return address;
+    public String getGoogleId() {
+        return googleId;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
     }
-
 
     public Status getStatus() {
         return status;
@@ -148,4 +151,6 @@ public class User {
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+
 }

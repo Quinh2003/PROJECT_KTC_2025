@@ -16,21 +16,26 @@ public class Warehouse {
     private Long id;
 
 
-    private String warehouseCode;
 
+    @Column(length = 255, nullable = false)
     private String name;
 
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String address;
 
-
+    @Column(precision = 10, scale = 8)
     private BigDecimal latitude;
 
+    @Column(precision = 11, scale = 8)
     private BigDecimal longitude;
 
+    @Column(name = "capacity_m3", precision = 10, scale = 2, nullable = false)
     private BigDecimal capacityM3;
 
+    @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     @ManyToOne
@@ -38,9 +43,11 @@ public class Warehouse {
     private User createdBy;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
     public Warehouse() {}
@@ -72,13 +79,7 @@ public class Warehouse {
     }
 
 
-    public String getWarehouseCode() {
-        return warehouseCode;
-    }
 
-    public void setWarehouseCode(String warehouseCode) {
-        this.warehouseCode = warehouseCode;
-    }
 
     public BigDecimal getLatitude() {
         return latitude;

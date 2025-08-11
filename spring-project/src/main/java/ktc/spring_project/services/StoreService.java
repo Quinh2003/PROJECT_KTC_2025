@@ -29,7 +29,7 @@ public class StoreService {
 
     public Store updateStore(Long id, Store storeDetails) {
         Store store = getStoreById(id);
-        store.setStoreCode(storeDetails.getStoreCode());
+        store.setId(storeDetails.getId());
         store.setStoreName(storeDetails.getStoreName());
         store.setEmail(storeDetails.getEmail());
         store.setPhone(storeDetails.getPhone());
@@ -42,8 +42,16 @@ public class StoreService {
         return storeRepository.save(store);
     }
 
-    public void deleteStore(Long id) {
-        Store store = getStoreById(id);
-        storeRepository.delete(store);
-    }
+    // public void deleteStore(Long id) {
+    //     Store store = getStoreById(id);
+    //     storeRepository.delete(store);
+    // }
+
+    // ...existing code...
+public void deleteStore(Long id) {
+    Store store = getStoreById(id);
+    store.setIsActive(false); // Soft delete
+    storeRepository.save(store);
+}
+// ...existing code...
 }
