@@ -1,39 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserForm from "./UserForm";
-import { FaBellConcierge } from "react-icons/fa6";
-import { FaTruck } from "react-icons/fa6";
+import { fetchUsers } from "../../services/adminAPI";
+import { FaBellConcierge, FaTruck } from "react-icons/fa6";
 import { FaTools } from "react-icons/fa";
 
-const initialUsers = [
-  {
-    name: "Nguyen Van A",
-    email: "nguyenvana@company.com",
-    role: "Dispatcher",
-    roleIcon: <FaBellConcierge className="inline mr-1" />,
-    status: "active",
-    lastLogin: "2024-01-15 09:30",
-  },
-  {
-    name: "Tran Thi B",
-    email: "tranthib@company.com",
-    role: "Fleet Manager",
-    roleIcon: <FaTools className="inline mr-1" />,
-    status: "active",
-    lastLogin: "2024-01-15 08:45",
-  },
-  {
-    name: "Le Van C",
-    email: "levanc@company.com",
-    role: "Driver",
-    roleIcon: <FaTruck className="inline mr-1" />,
-    status: "inactive",
-    lastLogin: "2024-01-10 16:20",
-  },
-];
+// Helper to map API role to display name and icon
+function getRoleDisplay(roleName: string) {
+  switch (roleName) {
+    case "DISPATCHER":
+      return { label: "Dispatcher", icon: <FaBellConcierge className="inline mr-1" /> };
+    case "FLEET_MANAGER":
+      return { label: "Fleet Manager", icon: <FaTools className="inline mr-1" /> };
+    case "DRIVER":
+      return { label: "Driver", icon: <FaTruck className="inline mr-1" /> };
+    default:
+      return { label: roleName, icon: null };
+  }
+}
 
 export default function UserTable() {
   const [search, setSearch] = useState("");
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editUser, setEditUser] = useState<{
     name: string;
@@ -53,6 +40,42 @@ export default function UserTable() {
     status: string;
     lastLogin: string;
   } | null>(null);
+  const [fetchError, setFetchError] = useState<string>("");
+
+  useEffect(() => {
+    fetchUsers()
+      .then((data) => {
+        console.log("[UserTable] API data:", data);
+        setFetchError("");
+        if (!Array.isArray(data)) {
+          setFetchError("API không trả về mảng user. Kiểm tra lại format dữ liệu!");
+          setUsers([]);
+          return;
+        }
+        setUsers(
+          data.map((u: any) => {
+            const roleInfo = getRoleDisplay(u.role?.roleName || "");
+            // Quy ước status: nếu status.name === "Active" thì active, ngược lại inactive
+            const status = u.status?.name?.toLowerCase() === "active" ? "active" : "inactive";
+            // lastLogin: dùng updatedAt, format lại nếu cần
+            const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+            return {
+              name: u.fullName || u.username || "",
+              email: u.email,
+              role: roleInfo.label,
+              roleIcon: roleInfo.icon,
+              status,
+              lastLogin,
+            };
+          })
+        );
+      })
+      .catch((err) => {
+        console.error("[UserTable] Fetch users error:", err);
+        setFetchError("Không thể lấy dữ liệu user từ API. Vui lòng thử lại hoặc kiểm tra backend!");
+        setUsers([]);
+      });
+  }, []);
 
   const filtered = users.filter(
     (u) =>
@@ -115,6 +138,11 @@ export default function UserTable() {
       )}
       <div>
         <h2 className="text-2xl font-bold mb-5">User List</h2>
+        {fetchError && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+            {fetchError}
+          </div>
+        )}
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>

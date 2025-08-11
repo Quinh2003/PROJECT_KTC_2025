@@ -1,5 +1,3 @@
-import React from "react";
-
 interface MaintenanceHistoryItem {
   licensePlate: string;
   status: "Hoàn thành" | "Đang thực hiện";

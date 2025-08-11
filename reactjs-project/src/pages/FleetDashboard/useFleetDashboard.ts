@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
-import type { Vehicle } from "./VehicleTable";
 import { initialVehicles } from "./VehicleTable";
+import type { FleetVehicle } from "../../types/dashboard";
 
 type FleetTab = "vehicles" | "maintenance" | "schedule";
 type VehicleStatus = "Hoạt động" | "Bảo trì" | "Cần bảo trì";
@@ -15,7 +15,7 @@ interface FleetStats {
 export const useFleetDashboard = () => {
   // State management
   const [tab, setTab] = useState<FleetTab>("vehicles");
-  const [vehicles, setVehicles] = useState<Vehicle[]>(initialVehicles);
+  const [vehicles, setVehicles] = useState<FleetVehicle[]>(initialVehicles);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<VehicleStatus | "all">("all");
   const [isLoading, setIsLoading] = useState(false);
@@ -45,12 +45,12 @@ export const useFleetDashboard = () => {
   }, [vehicles, searchTerm, statusFilter]);
 
   // Optimized add vehicle handler
-  const handleAddVehicle = useCallback((data: Omit<Vehicle, "id" | "status" | "lastMaintenance" | "nextMaintenance" | "driver" | "mileage">) => {
+  const handleAddVehicle = useCallback((data: Omit<FleetVehicle, "id" | "status" | "lastMaintenance" | "nextMaintenance" | "driver" | "mileage">) => {
     setIsLoading(true);
     
     // Simulate API call
     setTimeout(() => {
-      const newVehicle: Vehicle = {
+      const newVehicle: FleetVehicle = {
         id: Math.max(...vehicles.map(v => v.id), 0) + 1,
         licensePlate: data.licensePlate,
         type: data.type,
