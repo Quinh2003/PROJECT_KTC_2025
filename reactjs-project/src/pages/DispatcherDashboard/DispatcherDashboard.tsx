@@ -25,7 +25,7 @@ export default function DispatcherDashboard({
       <Sidebar
         activeTab={tab}
         onTabChange={tab => setTab(tab as DispatcherTab)}
-        role="dispatcher"v
+        role="dispatcher"
       />
 
       {/* Main content */}

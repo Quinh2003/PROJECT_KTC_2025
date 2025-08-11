@@ -29,52 +29,6 @@ interface MenuItem<T extends TabType> {
 }
 
 
-<<<<<<< HEAD
-    return (
-        <aside className="group flex-shrink-0 w-20 hover:w-64 transition-all duration-300 bg-white/30 backdrop-blur-xl border-r border-white/40 text-gray-800 flex flex-col py-8 px-5 overflow-hidden h-screen sticky top-0 shadow-xl rounded-r-3xl">
-            <div className="mb-5 flex items-center -mt-3 -ml-3 gap-1">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden bg-white/40 backdrop-blur-md border border-white/60 shadow-lg">
-                    <img
-                        src={logo}
-                        alt="Logo"
-                        className="w-12 h-12 rounded-full object-cover"
-                    />
-                </div>
-                <span
-                    className="hidden group-hover:inline-block font-bold text-lg tracking-wide transition-all duration-300 whitespace-nowrap overflow-hidden text-gray-700"
-                    style={{ maxWidth: "200px" }}
-                >
-                    Fast Route
-                </span>
-            </div>
-            <nav className="flex-1 flex flex-col gap-4">
-                {menuItems.map((item) => {
-                    const IconComponent = item.icon;
-                    return (
-                        <button
-  key={item.key}
-  className={`flex items-center gap-3 font-semibold transition-all duration-300 rounded-2xl p-4 ${
-    activeTab === item.key
-      ? "text-blue-700 bg-white/60 backdrop-blur-lg border border-white/60 shadow-xl"
-      : "hover:text-blue-700 hover:bg-white/30 backdrop-blur-md"
-  }`}
-  onClick={() => onTabChange(item.key)}
->
-                            <IconComponent className="text-2xl flex-shrink-0" />
-                            <span
-                                className="hidden group-hover:inline transition-all duration-300 whitespace-nowrap overflow-hidden"
-                                style={{ maxWidth: "160px" }}
-                            >
-                                {item.label}
-                            </span>
-                        </button>
-                    );
-                })}
-            </nav>
-        </aside>
-    );
-}
-=======
 const ALL_MENUS: Record<UserRole, MenuItem<any>[]> = {
   dispatcher: [
     { key: "orders", label: "Orders", icon: <MdManageAccounts /> },
@@ -101,7 +55,6 @@ const ALL_MENUS: Record<UserRole, MenuItem<any>[]> = {
 };
 
 function getMenu<T extends TabType>(role: UserRole): MenuItem<T>[] {
-  // @ts-ignore
   return ALL_MENUS[role] as MenuItem<T>[];
 }
 
@@ -154,4 +107,3 @@ export default function Sidebar<T extends TabType>({
     </aside>
   );
 }
->>>>>>> 92d7f39fd2e32c287c557be92d9e3a873c581f69
