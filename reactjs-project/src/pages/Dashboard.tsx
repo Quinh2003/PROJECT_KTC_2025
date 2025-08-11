@@ -57,35 +57,35 @@ export default function Dashboard({
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
         <AdminDashboard user={user} onLogout={onLogout} />
-        <ProtectedInfo data={protectedData} error={error} />
+        {/* <ProtectedInfo data={protectedData} error={error} /> */}
       </div>
     );
   if (user.role === "DISPATCHER")
     return (
       <div className="min-h-screen">
         <DispatcherDashboard user={user} onLogout={onLogout} />
-        <ProtectedInfo data={protectedData} error={error} />
+        {/* <ProtectedInfo data={protectedData} error={error} /> */}
       </div>
     );
   if (user.role === "FLEET_MANAGER")
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
         <FleetDashboard user={user} onLogout={onLogout} />
-        <ProtectedInfo data={protectedData} error={error} />
+        {/* <ProtectedInfo data={protectedData} error={error} /> */}
       </div>
     );
   if (user.role === "DRIVER")
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
         <DriverDashboard user={user} onLogout={onLogout} />
-        <ProtectedInfo data={protectedData} error={error} />
+        {/* <ProtectedInfo data={protectedData} error={error} /> */}
       </div>
     );
   if (user.role === "OPERATIONS_MANAGER")
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
         <OperationsDashboard user={user} onLogout={onLogout} />
-        <ProtectedInfo data={protectedData} error={error} />
+        {/* <ProtectedInfo data={protectedData} error={error} /> */}
       </div>
     );
 
@@ -100,21 +100,21 @@ export default function Dashboard({
 }
 
 // Component phụ để hiển thị dữ liệu protected (có thể bỏ nếu không cần)
-function ProtectedInfo({ data, error }: { data: any; error: string }) {
-  if (error)
-    return (
-      <div className="fixed bottom-5 right-5 z-40 bg-red-200/60 backdrop-blur-sm border border-red-300/50 text-red-800 rounded-xl px-4 py-3 shadow-lg max-w-md">
-        <div className="font-semibold mb-1">⚠️ Lỗi API:</div>
-        <div className="text-sm">{error}</div>
-      </div>
-    );
-  if (!data) return null;
-  return (
-    <div className="fixed bottom-5 left-5 z-40 bg-blue-200/60 backdrop-blur-sm border border-blue-300/50 text-blue-900 rounded-xl px-4 py-3 shadow-lg max-w-md">
-      <div className="font-semibold mb-2">🔒 Protected API Data:</div>
-      <pre className="text-xs overflow-auto max-h-32 bg-white/30 rounded p-2">
-        {JSON.stringify(data, null, 2)}
-      </pre>
-    </div>
-  );
-}
+// function ProtectedInfo({ data, error }: { data: any; error: string }) {
+//   if (error)
+//     return (
+//       <div className="fixed bottom-5 right-5 z-40 bg-red-200/60 backdrop-blur-sm border border-red-300/50 text-red-800 rounded-xl px-4 py-3 shadow-lg max-w-md">
+//         <div className="font-semibold mb-1">⚠️ Lỗi API:</div>
+//         <div className="text-sm">{error}</div>
+//       </div>
+//     );
+//   if (!data) return null;
+//   return (
+//     <div className="fixed bottom-5 left-5 z-40 bg-blue-200/60 backdrop-blur-sm border border-blue-300/50 text-blue-900 rounded-xl px-4 py-3 shadow-lg max-w-md">
+//       <div className="font-semibold mb-2">🔒 Protected API Data:</div>
+//       <pre className="text-xs overflow-auto max-h-32 bg-white/30 rounded p-2">
+//         {JSON.stringify(data, null, 2)}
+//       </pre>
+//     </div>
+//   );
+// }

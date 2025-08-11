@@ -22,15 +22,15 @@ export default function DispatcherDashboard({
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
-      <Sidebar<DispatcherTab> 
-        activeTab={tab} 
-        onTabChange={setTab} 
-        dashboardType="dispatcher"
+      <Sidebar
+        activeTab={tab}
+        onTabChange={tab => setTab(tab as DispatcherTab)}
+        role="dispatcher"v
       />
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col">
-        <Navbar 
+      <div className=" flex-1 flex flex-col">
+        <Navbar
           user={user}
           onLogout={onLogout}
           title="Dispatcher Dashboard"
