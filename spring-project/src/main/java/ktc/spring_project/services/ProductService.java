@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -93,6 +94,18 @@ public class ProductService {
 
         return new ArrayList<>();
     }
+
+// ...existing code...
+public Product patchProduct(Long id, Map<String, Object> updates, Authentication authentication) {
+    Product product = getProductById(id);
+    if (updates.containsKey("name")) {
+        product.setName((String) updates.get("name"));
+    }
+    // Thêm các trường khác nếu cần
+    // Lưu lại sản phẩm
+    return productRepository.save(product);
+}
+// ...existing code...
 
     /**
      * Get product by ID
