@@ -1,27 +1,13 @@
+
 import { useState, useEffect } from "react";
 import { FaTools, FaChartBar, FaTruck } from "react-icons/fa";
 import { FaBellConcierge } from "react-icons/fa6";
+import type { User } from "../../types/dashboard";
 
 interface UserFormProps {
-  onAdd: (user: {
-    name: string;
-    email: string;
-    role: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    roleIcon: any;
-    status: string;
-    lastLogin: string;
-  }) => void;
+  onAdd: (user: User & { roleIcon: React.ReactNode }) => void;
   onClose: () => void;
-  user?: {
-    name: string;
-    email: string;
-    role: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    roleIcon: any;
-    status: string;
-    lastLogin: string;
-  } | null;
+  user?: (User & { roleIcon: React.ReactNode }) | null;
 }
 
 const roles = [
@@ -48,6 +34,7 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
     e.preventDefault();
     const selectedRole = roles.find(r => r.value === role) || roles[0];
     onAdd({
+      id: user?.id || "",
       name,
       email,
       role,
