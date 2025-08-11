@@ -1,4 +1,4 @@
-export type Role = "ADMIN" | "DISPATCHER" | "FLEET_MANAGER" | "DRIVER" | "OPERATIONS_MANAGER";
+export type Role = "ADMIN" | "DISPATCHER" | "FLEET" | "DRIVER" | "OPERATIONS";
 
 export interface User {
   email: string;

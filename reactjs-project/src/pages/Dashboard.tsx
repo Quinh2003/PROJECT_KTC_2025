@@ -67,7 +67,7 @@ export default function Dashboard({
         {/* <ProtectedInfo data={protectedData} error={error} /> */}
       </div>
     );
-  if (user.role === "FLEET_MANAGER")
+  if (user.role === "FLEET")
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
         <FleetDashboard user={user} onLogout={onLogout} />
@@ -81,7 +81,7 @@ export default function Dashboard({
         {/* <ProtectedInfo data={protectedData} error={error} /> */}
       </div>
     );
-  if (user.role === "OPERATIONS_MANAGER")
+  if (user.role === "OPERATIONS")
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
         <OperationsDashboard user={user} onLogout={onLogout} />
