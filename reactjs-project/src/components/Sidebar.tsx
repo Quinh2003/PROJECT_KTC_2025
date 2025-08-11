@@ -107,4 +107,4 @@ export default function Sidebar<T extends TabType>({
       </nav>
     </aside>
   );
-
+}
