@@ -5,22 +5,20 @@ import RoleTable from "./RoleTable";
 import SystemConfigForm from "./SystemConfigForm";
 import AuditLogTable from "./AuditLogTable";
 import Navbar from "../../components/Navbar";
-import { AiOutlineSafetyCertificate } from "react-icons/ai";
+import type { AdminTab } from "../../components/Sidebar";
 import { MdManageAccounts } from "react-icons/md";
 import { RiShieldKeyholeLine } from "react-icons/ri";
+import { AiOutlineSafetyCertificate } from "react-icons/ai";
 import { HiOutlineDocumentReport } from "react-icons/hi";
-import Sidebar, { type AdminTab } from "../../components/Sidebar";
+import Sidebar from "../../components/Sidebar";
 
 interface AdminDashboardProps {
   user: User;
   onLogout: () => void;
 }
 
-export default function AdminDashboard({
-  user,
-  onLogout,
-}: AdminDashboardProps) {
-  const [active, setActive] = useState<AdminTab>("users");
+export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
+  const [active, setActive] = useState<AdminTab>("users"); // Sử dụng AdminTab
 
   const stats = [
     {
@@ -50,8 +48,8 @@ export default function AdminDashboard({
       {/* Sidebar */}
       <Sidebar
         activeTab={active}
-        onTabChange={setActive}
-        dashboardType="admin"
+        onTabChange={tab => setActive(tab as AdminTab)}
+        role="admin"
       />
       {/* Main content */}
       <main className="flex-1 flex flex-col bg-transparent overflow-y-auto h-screen">
