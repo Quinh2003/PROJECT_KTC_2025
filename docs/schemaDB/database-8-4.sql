@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `password` VARCHAR(255) NOT NULL COMMENT 'Mật khẩu đã mã hóa để xác thực',
     `full_name` VARCHAR(255) COMMENT 'Họ tên đầy đủ để hiển thị',
     `phone` VARCHAR(20) COMMENT 'Số điện thoại liên hệ',
+    `google_id` VARCHAR(255) COMMENT 'ID người dùng trên Google',
     `role_id` BIGINT NOT NULL COMMENT 'Vai trò người dùng (admin, điều phối, tài xế, xem)',
     `status_id` TINYINT UNSIGNED COMMENT 'Trạng thái tài khoản (hoạt động, ngừng hoạt động, tạm khóa)',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo tài khoản',
