@@ -18,9 +18,6 @@ public class Product {
     private Long id;
 
 
-
-
-
     @Column(nullable = false, length = 255)
     private String name;
 
@@ -52,7 +49,6 @@ public class Product {
     @Enumerated(EnumType.STRING) // hoặc EnumType.ORDINAL nếu bạn muốn lưu bằng tên
 @Column(name = "product_status", nullable = false)
 private ProductStatus productStatus = ProductStatus.ACTIVE;
-
 
     @Column(columnDefinition = "TEXT")
     private String notes;
@@ -143,6 +139,7 @@ public ProductStatus getProductStatus() {
 public void setProductStatus(ProductStatus productStatus) {
     this.productStatus = productStatus;
 }
+
 
 
     public String getProductImage() {

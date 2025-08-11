@@ -25,10 +25,14 @@ public class Store {
     private String address;
 
     @Column(precision = 10, scale = 8)
-    private BigDecimal latitude;
+
 
     @Column(precision = 11, scale = 8)
     private BigDecimal longitude;
+
+
+    @Column(precision = 11, scale = 8)
+    private Double longitude;
 
     @Column(name = "is_active")
     private Boolean isActive;
