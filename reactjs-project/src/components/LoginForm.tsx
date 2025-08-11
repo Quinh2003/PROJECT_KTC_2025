@@ -28,6 +28,7 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       onLogin(data.user);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setError("Không thể kết nối tới máy chủ!");
     } finally {
@@ -58,7 +59,7 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
 
         <form
           onSubmit={handleSubmit}
-          className="w-full bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl px-8 py-10 space-y-6 transform transition-all duration-500 hover:scale-105 hover:shadow-3xl"
+          className="w-full bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl px-8 py-10 space-y-6 transform transition-all duration-500 "
         >
           <div className="text-center mb-8">
             <h2 className="text-2xl font-semibold text-white drop-shadow-lg">
@@ -131,7 +132,7 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group"
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
             <span className="relative flex items-center justify-center gap-2">

@@ -70,9 +70,9 @@ export default function Sidebar<T extends TabType>({ activeTab, onTabChange, das
     const menuItems = getMenuItems();
 
     return (
-        <aside className="group flex-shrink-0 w-20 hover:w-64 transition-all duration-300 bg-white/20 backdrop-blur-lg border-r border-white/30 text-gray-800 flex flex-col py-6 px-4 overflow-hidden h-screen sticky top-0">
+        <aside className="group flex-shrink-0 w-20 hover:w-64 transition-all duration-300 bg-white/30 backdrop-blur-xl border-r border-white/40 text-gray-800 flex flex-col py-8 px-5 overflow-hidden h-screen sticky top-0 shadow-xl rounded-r-3xl">
             <div className="mb-5 flex items-center -mt-3 -ml-3 gap-1">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden bg-white/30 backdrop-blur-sm border border-white/50">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden bg-white/40 backdrop-blur-md border border-white/60 shadow-lg">
                     <img
                         src={logo}
                         alt="Logo"
@@ -91,13 +91,14 @@ export default function Sidebar<T extends TabType>({ activeTab, onTabChange, das
                     const IconComponent = item.icon;
                     return (
                         <button
-                            key={item.key}
-                            className={`flex items-center gap-4 font-semibold transition-all duration-300 rounded-xl p-4 ${activeTab === item.key
-                                    ? "text-blue-600 bg-white/40 backdrop-blur-sm border border-white/50 shadow-lg"
-                                    : "hover:text-blue-600 hover:bg-white/20 backdrop-blur-sm"
-                                }`}
-                            onClick={() => onTabChange(item.key)}
-                        >
+  key={item.key}
+  className={`flex items-center gap-3 font-semibold transition-all duration-300 rounded-2xl p-4 ${
+    activeTab === item.key
+      ? "text-blue-700 bg-white/60 backdrop-blur-lg border border-white/60 shadow-xl"
+      : "hover:text-blue-700 hover:bg-white/30 backdrop-blur-md"
+  }`}
+  onClick={() => onTabChange(item.key)}
+>
                             <IconComponent className="text-2xl flex-shrink-0" />
                             <span
                                 className="hidden group-hover:inline transition-all duration-300 whitespace-nowrap overflow-hidden"
