@@ -35,7 +35,7 @@ const ALL_MENUS: Record<UserRole, MenuItem<any>[]> = {
     { key: "resources", label: "Resources", icon: <RiShieldKeyholeLine /> },
     { key: "assignment", label: "Assignment", icon: <AiOutlineSetting /> },
   ],
-  operations: [
+ operations : [
     { key: "overview", label: "Overview", icon: <MdManageAccounts /> },
     { key: "performance", label: "Performance", icon: <AiOutlineSafetyCertificate /> },
     { key: "monitoring", label: "Monitoring", icon: <HiOutlineDocumentReport /> },
