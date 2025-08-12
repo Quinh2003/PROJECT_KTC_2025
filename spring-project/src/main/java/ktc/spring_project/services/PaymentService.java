@@ -29,4 +29,9 @@ public class PaymentService {
     public void delete(Long id) {
         paymentRepository.deleteById(id);
     }
+    // ...existing code...
+public void deleteById(Long id) {
+    paymentRepository.deleteById(id);
+}
+// ...existing code...
 }

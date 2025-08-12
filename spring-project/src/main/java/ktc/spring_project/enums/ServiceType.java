@@ -2,6 +2,9 @@ package ktc.spring_project.enums;
 
 public enum ServiceType {
     STANDARD("Standard"),
+    FIRST_CLASS("First Class"),
+    SECOND_CLASS("Second Class"),
+    SAME_DAY("Same Day"),
     EXPRESS("Express"),
     PRIORITY("Priority");
 

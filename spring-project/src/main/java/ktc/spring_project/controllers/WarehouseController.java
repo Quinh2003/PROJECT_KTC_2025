@@ -85,14 +85,14 @@ public class WarehouseController {
     /**
      * Create new warehouse
      */
-    @PostMapping
-    public ResponseEntity<Warehouse> createWarehouse(
-            @Valid @RequestBody Warehouse warehouse,
-            Authentication authentication) {
-
-        Warehouse createdWarehouse = warehouseService.createWarehouse(warehouse, authentication);
-        return new ResponseEntity<>(createdWarehouse, HttpStatus.CREATED);
-    }
+   @PostMapping
+public ResponseEntity<Warehouse> createWarehouse(
+        @Valid @RequestBody Warehouse warehouse,
+        Authentication authentication) {
+    // return new ResponseEntity<>(warehouse, HttpStatus.CREATED); // Test trả về luôn
+    Warehouse createdWarehouse = warehouseService.createWarehouse(warehouse, authentication);
+    return new ResponseEntity<>(createdWarehouse, HttpStatus.CREATED);
+}
 
     /**
      * Update warehouse information

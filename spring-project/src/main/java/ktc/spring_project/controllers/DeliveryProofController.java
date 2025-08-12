@@ -42,58 +42,72 @@ public class DeliveryProofController {
     @Autowired
     private OrderService orderService;
 
-    /**
-     * Upload delivery proof (photo, signature, etc.)
-     * US-DRIVER-STATUS-UPDATE-01
-     * TO-DO: Implement file handling, authentication check, and order validation
-     */
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<DeliveryProof> uploadDeliveryProof(
-            @RequestParam("orderId") Long orderId,
-            @RequestParam("proofType") String proofTypeStr,
-            @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam(value = "recipientName", required = false) String recipientName,
-            @RequestParam(value = "recipientSignature", required = false) String recipientSignature,
-            @RequestParam(value = "notes", required = false) String notes,
-            Authentication authentication) {
+    // Lấy tất cả delivery proofs
+@GetMapping
+public ResponseEntity<List<DeliveryProof>> getAllDeliveryProofs() {
+    return ResponseEntity.ok(deliveryProofService.findAll());
+}
 
-        // TO-DO: This is a temporary implementation.
-        // In the future, this will handle file uploads, save them to appropriate storage,
-        // and create proper delivery proof records in the database
+// Lấy delivery proof theo ID
+@GetMapping("/{id}")
+public ResponseEntity<DeliveryProof> getDeliveryProofById(@PathVariable Long id) {
+    Optional<DeliveryProof> proofOptional = deliveryProofService.findById(id);
+    return proofOptional.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+}
 
-        // Get the order entity
-        Optional<Order> orderOptional = Optional.ofNullable(orderService.getOrderById(orderId));
-        if (orderOptional.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        // Convert string to ProofType enum
-        ProofType proofType;
-        try {
-            proofType = ProofType.valueOf(proofTypeStr.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            // Default to PHOTO if invalid type provided
-            proofType = ProofType.PHOTO;
-        }
-
-        // Create a basic delivery proof entity with the provided information
-        DeliveryProof proof = new DeliveryProof();
-        proof.setOrder(orderOptional.get());
-        proof.setProofType(proofType);
-        proof.setRecipientName(recipientName);
-        proof.setRecipientSignature(recipientSignature);
-        proof.setNotes(notes);
-        proof.setCapturedAt(Timestamp.from(Instant.now()));
-
-        // TO-DO: Handle file upload and storage
-        // TO-DO: Set the file path and name
-
-        // TO-DO: Set the user who uploaded this proof
-        // proof.setUploadedBy(userService.getUserFromAuthentication(authentication));
-
-        // Save the proof to the database
-        return new ResponseEntity<>(deliveryProofService.save(proof), HttpStatus.CREATED);
+// Tạo mới delivery proof (POST)
+@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public ResponseEntity<DeliveryProof> uploadDeliveryProof(
+        @RequestParam("orderId") Long orderId,
+        @RequestParam("proofType") String proofTypeStr,
+        @RequestParam(value = "file", required = false) MultipartFile file,
+        @RequestParam(value = "recipientName", required = false) String recipientName,
+        @RequestParam(value = "recipientSignature", required = false) String recipientSignature,
+        @RequestParam(value = "notes", required = false) String notes,
+        Authentication authentication) {
+    try {
+        DeliveryProof proof = deliveryProofService.createProof(
+            orderId, proofTypeStr, file, recipientName, recipientSignature, notes, authentication
+        );
+        return ResponseEntity.ok(proof);
+    } catch (Exception e) {
+        // Return a 400 Bad Request or other appropriate response
+        return ResponseEntity.badRequest().build();
     }
+}
+
+// Cập nhật delivery proof theo ID (PUT)
+@PutMapping("/{id}")
+public ResponseEntity<DeliveryProof> updateDeliveryProof(
+        @PathVariable Long id,
+        @Valid @RequestBody Map<String, Object> updateData,
+        Authentication authentication) {
+    try {
+        DeliveryProof updatedProof = deliveryProofService.updateProof(id, updateData, authentication);
+        if (updatedProof != null) {
+            return ResponseEntity.ok(updatedProof);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().build();
+    }
+}
+
+// Xóa delivery proof theo ID (DELETE)
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> deleteDeliveryProof(
+        @PathVariable Long id,
+        Authentication authentication) {
+    try {
+        deliveryProofService.deleteById(id, authentication);
+        return ResponseEntity.noContent().build(); // 204 No Content on successful delete
+    } catch (EntityNotFoundException e) {
+        return ResponseEntity.notFound().build();
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+}
 
     /**
      * Get delivery proofs for an order
@@ -124,78 +138,5 @@ public class DeliveryProofController {
         }
     }
 
-    /**
-     * Get delivery proof by ID
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<DeliveryProof> getDeliveryProofById(@PathVariable Long id) {
-        Optional<DeliveryProof> proofOptional = deliveryProofService.findById(id);
 
-        if (proofOptional.isPresent()) {
-            return ResponseEntity.ok(proofOptional.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    /**
-     * Delete delivery proof
-     * TO-DO: Add permission checks before deletion
-     */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDeliveryProof(
-            @PathVariable Long id,
-            Authentication authentication) {
-
-        // TO-DO: Add permission checks - only admin or original uploader should delete
-        // TO-DO: Add authentication validation
-
-        // Check if proof exists before deletion
-        Optional<DeliveryProof> proofOptional = deliveryProofService.findById(id);
-        if (proofOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        deliveryProofService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * Update delivery proof information
-     * TO-DO: Implement full update capability with security checks
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<DeliveryProof> updateDeliveryProof(
-            @PathVariable Long id,
-            @Valid @RequestBody Map<String, Object> updateData,
-            Authentication authentication) {
-
-        // TO-DO: This is a temporary implementation.
-        // In the future, implement proper update logic with permission checks
-
-        // Check if proof exists
-        Optional<DeliveryProof> proofOptional = deliveryProofService.findById(id);
-        if (proofOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // Get the existing proof
-        DeliveryProof proof = proofOptional.get();
-
-        // TO-DO: Add permission checks - only admin or original uploader should update
-
-        // Update fields based on provided data
-        if (updateData.containsKey("recipientName")) {
-            proof.setRecipientName((String) updateData.get("recipientName"));
-        }
-
-        if (updateData.containsKey("notes")) {
-            proof.setNotes((String) updateData.get("notes"));
-        }
-
-        // TO-DO: Handle updates to other fields including file replacement if needed
-
-        // Save the updated proof
-        return ResponseEntity.ok(deliveryProofService.save(proof));
-    }
 }

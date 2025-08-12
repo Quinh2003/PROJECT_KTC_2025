@@ -1,6 +1,8 @@
 package ktc.spring_project.controllers;
 
 import ktc.spring_project.entities.Payment;
+import ktc.spring_project.repositories.PaymentRepository;
+import ktc.spring_project.repositories.StatusRepository;
 import ktc.spring_project.services.PaymentService;
 import ktc.spring_project.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
+import ktc.spring_project.entities.Status;
+import ktc.spring_project.enums.StatusType;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +31,13 @@ public class PaymentController {
     @Autowired
     private UserService userService;
 
+     @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Autowired
+private StatusRepository statusRepository;
     /**
+     * 
      * Get all payments with optional filters
      */
     @GetMapping
@@ -51,13 +60,21 @@ public class PaymentController {
     /**
      * Get payment by ID
      */
-    @GetMapping("/{id}")
+      @GetMapping("/{id}")
     public ResponseEntity<Payment> getPaymentById(@PathVariable Long id) {
         return paymentService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
+    if (paymentService.findById(id).isPresent()) {
+        paymentService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    } else {
+        return ResponseEntity.notFound().build();
+    }
+}
     /**
      * Create a new payment
      */
@@ -77,50 +94,23 @@ public class PaymentController {
     /**
      * Update payment information
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<Payment> updatePayment(
-            @PathVariable Long id,
-            @Valid @RequestBody Payment payment,
-            Authentication authentication) {
+   @PutMapping("/{id}")
+public ResponseEntity<Payment> updatePayment(
+        @PathVariable Long id,
+        @Valid @RequestBody Payment payment,
+        Authentication authentication) {
 
-        // Kiểm tra xem thanh toán có tồn tại không
-        return paymentService.findById(id)
-                .map(existingPayment -> {
-                    // Cập nhật ID để đảm bảo sửa đúng record
-                    payment.setId(id);
-
-                    // Lưu thanh toán đã cập nhật
-                    Payment updatedPayment = paymentService.save(payment);
-                    return ResponseEntity.ok(updatedPayment);
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
+    return paymentService.findById(id)
+            .map(existingPayment -> {
+                payment.setId(id);
+                Payment updatedPayment = paymentService.save(payment);
+                return ResponseEntity.ok(updatedPayment);
+            })
+            .orElse(ResponseEntity.notFound().build());
+}
     /**
      * Update payment status
-     */
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<Payment> updatePaymentStatus(
-            @PathVariable Long id,
-            @RequestBody Map<String, Long> statusData,
-            Authentication authentication) {
-
-        Long statusId = statusData.get("statusId");
-
-        // Kiểm tra xem thanh toán có tồn tại không
-        return paymentService.findById(id)
-                .map(payment -> {
-                    // Cập nhật trạng thái thanh toán
-                    // Trong thực tế, sẽ cập nhật trạng thái từ StatusService
-                    // payment.setStatus(statusService.findById(statusId).orElse(null));
-
-                    // Lưu thanh toán đã cập nhật
-                    Payment updatedPayment = paymentService.save(payment);
-                    return ResponseEntity.ok(updatedPayment);
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
+     *}
     /**
      * Get payments for an order
      */

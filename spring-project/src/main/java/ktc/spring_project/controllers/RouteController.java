@@ -190,4 +190,11 @@ public class RouteController {
             )
         ));
     }
+
+    @GetMapping("/{id}/tracking")
+public ResponseEntity<Route> getRouteTracking(@PathVariable Long id) {
+    return routeService.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+}
 }
