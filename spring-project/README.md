@@ -2,15 +2,12 @@
 
 ## 🚀 Docker Hub Repository
 
-**Public Repository:** https://hub.docker.com/r/fanglee2003/ktc-logistics-backend
+**Public Repository:**
 
 ## 📦 Quick Start
 
 ### Pull và chạy container:
-```bash
-docker pull fanglee2003/ktc-logistics-backend:latest
-docker run -d -p 8080:8080 fanglee2003/ktc-logistics-backend:latest
-```
+
 
 ### Hoặc sử dụng docker-compose:
 ```bash
