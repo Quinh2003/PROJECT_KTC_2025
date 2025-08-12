@@ -106,7 +106,13 @@ public class OrderController {
         Order order = orderService.getOrderById(id);
         return ResponseEntity.ok(order);
     }
-
+@PatchMapping("/{id}")
+    public ResponseEntity<Order> patchOrder(
+            @PathVariable Long id,
+            @RequestBody Order orderDetails) {
+        Order updatedOrder = orderService.updateOrder(id, orderDetails);
+        return ResponseEntity.ok(updatedOrder);
+    }
     /**
      * Assign vehicle and driver to an order
      * US-ORDER-ASSIGN-01
