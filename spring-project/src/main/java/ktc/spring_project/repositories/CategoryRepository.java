@@ -16,6 +16,7 @@ Optional<Category> findById(Long id);
     List<Category> findByIsActive(Boolean isActive);
     
     List<Category> findByParent_Id(Long parentId); 
+
     
     @Query("SELECT c FROM Category c WHERE c.parent IS NULL AND c.isActive = true")
     List<Category> findRootCategories();
