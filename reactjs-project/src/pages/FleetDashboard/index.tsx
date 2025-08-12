@@ -3,7 +3,12 @@ import VehicleTable from './VehicleTable';
 import MaintenanceForm from './Maintenance_Form';
 import type { User } from '../../types/User';
 
-import { Vehicle } from '../../types/Vehicle';
+interface Vehicle {
+  id: number;
+  type: string;
+  licensePlate: string;
+  status: string;
+}
 
 interface Maintenance {
   id: number;
@@ -20,30 +25,8 @@ interface FleetDashboardProps {
 export default function FleetDashboard({ user, onLogout }: FleetDashboardProps) {
   const [activeTab, setActiveTab] = useState<"vehicles" | "maintenance">("vehicles");
   const [vehicles] = useState<Vehicle[]>([
-    {
-      id: 1,
-      type: 'Xe tải',
-      brand: 'Hyundai',
-      model: 'Mighty',
-      year: 2023,
-      licensePlate: '51H-12345',
-      status: 'Hoạt động',
-      lastMaintenance: '2025-07-15',
-      nextMaintenance: '2025-09-15',
-      mileage: 15000
-    },
-    {
-      id: 2,
-      type: 'Xe container',
-      brand: 'Hino',
-      model: 'Series 500',
-      year: 2024,
-      licensePlate: '51H-67890',
-      status: 'Bảo trì',
-      lastMaintenance: '2025-08-01',
-      nextMaintenance: '2025-10-01',
-      mileage: 25000
-    },
+    { id: 1, type: 'Xe tải', licensePlate: '51H-12345', status: 'Hoạt động' },
+    { id: 2, type: 'Xe container', licensePlate: '51H-67890', status: 'Bảo trì' },
   ]);
   const [maintenanceRecords, setMaintenanceRecords] = useState<Maintenance[]>([]);
 
@@ -54,7 +37,6 @@ export default function FleetDashboard({ user, onLogout }: FleetDashboardProps) 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-blue-100 via-white to-blue-200">
       {/* Sidebar */}
-      
       <aside className="group flex-shrink-0 w-20 hover:w-64 transition-all duration-300 backdrop-blur-lg bg-white/20 border-r border-white/40 text-gray-800 flex flex-col py-6 px-4 overflow-hidden h-screen sticky top-0">
         <nav className="flex-1 flex flex-col gap-7">
           <button
