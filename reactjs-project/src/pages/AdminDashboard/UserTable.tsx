@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import UserForm from "./UserForm";
-import { fetchUsers } from "../../services/adminAPI";
+import { fetchUsers, addUser, editUser, deleteUser as apiDeleteUser } from "../../services/adminAPI";
 import { FaBellConcierge, FaTruck } from "react-icons/fa6";
 import { FaTools } from "react-icons/fa";
 
@@ -84,8 +84,29 @@ export default function UserTable() {
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleAddUser = (user: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
-    setUsers([...users, user]);
+  const handleAddUser = async (user: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
+    try {
+      await addUser(user);
+      // Sau khi thêm thành công, reload lại danh sách user từ API
+      const data = await fetchUsers();
+      setUsers(
+        data.map((u: any) => {
+          const roleInfo = getRoleDisplay(u.role?.roleName || "");
+          const status = u.status?.name?.toLowerCase() === "active" ? "active" : "inactive";
+          const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+          return {
+            name: u.fullName || u.username || "",
+            email: u.email,
+            role: roleInfo.label,
+            roleIcon: roleInfo.icon,
+            status,
+            lastLogin,
+          };
+        })
+      );
+    } catch (err) {
+      alert("Lỗi khi thêm user mới. Vui lòng thử lại!");
+    }
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -95,15 +116,72 @@ export default function UserTable() {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleUpdateUser = (updatedUser: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
-    setUsers(users.map(u => (u.email === updatedUser.email ? updatedUser : u)));
-    setShowForm(false);
-    setEditUser(null);
+  const handleUpdateUser = async (updatedUser: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
+    try {
+      // Tìm user gốc để lấy id
+      const userOrigin = users.find(u => u.email === updatedUser.email);
+      if (!userOrigin) throw new Error("User not found");
+      // Gửi request update lên API
+      await editUser(userOrigin.id, {
+        ...userOrigin,
+        fullName: updatedUser.name,
+        email: updatedUser.email,
+        // map lại role nếu cần
+        // role: ...
+        // status: ...
+      });
+      // Reload lại danh sách user
+      const data = await fetchUsers();
+      setUsers(
+        data.map((u: any) => {
+          const roleInfo = getRoleDisplay(u.role?.roleName || "");
+          const status = u.status?.name?.toLowerCase() === "active" ? "active" : "inactive";
+          const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+          return {
+            id: u.id,
+            name: u.fullName || u.username || "",
+            email: u.email,
+            role: roleInfo.label,
+            roleIcon: roleInfo.icon,
+            status,
+            lastLogin,
+          };
+        })
+      );
+      setShowForm(false);
+      setEditUser(null);
+    } catch (err) {
+      alert("Lỗi khi cập nhật user. Vui lòng thử lại!");
+    }
   };
 
-  const handleDeleteUser = (email: string) => {
+  const handleDeleteUser = async (email: string) => {
+    const user = users.find(u => u.email === email);
+    if (!user) return;
     if (window.confirm("Are you sure you want to delete this user?")) {
-      setUsers(users.filter(u => u.email !== email));
+      try {
+        await apiDeleteUser(user.id);
+        // Reload lại danh sách user
+        const data = await fetchUsers();
+        setUsers(
+          data.map((u: any) => {
+            const roleInfo = getRoleDisplay(u.role?.roleName || "");
+            const status = u.status?.name?.toLowerCase() === "active" ? "active" : "inactive";
+            const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+            return {
+              id: u.id,
+              name: u.fullName || u.username || "",
+              email: u.email,
+              role: roleInfo.label,
+              roleIcon: roleInfo.icon,
+              status,
+              lastLogin,
+            };
+          })
+        );
+      } catch (err) {
+        alert("Lỗi khi xóa user. Vui lòng thử lại!");
+      }
     }
   };
 

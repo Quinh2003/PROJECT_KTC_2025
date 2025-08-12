@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { User } from "../../types/User";
+import { fetchUsers } from "../../services/adminAPI";
 import UserTable from "./UserTable";
 import RoleTable from "./RoleTable";
 import SystemConfigForm from "./SystemConfigForm";
@@ -18,12 +19,28 @@ interface AdminDashboardProps {
 }
 
 export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
-  const [active, setActive] = useState<AdminTab>("users"); // Sử dụng AdminTab
+  const [active, setActive] = useState<AdminTab>("users");
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchUsers()
+      .then(data => {
+        setUsers(data);
+        setError(null);
+      })
+      .catch(err => {
+        setError("Failed to fetch users");
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const stats = [
     {
       label: "Total Users",
-      value: "2,345",
+      value: users.length.toLocaleString(),
       icon: <MdManageAccounts className="text-3xl text-blue-600" />,
     },
     {
