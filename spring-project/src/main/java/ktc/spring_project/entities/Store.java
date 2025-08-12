@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 @Entity
 @Table(name = "stores")
 public class Store {
@@ -33,9 +36,17 @@ public class Store {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @Column(name = "created_at")
+    // @Column(name = "created_at")
+    // private Timestamp createdAt;
+
+    // @Column(name = "updated_at")
+    // private Timestamp updatedAt;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 

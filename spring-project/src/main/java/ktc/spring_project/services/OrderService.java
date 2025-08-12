@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderService {
@@ -65,4 +68,19 @@ public class OrderService {
         Order order = getOrderById(id);
         orderRepository.delete(order);
     }
+
+    public Object getOrderTrackingInfo(Long orderId) {
+    Order order = getOrderById(orderId); // Lấy order từ DB
+
+    Map<String, Object> tracking = new HashMap<>();
+    tracking.put("orderId", order.getId());
+    // Lấy trạng thái từ entity Status liên kết
+    tracking.put("status", order.getStatus() != null ? order.getStatus().getName() : null);
+    // Lấy vị trí hiện tại (giả sử có trường currentLocation hoặc tracking entity)
+    tracking.put("currentLocation", order.getNotes()); // hoặc order.getCurrentLocation() nếu có
+    // Thời gian cập nhật gần nhất
+    tracking.put("updatedAt", order.getUpdatedAt() != null ? order.getUpdatedAt() : LocalDateTime.now());
+
+    return tracking;
+}
 }

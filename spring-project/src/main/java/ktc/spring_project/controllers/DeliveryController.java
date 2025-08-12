@@ -15,6 +15,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ktc.spring_project.services.OrderService; // Add this import if missing
 
 import jakarta.validation.Valid;
 import java.util.ArrayList;
@@ -47,6 +52,9 @@ public class DeliveryController {
 
     @Autowired
     private RouteService routeService;
+
+    @Autowired
+    private OrderService orderService;
 
     /**
      * Get all deliveries with optional filters
@@ -109,84 +117,197 @@ public class DeliveryController {
     /**
      * Get delivery by ID
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getDeliveryById(@PathVariable Long id) {
-        // Lấy thông tin giao hàng
-        Delivery delivery = deliveryService.getDeliveryById(id);
+    // @GetMapping("/{id}")
+    // public ResponseEntity<Map<String, Object>> getDeliveryById(@PathVariable Long id) {
+    //     // Lấy thông tin giao hàng
+    //     Delivery delivery = deliveryService.getDeliveryById(id);
 
-        // Chuyển đổi thành Map
-        Map<String, Object> deliveryMap = new HashMap<>();
-        deliveryMap.put("id", delivery.getId());
-        deliveryMap.put("orderId", delivery.getOrder() != null ? delivery.getOrder().getId() : null);
-        deliveryMap.put("deliveryFee", delivery.getDeliveryFee());
-        deliveryMap.put("transportMode", delivery.getTransportMode());
-        deliveryMap.put("serviceType", delivery.getServiceType());
-        deliveryMap.put("orderDate", delivery.getOrderDate());
-        deliveryMap.put("pickupDate", delivery.getPickupDate());
-        deliveryMap.put("scheduleDeliveryTime", delivery.getScheduleDeliveryTime());
-        deliveryMap.put("actualDeliveryTime", delivery.getActualDeliveryTime());
-        deliveryMap.put("orderStatus", delivery.getOrder() != null && delivery.getOrder().getStatus() != null ?
-            delivery.getOrder().getStatus().getName() : null);
-        deliveryMap.put("driverId", delivery.getDriver() != null ? delivery.getDriver().getId() : null);
-        deliveryMap.put("vehicleId", delivery.getVehicle() != null ? delivery.getVehicle().getId() : null);
-        deliveryMap.put("deliveryAttempts", delivery.getDeliveryAttempts());
-        deliveryMap.put("deliveryNotes", delivery.getDeliveryNotes());
+    //     // Chuyển đổi thành Map
+    //     Map<String, Object> deliveryMap = new HashMap<>();
+    //     deliveryMap.put("id", delivery.getId());
+    //     deliveryMap.put("orderId", delivery.getOrder() != null ? delivery.getOrder().getId() : null);
+    //     deliveryMap.put("deliveryFee", delivery.getDeliveryFee());
+    //     deliveryMap.put("transportMode", delivery.getTransportMode());
+    //     deliveryMap.put("serviceType", delivery.getServiceType());
+    //     deliveryMap.put("orderDate", delivery.getOrderDate());
+    //     deliveryMap.put("pickupDate", delivery.getPickupDate());
+    //     deliveryMap.put("scheduleDeliveryTime", delivery.getScheduleDeliveryTime());
+    //     deliveryMap.put("actualDeliveryTime", delivery.getActualDeliveryTime());
+    //     deliveryMap.put("orderStatus", delivery.getOrder() != null && delivery.getOrder().getStatus() != null ?
+    //         delivery.getOrder().getStatus().getName() : null);
+    //     deliveryMap.put("driverId", delivery.getDriver() != null ? delivery.getDriver().getId() : null);
+    //     deliveryMap.put("vehicleId", delivery.getVehicle() != null ? delivery.getVehicle().getId() : null);
+    //     deliveryMap.put("deliveryAttempts", delivery.getDeliveryAttempts());
+    //     deliveryMap.put("deliveryNotes", delivery.getDeliveryNotes());
 
-        return ResponseEntity.ok(deliveryMap);
-    }
+    //     return ResponseEntity.ok(deliveryMap);
+    // }
+@GetMapping("/{id}")
+public ResponseEntity<Map<String, Object>> getDeliveryById(@PathVariable Long id) {
+    Delivery delivery = deliveryService.getDeliveryById(id);
+    // Sử dụng ObjectMapper để convert entity sang Map
+    Map<String, Object> deliveryMap = new com.fasterxml.jackson.databind.ObjectMapper()
+            .convertValue(delivery, Map.class);
+    return ResponseEntity.ok(deliveryMap);
+}
 
+@DeleteMapping("/{id}")
+public ResponseEntity<Map<String, Object>> deleteDelivery(@PathVariable Long id) {
+    deliveryService.deleteDelivery(id);
+    return ResponseEntity.ok(Map.of(
+        "id", id,
+        "message", "Delivery deleted successfully"
+    ));
+}
     /**
      * Create a new delivery
      */
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createDelivery(
-            @Valid @RequestBody Map<String, Object> deliveryData,
-            Authentication authentication) {
+public ResponseEntity<Map<String, Object>> createDelivery(
+        @Valid @RequestBody Map<String, Object> deliveryData,
+        Authentication authentication) {
 
-        // Tạo đối tượng Delivery từ dữ liệu đầu vào
-        Delivery delivery = new Delivery();
-        // TO-DO: Implement proper mapping from request data to Delivery entity
-        // Thiết lập các thuộc tính từ deliveryData
-        // Đây là giải pháp tạm thời, trong thực tế cần mapping chi tiết từ Map sang Entity
+    Delivery delivery = new Delivery();
 
-        // Lưu giao hàng
-        Delivery createdDelivery = deliveryService.createDelivery(delivery);
-
-        // Chuyển đổi kết quả thành Map
-        Map<String, Object> result = new HashMap<>();
-        result.put("id", createdDelivery.getId());
-        result.put("message", "Delivery created successfully");
-
-        return new ResponseEntity<>(result, HttpStatus.CREATED);
+    // Mapping các trường bắt buộc và cơ bản
+    if (deliveryData.get("orderId") != null) {
+        // Bạn cần có OrderService để lấy Order theo id
+        delivery.setOrder(orderService.getOrderById(Long.valueOf(deliveryData.get("orderId").toString())));
+    }
+    if (deliveryData.get("deliveryFee") != null) {
+        delivery.setDeliveryFee(new java.math.BigDecimal(deliveryData.get("deliveryFee").toString()));
+    }
+    if (deliveryData.get("transportMode") != null) {
+        delivery.setTransportMode(ktc.spring_project.enums.TransportMode.valueOf(deliveryData.get("transportMode").toString()));
+    }
+    if (deliveryData.get("serviceType") != null) {
+        delivery.setServiceType(ktc.spring_project.enums.ServiceType.valueOf(deliveryData.get("serviceType").toString()));
+    }
+    if (deliveryData.get("pickupDate") != null) {
+        delivery.setPickupDate(java.sql.Timestamp.valueOf(deliveryData.get("pickupDate").toString()));
+    }
+    if (deliveryData.get("scheduleDeliveryTime") != null) {
+        delivery.setScheduleDeliveryTime(java.sql.Timestamp.valueOf(deliveryData.get("scheduleDeliveryTime").toString()));
+    }
+    if (deliveryData.get("actualDeliveryTime") != null) {
+        delivery.setActualDeliveryTime(java.sql.Timestamp.valueOf(deliveryData.get("actualDeliveryTime").toString()));
+    }
+    if (deliveryData.get("lateDeliveryRisk") != null) {
+        delivery.setLateDeliveryRisk(Integer.valueOf(deliveryData.get("lateDeliveryRisk").toString()));
+    }
+    if (deliveryData.get("deliveryAttempts") != null) {
+        delivery.setDeliveryAttempts(Integer.valueOf(deliveryData.get("deliveryAttempts").toString()));
+    }
+    if (deliveryData.get("deliveryNotes") != null) {
+        delivery.setDeliveryNotes(deliveryData.get("deliveryNotes").toString());
+    }
+    if (deliveryData.get("orderDate") != null) {
+        delivery.setOrderDate(java.sql.Timestamp.valueOf(deliveryData.get("orderDate").toString()));
+    }
+    if (deliveryData.get("vehicleId") != null) {
+        delivery.setVehicle(vehicleService.getVehicleById(Long.valueOf(deliveryData.get("vehicleId").toString())));
+    }
+    if (deliveryData.get("driverId") != null) {
+        delivery.setDriver(userService.getUserById(Long.valueOf(deliveryData.get("driverId").toString())));
+    }
+    if (deliveryData.get("routeId") != null) {
+        delivery.setRoute(routeService.getRouteById(Long.valueOf(deliveryData.get("routeId").toString())));
     }
 
-    /**
-     * Update delivery information
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateDelivery(
-            @PathVariable Long id,
-            @Valid @RequestBody Map<String, Object> deliveryData,
-            Authentication authentication) {
+    // Lưu giao hàng
+    Delivery createdDelivery = deliveryService.createDelivery(delivery);
 
-        // Lấy thông tin giao hàng hiện tại
-        Delivery existingDelivery = deliveryService.getDeliveryById(id);
+    // Chuyển đổi kết quả thành Map
+    Map<String, Object> result = new ObjectMapper().convertValue(createdDelivery, Map.class);
+return new ResponseEntity<>(result, HttpStatus.CREATED);
+}
 
-        // TO-DO: Implement proper mapping from request data to Delivery entity
-        // Cập nhật các thuộc tính từ deliveryData
-        // Đây là giải pháp tạm thời, trong thực tế cần mapping chi tiết từ Map sang Entity
+   @PutMapping("/{id}")
+public ResponseEntity<Map<String, Object>> updateDelivery(
+        @PathVariable Long id,
+        @Valid @RequestBody Map<String, Object> deliveryData,
+        Authentication authentication) {
 
-        // Lưu giao hàng đã cập nhật
-        Delivery updatedDelivery = deliveryService.updateDelivery(id, existingDelivery);
+    Delivery delivery = deliveryService.getDeliveryById(id); // Lấy entity cũ
 
-        // Chuyển đổi kết quả thành Map
-        Map<String, Object> result = new HashMap<>();
-        result.put("id", updatedDelivery.getId());
-        result.put("message", "Delivery updated successfully");
-
-        return ResponseEntity.ok(result);
+    if (deliveryData.get("orderId") != null) {
+        delivery.setOrder(orderService.getOrderById(Long.valueOf(deliveryData.get("orderId").toString())));
+    }
+    if (deliveryData.get("deliveryFee") != null) {
+        delivery.setDeliveryFee(new java.math.BigDecimal(deliveryData.get("deliveryFee").toString()));
+    }
+    if (deliveryData.get("transportMode") != null) {
+        delivery.setTransportMode(ktc.spring_project.enums.TransportMode.valueOf(deliveryData.get("transportMode").toString()));
+    }
+    if (deliveryData.get("serviceType") != null) {
+        delivery.setServiceType(ktc.spring_project.enums.ServiceType.valueOf(deliveryData.get("serviceType").toString()));
+    }
+    if (deliveryData.get("pickupDate") != null) {
+        delivery.setPickupDate(java.sql.Timestamp.valueOf(deliveryData.get("pickupDate").toString()));
+    }
+    if (deliveryData.get("scheduleDeliveryTime") != null) {
+        delivery.setScheduleDeliveryTime(java.sql.Timestamp.valueOf(deliveryData.get("scheduleDeliveryTime").toString()));
+    }
+    if (deliveryData.get("actualDeliveryTime") != null) {
+        delivery.setActualDeliveryTime(java.sql.Timestamp.valueOf(deliveryData.get("actualDeliveryTime").toString()));
+    }
+    if (deliveryData.get("lateDeliveryRisk") != null) {
+        delivery.setLateDeliveryRisk(Integer.valueOf(deliveryData.get("lateDeliveryRisk").toString()));
+    }
+    if (deliveryData.get("deliveryAttempts") != null) {
+        delivery.setDeliveryAttempts(Integer.valueOf(deliveryData.get("deliveryAttempts").toString()));
+    }
+    if (deliveryData.get("deliveryNotes") != null) {
+        delivery.setDeliveryNotes(deliveryData.get("deliveryNotes").toString());
+    }
+    if (deliveryData.get("orderDate") != null) {
+        delivery.setOrderDate(java.sql.Timestamp.valueOf(deliveryData.get("orderDate").toString()));
+    }
+    if (deliveryData.get("vehicleId") != null) {
+        delivery.setVehicle(vehicleService.getVehicleById(Long.valueOf(deliveryData.get("vehicleId").toString())));
+    }
+    if (deliveryData.get("driverId") != null) {
+        delivery.setDriver(userService.getUserById(Long.valueOf(deliveryData.get("driverId").toString())));
+    }
+    if (deliveryData.get("routeId") != null) {
+        delivery.setRoute(routeService.getRouteById(Long.valueOf(deliveryData.get("routeId").toString())));
     }
 
+    Delivery updatedDelivery = deliveryService.createDelivery(delivery); // hoặc save/update
+
+    Map<String, Object> result = new com.fasterxml.jackson.databind.ObjectMapper().convertValue(updatedDelivery, Map.class);
+    return ResponseEntity.ok(result);
+}
+
+// @PostMapping("/{id}/proof")
+// public ResponseEntity<Map<String, Object>> uploadDeliveryProof(
+//         @PathVariable Long id,
+//         @RequestParam("file") MultipartFile file,
+//         @RequestParam(value = "note", required = false) String note,
+//         Authentication authentication) {
+
+//     // 1. Kiểm tra delivery tồn tại
+//     Delivery delivery = deliveryService.getDeliveryById(id);
+
+//     // 2. Lưu file (ví dụ lưu vào thư mục local, hoặc cloud, hoặc DB)
+//     // Ở đây chỉ demo lưu tên file, bạn tự xử lý lưu file thực tế
+//     String fileName = file.getOriginalFilename();
+//     // TODO: Lưu file vào thư mục hoặc cloud storage
+
+//     // 3. Lưu thông tin proof vào delivery (nếu có trường proof, hoặc tạo bảng proof riêng)
+//     // Ví dụ: delivery.setProofFileName(fileName);
+//     // delivery.setProofNote(note);
+//     // deliveryService.save(delivery);
+
+//     // 4. Trả về kết quả
+//     Map<String, Object> result = new HashMap<>();
+//     result.put("id", delivery.getId());
+//     result.put("fileName", fileName);
+//     result.put("note", note);
+//     result.put("message", "Proof uploaded successfully");
+
+//     return ResponseEntity.ok(result);
+// }
     /**
      * Assign driver to delivery
      */
@@ -211,13 +332,9 @@ public class DeliveryController {
         Delivery updatedDelivery = deliveryService.updateDelivery(id, delivery);
 
         // Chuyển đổi kết quả thành Map
-        Map<String, Object> result = new HashMap<>();
-        result.put("id", updatedDelivery.getId());
-        result.put("driverId", driverId);
-        result.put("message", "Driver assigned successfully");
-
-        return ResponseEntity.ok(result);
-    }
+         Map<String, Object> result = new com.fasterxml.jackson.databind.ObjectMapper().convertValue(updatedDelivery, Map.class);
+    return ResponseEntity.ok(result);
+}
 
     /**
      * Assign vehicle to delivery

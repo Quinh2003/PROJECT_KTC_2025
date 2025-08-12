@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -154,15 +153,21 @@ public PasswordEncoder passwordEncoder() {
 .requestMatchers("/api/categories/**").permitAll()
 .requestMatchers(HttpMethod.GET, "/api/stores", "/api/stores/**").permitAll()
 .requestMatchers(HttpMethod.PATCH, "/api/stores/**").permitAll()
-.requestMatchers(HttpMethod.PATCH, "/api/orders/**").permitAll()
-.requestMatchers(HttpMethod.PATCH, "/api/orders/**").permitAll()
+.requestMatchers(HttpMethod.POST, "/api/orders", "/api/orders/**").permitAll()
+.requestMatchers(HttpMethod.PUT, "/api/orders/**").permitAll()
+    .requestMatchers(HttpMethod.PATCH, "/api/orders/**").permitAll()
+.requestMatchers(HttpMethod.POST, "/api/stores").permitAll()
+    .requestMatchers(HttpMethod.POST, "/api/routes").permitAll()
+
 // ...existing code...
     .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
     .requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyRole("ADMIN", "USER", "CUSTOMER")
 // ...existing code...
 .requestMatchers(HttpMethod.POST, "/api/products/**").hasAnyRole("ADMIN", "USER", "CUSTOMER")
-
-    .anyRequest().authenticated()
+.requestMatchers("/api/orders/**").permitAll()
+.requestMatchers(HttpMethod.GET, "/api/deliveries", "/api/deliveries/**").permitAll()
+    // .anyRequest().authenticated()
+ .anyRequest().permitAll()
 )
 
 

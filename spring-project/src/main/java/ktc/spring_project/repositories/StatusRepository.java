@@ -13,7 +13,8 @@ import java.util.Optional;
 
 @Repository
 public interface StatusRepository extends JpaRepository<Status, Short> {
-    
+    List<Status> findByName(String name);
+
     List<Status> findByStatusType(StatusType statusType);
 
 Optional<Status> findByStatusTypeAndName(StatusType statusType, String name);

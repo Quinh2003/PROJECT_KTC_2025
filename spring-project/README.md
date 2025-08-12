@@ -7,192 +7,178 @@
 ## 📦 Quick Start
 
 ### Pull và chạy container:
-```bash
-docker pull fanglee2003/ktc-logistics-backend:latest
-docker run -d -p 8080:8080 fanglee2003/ktc-logistics-backend:latest
-```
 
-### Hoặc sử dụng docker-compose:
 ```bash
-git clone <repository-url>
-cd spring-project
-docker-compose up -d
+docker pull fanglee2003/ktc-logistics-backend
+docker run -d -p 8080:8080 fanglee2003/ktc-logistics-backend
 ```
 
 ## 🌐 API Resources & Endpoints
 
 ### 🔐 Authentication & Authorization
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/auth/login` | POST | User login with email/password | ✅ **Done** |
-| `/api/auth/register` | POST | User registration | ✅ **Done** |
-| `/api/auth/google` | POST | Google OAuth login | ✅ **Done** |
-| `/api/auth/google-credential` | POST | Google credential login | ✅ **Done** |
-| `/api/auth/refresh-token` | POST | Refresh JWT token | 🚧 **In Progress** |
-| `/api/auth/forgot-password` | POST | Send password reset email | 📝 **Planned** |
-| `/api/auth/reset-password` | POST | Reset password with token | 📝 **Planned** |
-| `/api/auth/logout` | POST | User logout | 📝 **Planned** |
+
+| Endpoint                        | Method | Description                    | Status      |
+|----------------------------------|--------|--------------------------------|-------------|
+| `/api/auth/login`                | POST   | User login                     | ✅ Đã làm   |
+| `/api/auth/register`             | POST   | User registration              | ✅ Đã làm   |
+| `/api/auth/google`               | POST   | Google OAuth login             | ✅ Đã làm   |
+| `/api/auth/google-credential`    | POST   | Google credential login        | ✅ Đã làm   |
+| `/api/auth/forgot-password`      | POST   | Send password reset email      | ❌ Chưa làm |
+| `/api/auth/reset-password`       | POST   | Reset password with token      | ❌ Chưa làm |
+| `/api/auth/logout`               | POST   | User logout                    | ❌ Chưa làm |
 
 ### 👥 User Management
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/users` | GET | Get all users (Admin only) | ✅ **Done** |
-| `/api/users/{id}` | GET | Get user by ID | ✅ **Done** |
-| `/api/users/{id}` | PUT | Update user information | ✅ **Done** |
-| `/api/users/{id}` | DELETE | Delete user (soft delete) | ✅ **Done** |
-| `/api/users/profile` | GET | Get current user profile | ✅ **Done** |
-| `/api/users/profile` | PUT | Update current user profile | ✅ **Done** |
-| `/api/users/{id}/activity-logs` | GET | Get user activity logs | ✅ **Done** |
-| `/api/users/search` | GET | Search users by criteria | 📝 **Planned** |
+
+| Endpoint                              | Method | Description                   | Status      |
+|----------------------------------------|--------|-------------------------------|-------------|
+| `/api/users`                          | GET    | Get all users                 | ✅ Đã làm   |
+| `/api/users/{id}`                     | GET    | Get user by ID                | ✅ Đã làm   |
+| `/api/users/{id}`                     | PUT    | Update user                   | ✅ Đã làm   |
+| `/api/users/{id}`                     | DELETE | Delete user (soft)            | ✅ Đã làm   |
+| `/api/users/profile`                  | GET    | Get current user profile      | ✅ Đã làm   |
+| `/api/users/profile`                  | PUT    | Update current user profile   | ✅ Đã làm   |
+| `/api/users/{id}/activity-logs`       | GET    | Get user activity logs        | ❌ Chưa làm |
 
 ### 🏗️ Category Management
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/categories` | GET | Get all categories with filters | ✅ **Done** |
-| `/api/categories/tree` | GET | Get category tree structure | ✅ **Done** |
-| `/api/categories/{id}` | GET | Get category by ID | ✅ **Done** |
-| `/api/categories` | POST | Create new category | ✅ **Done** |
-| `/api/categories/{id}` | PUT | Update category | ✅ **Done** |
-| `/api/categories/{id}` | PATCH | Partial update category | ✅ **Done** |
-| `/api/categories/{id}` | DELETE | Delete category | ✅ **Done** |
-| `/api/categories/{id}/products` | GET | Get products in category | ✅ **Done** |
-| `/api/categories/{id}/statistics` | GET | Get category statistics | ✅ **Done** |
+
+| Endpoint                                   | Method | Description                  | Status      |
+|---------------------------------------------|--------|------------------------------|-------------|
+| `/api/categories`                          | GET    | Get all categories           | ✅ Đã làm   |
+| `/api/categories/tree`                     | GET    | Get category tree            | ✅ Đã làm   |
+| `/api/categories/{id}`                     | GET    | Get category by ID           | ✅ Đã làm   |
+| `/api/categories`                          | POST   | Create new category          | ✅ Đã làm   |
+| `/api/categories/{id}`                     | PUT    | Update category              | ✅ Đã làm   |
+| `/api/categories/{id}`                     | PATCH  | Partial update category      | ✅ Đã làm   |
+| `/api/categories/{id}`                     | DELETE | Delete category              | ✅ Đã làm   |
+| `/api/categories/{id}/products`            | GET    | Get products in category     | ✅ Đã làm   |
+| `/api/categories/{id}/statistics`          | GET    | Get category statistics      | ✅ Đã làm   |
 
 ### 📦 Product Management
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/products` | GET | Get all products with filters | 🚧 **In Progress** |
-| `/api/products/{id}` | GET | Get product by ID | 🚧 **In Progress** |
-| `/api/products` | POST | Create new product | 🚧 **In Progress** |
-| `/api/products/{id}` | PUT | Update product | 🚧 **In Progress** |
-| `/api/products/{id}` | DELETE | Delete product | 🚧 **In Progress** |
-| `/api/products/search` | GET | Search products | 📝 **Planned** |
-| `/api/products/{id}/inventory` | GET | Get product inventory | 📝 **Planned** |
+
+| Endpoint                                   | Method | Description                  | Status      |
+|---------------------------------------------|--------|------------------------------|-------------|
+| `/api/products`                            | GET    | Get all products             | ✅ Đã làm   |
+| `/api/products/{id}`                       | GET    | Get product by ID            | ✅ Đã làm   |
+| `/api/products`                            | POST   | Create new product           | ✅ Đã làm   |
+| `/api/products/{id}`                       | PUT    | Update product               | ✅ Đã làm   |
+| `/api/products/{id}`                       | PATCH  | Partial update product       | ✅ Đã làm   |
+| `/api/products/{id}`                       | DELETE | Delete product               | ✅ Đã làm   |
+| `/api/products/{id}/inventory`             | GET    | Get product inventory        | ❌ Chưa làm |
 
 ### 📋 Order Management
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/orders` | GET | Get all orders | 🚧 **In Progress** |
-| `/api/orders/{id}` | GET | Get order by ID | 🚧 **In Progress** |
-| `/api/orders` | POST | Create new order | 🚧 **In Progress** |
-| `/api/orders/{id}` | PUT | Update order | 🚧 **In Progress** |
-| `/api/orders/{id}/status` | PATCH | Update order status | 📝 **Planned** |
-| `/api/orders/{id}/items` | GET | Get order items | 🚧 **In Progress** |
-| `/api/orders/{id}/tracking` | GET | Get order tracking info | 📝 **Planned** |
+
+| Endpoint                                   | Method | Description                  | Status      |
+|---------------------------------------------|--------|------------------------------|-------------|
+| `/api/orders`                              | GET    | Get all orders               | ✅ Đã làm   |
+| `/api/orders/{id}`                         | GET    | Get order by ID              | ✅ Đã làm   |
+| `/api/orders`                              | POST   | Create new order             | ✅ Đã làm   |
+| `/api/orders/{id}`                         | PUT    | Update order                 | ✅ Đã làm   |
+| `/api/orders/{id}`                         | PATCH  | Partial update order         | ✅ Đã làm   |
+| `/api/orders/{id}/status`                  | PATCH  | Update order status          | ✅ Đã làm   |
+| `/api/orders/{id}/items`                   | GET    | Get order items              | ❌ Chưa làm |
+| `/api/orders/{id}/tracking`                | GET    | Get order tracking info      | ✅ Đã làm   |
 
 ### 🚚 Vehicle Management
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/vehicles` | GET | Get all vehicles | 🚧 **In Progress** |
-| `/api/vehicles/{id}` | GET | Get vehicle by ID | 🚧 **In Progress** |
-| `/api/vehicles` | POST | Create new vehicle | 🚧 **In Progress** |
-| `/api/vehicles/{id}` | PUT | Update vehicle | 🚧 **In Progress** |
-| `/api/vehicles/{id}` | DELETE | Delete vehicle | 🚧 **In Progress** |
-| `/api/vehicles/{id}/maintenance` | GET | Get vehicle maintenance history | 📝 **Planned** |
-| `/api/vehicles/{id}/assignments` | GET | Get vehicle assignments | 📝 **Planned** |
-| `/api/vehicles/available` | GET | Get available vehicles | 📝 **Planned** |
+
+| Endpoint                                   | Method     | Description                  | Status      |
+|---------------------------------------------|------------|------------------------------|-------------|
+| `/api/vehicles`                            | GET        | Get all vehicles             | ✅ Đã làm   |
+| `/api/vehicles/{id}`                       | GET        | Get vehicle by ID            | ✅ Đã làm   |
+| `/api/vehicles`                            | POST       | Create new vehicle           | ✅ Đã làm   |
+| `/api/vehicles/{id}`                       | PUT/PATCH  | Update vehicle               | ✅ Đã làm   |
+| `/api/vehicles/{id}`                       | DELETE     | Delete vehicle               | ✅ Đã làm   |
+| `/api/vehicles/{id}/maintenance`           | GET        | Get vehicle maintenance      | ❌ Chưa làm |
+| `/api/vehicles/{id}/assignments`           | GET        | Get vehicle assignments      | ❌ Chưa làm |
+| `/api/vehicles/available`                  | GET        | Get available vehicles       | ❌ Chưa làm |
 
 ### 📍 Route Management
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/routes` | GET | Get all routes | 🚧 **In Progress** |
-| `/api/routes/{id}` | GET | Get route by ID | 🚧 **In Progress** |
-| `/api/routes` | POST | Create new route | 🚧 **In Progress** |
-| `/api/routes/{id}` | PUT | Update route | 🚧 **In Progress** |
-| `/api/routes/{id}/optimize` | POST | Optimize route | 📝 **Planned** |
-| `/api/routes/{id}/tracking` | GET | Get route tracking | 📝 **Planned** |
+
+| Endpoint                                   | Method | Description                  | Status      |
+|---------------------------------------------|--------|------------------------------|-------------|
+| `/api/routes`                              | GET    | Get all routes               | ✅ Đã làm   |
+| `/api/routes/{id}`                         | GET    | Get route by ID              | ✅ Đã làm   |
+| `/api/routes`                              | POST   | Create new route             | ✅ Đã làm   |
+| `/api/routes/{id}`                         | DELETE | Delete route                 | ✅ Đã làm   |
+| `/api/routes/{id}`                         | PUT    | Update route                 | ✅ Đã làm   |
+| `/api/routes/{id}/tracking`                | GET    | Get route tracking           | ✅ Đã làm   |
 
 ### 🚛 Delivery Management
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/deliveries` | GET | Get all deliveries | 🚧 **In Progress** |
-| `/api/deliveries/{id}` | GET | Get delivery by ID | 🚧 **In Progress** |
-| `/api/deliveries` | POST | Create new delivery | 🚧 **In Progress** |
-| `/api/deliveries/{id}` | PUT | Update delivery | 🚧 **In Progress** |
-| `/api/deliveries/{id}/status` | PATCH | Update delivery status | 📝 **Planned** |
-| `/api/deliveries/{id}/proof` | POST | Upload delivery proof | 🚧 **In Progress** |
-| `/api/deliveries/{id}/tracking` | GET | Get delivery tracking | 🚧 **In Progress** |
+
+| Endpoint                                   | Method | Description                  | Status      |
+|---------------------------------------------|--------|------------------------------|-------------|
+| `/api/deliveries`                          | GET    | Get all deliveries           | ✅ Đã làm   |
+| `/api/deliveries/{id}`                     | GET    | Get delivery by ID           | ✅ Đã làm   |
+| `/api/deliveries`                          | POST   | Create new delivery          | ✅ Đã làm   |
+| `/api/deliveries/{id}`                     | DELETE | Delete delivery              | ✅ Đã làm   |
+| `/api/deliveries/{id}`                     | PUT    | Update delivery              | ✅ Đã làm   |
+| `/api/deliveries/{id}/tracking`            | GET    | Get delivery tracking        | ✅ Đã làm   |
 
 ### 📱 GPS Tracking
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/tracking/vehicles/{id}` | GET | Get vehicle real-time location | 🚧 **In Progress** |
-| `/api/tracking/deliveries/{id}` | GET | Get delivery tracking points | 🚧 **In Progress** |
-| `/api/tracking/update` | POST | Update GPS location | 📝 **Planned** |
-| `/api/tracking/history` | GET | Get tracking history | 📝 **Planned** |
+
+| Endpoint                                   | Method | Description                  | Status      |
+|---------------------------------------------|--------|------------------------------|-------------|
+| `/api/tracking/vehicles/{id}`              | GET    | Get vehicle real-time loc    | ❌ Chưa làm |
+| `/api/tracking/deliveries/{id}`            | GET    | Get delivery tracking points | ❌ Chưa làm |
+| `/api/tracking/update`                     | POST   | Update GPS location          | ❌ Chưa làm |
+| `/api/tracking/history`                    | GET    | Get tracking history         | ❌ Chưa làm |
 
 ### 💰 Payment Management
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/payments` | GET | Get all payments | 🚧 **In Progress** |
-| `/api/payments/{id}` | GET | Get payment by ID | 🚧 **In Progress** |
-| `/api/payments` | POST | Create payment | 🚧 **In Progress** |
-| `/api/payments/{id}/status` | PATCH | Update payment status | 📝 **Planned** |
+
+| Endpoint                                   | Method | Description                  | Status      |
+|---------------------------------------------|--------|------------------------------|-------------|
+| `/api/payments`                            | GET    | Get all payments             | ✅ Đã làm   |
+| `/api/payments/{id}`                       | GET    | Get payment by ID            | ✅ Đã làm   |
+| `/api/payments/{id}`                       | DELETE | Delete payment               | ✅ Đã làm   |
+| `/api/payments`                            | POST   | Create payment               | ✅ Đã làm   |
+| `/api/payments/{id}`                       | PUT    | Update payment               | ✅ Đã làm   |
 
 ### 🏪 Store Management
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/stores` | GET | Get all stores | 🚧 **In Progress** |
-| `/api/stores/{id}` | GET | Get store by ID | 🚧 **In Progress** |
-| `/api/stores` | POST | Create new store | 🚧 **In Progress** |
-| `/api/stores/{id}` | PUT | Update store | 🚧 **In Progress** |
+
+| Endpoint                                   | Method     | Description                  | Status      |
+|---------------------------------------------|------------|------------------------------|-------------|
+| `/api/stores`                              | GET        | Get all stores               | ✅ Đã làm   |
+| `/api/stores/{id}`                         | GET        | Get store by ID              | ✅ Đã làm   |
+| `/api/stores`                              | POST       | Create new store             | ✅ Đã làm   |
+| `/api/stores/{id}`                         | PUT/PATCH  | Update store                 | ✅ Đã làm   |
+| `/api/stores/{id}`                         | DELETE     | Delete store                 | ✅ Đã làm   |
 
 ### 🏭 Warehouse Management
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/warehouses` | GET | Get all warehouses | 🚧 **In Progress** |
-| `/api/warehouses/{id}` | GET | Get warehouse by ID | 🚧 **In Progress** |
-| `/api/warehouses` | POST | Create new warehouse | 🚧 **In Progress** |
-| `/api/warehouses/{id}` | PUT | Update warehouse | 🚧 **In Progress** |
-| `/api/warehouses/{id}/transactions` | GET | Get warehouse transactions | 📝 **Planned** |
-| `/api/warehouses/{id}/inventory` | GET | Get warehouse inventory | 📝 **Planned** |
+
+| Endpoint                                   | Method | Description                  | Status      |
+|---------------------------------------------|--------|------------------------------|-------------|
+| `/api/warehouses`                          | GET    | Get all warehouses           | ✅ Đã làm   |
+| `/api/warehouses/{id}`                     | GET    | Get warehouse by ID          | ✅ Đã làm   |
+| `/api/warehouses`                          | POST   | Create new warehouse         | ✅ Đã làm   |
+| `/api/warehouses/{id}`                     | PUT    | Update warehouse             | ✅ Đã làm   |
+| `/api/warehouses/{id}`                     | DELETE | Delete warehouse             | ✅ Đã làm   |
+| `/api/warehouses/{id}/transactions`        | GET    | Get warehouse transactions   | ✅ Đã làm |
+| `/api/warehouses/{id}/inventory`           | GET    | Get warehouse inventory      | ✅ Đã làm |
 
 ### 📊 Dashboard & Analytics
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/dashboard/overview` | GET | Get dashboard overview stats | 🚧 **In Progress** |
-| `/api/dashboard/kpi` | GET | Get KPI metrics | 📝 **Planned** |
-| `/api/reports/orders` | GET | Generate order reports | 🚧 **In Progress** |
-| `/api/reports/deliveries` | GET | Generate delivery reports | 🚧 **In Progress** |
-| `/api/reports/performance` | GET | Generate performance reports | 📝 **Planned** |
-| `/api/reports/export` | POST | Export reports to file | 📝 **Planned** |
 
-### 👑 Admin Management
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/admin/users` | GET | Admin - manage all users | 🚧 **In Progress** |
-| `/api/admin/system-config` | GET | Get system configurations | 📝 **Planned** |
-| `/api/admin/system-config` | PUT | Update system configurations | 📝 **Planned** |
-| `/api/admin/activity-logs` | GET | Get all activity logs | 📝 **Planned** |
-| `/api/admin/audit` | GET | System audit reports | 📝 **Planned** |
+| Endpoint                                   | Method | Description                  | Status      |
+|---------------------------------------------|--------|------------------------------|-------------|
+| `/api/dashboard/overview`                  | GET    | Get dashboard overview stats | ❌ Chưa làm |
+| `/api/dashboard/kpi`                       | GET    | Get KPI metrics              | ❌ Chưa làm |
+| `/api/reports/orders`                      | GET    | Generate order reports       | ❌ Chưa làm |
+| `/api/reports/deliveries`                  | GET    | Generate delivery reports    | ❌ Chưa làm |
+| `/api/reports/performance`                 | GET    | Generate performance reports | ❌ Chưa làm |
+| `/api/reports/export`                      | POST   | Export reports to file       | ❌ Chưa làm |
 
-### 🔒 Protected Resources (Testing)
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/protected/profile` | GET | Test JWT authentication | ✅ **Done** |
-| `/api/protected/admin/users` | GET | Test admin role access | ✅ **Done** |
-| `/api/protected/dispatcher/dashboard` | GET | Test dispatcher access | ✅ **Done** |
-| `/api/protected/driver/routes` | GET | Test driver access | ✅ **Done** |
-
-### 📋 Status Management
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/api/status` | GET | Get all system statuses | 🚧 **In Progress** |
-| `/api/status/{id}` | GET | Get status by ID | 🚧 **In Progress** |
-| `/api/status` | POST | Create new status | 📝 **Planned** |
+---
 
 ## 📊 API Status Summary
 
-| Status | Count | Description |
-|--------|-------|-------------|
-| ✅ **Done** | 17 | Fully implemented and tested |
-| 🚧 **In Progress** | 41 | Basic structure exists, needs completion |
-| 📝 **Planned** | 32 | Planned for future implementation |
-| **Total** | **90** | **Total API endpoints** |
+| Status         | Count | Description                        |
+|----------------|-------|------------------------------------|
+| ✅ Đã làm       | 66    | Đã có controller & test Postman    |
+| ❌ Chưa làm     | 19    | Chưa có hoặc chưa hoàn thiện       |
+| **Total**      | **85**| **Tổng số endpoint kiểm tra được** |
 
 ## 🔧 Configuration
 
-Application sử dụng remote MySQL database:
+Ứng dụng sử dụng remote MySQL database:
+
 - **Server:** server.aptech.io:3307
 - **Database:** fastroute_test
 - **Username:** fastroute_user
@@ -212,5 +198,3 @@ Application sử dụng remote MySQL database:
 - **API Documentation:** http://localhost:8080/swagger-ui.html (planned)
 - **Database Schema:** [docs/schemaDB/tables_documentation.md](docs/schemaDB/tables_documentation.md)
 - **User Stories:** [docs/userStory/](docs/userStory/)
-
----

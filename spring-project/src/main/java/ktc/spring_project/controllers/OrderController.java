@@ -18,18 +18,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * Controller responsible for managing delivery orders
- * Based on user stories:
- * - US-ORDER-CREATE-01: Create Delivery Order
- * - US-ORDER-ASSIGN-01: Assign Vehicle & Driver
- * - US-ORDER-TRACK-01: Real-Time Order Tracking
- */
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
@@ -47,31 +41,33 @@ public class OrderController {
     private DeliveryTrackingService deliveryTrackingService;
 
     /**
-     * Create a new delivery order
-     * US-ORDER-CREATE-01
-     * TO-DO: Implement createOrder method in OrderService that accepts DTO and User
+     * Tạo đơn hàng mới
      */
     @PostMapping
-    public ResponseEntity<Order> createOrder(
-            @Valid @RequestBody CreateDeliveryOrderRequestDTO requestDTO,
-            Authentication authentication) {
-
-        // TO-DO: Replace with actual implementation when DTO-based createOrder is implemented
-        // User currentUser = userService.getCurrentUser(authentication);
-        // DeliveryOrderResponseDTO responseDTO = orderService.createOrder(requestDTO, currentUser);
-
-        // Temporary implementation using existing service method
-        Order order = new Order();
-        // Set basic properties from requestDTO
-        // This is a simplified version until proper DTO handling is implemented
-
-        Order createdOrder = orderService.createOrder(order);
-        return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
+    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
+        try {
+            // Đặt giá trị mặc định nếu không được cung cấp
+            if (order.getBenefitPerOrder() == null) {
+                order.setBenefitPerOrder(BigDecimal.ZERO);
+            }
+            if (order.getOrderProfitPerOrder() == null) {
+                order.setOrderProfitPerOrder(BigDecimal.ZERO);
+            }
+            if (order.getTotalAmount() == null) {
+                order.setTotalAmount(BigDecimal.valueOf(500.00)); // Giá trị mặc định từ JSON của bạn
+            }
+            
+            Order createdOrder = orderService.createOrder(order);
+            return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
-     * Get all orders with optional filters
-     * TO-DO: Implement getFilteredOrders method in OrderService
+     * Lấy tất cả đơn hàng
      */
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders(
@@ -81,172 +77,90 @@ public class OrderController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
 
-        // TO-DO: Replace with actual implementation when getFilteredOrders is implemented in OrderService
-        // List<DeliveryOrderResponseDTO> orders = orderService.getFilteredOrders(status, driverId, vehicleId, dateFrom, dateTo);
-
-        // Temporary implementation using basic service method
-        List<Order> allOrders = orderService.getAllOrders();
-
-        // Apply basic filtering logic here until proper service method is implemented
-        // This is just a temporary solution
-
-        return ResponseEntity.ok(allOrders);
+        try {
+            List<Order> allOrders = orderService.getAllOrders();
+            return ResponseEntity.ok(allOrders);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
+        }
     }
 
     /**
-     * Get order by ID
-     * TO-DO: Implement getOrderById method in OrderService that returns DeliveryOrderResponseDTO
+     * Lấy đơn hàng theo ID
      */
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        // TO-DO: Replace with actual implementation when getOrderById returning DTO is implemented
-        // DeliveryOrderResponseDTO order = orderService.getOrderById(id);
-
-        // Temporary implementation using existing service method
-        Order order = orderService.getOrderById(id);
-        return ResponseEntity.ok(order);
+        try {
+            Order order = orderService.getOrderById(id);
+            return ResponseEntity.ok(order);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
-@PatchMapping("/{id}")
+
+    /**
+     * Cập nhật đơn hàng
+     */
+    @PatchMapping("/{id}")
     public ResponseEntity<Order> patchOrder(
             @PathVariable Long id,
             @RequestBody Order orderDetails) {
+        try {
+            Order updatedOrder = orderService.updateOrder(id, orderDetails);
+            return ResponseEntity.ok(updatedOrder);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/{id}")
+public ResponseEntity<Order> putOrder(
+        @PathVariable Long id,
+        @RequestBody Order orderDetails) {
+    try {
         Order updatedOrder = orderService.updateOrder(id, orderDetails);
         return ResponseEntity.ok(updatedOrder);
+    } catch (Exception e) {
+        return ResponseEntity.notFound().build();
     }
-    /**
-     * Assign vehicle and driver to an order
-     * US-ORDER-ASSIGN-01
-     * TO-DO: Implement checkSchedulingConflicts and assignVehicleAndDriver methods in OrderService
-     */
-    @PatchMapping("/{id}/assign")
-    public ResponseEntity<Order> assignVehicleAndDriver(
-            @PathVariable Long id,
-            @RequestBody Map<String, Long> assignmentData,
-            Authentication authentication) {
+}
+// ...existing code...
 
-        Long vehicleId = assignmentData.get("vehicleId");
-        Long driverId = assignmentData.get("driverId");
+// DTO đơn giản để nhận statusId
+public static class UpdateOrderStatusDTO {
+    public Long statusId;
+}
 
-        // TO-DO: Replace with actual implementation when these methods are implemented
-        // boolean hasConflicts = orderService.checkSchedulingConflicts(id, vehicleId, driverId);
-        // DeliveryOrderResponseDTO updatedOrder = orderService.assignVehicleAndDriver(id, vehicleId, driverId, currentUser);
-
-        // Temporary implementation
+// API cập nhật trạng thái đơn hàng
+@PatchMapping("/{id}/status")
+public ResponseEntity<Order> updateOrderStatus(
+        @PathVariable Long id,
+        @RequestBody UpdateOrderStatusDTO dto) {
+    try {
         Order order = orderService.getOrderById(id);
-        // Basic update logic can be added here
-
-        return ResponseEntity.ok(order);
-    }
-
-    /**
-     * Get available vehicles for a specific time slot
-     * Supporting US-ORDER-ASSIGN-01
-     * TO-DO: Implement getAvailableVehicles method in VehicleService
-     */
-    @GetMapping("/available-vehicles")
-    public ResponseEntity<List<Vehicle>> getAvailableVehicles(
-            @RequestParam String scheduledDate,
-            @RequestParam(required = false) String scheduledTime) {
-
-        // TO-DO: Replace with actual implementation when this method is implemented
-        // List<Vehicle> availableVehicles = vehicleService.getAvailableVehicles(scheduledDate, scheduledTime);
-
-        // Temporary implementation
-        List<Vehicle> allVehicles = vehicleService.getAllVehicles();
-
-        return ResponseEntity.ok(allVehicles);
-    }
-
-    /**
-     * Get available drivers for a specific time slot
-     * Supporting US-ORDER-ASSIGN-01
-     * TO-DO: Implement getAvailableDrivers method in UserService
-     */
-    @GetMapping("/available-drivers")
-    public ResponseEntity<List<User>> getAvailableDrivers(
-            @RequestParam String scheduledDate,
-            @RequestParam(required = false) String scheduledTime) {
-
-        // TO-DO: Replace with actual implementation when this method is implemented
-        // List<User> availableDrivers = userService.getAvailableDrivers(scheduledDate, scheduledTime);
-
-        // Temporary implementation to return all users with driver role
-        List<User> filteredDrivers = userService.getFilteredUsers("DRIVER", null, null);
-        if (filteredDrivers == null || filteredDrivers.isEmpty()) {
-            // Fallback if no drivers found
-            return ResponseEntity.ok(List.of());
+        if (dto.statusId != null) {
+            Status status = new Status();
+            status.setId(dto.statusId != null ? dto.statusId.shortValue() : null);
+            order.setStatus(status);
         }
-
-        return ResponseEntity.ok(filteredDrivers);
-    }
-
-    /**
-     * Update order status
-     * TO-DO: Implement updateOrderStatus method in OrderService
-     */
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<Order> updateOrderStatus(
-            @PathVariable Long id,
-            @RequestBody Map<String, Long> statusData,
-            Authentication authentication) {
-
-        Long statusId = statusData.get("statusId");
-
-        // TO-DO: Replace with actual implementation when this method is implemented
-        // User currentUser = userService.getCurrentUser(authentication);
-        // DeliveryOrderResponseDTO updatedOrder = orderService.updateOrderStatus(id, statusId, currentUser);
-
-        // Temporary implementation
-        Order order = orderService.getOrderById(id);
-        // Set status ID if needed
-        // Ideally, we would fetch the Status entity and set it on the order
-
-        Order updatedOrder = orderService.updateOrder(id, order);
+        Order updatedOrder = orderService.createOrder(order); // hoặc orderService.save(order)
         return ResponseEntity.ok(updatedOrder);
+    } catch (Exception e) {
+        return ResponseEntity.notFound().build();
     }
-
-    /**
-     * Get real-time tracking information for an order
-     * US-ORDER-TRACK-01
-     * TO-DO: Implement getOrderTrackingData method in DeliveryTrackingService
-     */
-    @GetMapping("/{id}/tracking")
-    public ResponseEntity<Map<String, Object>> getOrderTracking(@PathVariable Long id) {
-        // TO-DO: Replace with actual implementation when this method is implemented
-        // Map<String, Object> trackingData = deliveryTrackingService.getOrderTrackingData(id);
-
-        // Temporary placeholder response
-        Map<String, Object> trackingData = Map.of(
-            "orderId", id,
-            "message", "Real-time tracking will be implemented in a future update",
-            "status", "PENDING"
-        );
-
-        return ResponseEntity.ok(trackingData);
+}
+@GetMapping("/{id}/tracking")
+public ResponseEntity<?> getOrderTracking(@PathVariable Long id) {
+    try {
+        // Giả sử bạn có service lấy tracking info
+        Object trackingInfo = orderService.getOrderTrackingInfo(id);
+        if (trackingInfo == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(trackingInfo);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
     }
+}
 
-    /**
-     * Cancel an order
-     * TO-DO: Implement cancelOrder method in OrderService
-     */
-    @PatchMapping("/{id}/cancel")
-    public ResponseEntity<Order> cancelOrder(
-            @PathVariable Long id,
-            @RequestBody(required = false) Map<String, String> cancelData,
-            Authentication authentication) {
-
-        String cancelReason = cancelData != null ? cancelData.get("reason") : null;
-
-        // TO-DO: Replace with actual implementation when this method is implemented
-        // User currentUser = userService.getCurrentUser(authentication);
-        // DeliveryOrderResponseDTO cancelledOrder = orderService.cancelOrder(id, cancelReason, currentUser);
-
-        // Temporary implementation
-        Order order = orderService.getOrderById(id);
-        // Update order status to canceled
-        // Ideally, we would fetch the 'CANCELED' Status entity and set it
-
-        Order updatedOrder = orderService.updateOrder(id, order);
-        return ResponseEntity.ok(updatedOrder);
-    }
 }

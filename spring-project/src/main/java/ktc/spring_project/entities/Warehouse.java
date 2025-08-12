@@ -16,6 +16,8 @@ public class Warehouse {
     private Long id;
 
 
+@Column(name = "warehouse_code", length = 50, nullable = false)
+private String warehouseCode;
 
     @Column(length = 255, nullable = false)
     private String name;
@@ -78,7 +80,13 @@ public class Warehouse {
         this.address = address;
     }
 
+public String getWarehouseCode() {
+    return warehouseCode;
+}
 
+public void setWarehouseCode(String warehouseCode) {
+    this.warehouseCode = warehouseCode;
+}
 
 
     public BigDecimal getLatitude() {

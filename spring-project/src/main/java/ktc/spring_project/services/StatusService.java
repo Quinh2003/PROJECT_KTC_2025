@@ -22,6 +22,12 @@ public class StatusService {
     StatusType statusType = StatusType.valueOf(type.toUpperCase());
     return statusRepository.findByStatusType(statusType);
 }
+public List<Status> getAllStatuses() {
+    return statusRepository.findAll();
+}
+public Optional<Status> getStatusById(Short id) {
+    return statusRepository.findById(id);
+}
 
 public Optional<Status> getStatusByTypeAndName(String type, String name) {
     StatusType statusType = StatusType.valueOf(type.toUpperCase());

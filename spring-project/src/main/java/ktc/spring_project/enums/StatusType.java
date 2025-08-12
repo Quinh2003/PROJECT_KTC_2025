@@ -4,7 +4,8 @@ public enum StatusType {
     VEHICLE("Vehicle"),
     ORDER("Order"),
     PAYMENT("Payment"),
-    USER("User");
+    USER("User"),
+    DELIVERY("Delivery"); // Thêm dòng này
 
     private final String displayName;
 

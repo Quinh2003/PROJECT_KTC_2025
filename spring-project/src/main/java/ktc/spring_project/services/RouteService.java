@@ -29,4 +29,14 @@ public class RouteService {
     public void delete(Long id) {
         routeRepository.deleteById(id);
     }
+
+    // ...existing code...
+
+public Route getRouteById(Long routeId) {
+    // Replace with your actual data access logic
+    return routeRepository.findById(routeId)
+        .orElseThrow(() -> new RuntimeException("Route not found with id: " + routeId));
+}
+
+// ...existing code...
 }
