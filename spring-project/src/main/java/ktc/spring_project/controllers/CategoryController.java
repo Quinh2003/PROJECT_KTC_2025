@@ -162,6 +162,21 @@ public class CategoryController {
         return ResponseEntity.ok(updatedCategory);
     }
 
+    @PatchMapping("/{id}")
+public ResponseEntity<Category> patchCategory(
+        @PathVariable Long id,
+        @RequestBody Map<String, Object> updates,
+        Authentication authentication) {
+
+    Category category = categoryService.getCategoryById(id);
+    if (updates.containsKey("name")) {
+        category.setName((String) updates.get("name"));
+    }
+    // Thêm các trường khác nếu cần
+
+    Category updatedCategory = categoryService.createCategory(category);
+    return ResponseEntity.ok(updatedCategory);
+}
     /**
      * Delete category (soft delete)
      */

@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
 import jakarta.validation.Valid;
 import java.util.ArrayList;
@@ -119,15 +121,9 @@ public class StoreController {
     /**
      * Delete store (soft delete)
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStore(
-            @PathVariable Long id,
-            Authentication authentication) {
-
-        // TO-DO: Add authentication handling once implemented in service
-        storeService.deleteStore(id);
-        return ResponseEntity.noContent().build();
-    }
+    /**
+ * Delete store (soft delete)
+ */
 
     /**
      * Get orders for a store
@@ -207,12 +203,19 @@ public class StoreController {
                 )
         ));
     }
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> deleteStore(
+        @PathVariable Long id,
+        Authentication authentication) {
+    storeService.deleteStore(id);
+    return ResponseEntity.noContent().build();
+}
 
-    /**
-     * Update store status (active/inactive)
-     * TO-DO: Implement updateStoreStatus method in StoreService
-     */
-    @PatchMapping("/{id}/status")
+/**
+ * Update store status (active/inactive)
+ * TO-DO: Implement updateStoreStatus method in StoreService
+ */
+@PatchMapping("/{id}/status")
     public ResponseEntity<Map<String, Object>> updateStoreStatus(
             @PathVariable Long id,
             @RequestBody Map<String, Boolean> statusData,
@@ -235,4 +238,21 @@ public class StoreController {
                 "message", "Store status updated successfully"
         ));
     }
+
+    @PatchMapping("/{id}")
+public ResponseEntity<Store> patchStore(
+        @PathVariable Long id,
+        @RequestBody Map<String, Object> updates,
+        Authentication authentication) {
+
+    Store store = storeService.getStoreById(id);
+    if (updates.containsKey("storeName")) {
+        store.setStoreName((String) updates.get("storeName"));
+    }
+    // Thêm các trường khác nếu cần PATCH
+
+    Store updatedStore = storeService.updateStore(id, store);
+    return ResponseEntity.ok(updatedStore);
+}
+
 }
