@@ -3,6 +3,7 @@ package ktc.spring_project.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -57,7 +59,7 @@ public class SecurityConfig {
 
       @Bean
 public PasswordEncoder passwordEncoder() {
-    return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
+    return NoOpPasswordEncoder.getInstance();
 }
 
     /**
@@ -149,6 +151,17 @@ public PasswordEncoder passwordEncoder() {
     // Cho phép truy cập cả danh sách và từng user theo id
 .requestMatchers("/api/auth/users/**").permitAll()
 .requestMatchers("/api/auth/users").permitAll()
+.requestMatchers("/api/categories/**").permitAll()
+.requestMatchers(HttpMethod.GET, "/api/stores", "/api/stores/**").permitAll()
+.requestMatchers(HttpMethod.PATCH, "/api/stores/**").permitAll()
+.requestMatchers(HttpMethod.PATCH, "/api/orders/**").permitAll()
+.requestMatchers(HttpMethod.PATCH, "/api/orders/**").permitAll()
+// ...existing code...
+    .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+    .requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyRole("ADMIN", "USER", "CUSTOMER")
+// ...existing code...
+.requestMatchers(HttpMethod.POST, "/api/products/**").hasAnyRole("ADMIN", "USER", "CUSTOMER")
+
     .anyRequest().authenticated()
 )
 
@@ -180,7 +193,7 @@ public PasswordEncoder passwordEncoder() {
         configuration.setAllowedOriginPatterns(java.util.List.of("http://localhost:3000", "http://localhost:3001", "http://localhost:5173"));
 
         // Cho phép các HTTP methods
-        configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 
         // Cho phép tất cả headers
         configuration.setAllowedHeaders(java.util.List.of("*"));
