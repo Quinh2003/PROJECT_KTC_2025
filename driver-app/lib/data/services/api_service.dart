@@ -2,16 +2,13 @@
 // Service class để giao tiếp với Spring Boot backend
 
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ktc_logistics_driver/data/env/environment.dart';
 import 'package:ktc_logistics_driver/domain/models/response/auth_response.dart';
-import 'package:ktc_logistics_driver/domain/models/response/order_response.dart';
+import 'package:ktc_logistics_driver/domain/models/response/order_response.dart' as order_models;
 import 'package:ktc_logistics_driver/domain/models/response/delivery_response.dart';
-import 'package:ktc_logistics_driver/domain/models/response/orders_by_status_response.dart';
-import 'package:ktc_logistics_driver/domain/models/driver_status_model.dart';
-import 'package:ktc_logistics_driver/domain/models/notification_model.dart';
+import 'package:ktc_logistics_driver/domain/models/response/orders_by_status_response.dart' as status_models;
 
 class ApiService {
   // Instance của FlutterSecureStorage để lưu JWT token
@@ -102,7 +99,7 @@ class ApiService {
   // ======== Order API ========
 
   // Lấy đơn hàng theo trạng thái
-  Future<OrdersByStatusResponse> getOrdersByStatus(String status) async {
+  Future<status_models.OrdersByStatusResponse> getOrdersByStatus(String status) async {
     try {
       final uid = await _storage.read(key: 'uid');
       
@@ -113,7 +110,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return OrdersByStatusResponse.fromJson(decodedData);
+        return status_models.OrdersByStatusResponse.fromJson(decodedData);
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to load orders');
@@ -124,7 +121,7 @@ class ApiService {
   }
 
   // Lấy tất cả đơn hàng của tài xế
-  Future<OrdersResponse> getAllOrders({int page = 1, int perPage = 10}) async {
+  Future<order_models.OrdersResponse> getAllOrders({int page = 1, int perPage = 10}) async {
     try {
       final response = await _client.get(
         Uri.parse('${Environment.ordersUrl}?page=$page&perPage=$perPage'),
@@ -133,7 +130,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return OrdersResponse.fromJson(decodedData);
+        return order_models.OrdersResponse.fromJson(decodedData);
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to load orders');
@@ -144,7 +141,7 @@ class ApiService {
   }
 
   // Lấy chi tiết một đơn hàng
-  Future<OrderDetailResponse> getOrderDetail(String orderId) async {
+  Future<Map<String, dynamic>> getOrderDetail(String orderId) async {
     try {
       final response = await _client.get(
         Uri.parse('${Environment.ordersUrl}/$orderId'),
@@ -153,7 +150,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return OrderDetailResponse.fromJson(decodedData);
+        return decodedData;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to load order details');
@@ -164,7 +161,7 @@ class ApiService {
   }
 
   // Cập nhật trạng thái đơn hàng
-  Future<OrderStatusUpdateResponse> updateOrderStatus(String orderId, String status) async {
+  Future<Map<String, dynamic>> updateOrderStatus(String orderId, String status) async {
     try {
       final response = await _client.patch(
         Uri.parse('${Environment.orderStatusUrl}/$orderId/status'),
@@ -176,7 +173,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return OrderStatusUpdateResponse.fromJson(decodedData);
+        return decodedData;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to update order status');
@@ -187,7 +184,7 @@ class ApiService {
   }
 
   // Lấy thông tin tracking của đơn hàng
-  Future<OrderTrackingResponse> getOrderTracking(String orderId) async {
+  Future<Map<String, dynamic>> getOrderTracking(String orderId) async {
     try {
       final response = await _client.get(
         Uri.parse('${Environment.orderTrackingUrl}/$orderId/tracking'),
@@ -196,7 +193,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return OrderTrackingResponse.fromJson(decodedData);
+        return decodedData;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to get order tracking');
@@ -209,7 +206,7 @@ class ApiService {
   // ======== Delivery API ========
 
   // Lấy tất cả deliveries của tài xế
-  Future<DeliveriesResponse> getAllDeliveries({int page = 1, int perPage = 10}) async {
+  Future<Map<String, dynamic>> getAllDeliveries({int page = 1, int perPage = 10}) async {
     try {
       final response = await _client.get(
         Uri.parse('${Environment.deliveriesUrl}?page=$page&perPage=$perPage'),
@@ -218,7 +215,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return DeliveriesResponse.fromJson(decodedData);
+        return decodedData;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to load deliveries');
@@ -249,7 +246,7 @@ class ApiService {
   }
 
   // Lấy thông tin tracking của delivery
-  Future<DeliveryTrackingResponse> getDeliveryTracking(String deliveryId) async {
+  Future<Map<String, dynamic>> getDeliveryTracking(String deliveryId) async {
     try {
       final response = await _client.get(
         Uri.parse('${Environment.deliveryTrackingUrl}/$deliveryId/tracking'),
@@ -258,7 +255,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return DeliveryTrackingResponse.fromJson(decodedData);
+        return decodedData;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to get delivery tracking');
@@ -271,7 +268,7 @@ class ApiService {
   // ======== Route API ========
 
   // Lấy tất cả routes
-  Future<RoutesResponse> getAllRoutes({int page = 1, int perPage = 10}) async {
+  Future<Map<String, dynamic>> getAllRoutes({int page = 1, int perPage = 10}) async {
     try {
       final response = await _client.get(
         Uri.parse('${Environment.routesUrl}?page=$page&perPage=$perPage'),
@@ -280,7 +277,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return RoutesResponse.fromJson(decodedData);
+        return decodedData;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to load routes');
@@ -291,7 +288,7 @@ class ApiService {
   }
 
   // Lấy chi tiết một route
-  Future<RouteResponse> getRouteDetail(String routeId) async {
+  Future<Map<String, dynamic>> getRouteDetail(String routeId) async {
     try {
       final response = await _client.get(
         Uri.parse('${Environment.routesUrl}/$routeId'),
@@ -300,7 +297,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return RouteResponse.fromJson(decodedData);
+        return decodedData;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to load route details');
@@ -311,7 +308,7 @@ class ApiService {
   }
 
   // Lấy tracking của route
-  Future<RouteTrackingResponse> getRouteTracking(String routeId) async {
+  Future<Map<String, dynamic>> getRouteTracking(String routeId) async {
     try {
       final response = await _client.get(
         Uri.parse('${Environment.routeTrackingUrl}/$routeId/tracking'),
@@ -320,7 +317,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return RouteTrackingResponse.fromJson(decodedData);
+        return decodedData;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to get route tracking');
@@ -333,7 +330,7 @@ class ApiService {
   // ======== Tracking API ========
 
   // Cập nhật vị trí GPS
-  Future<LocationUpdateResponse> updateDriverLocation(double latitude, double longitude) async {
+  Future<Map<String, dynamic>> updateDriverLocation(double latitude, double longitude) async {
     try {
       final response = await _client.post(
         Uri.parse(Environment.updateLocationUrl),
@@ -347,7 +344,7 @@ class ApiService {
       
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decodedData = jsonDecode(response.body);
-        return LocationUpdateResponse.fromJson(decodedData);
+        return decodedData;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to update location');
@@ -358,7 +355,7 @@ class ApiService {
   }
 
   // Lấy vị trí thời gian thực của xe
-  Future<VehicleLocationResponse> getVehicleLocation(String vehicleId) async {
+  Future<Map<String, dynamic>> getVehicleLocation(String vehicleId) async {
     try {
       final response = await _client.get(
         Uri.parse('${Environment.vehicleTrackingUrl}/$vehicleId'),
@@ -367,7 +364,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return VehicleLocationResponse.fromJson(decodedData);
+        return decodedData;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to get vehicle location');
@@ -378,7 +375,7 @@ class ApiService {
   }
 
   // Lấy lịch sử tracking
-  Future<TrackingHistoryResponse> getTrackingHistory({String? vehicleId, String? driverId, String? startDate, String? endDate}) async {
+  Future<Map<String, dynamic>> getTrackingHistory({String? vehicleId, String? driverId, String? startDate, String? endDate}) async {
     try {
       // Build query parameters
       final queryParams = <String, String>{};
@@ -396,7 +393,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return TrackingHistoryResponse.fromJson(decodedData);
+        return decodedData;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to get tracking history');
@@ -450,7 +447,7 @@ class ApiService {
   }
 
   // Cập nhật trạng thái tài xế (online, offline, busy, etc.)
-  Future<DriverStatusUpdateResponse> updateDriverStatus(String status) async {
+  Future<Map<String, dynamic>> updateDriverStatus(String status) async {
     try {
       final response = await _client.post(
         Uri.parse('${Environment.userProfileUrl}/status'),
@@ -462,7 +459,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return DriverStatusUpdateResponse.fromJson(decodedData);
+        return decodedData;
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to update driver status');

@@ -64,7 +64,7 @@ class NotificationService {
     required String title,
     required String body,
     String? payload,
-    NotificationPriority priority = NotificationPriority.defaultPriority,
+    Priority priority = Priority.defaultPriority,
   }) async {
     AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -134,7 +134,7 @@ class NotificationService {
       id: 9999,
       title: title,
       body: message,
-      priority: NotificationPriority.max,
+      priority: Priority.max,
       payload: 'emergency',
     );
   }
