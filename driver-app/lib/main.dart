@@ -1,52 +1,53 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ktc_logistics_driver/domain/bloc/blocs.dart';
-import 'package:ktc_logistics_driver/domain/services/push_notification.dart';
-import 'package:ktc_logistics_driver/presentation/screens/intro/checking_login_screen.dart';
- 
-PushNotification pushNotification = PushNotification();
-
-Future<void> _firebaseMessagingBackground( RemoteMessage message ) async {
-
-  await Firebase.initializeApp();
-
-}
+import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
+import 'package:ktc_logistics_driver/presentation/blocs/auth/auth_bloc.dart' as AuthSpatial;
+import 'package:ktc_logistics_driver/presentation/blocs/auth/auth_state.dart' as AuthSpatialState;
+import 'package:ktc_logistics_driver/presentation/blocs/auth/auth_event.dart' as AuthSpatialEvent;
+import 'package:ktc_logistics_driver/presentation/blocs/tracking/tracking_bloc.dart' as TrackingSpatial;
+import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_login_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/dashboard_screen_spatial.dart';
+import 'package:ktc_logistics_driver/injection/spatial_dependency_injection.dart';
+import 'package:ktc_logistics_driver/presentation/design/spatial_design_system.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackground);
-  pushNotification.initNotifacion();
+  
+  // Setup dependency injection with mock services (replacing Firebase)
+  await setupSpatialDependencyInjection();
+  
   runApp(MyApp());
 }
- 
 
- 
 class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   void initState() {
-    pushNotification.onMessagingListener();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.dark ));
+    // Set system UI overlay style for a modern look
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, 
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
 
     return MultiBlocProvider(
       providers: [ 
-        BlocProvider(create: (context) => AuthBloc()..add(CheckLoginEvent())),
+        // Core authentication and tracking BLoCs with dependency injection
+        BlocProvider(create: (context) => getIt<AuthSpatial.AuthBloc>()..add(AuthSpatialEvent.CheckLoginEvent())),
+        BlocProvider(create: (context) => getIt<TrackingSpatial.TrackingBloc>()),
+        
+        // Other app BLoCs (can be updated to use DI later)
         BlocProvider(create: (context) => GeneralBloc()),
         BlocProvider(create: (context) => ProductsBloc()),
         BlocProvider(create: (context) => CartBloc()),
@@ -60,9 +61,32 @@ class _MyAppState extends State<MyApp> {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Food - Fraved',
-        home: CheckingLoginScreen(),
+        title: 'KTC Logistics Driver - Spatial UI',
+        
+        // Use Spatial design theme
+        theme: SpatialTheme.lightTheme,
+        darkTheme: SpatialTheme.darkTheme,
+        themeMode: ThemeMode.system,
+        
+        // App routing based on authentication state
+        home: BlocBuilder<AuthSpatial.AuthBloc, AuthSpatialState.AuthState>(
+          builder: (context, state) {
+            if (state is AuthSpatialState.AuthenticatedState) {
+              return const DashboardScreenSpatial();
+            } else {
+              return const SpatialLoginScreen();
+            }
+          },
+        ),
+        
+        // Named routes for navigation
+        routes: {
+          '/login': (context) => const SpatialLoginScreen(),
+          '/dashboard': (context) => const DashboardScreenSpatial(),
+        },
       ),
     );
   }
 }
+
+

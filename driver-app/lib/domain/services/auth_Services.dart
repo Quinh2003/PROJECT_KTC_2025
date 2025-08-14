@@ -1,38 +1,50 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:ktc_logistics_driver/data/env/environment.dart';
-import 'package:ktc_logistics_driver/data/local_secure/secure_storage.dart';
-import 'package:ktc_logistics_driver/domain/models/response/response_login.dart';
+// auth_services.dart
+// Service để xử lý authentication với Spring Boot backend
+
+import 'package:ktc_logistics_driver/data/services/api_service.dart';
+import 'package:ktc_logistics_driver/domain/models/response/auth_response.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthServices {
+  // Instance của ApiService để gọi API
+  final _apiService = ApiService();
+  
+  // Instance của FlutterSecureStorage để lưu/đọc token
+  final _secureStorage = const FlutterSecureStorage();
 
-
-  Future<ResponseLogin> loginController( String email, String password ) async {
-
-    final response = await http.post(Uri.parse('${Environment.endpointApi}/login-email-id'),
-      headers: { 'Accept' : 'application/json' },
-      body: {
-        'email' : email,
-        'password' : password
-      }
-    );
-
-    return ResponseLogin.fromJson(jsonDecode(response.body));
+  // Đăng nhập với email và password
+  Future<AuthResponse> loginController(String email, String password) async {
+    return await _apiService.login(email, password);
   }
 
-
-  Future<ResponseLogin> renewLoginController() async {
-
-    final token = await secureStorage.readToken();
-
-    final response = await http.get(Uri.parse('${Environment.endpointApi}/renew-token-login'),
-      headers: { 'Accept' : 'application/json', 'xx-token' : token! }
-    );
-
-    return ResponseLogin.fromJson(jsonDecode(response.body));
+  // Làm mới token (renew token)
+  Future<AuthResponse> renewLoginController() async {
+    // Kiểm tra token có hợp lệ không
+    final isValid = await _apiService.checkTokenValidity();
+    
+    if (!isValid) {
+      throw Exception('Token invalid or expired');
+    }
+    
+    // Lấy thông tin profile để tự động đăng nhập lại
+    return await _apiService.getDriverProfile();
   }
-
-
+  
+  // Kiểm tra đã đăng nhập chưa
+  Future<bool> isLoggedIn() async {
+    final token = await _secureStorage.read(key: 'token');
+    if (token == null) return false;
+    
+    return await _apiService.checkTokenValidity();
+  }
+  
+  // Đăng xuất
+  Future<void> logout() async {
+    await _apiService.logout();
+  }
 }
 
+// Instance global của AuthServices
 final authServices = AuthServices();
+
+

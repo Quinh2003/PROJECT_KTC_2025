@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ktc_logistics_driver/data/env/environment.dart';
-import 'package:ktc_logistics_driver/domain/bloc/blocs.dart';
+import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 
 class ImagePickerFrave extends StatelessWidget {
@@ -66,3 +66,5 @@ class ImagePickerFrave extends StatelessWidget {
     );
   }
 }
+
+

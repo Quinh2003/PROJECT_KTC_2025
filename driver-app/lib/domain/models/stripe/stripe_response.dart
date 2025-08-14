@@ -6,3 +6,5 @@ class StripeResponseCustom  {
   StripeResponseCustom({ required this.ok, this.msg});
 
 }
+
+

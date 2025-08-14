@@ -36,3 +36,5 @@ class ImageProductdb {
     productId: json["product_id"],
   );
 }
+
+
