@@ -235,5 +235,3 @@ class _PictureRegistre extends StatelessWidget {
     );
   }
 }
-
-

@@ -74,5 +74,3 @@ void modalActiveOrInactiveProduct(BuildContext context, int status, String nameP
   );
 
 }
-
-

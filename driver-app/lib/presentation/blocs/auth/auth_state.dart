@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../data/repositories/repository_implementations_spatial.dart';
+import '../../../data/repositories/repository_implementations.dart';
 
 abstract class AuthState extends Equatable {
   @override

@@ -214,5 +214,3 @@ class _WithOutProducts extends StatelessWidget {
     );
   }
 }
-
-

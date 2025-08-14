@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ktc_logistics_driver/domain/bloc/auth/auth_bloc.dart';
-import 'package:ktc_logistics_driver/domain/bloc/orders/orders_bloc.dart';
-import 'package:ktc_logistics_driver/domain/bloc/tracking/tracking_bloc.dart';
-import 'package:ktc_logistics_driver/domain/services/service_index.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/presentation/screens/login_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/onboarding_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/dashboard/dashboard_screen_spatial.dart';
+import 'package:ktc_logistics_driver/presentation/screens/dashboard_screen_spatial.dart';
+import 'package:ktc_logistics_driver/injection/spatial_dependency_injection.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -39,13 +38,13 @@ class App extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create: (context) => AuthBloc()..add(CheckAuthStatusEvent()),
+          create: (context) => getIt<AuthBloc>()..add(CheckLoginEvent()),
         ),
         BlocProvider<OrdersBloc>(
-          create: (context) => OrdersBloc(),
+          create: (context) => getIt<OrdersBloc>(),
         ),
         BlocProvider<TrackingBloc>(
-          create: (context) => TrackingBloc(),
+          create: (context) => getIt<TrackingBloc>(),
         ),
       ],
       child: MaterialApp(
@@ -114,8 +113,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // Simulating a delay for splash screen
     await Future.delayed(const Duration(seconds: 3));
     
-    // Check if the user has completed onboarding
-    final hasCompletedOnboarding = await ServiceLocator.instance.storage.read(key: 'onboarding_completed') == 'true';
+    // Check if the user has completed onboarding using secure storage
+    final storage = getIt<FlutterSecureStorage>();
+    final hasCompletedOnboarding = await storage.read(key: 'onboarding_completed') == 'true';
     
     if (context.mounted) {
       if (!hasCompletedOnboarding) {
@@ -224,5 +224,3 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
   }
 }
-
-

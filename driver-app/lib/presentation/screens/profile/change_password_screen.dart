@@ -215,5 +215,3 @@ class FormFieldFravePassword extends StatelessWidget {
     );
   }
 }
-
-

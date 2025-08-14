@@ -98,5 +98,3 @@ class _WithoutListAddress extends StatelessWidget {
     );
   }
 }
-
-

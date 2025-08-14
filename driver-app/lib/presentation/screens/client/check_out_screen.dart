@@ -295,5 +295,3 @@ class _CheckoutAddress extends StatelessWidget {
     );
   }
 }
-
-

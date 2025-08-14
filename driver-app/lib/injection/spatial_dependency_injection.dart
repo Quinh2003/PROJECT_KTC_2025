@@ -10,7 +10,7 @@ import '../data/services/socket_service.dart';
 import '../data/services/mock_auth_service.dart';
 import '../data/services/mock_data_service.dart';
 import '../data/services/notification_service.dart';
-import '../data/repositories/repository_implementations_spatial.dart';
+import '../data/repositories/repository_implementations.dart';
 
 // Domain layer
 import '../domain/repositories/repository_interfaces.dart';

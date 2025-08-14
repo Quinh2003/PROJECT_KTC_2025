@@ -200,5 +200,3 @@ class _HistorySearch extends StatelessWidget {
     );
   }
 }
-
-

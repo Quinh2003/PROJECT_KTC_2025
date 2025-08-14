@@ -66,5 +66,3 @@ class ImagePickerFrave extends StatelessWidget {
     );
   }
 }
-
-

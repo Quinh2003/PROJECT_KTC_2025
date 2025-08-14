@@ -125,5 +125,3 @@ class ProfileClientScreen extends StatelessWidget {
   }
 }
 
-
-

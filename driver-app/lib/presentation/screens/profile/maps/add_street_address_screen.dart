@@ -151,5 +151,3 @@ class _AddStreetAddressScreenState extends State<AddStreetAddressScreen> {
     );
   }
 }
-
-

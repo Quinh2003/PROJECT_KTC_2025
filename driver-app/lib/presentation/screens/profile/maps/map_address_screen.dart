@@ -76,5 +76,3 @@ class _CreateMap extends StatelessWidget {
 }
 
 
-
-

@@ -163,5 +163,3 @@ class _ListDelivery extends StatelessWidget {
 
 
 }
-
-

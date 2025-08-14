@@ -271,5 +271,3 @@ class _ListProductsDetails extends StatelessWidget {
   }
 }
 
-
-

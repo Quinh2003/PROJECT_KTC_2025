@@ -143,5 +143,3 @@ class _InfoCardClient extends StatelessWidget {
     );
   }
 }
-
-
