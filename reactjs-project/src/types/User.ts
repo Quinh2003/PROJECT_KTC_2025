@@ -1,12 +1,12 @@
-import type { ReactNode } from "react";
-
-export type Role = "ADMIN" | "DISPATCHER" | "FLEET" | "DRIVER" | "OPERATIONS";
+export type Role = "ADMIN" | "DISPATCHER" | "FLEET" | "DRIVER" | "OPERATIONS" | "CUSTOMER";
 
 export interface User {
-  fullName: ReactNode;
-  status: string;
+  id: number;
+  name: string;
   email: string;
   password: string;
-  role: Role;
-  name: string;
+  role: string;
+  status: string;
+  lastLogin: string;
+  phone: string;
 }

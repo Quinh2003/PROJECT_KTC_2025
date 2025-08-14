@@ -1,41 +1,47 @@
 import { useState, useEffect } from "react";
-import { FaTools, FaChartBar, FaTruck } from "react-icons/fa";
-import { FaBellConcierge } from "react-icons/fa6";
-import type { User } from "../../types/dashboard";
+import type { User } from "../../types/User";
 
 interface UserFormProps {
-  onAdd: (user: User & { roleIcon: React.ReactNode }) => void;
+  onAdd: (user: User) => void;
   onClose: () => void;
-  user?: (User & { roleIcon: React.ReactNode }) | null;
+  user?: User | null;
 }
 
 const roles = [
-  { label: "Admin", value: "Admin", icon: <FaTools className="inline mr-1" /> },
-  { label: "Dispatcher", value: "Dispatcher", icon: <FaBellConcierge className="inline mr-1" /> },
-  { label: "Fleet Manager", value: "Fleet Manager", icon: <FaTools className="inline mr-1" /> },
-  { label: "Driver", value: "Driver", icon: <FaTruck className="inline mr-1" /> },
-  { label: "Operations Manager", value: "Operations Manager", icon: <FaChartBar className="inline mr-1" /> },
-  { label: "Customer", value: "Customer", icon: <FaChartBar className="inline mr-1" /> },
+  { label: "ADMIN", value: "ADMIN" },
+  { label: "DISPATCHER", value: "DISPATCHER" },
+  { label: "FLEET", value: "FLEET" },
+  { label: "DRIVER", value: "DRIVER" },
+  { label: "OPERATIONS", value: "OPERATIONS" },
+  { label: "CUSTOMER", value: "CUSTOMER" },
 ];
 
 export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
   const [phoneError, setPhoneError] = useState("");
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
-  const [role, setRole] = useState(user?.roleValue || roles[0].value);
+  const [role, setRole] = useState(user?.role || roles[0].value);
   const [status, setStatus] = useState(
     user?.status === "inactive" ? "inactive" : "active"
   );
   const [password, setPassword] = useState(user?.password || "");
   const [phone, setPhone] = useState(user?.phone || "");
 
+  // Debug password issue
+  console.log("UserForm - user:", user);
+  console.log("UserForm - user?.password:", user?.password);
+  console.log("UserForm - password state:", password);
+
   useEffect(() => {
-  setName(user?.name || "");
-  setEmail(user?.email || "");
-  setRole(user?.roleValue || roles[0].value);
-  setStatus(user?.status === "inactive" ? "inactive" : "active");
-  setPassword(user?.password || "");
-  setPhone(user?.phone || "");
+    console.log("useEffect - user:", user);
+    console.log("useEffect - user?.password:", user?.password);
+    setName(user?.name || "");
+    setEmail(user?.email || "");
+    setRole(user?.role || roles[0].value);
+    setStatus(user?.status === "inactive" ? "inactive" : "active");
+    // Hiển thị password từ API
+    setPassword(user?.password || "");
+    setPhone(user?.phone || "");
   }, [user]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -48,13 +54,11 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
     } else {
       setPhoneError("");
     }
-    const selectedRole = roles.find(r => r.value === role) || roles[0];
-    const userToSubmit = {
-      id: user?.id || "",
+    const userToSubmit: User = {
+      id: user?.id || 0,
       name,
       email,
       role,
-      roleIcon: selectedRole.icon,
       status,
       lastLogin: user?.lastLogin || "-",
       password,
@@ -111,9 +115,10 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
           <label className="block mb-1 font-semibold">Password</label>
           <input
             className="border rounded px-3 py-2 w-full"
-            type="password"
+            type="text"
             value={password}
             onChange={e => setPassword(e.target.value)}
+            placeholder={user ? "Enter new password or keep current" : "Enter password"}
             required
           />
         </div>
@@ -131,8 +136,7 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
             ))}
           </select>
           <div className="mt-1">
-            {roles.find(r => r.value === role)?.icon}
-            <span className="ml-1">{roles.find(r => r.value === role)?.label}</span>
+            <span>{roles.find(r => r.value === role)?.label}</span>
           </div>
         </div>
         <div>
