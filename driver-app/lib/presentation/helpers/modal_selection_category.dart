@@ -94,5 +94,3 @@ void modalSelectionCategory(BuildContext ctx){
   );
 
 }
-
-

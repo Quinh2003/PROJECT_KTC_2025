@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import '../../../domain/usecases/usecases_spatial.dart';
 import '../../../domain/models/response/auth_response.dart' as auth_models;
-import '../../../data/repositories/repository_implementations_spatial.dart';
+import '../../../data/repositories/repository_implementations.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 

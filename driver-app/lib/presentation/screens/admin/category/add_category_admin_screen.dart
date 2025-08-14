@@ -113,5 +113,3 @@ class _AddCategoryAdminScreenState extends State<AddCategoryAdminScreen> {
     );
   }
 }
-
-

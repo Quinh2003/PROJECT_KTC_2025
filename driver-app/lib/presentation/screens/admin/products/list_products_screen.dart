@@ -129,5 +129,3 @@ class _GridViewListProduct extends StatelessWidget {
 
 
 }
-
-

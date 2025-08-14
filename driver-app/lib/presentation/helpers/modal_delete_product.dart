@@ -75,5 +75,3 @@ void modalDeleteProduct(BuildContext context, String name, String image, String 
   );
 
 }
-
-

@@ -222,5 +222,3 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
     );
   }
 }
-
-

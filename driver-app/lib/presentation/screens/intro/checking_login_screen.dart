@@ -100,5 +100,3 @@ class _CheckingLoginScreenState extends State<CheckingLoginScreen> with TickerPr
     );
   }
 }
-
-
