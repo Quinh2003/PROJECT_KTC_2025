@@ -20,6 +20,7 @@ export type User = {
   fullName: string;
   email: string;
   phone?: string;
+  password?: string;
   role?: {
     id: string | number;
     roleName: string;

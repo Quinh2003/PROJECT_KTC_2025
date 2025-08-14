@@ -34,13 +34,13 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
           switch (u.role?.roleName) {
             case "DISPATCHER":
               roleIcon = <span style={{fontWeight: 'bold'}}>D</span>; break;
-            case "FLEET_MANAGER":
+            case "FLEET":
               roleIcon = <span style={{fontWeight: 'bold'}}>F</span>; break;
             case "DRIVER":
               roleIcon = <span style={{fontWeight: 'bold'}}>Dr</span>; break;
             case "ADMIN":
               roleIcon = <span style={{fontWeight: 'bold'}}>A</span>; break;
-            case "OPERATIONS_MANAGER":
+            case "OPERATIONS":
               roleIcon = <span style={{fontWeight: 'bold'}}>O</span>; break;
             default:
               roleIcon = null;
@@ -54,7 +54,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
             status: u.status?.name?.toLowerCase() === "active" ? "active" : "inactive",
             lastLogin: u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-",
             phone: u.phone || "",
-            password: "",
+            password: u.password || "",
           };
         });
         setUsers(mappedUsers);

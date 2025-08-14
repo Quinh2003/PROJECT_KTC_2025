@@ -1,44 +1,13 @@
 import { useEffect, useState } from "react";
 import UserForm from "./UserForm";
 import { fetchUsers, addUser, editUser as apiEditUser, deleteUser as apiDeleteUser } from "../../services/adminAPI";
-import { FaBellConcierge, FaTruck } from "react-icons/fa6";
-import { FaTools } from "react-icons/fa";
+import type { User } from "../../types/User";
 
-// Helper to map API role to display name and icon
-function getRoleDisplay(roleName: string) {
-  switch (roleName) {
-    case "DISPATCHER":
-      return { label: "Dispatcher", icon: <FaBellConcierge className="inline mr-1" /> };
-    case "FLEET_MANAGER":
-      return { label: "Fleet Manager", icon: <FaTools className="inline mr-1" /> };
-    case "DRIVER":
-      return { label: "Driver", icon: <FaTruck className="inline mr-1" /> };
-    default:
-      return { label: roleName, icon: null };
-  }
-}
-
-export default function UserTable({ users, setUsers }: { users: any[]; setUsers: (users: any[]) => void }) {
+export default function UserTable({ users, setUsers }: { users: User[]; setUsers: (users: User[]) => void }) {
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [editUser, setEditUser] = useState<{
-    name: string;
-    email: string;
-    role: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    roleIcon: any;
-    status: string;
-    lastLogin: string;
-  } | null>(null);
-  const [viewUser, setViewUser] = useState<{
-    name: string;
-    email: string;
-    role: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    roleIcon: any;
-    status: string;
-    lastLogin: string;
-  } | null>(null);
+  const [editUser, setEditUser] = useState<User | null>(null);
+  const [viewUser, setViewUser] = useState<User | null>(null);
   const [fetchError, setFetchError] = useState<string>("");
 
   useEffect(() => {
@@ -52,26 +21,16 @@ export default function UserTable({ users, setUsers }: { users: any[]; setUsers:
           return;
         }
         setUsers(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           data.map((u: any) => {
-            const roleInfo = getRoleDisplay(u.role?.roleName || "");
             const status = u.status?.name?.toLowerCase() === "active" ? "active" : u.status?.name?.toLowerCase() || "inactive";
             const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
-            // Map roleName từ backend về đúng value của select (loại bỏ dấu gạch dưới, khoảng trắng, so sánh chữ thường)
-            let roleValue = "";
-            const rawRole = (u.role?.roleName || "").replace(/[\s_]+/g, '').toLowerCase();
-            if (rawRole === "admin") roleValue = "Admin";
-            else if (rawRole === "dispatcher") roleValue = "Dispatcher";
-            else if (rawRole === "fleetmanager" || rawRole === "fleet") roleValue = "Fleet Manager";
-            else if (rawRole === "driver") roleValue = "Driver";
-            else if (rawRole === "operationsmanager" || rawRole === "operations") roleValue = "Operations Manager";
-            else roleValue = u.role?.roleName || "";
+            const roleName = u.role?.roleName || "";
             return {
               id: u.id,
               name: u.fullName || u.username || "",
               email: u.email,
-              role: roleInfo.label,
-              roleValue,
-              roleIcon: roleInfo.icon,
+              role: roleName,
               status,
               lastLogin,
               phone: u.phone || "",
@@ -85,7 +44,7 @@ export default function UserTable({ users, setUsers }: { users: any[]; setUsers:
         setFetchError("Không thể lấy dữ liệu user từ API. Vui lòng thử lại hoặc kiểm tra backend!");
         setUsers([]);
       });
-  }, []);
+  }, [setUsers]);
 
 
   // Pagination state
@@ -102,16 +61,15 @@ export default function UserTable({ users, setUsers }: { users: any[]; setUsers:
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
   const paginated = filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleAddUser = async (user: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
+  const handleAddUser = async (user: User) => {
     try {
       // Map role string sang id theo bảng roles thực tế
       const roleMap: Record<string, number> = {
         "DISPATCHER": 1,
         "ADMIN": 2,
-        "OPERATIONS_MANAGER": 3,
+        "OPERATIONS": 3,
         "CUSTOMER": 5,
-        "FLEET_MANAGER": 6,
+        "FLEET": 6,
         "DRIVER": 7
       };
       const statusMap: Record<string, number> = {
@@ -125,25 +83,26 @@ export default function UserTable({ users, setUsers }: { users: any[]; setUsers:
         username: user.email.split("@")[0],
         fullName: user.name,
         email: user.email,
-        password: (user as any).password || "", // lấy từ form
-        phone: (user as any).phone || "",
+        password: user.password || "",
+        phone: user.phone || "",
         role: { id: roleMap[roleKey] },
         status: { id: statusMap[user.status] || 1 }
       };
-      await addUser(payload);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await addUser(payload as any);
       // Sau khi thêm thành công, reload lại danh sách user từ API
       const data = await fetchUsers();
       setUsers(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data.map((u: any) => {
-          const roleInfo = getRoleDisplay(u.role?.roleName || "");
           const status = u.status?.name?.toLowerCase() === "active" ? "active" : u.status?.name?.toLowerCase() || "inactive";
           const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+          const roleName = u.role?.roleName || "";
           return {
             id: u.id,
             name: u.fullName || u.username || "",
             email: u.email,
-            role: roleInfo.label,
-            roleIcon: roleInfo.icon,
+            role: roleName,
             status,
             lastLogin,
             phone: u.phone || "",
@@ -159,18 +118,26 @@ export default function UserTable({ users, setUsers }: { users: any[]; setUsers:
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEditUser = (user: any) => {
-    setEditUser({
+    console.log("=== handleEditUser Debug ===");
+    console.log("Original user data:", user);
+    console.log("user.password:", user.password);
+    
+    const editUserData = {
       ...user,
       roleValue: user.roleValue,
       status: user.status === "active" ? "active" : "inactive",
       phone: user.phone || "",
-      password: user.password || ""
-    }); // Đảm bảo có trường roleValue, status, phone, password đúng cho form
+      password: user.password || "" // Truyền password từ user data
+    };
+    
+    console.log("editUserData to be set:", editUserData);
+    console.log("editUserData.password:", editUserData.password);
+    
+    setEditUser(editUserData); // Đảm bảo có trường roleValue, status, phone, password đúng cho form
     setShowForm(true);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleUpdateUser = async (updatedUser: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; password?: string; phone?: string; }) => {
+  const handleUpdateUser = async (updatedUser: User) => {
     try {
       console.log("[UserTable] handleUpdateUser called with:", updatedUser);
       
@@ -178,9 +145,9 @@ export default function UserTable({ users, setUsers }: { users: any[]; setUsers:
       const roleMap: Record<string, number> = {
         "DISPATCHER": 1,
         "ADMIN": 2,
-        "OPERATIONS_MANAGER": 3,
+        "OPERATIONS": 3,
         "CUSTOMER": 5,
-        "FLEET_MANAGER": 6,
+        "FLEET": 6,
         "DRIVER": 7
       };
       const statusMap: Record<string, number> = {
@@ -201,36 +168,49 @@ export default function UserTable({ users, setUsers }: { users: any[]; setUsers:
       console.log("[UserTable] userOrigin:", userOrigin);
       
       // Tạo payload đầy đủ cho PUT
-      const payload: any = {
+      const payload: {
+        id: number;
+        username: string;
+        fullName: string;
+        email: string;
+        phone: string;
+        role: { id: number };
+        status: { id: number };
+        password?: string;
+      } = {
         id: userOrigin.id,
         username: updatedUser.email.split("@")[0],
         fullName: updatedUser.name,
         email: updatedUser.email,
-        password: updatedUser.password && updatedUser.password.trim() !== "" ? updatedUser.password : userOrigin.password || "",
         phone: updatedUser.phone && updatedUser.phone.trim() !== "" ? updatedUser.phone : userOrigin.phone || "",
         role: { id: roleMap[roleKey] },
-        status: { id: statusMap[updatedUser.status] || 7 },
-        notes: userOrigin.notes || null,
-        googleId: userOrigin.googleId || null
+        status: { id: statusMap[updatedUser.status] || 7 }
       };
+      
+      // Chỉ thêm password vào payload nếu user nhập password mới
+      if (updatedUser.password && updatedUser.password.trim() !== "") {
+        payload.password = updatedUser.password;
+      }
+      
       console.log("[UserTable] payload for update:", payload);
       
-      await apiEditUser(userOrigin.id, payload);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await apiEditUser(userOrigin.id, payload as any);
       console.log("[UserTable] Update successful, reloading users...");
       // Reload lại danh sách user
       const data = await fetchUsers();
       setUsers(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data.map((u: any) => {
-          const roleInfo = getRoleDisplay(u.role?.roleName || "");
           const statusRaw = u.status?.name?.toLowerCase() || "";
           const status = statusRaw === "active" ? "active" : "inactive";
           const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+          const roleName = u.role?.roleName || "";
           return {
             id: u.id,
             name: u.fullName || u.username || "",
             email: u.email,
-            role: roleInfo.label,
-            roleIcon: roleInfo.icon,
+            role: roleName,
             status,
             lastLogin,
             phone: u.phone || "",
@@ -257,25 +237,15 @@ export default function UserTable({ users, setUsers }: { users: any[]; setUsers:
         setUsers(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           data.map((u: any) => {
-            const roleInfo = getRoleDisplay(u.role?.roleName || "");
-            const status = u.status?.name?.toLowerCase() === "active" ? "active" : "inactive";
+            const statusRaw = u.status?.name?.toLowerCase() || "";
+            const status = statusRaw === "active" ? "active" : "inactive";
             const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
-            // Map roleName từ backend về đúng value của select
-            let roleValue = "";
-            const rawRole = (u.role?.roleName || "").replace(/[\s_]+/g, '').toLowerCase();
-            if (rawRole === "admin") roleValue = "Admin";
-            else if (rawRole === "dispatcher") roleValue = "Dispatcher";
-            else if (rawRole === "fleetmanager" || rawRole === "fleet") roleValue = "Fleet Manager";
-            else if (rawRole === "driver") roleValue = "Driver";
-            else if (rawRole === "operationsmanager" || rawRole === "operations") roleValue = "Operations Manager";
-            else roleValue = u.role?.roleName || "";
+            const roleName = u.role?.roleName || "";
             return {
               id: u.id,
               name: u.fullName || u.username || "",
               email: u.email,
-              role: roleInfo.label,
-              roleValue,
-              roleIcon: roleInfo.icon,
+              role: roleName,
               status,
               lastLogin,
               phone: u.phone || "",
@@ -357,7 +327,6 @@ export default function UserTable({ users, setUsers }: { users: any[]; setUsers:
                           : ""
                       }`}
                     >
-                      <span>{u.roleIcon}</span>
                       {u.role}
                     </span>
                   </td>
