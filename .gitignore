@@ -2,7 +2,7 @@ requirements/PROJECT_KTC_2025.code-workspace
 .idea
 .DS_Store
 
-# Mobile App specific ignores
+# Flutter/Dart cache and build files
 mobile-app/.dart_tool/
 mobile-app/.flutter-plugins
 mobile-app/.flutter-plugins-dependencies
@@ -11,34 +11,41 @@ mobile-app/.pub-cache/
 mobile-app/.pub/
 mobile-app/build/
 
-# Android build artifacts
-mobile-app/android/app/debug
-mobile-app/android/app/profile
-mobile-app/android/app/release
+# Android build artifacts and cache
+mobile-app/android/app/debug/
+mobile-app/android/app/profile/
+mobile-app/android/app/release/
 mobile-app/android/.gradle/
 mobile-app/android/gradle/wrapper/gradle-wrapper.jar
 mobile-app/android/local.properties
 
-# Firebase config files
+# iOS build artifacts (if any)
+mobile-app/ios/Flutter/.last_build_id
+mobile-app/ios/Pods/
+mobile-app/ios/.symlinks/
+mobile-app/ios/Flutter/flutter_export_environment.sh
+
+# Firebase config files (sensitive)
 mobile-app/google-services.json
 mobile-app/android/app/google-services.json
+mobile-app/ios/firebase_app_id_file.json
+mobile-app/ios/GoogleService-Info.plist
 
 # APK and Bundle files
 *.apk
 *.aab
 *.ipa
 
-# Keystore files
+# Keystore files (sensitive)
 *.jks
 *.keystore
 *.p12
 *.pfx
 
-# API Keys and sensitive data
-mobile-app/lib/Services/GoogleServices/
-mobile-app/lib/Controller/MapBoxController/
-api_keys.dart
-secrets.dart
+# Log files
+*.log
+logs/
+crash-reports/
 
 # Cache and temporary files
 .tmp/
@@ -53,32 +60,11 @@ secrets.dart
 .vscode/launch.json
 *.code-workspace
 
-# Log files
-*.log
-logs/
-crash-reports/
-
-# Test coverage
-coverage/
-.nyc_output/
-
 # Generated files
 *.g.dart
 *.freezed.dart
 *.gr.dart
 *.config.dart
-
-# Miscellaneous
-*.class
-*.pyc
-.buildlog/
-.history
-.svn/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
 
 # macOS specific
 .AppleDouble
