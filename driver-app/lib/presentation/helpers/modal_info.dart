@@ -67,3 +67,5 @@ void modalInfoFrave(BuildContext context, String text){
   );
 
 }
+
+

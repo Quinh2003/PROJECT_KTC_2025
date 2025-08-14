@@ -64,3 +64,5 @@ void modalPictureRegister({ required BuildContext ctx, VoidCallback? onPressedCh
 
 
 }
+
+

@@ -48,3 +48,5 @@ class UserResponse {
     notificationToken: json["notification_token"]
   );
 }
+
+

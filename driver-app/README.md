@@ -5,32 +5,32 @@
 ## 🚀 Tính năng chính
 
 ### 📦 **Quản lý đơn hàng**
-- ✅ Nhận đơn hàng mới theo thời gian thực
-- ✅ Xem chi tiết thông tin giao hàng
-- ✅ Cập nhật trạng thái đơn hàng (đang giao, hoàn thành)
-- ✅ Lịch sử các chuyến giao hàng
+- Nhận đơn hàng mới theo thời gian thực
+- Xem chi tiết thông tin giao hàng
+- Cập nhật trạng thái đơn hàng (đang giao, hoàn thành)
+- Lịch sử các chuyến giao hàng
 
 ### 🗺️ **Navigation & Maps**
-- ✅ Tích hợp Google Maps với GPS tracking
-- ✅ Tối ưu tuyến đường thời gian thực
-- ✅ Hiển thị vị trí pickup và delivery
-- ✅ Polyline routing với flutter_polyline_points
+- Tích hợp Google Maps với GPS tracking
+- Tối ưu tuyến đường thời gian thực
+- Hiển thị vị trí pickup và delivery
+- Polyline routing với flutter_polyline_points
 
 ### 📸 **Xác nhận giao hàng**
-- ✅ Chụp ảnh xác nhận giao hàng thành công
-- ✅ Lấy signature khách hàng
-- ✅ Upload ảnh lên server
+- Chụp ảnh xác nhận giao hàng thành công
+- Lấy signature khách hàng
+- Upload ảnh lên server
 
 ### � **Push Notifications**
-- ✅ Firebase Cloud Messaging (FCM)
-- ✅ Thông báo đơn hàng mới
-- ✅ Cập nhật trạng thái từ dispatcher
+- Firebase Cloud Messaging (FCM)
+- Thông báo đơn hàng mới
+- Cập nhật trạng thái từ dispatcher
 
 ### � **Authentication & Security**
-- ✅ Đăng nhập secure cho tài xế
-- ✅ Flutter Secure Storage
-- ✅ JWT token authentication
-- ✅ Role-based access control
+- Đăng nhập secure cho tài xế
+- Flutter Secure Storage
+- JWT token authentication
+- Role-based access control
 
 ---
 
@@ -240,12 +240,12 @@ Copyright © 2025 KTC Logistics. All rights reserved.
 ## 🆕 Changelog
 
 ### v1.0.0 (2025-08-14)
-- ✅ Initial release
-- ✅ Complete migration from legacy restaurant app
-- ✅ Updated to latest Flutter 3.32.8
-- ✅ Implemented all logistics features
-- ✅ Android SDK 35 support
-- ✅ Modern dependency management
+- Initial release
+- Complete migration from legacy restaurant app
+- Updated to latest Flutter 3.32.8
+- Implemented all logistics features
+- Android SDK 35 support
+- Modern dependency management
 
 **Ready for production deployment! 🚀**
 - Cài đặt Android Studio, Android SDK, và tạo máy ảo (AVD). Nếu thiếu cmdline-tools, cài qua SDK Manager. Có thể đổi vị trí lưu AVD nếu ổ đĩa đầy.

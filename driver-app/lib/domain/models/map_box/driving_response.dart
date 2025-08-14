@@ -115,3 +115,5 @@ class Waypoint {
     location: json["location"] != null ? List<double>.from(json["location"].map((x) => x.toDouble())) : [],
   );
 }
+
+
