@@ -189,7 +189,6 @@ class SocketService {
   Function(Order order)? _onNewOrderCallback;
   Function(Order order)? _onOrderUpdatedCallback;
   Function(String orderId, String reason)? _onOrderCancelledCallback;
-  Function(Notification notification)? _onNewNotificationCallback;
   
   // Đăng ký callbacks
   void onNewOrder(Function(Order order) callback) {
@@ -205,8 +204,6 @@ class SocketService {
   }
   
   void onNewNotification(Function(Notification notification) callback) {
-    _onNewNotificationCallback = callback;
-    
     // Đăng ký event listener cho thông báo mới
     _socket.on('new_notification', (data) {
       if (data != null) {
