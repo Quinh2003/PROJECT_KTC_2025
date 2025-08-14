@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export type Role = "ADMIN" | "DISPATCHER" | "FLEET" | "DRIVER" | "OPERATIONS";
 
 export interface User {
