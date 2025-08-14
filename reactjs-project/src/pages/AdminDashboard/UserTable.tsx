@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import UserForm from "./UserForm";
-import { fetchUsers, addUser, editUser, deleteUser as apiDeleteUser } from "../../services/adminAPI";
+import { fetchUsers, addUser, editUser as apiEditUser, deleteUser as apiDeleteUser } from "../../services/adminAPI";
 import { FaBellConcierge, FaTruck } from "react-icons/fa6";
 import { FaTools } from "react-icons/fa";
 
@@ -18,9 +18,8 @@ function getRoleDisplay(roleName: string) {
   }
 }
 
-export default function UserTable() {
+export default function UserTable({ users, setUsers }: { users: any[]; setUsers: (users: any[]) => void }) {
   const [search, setSearch] = useState("");
-  const [users, setUsers] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editUser, setEditUser] = useState<{
     name: string;
@@ -55,17 +54,28 @@ export default function UserTable() {
         setUsers(
           data.map((u: any) => {
             const roleInfo = getRoleDisplay(u.role?.roleName || "");
-            // Quy ước status: nếu status.name === "Active" thì active, ngược lại inactive
-            const status = u.status?.name?.toLowerCase() === "active" ? "active" : "inactive";
-            // lastLogin: dùng updatedAt, format lại nếu cần
+            const status = u.status?.name?.toLowerCase() === "active" ? "active" : u.status?.name?.toLowerCase() || "inactive";
             const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+            // Map roleName từ backend về đúng value của select (loại bỏ dấu gạch dưới, khoảng trắng, so sánh chữ thường)
+            let roleValue = "";
+            const rawRole = (u.role?.roleName || "").replace(/[\s_]+/g, '').toLowerCase();
+            if (rawRole === "admin") roleValue = "Admin";
+            else if (rawRole === "dispatcher") roleValue = "Dispatcher";
+            else if (rawRole === "fleetmanager" || rawRole === "fleet") roleValue = "Fleet Manager";
+            else if (rawRole === "driver") roleValue = "Driver";
+            else if (rawRole === "operationsmanager" || rawRole === "operations") roleValue = "Operations Manager";
+            else roleValue = u.role?.roleName || "";
             return {
+              id: u.id,
               name: u.fullName || u.username || "",
               email: u.email,
               role: roleInfo.label,
+              roleValue,
               roleIcon: roleInfo.icon,
               status,
               lastLogin,
+              phone: u.phone || "",
+              password: u.password || "",
             };
           })
         );
@@ -77,65 +87,56 @@ export default function UserTable() {
       });
   }, []);
 
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 20;
+
   const filtered = users.filter(
     (u) =>
       u.name.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Pagination logic
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const paginated = filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleAddUser = async (user: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
     try {
-      await addUser(user);
+      // Map role string sang id theo bảng roles thực tế
+      const roleMap: Record<string, number> = {
+        "DISPATCHER": 1,
+        "ADMIN": 2,
+        "OPERATIONS_MANAGER": 3,
+        "CUSTOMER": 5,
+        "FLEET_MANAGER": 6,
+        "DRIVER": 7
+      };
+      const statusMap: Record<string, number> = {
+        "active": 7,
+        "inactive": 8,
+        "suspended": 9
+      };
+      // Chuẩn hóa key role: "Admin" => "ADMIN", "Fleet Manager" => "FLEET_MANAGER"
+      const roleKey = user.role.replace(/ /g, '_').toUpperCase();
+      const payload = {
+        username: user.email.split("@")[0],
+        fullName: user.name,
+        email: user.email,
+        password: (user as any).password || "", // lấy từ form
+        phone: (user as any).phone || "",
+        role: { id: roleMap[roleKey] },
+        status: { id: statusMap[user.status] || 1 }
+      };
+      await addUser(payload);
       // Sau khi thêm thành công, reload lại danh sách user từ API
       const data = await fetchUsers();
       setUsers(
         data.map((u: any) => {
           const roleInfo = getRoleDisplay(u.role?.roleName || "");
-          const status = u.status?.name?.toLowerCase() === "active" ? "active" : "inactive";
-          const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
-          return {
-            name: u.fullName || u.username || "",
-            email: u.email,
-            role: roleInfo.label,
-            roleIcon: roleInfo.icon,
-            status,
-            lastLogin,
-          };
-        })
-      );
-    } catch (err) {
-      alert("Lỗi khi thêm user mới. Vui lòng thử lại!");
-    }
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleEditUser = (user: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
-    setEditUser(user);
-    setShowForm(true);
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleUpdateUser = async (updatedUser: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
-    try {
-      // Tìm user gốc để lấy id
-      const userOrigin = users.find(u => u.email === updatedUser.email);
-      if (!userOrigin) throw new Error("User not found");
-      // Gửi request update lên API
-      await editUser(userOrigin.id, {
-        ...userOrigin,
-        fullName: updatedUser.name,
-        email: updatedUser.email,
-        // map lại role nếu cần
-        // role: ...
-        // status: ...
-      });
-      // Reload lại danh sách user
-      const data = await fetchUsers();
-      setUsers(
-        data.map((u: any) => {
-          const roleInfo = getRoleDisplay(u.role?.roleName || "");
-          const status = u.status?.name?.toLowerCase() === "active" ? "active" : "inactive";
+          const status = u.status?.name?.toLowerCase() === "active" ? "active" : u.status?.name?.toLowerCase() || "inactive";
           const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
           return {
             id: u.id,
@@ -145,13 +146,103 @@ export default function UserTable() {
             roleIcon: roleInfo.icon,
             status,
             lastLogin,
+            phone: u.phone || "",
+            password: u.password || "",
+          };
+        })
+      );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      alert("Lỗi khi thêm user mới. Vui lòng thử lại!");
+    }
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleEditUser = (user: any) => {
+    setEditUser({
+      ...user,
+      roleValue: user.roleValue,
+      status: user.status === "active" ? "active" : "inactive",
+      phone: user.phone || "",
+      password: user.password || ""
+    }); // Đảm bảo có trường roleValue, status, phone, password đúng cho form
+    setShowForm(true);
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleUpdateUser = async (updatedUser: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; password?: string; phone?: string; }) => {
+    try {
+      console.log("[UserTable] handleUpdateUser called with:", updatedUser);
+      
+      // Map role string sang id theo bảng roles thực tế
+      const roleMap: Record<string, number> = {
+        "DISPATCHER": 1,
+        "ADMIN": 2,
+        "OPERATIONS_MANAGER": 3,
+        "CUSTOMER": 5,
+        "FLEET_MANAGER": 6,
+        "DRIVER": 7
+      };
+      const statusMap: Record<string, number> = {
+        "active": 7,
+        "inactive": 8,
+        "suspended": 9
+      };
+      // Chuẩn hóa key role: "Admin" => "ADMIN", "Fleet Manager" => "FLEET_MANAGER"
+      const roleKey = updatedUser.role.replace(/ /g, '_').toUpperCase();
+      console.log("[UserTable] roleKey:", roleKey, "roleMap[roleKey]:", roleMap[roleKey]);
+      
+      // Tìm user gốc để lấy id và các trường không sửa
+      const userOrigin = users.find(u => u.email === updatedUser.email);
+      if (!userOrigin) {
+        console.error("[UserTable] User not found with email:", updatedUser.email);
+        throw new Error("User not found");
+      }
+      console.log("[UserTable] userOrigin:", userOrigin);
+      
+      // Tạo payload đầy đủ cho PUT
+      const payload: any = {
+        id: userOrigin.id,
+        username: updatedUser.email.split("@")[0],
+        fullName: updatedUser.name,
+        email: updatedUser.email,
+        password: updatedUser.password && updatedUser.password.trim() !== "" ? updatedUser.password : userOrigin.password || "",
+        phone: updatedUser.phone && updatedUser.phone.trim() !== "" ? updatedUser.phone : userOrigin.phone || "",
+        role: { id: roleMap[roleKey] },
+        status: { id: statusMap[updatedUser.status] || 7 },
+        notes: userOrigin.notes || null,
+        googleId: userOrigin.googleId || null
+      };
+      console.log("[UserTable] payload for update:", payload);
+      
+      await apiEditUser(userOrigin.id, payload);
+      console.log("[UserTable] Update successful, reloading users...");
+      // Reload lại danh sách user
+      const data = await fetchUsers();
+      setUsers(
+        data.map((u: any) => {
+          const roleInfo = getRoleDisplay(u.role?.roleName || "");
+          const statusRaw = u.status?.name?.toLowerCase() || "";
+          const status = statusRaw === "active" ? "active" : "inactive";
+          const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+          return {
+            id: u.id,
+            name: u.fullName || u.username || "",
+            email: u.email,
+            role: roleInfo.label,
+            roleIcon: roleInfo.icon,
+            status,
+            lastLogin,
+            phone: u.phone || "",
+            password: u.password || "",
           };
         })
       );
       setShowForm(false);
       setEditUser(null);
     } catch (err) {
-      alert("Lỗi khi cập nhật user. Vui lòng thử lại!");
+      console.error("[UserTable] Update error:", err);
+      alert(`Lỗi khi cập nhật user: ${err instanceof Error ? err.message : 'Unknown error'}. Vui lòng thử lại!`);
     }
   };
 
@@ -164,21 +255,35 @@ export default function UserTable() {
         // Reload lại danh sách user
         const data = await fetchUsers();
         setUsers(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           data.map((u: any) => {
             const roleInfo = getRoleDisplay(u.role?.roleName || "");
             const status = u.status?.name?.toLowerCase() === "active" ? "active" : "inactive";
             const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+            // Map roleName từ backend về đúng value của select
+            let roleValue = "";
+            const rawRole = (u.role?.roleName || "").replace(/[\s_]+/g, '').toLowerCase();
+            if (rawRole === "admin") roleValue = "Admin";
+            else if (rawRole === "dispatcher") roleValue = "Dispatcher";
+            else if (rawRole === "fleetmanager" || rawRole === "fleet") roleValue = "Fleet Manager";
+            else if (rawRole === "driver") roleValue = "Driver";
+            else if (rawRole === "operationsmanager" || rawRole === "operations") roleValue = "Operations Manager";
+            else roleValue = u.role?.roleName || "";
             return {
               id: u.id,
               name: u.fullName || u.username || "",
               email: u.email,
               role: roleInfo.label,
+              roleValue,
               roleIcon: roleInfo.icon,
               status,
               lastLogin,
+              phone: u.phone || "",
+              password: u.password || "",
             };
           })
         );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
         alert("Lỗi khi xóa user. Vui lòng thử lại!");
       }
@@ -225,7 +330,7 @@ export default function UserTable() {
           <table className="min-w-full">
             <thead>
               <tr className="text-left text-gray-600 border-b">
-                <th className="py-2 pr-4">Name</th>
+                <th className="py-2 pr-4">Full Name</th>
                 <th className="py-2 pr-4">Email</th>
                 <th className="py-2 pr-4">Role</th>
                 <th className="py-2 pr-4">Status</th>
@@ -234,8 +339,8 @@ export default function UserTable() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((u, idx) => (
-                <tr key={idx} className="border-b hover:bg-gray-50">
+              {paginated.map((u, idx) => (
+                <tr key={u.id || idx} className="border-b hover:bg-gray-50">
                   <td className="py-3 pr-4 font-medium">{u.name}</td>
                   <td className="py-3 pr-4">{u.email}</td>
                   <td className="py-3 pr-4">
@@ -354,6 +459,26 @@ export default function UserTable() {
             </tbody>
           </table>
         </div>
+        {/* Pagination controls */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-4">
+            <button
+              className="px-3 py-1 rounded border bg-gray-100 disabled:opacity-50"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span className="mx-2">Page {currentPage} / {totalPages}</span>
+            <button
+              className="px-3 py-1 rounded border bg-gray-100 disabled:opacity-50"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
       {/* User detail modal */}
       {viewUser && (
