@@ -4,7 +4,8 @@ import 'package:ktc_logistics_driver/data/env/environment.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/domain/models/response/category_all_response.dart';
 import 'package:ktc_logistics_driver/domain/models/response/products_top_home_response.dart';
-import 'package:ktc_logistics_driver/domain/services/services.dart';
+import 'package:ktc_logistics_driver/services/products_services.dart';
+import 'package:ktc_logistics_driver/services/category_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/date_custom.dart';
 import 'package:ktc_logistics_driver/presentation/screens/client/cart_client_screen.dart';
@@ -17,7 +18,7 @@ class ClientHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-
+    final _env = Environment.getInstance();
     final authBloc = BlocProvider.of<AuthBloc>(context);
 
     return Scaffold(
@@ -40,12 +41,20 @@ class ClientHomeScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                         image: DecorationImage(
                           fit: BoxFit.cover,
-                          image: NetworkImage('${Environment.endpointBase}${authBloc.state.user!.image}')
+                          image: authBloc.state is AuthenticatedState 
+                              ? NetworkImage('${_env.endpointBase}${(authBloc.state as AuthenticatedState).user.avatar ?? "without-image.png"}')
+                              : const AssetImage('assets/svg/profile.jpg') as ImageProvider
                         )
                       ),
                     ),
                     const SizedBox(width: 8.0),
-                    TextCustom(text: DateCustom.getDateFrave() + ', ${authBloc.state.user!.firstName}', fontSize: 17, color: ColorsFrave.secundaryColor),
+                    TextCustom(
+                      text: DateCustom.getDateFrave() + (authBloc.state is AuthenticatedState 
+                          ? ', ${(authBloc.state as AuthenticatedState).user.name}'
+                          : ', Guest'),
+                      fontSize: 17, 
+                      color: ColorsFrave.secundaryColor
+                    ),
                   ],
                 ),
                 InkWell(

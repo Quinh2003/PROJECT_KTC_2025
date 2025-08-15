@@ -39,8 +39,9 @@ class MapclientBloc extends Bloc<MapclientEvent, MapclientState> {
 
 
   void initSocketDelivery(String idOrder) {
+    final _env = Environment.getInstance();
 
-    this._socket = IO.io('${Environment.endpointBase}orders-delivery-socket' , {
+    this._socket = IO.io('${_env.endpointBase}orders-delivery-socket' , {
       'transports': ['websocket'], 
       'autoConnect': true,
     });

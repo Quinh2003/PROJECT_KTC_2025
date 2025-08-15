@@ -2,6 +2,7 @@
 // Business logic use cases theo Clean Architecture
 
 import '../repositories/repository_interfaces.dart';
+import '../repositories/tracking_repository_interfaces.dart';
 import '../models/response/auth_response.dart';
 import '../models/tracking_model.dart';
 
@@ -63,62 +64,54 @@ class GetCurrentUserUseCase implements UseCase<User?, NoParams> {
 
 // ======== Tracking Use Cases ========
 
-class StartTrackingUseCase implements UseCase<void, NoParams> {
+class StartRouteTrackingUseCase implements UseCase<bool, StartRouteTrackingParams> {
   final TrackingRepository repository;
   
-  StartTrackingUseCase({required this.repository});
+  StartRouteTrackingUseCase({required this.repository});
   
   @override
-  Future<void> call(NoParams params) async {
-    return await repository.startTracking();
+  Future<bool> call(StartRouteTrackingParams params) async {
+    return await repository.startRouteTracking(
+      routeId: params.routeId,
+      driverId: params.driverId,
+      vehicleId: params.vehicleId,
+    );
   }
 }
 
-class StopTrackingUseCase implements UseCase<void, NoParams> {
+class EndRouteTrackingUseCase implements UseCase<bool, EndRouteTrackingParams> {
   final TrackingRepository repository;
   
-  StopTrackingUseCase({required this.repository});
+  EndRouteTrackingUseCase({required this.repository});
   
   @override
-  Future<void> call(NoParams params) async {
-    return await repository.stopTracking();
+  Future<bool> call(EndRouteTrackingParams params) async {
+    return await repository.endRouteTracking(routeId: params.routeId);
   }
 }
 
-class GetCurrentLocationUseCase implements UseCase<Map<String, dynamic>, NoParams> {
+class UpdateLocationUseCase implements UseCase<LocationUpdateResponse, TrackingPoint> {
   final TrackingRepository repository;
   
-  GetCurrentLocationUseCase({required this.repository});
+  UpdateLocationUseCase({required this.repository});
   
   @override
-  Future<Map<String, dynamic>> call(NoParams params) async {
-    return await repository.getCurrentLocation();
+  Future<LocationUpdateResponse> call(TrackingPoint params) async {
+    return await repository.updateLocation(params);
   }
 }
 
-class GetLocationStreamUseCase implements StreamUseCase<Map<String, dynamic>, NoParams> {
-  final TrackingRepository repository;
-  
-  GetLocationStreamUseCase({required this.repository});
-  
-  @override
-  Stream<Map<String, dynamic>> call(NoParams params) {
-    return repository.getLocationStream();
-  }
-}
-
-class GetTrackingHistoryUseCase implements UseCase<List<Map<String, dynamic>>, TrackingHistoryParams> {
+class GetTrackingHistoryUseCase implements UseCase<TrackingHistoryResponse, TrackingHistoryParams> {
   final TrackingRepository repository;
   
   GetTrackingHistoryUseCase({required this.repository});
   
   @override
-  Future<List<Map<String, dynamic>>> call(TrackingHistoryParams params) async {
+  Future<TrackingHistoryResponse> call(TrackingHistoryParams params) async {
     return await repository.getTrackingHistory(
-      driverId: params.driverId,
-      vehicleId: params.vehicleId,
-      startDate: params.startDate != null ? DateTime.parse(params.startDate!) : null,
-      endDate: params.endDate != null ? DateTime.parse(params.endDate!) : null,
+      driverId: params.driverId!,
+      startDate: DateTime.parse(params.startDate!),
+      endDate: DateTime.parse(params.endDate!),
     );
   }
 }
@@ -267,4 +260,22 @@ class SendNotificationParams {
   final Map<String, dynamic>? data;
   
   SendNotificationParams({required this.title, required this.message, this.data});
+}
+
+class StartRouteTrackingParams {
+  final String routeId;
+  final String driverId;
+  final String? vehicleId;
+  
+  StartRouteTrackingParams({
+    required this.routeId,
+    required this.driverId,
+    this.vehicleId,
+  });
+}
+
+class EndRouteTrackingParams {
+  final String routeId;
+  
+  EndRouteTrackingParams({required this.routeId});
 }

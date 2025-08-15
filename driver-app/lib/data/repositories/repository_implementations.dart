@@ -1,5 +1,7 @@
 import '../../domain/repositories/repository_interfaces.dart';
+import '../../domain/repositories/tracking_repository_interfaces.dart';
 import '../../domain/models/response/auth_response.dart';
+import '../../domain/models/tracking_model.dart';
 import '../../services/mock_auth_service.dart';
 import '../../services/mock_data_service.dart';
 import '../../services/notification_service.dart';
@@ -112,64 +114,159 @@ class AuthRepositoryImpl implements AuthRepository {
 
 /// TrackingRepository Implementation using Mock Service
 class TrackingRepositoryImpl implements TrackingRepository {
-  final MockDataService _mockDataService;
-
   TrackingRepositoryImpl({
     required MockDataService mockDataService,
-  }) : _mockDataService = mockDataService;
+  });
 
   @override
-  Future<void> startTracking() async {
-    // Mock implementation
-    await Future.delayed(const Duration(seconds: 1));
-    // In real implementation, this would start GPS tracking
+  Future<LocationUpdateResponse> updateLocation(TrackingPoint trackingPoint) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return LocationUpdateResponse(
+      success: true,
+      message: 'Location updated successfully',
+      trackingPoint: trackingPoint,
+    );
   }
 
   @override
-  Future<void> stopTracking() async {
-    // Mock implementation
-    await Future.delayed(const Duration(seconds: 1));
-  }
-
-  @override
-  Future<Map<String, dynamic>> getCurrentLocation() async {
-    return await _mockDataService.getDriverLocation();
-  }
-
-  @override
-  Stream<Map<String, dynamic>> getLocationStream() async* {
-    // Mock stream that emits location every 10 seconds
-    while (true) {
-      await Future.delayed(const Duration(seconds: 10));
-      yield await _mockDataService.getDriverLocation();
-    }
-  }
-
-  @override
-  Future<List<Map<String, dynamic>>> getTrackingHistory({
-    String? driverId,
+  Future<bool> startRouteTracking({
+    required String routeId,
+    required String driverId,
     String? vehicleId,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return true;
+  }
+
+  @override
+  Future<bool> endRouteTracking({required String routeId}) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return true;
+  }
+
+  @override
+  Future<bool> startDeliveryTracking({
+    required String deliveryId,
+    required String routeId,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return true;
+  }
+
+  @override
+  Future<bool> endDeliveryTracking({
+    required String deliveryId,
+    required String status,
+    Map<String, dynamic>? metadata,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return true;
+  }
+
+  @override
+  Future<bool> logTrackingEvent(TrackingEvent event) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return true;
+  }
+
+  @override
+  Future<TrackingHistoryResponse> getTrackingHistory({
+    required String driverId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return TrackingHistoryResponse(
+      trackingPoints: [],
+      totalPoints: 0,
+      timespan: '${startDate.toIso8601String()} to ${endDate.toIso8601String()}',
+    );
+  }
+
+  @override
+  Future<RouteTrackingResponse> getRouteTracking({required String routeId}) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return RouteTrackingResponse(
+      routeId: routeId,
+      status: 'active',
+      startTime: DateTime.now(),
+      trackingPoints: [],
+      totalDistance: 0.0,
+      totalDuration: Duration.zero,
+      deliveryIds: [],
+    );
+  }
+
+  @override
+  Future<OrderTrackingResponse> getOrderTracking({required String orderId}) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return OrderTrackingResponse(
+      orderId: orderId,
+      status: 'in_progress',
+      createdAt: DateTime.now(),
+      trackingPoints: [],
+      events: [],
+    );
+  }
+
+  @override
+  Future<DeliveryTrackingResponse> getDeliveryTracking({required String deliveryId}) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return DeliveryTrackingResponse(
+      deliveryId: deliveryId,
+      status: 'in_progress',
+      startTime: DateTime.now(),
+      trackingPoints: [],
+      events: [],
+    );
+  }
+
+  @override
+  Future<VehicleLocationResponse> getVehicleLocation({required String vehicleId}) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return VehicleLocationResponse(
+      vehicleId: vehicleId,
+      driverId: 'driver-123',
+      driverName: 'John Doe',
+      latitude: 21.028511,
+      longitude: 105.804817,
+      timestamp: DateTime.now(),
+    );
+  }
+
+  @override
+  Future<RoutesResponse> getDriverRoutes({
+    required String driverId,
+    int page = 1,
+    int limit = 10,
+    String? status,
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    // Mock implementation
     await Future.delayed(const Duration(seconds: 1));
-    return [
-      {
-        'id': '1',
-        'latitude': 21.028511,
-        'longitude': 105.804817,
-        'timestamp': DateTime.now().subtract(const Duration(hours: 1)).millisecondsSinceEpoch,
-        'speed': 30.0,
-      },
-      {
-        'id': '2',
-        'latitude': 21.030000,
-        'longitude': 105.806000,
-        'timestamp': DateTime.now().subtract(const Duration(minutes: 30)).millisecondsSinceEpoch,
-        'speed': 25.0,
-      },
-    ];
+    return RoutesResponse(
+      routes: [],
+      totalRoutes: 0,
+      currentPage: page,
+      totalPages: 0,
+    );
+  }
+
+  @override
+  Future<RouteResponse> getRouteDetails({required String routeId}) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return RouteResponse(
+      route: RouteDetail(
+        routeId: routeId,
+        name: 'Sample Route',
+        status: 'active',
+        startTime: DateTime.now(),
+        deliveryIds: [],
+        totalDistance: 0.0,
+        estimatedDuration: Duration.zero,
+        waypoints: [],
+      ),
+    );
   }
 }
 

@@ -12,7 +12,7 @@ class CartClientScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-
+    final _env = Environment.getInstance();
     final cartBloc = BlocProvider.of<CartBloc>(context);
 
     return Scaffold(
@@ -84,7 +84,7 @@ class CartClientScreen extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
                                           scale: 8,
-                                          image: NetworkImage('${Environment.endpointBase}${state.products![i].imageProduct}')
+                                          image: NetworkImage('${_env.endpointBase}${state.products![i].imageProduct}')
                                         )
                                       ),
                                     ),

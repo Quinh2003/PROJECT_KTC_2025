@@ -5,7 +5,7 @@ import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 
 void modalDeleteProduct(BuildContext context, String name, String image, String uid ){
-
+  final _env = Environment.getInstance();
   final productBloc = BlocProvider.of<ProductsBloc>(context);
 
   showDialog(
@@ -46,7 +46,7 @@ void modalDeleteProduct(BuildContext context, String name, String image, String 
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         scale: 7,
-                        image: NetworkImage('${Environment.endpointBase}$image')
+                        image: NetworkImage('${_env.endpointBase}$image')
                       )
                     ),
                   ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'dart:ui';
 
-import '../design/spatial_ui.dart';
+import '../../design/spatial_ui.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final String orderId;
@@ -410,7 +410,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                 child: Stack(
                   children: [
                     Image.asset(
-                      "Assets/google-map.png",
+                      "assets/google-map.png",
                       fit: BoxFit.cover,
                       width: double.infinity,
                     ),
@@ -819,5 +819,3 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
     );
   }
 }
-
-

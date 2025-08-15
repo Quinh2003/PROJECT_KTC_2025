@@ -6,7 +6,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ktc_logistics_driver/data/env/environment.dart';
-import 'package:ktc_logistics_driver/domain/services/map_box_services.dart';
+import 'package:ktc_logistics_driver/services/map_box_services.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/custom_markert.dart';
 import 'package:ktc_logistics_driver/presentation/themes/theme_maps.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -26,6 +26,7 @@ class MapdeliveryBloc extends Bloc<MapdeliveryEvent, MapdeliveryState> {
 
   late GoogleMapController _mapController;
   late IO.Socket _socket;
+  final mapBoxServices = MapBoxServices();
 
   Polyline _myRouteDestinationDelivery = Polyline(
     polylineId: PolylineId('myRouteDestinationDelivery'),
@@ -55,8 +56,9 @@ class MapdeliveryBloc extends Bloc<MapdeliveryEvent, MapdeliveryState> {
 
 
   void initSocketDelivery() {
+    final _env = Environment.getInstance();
 
-    this._socket = IO.io('${Environment.endpointBase}orders-delivery-socket' , {
+    this._socket = IO.io('${_env.endpointBase}orders-delivery-socket' , {
       'transports': ['websocket'], 
       'autoConnect': true,
     });

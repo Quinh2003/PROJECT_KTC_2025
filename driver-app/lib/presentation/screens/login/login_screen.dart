@@ -1,174 +1,344 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import 'package:ktc_logistics_driver/presentation/components/components.dart';
-import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
-import 'package:ktc_logistics_driver/presentation/screens/client/client_home_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/home/select_role_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/intro/intro_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/login/forgot_password_screen.dart';
-import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
+import 'package:flutter/services.dart';
+import 'dart:ui';
+
+import '../../design/spatial_ui.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+  bool _obscurePassword = true;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
 
-  late TextEditingController _emailController;
-  late TextEditingController _passwordController;
-  
-  final _keyForm = GlobalKey<FormState>();
-  
   @override
   void initState() {
-
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeIn,
+      ),
+    );
+    
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.5),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOut,
+      ),
+    );
+    
+    _animationController.forward();
   }
-
-
+  
   @override
   void dispose() {
-    _emailController.clear();
-    _passwordController.clear();
     _emailController.dispose();
     _passwordController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
-
   @override
-  Widget build(BuildContext context){
-
-    final authBloc = BlocProvider.of<AuthBloc>(context);
-    final userBloc = BlocProvider.of<UserBloc>(context);
-
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) async {
-        
-        if( state is LoadingAuthState ){
-
-          modalLoading(context);
-        
-        } else if ( state is FailureAuthState ){
-
-          Navigator.pop(context);
-          errorMessageSnack(context, state.error);
-
-        } else if ( state.rolId != '' ){
-
-          userBloc.add( OnGetUserEvent(state.user!) );
-          Navigator.pop(context);
-
-          if( state.rolId == '1' || state.rolId == '3' ){
-
-            Navigator.pushAndRemoveUntil(context, routeFrave(page: SelectRoleScreen()), (route) => false);
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final size = MediaQuery.of(context).size;
+    
+    return Scaffold(
+      backgroundColor: isDark
+          ? SpatialDesignSystem.darkBackgroundColor
+          : SpatialDesignSystem.backgroundColor,
+      body: Stack(
+        children: [
+          // Background elements
+          Positioned(
+            top: -100,
+            right: -100,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    SpatialDesignSystem.primaryColor.withOpacity(0.3),
+                    SpatialDesignSystem.primaryColor.withOpacity(0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -150,
+            left: -100,
+            child: Container(
+              width: 400,
+              height: 400,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    SpatialDesignSystem.accentColor.withOpacity(0.2),
+                    SpatialDesignSystem.accentColor.withOpacity(0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
           
-          } else if ( state.rolId == '2' ){
-
-            Navigator.pushAndRemoveUntil(context, routeFrave(page: ClientHomeScreen()), (route) => false);
-        
-          }
-        }
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Form(
-            key: _keyForm,
-            child: ListView(
-              physics: BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // Main content
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      InkWell(
-                        onTap: () => Navigator.pushReplacement(context, routeFrave(page: IntroScreen())),
-                        borderRadius: BorderRadius.circular(100.0),
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            shape: BoxShape.circle
+                      // Logo and App Name
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: SpatialDesignSystem.primaryColor,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: SpatialDesignSystem.primaryColor.withOpacity(0.3),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "KTC",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          child: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black, size: 20),
                         ),
                       ),
-                      Row(
-                        children: const [
-                          TextCustom(text: 'Frave ', color: ColorsFrave.primaryColor, fontWeight: FontWeight.w500 ),
-                          TextCustom(text: 'Food', color: Colors.black87, fontWeight: FontWeight.w500 ),
-                        ],
-                      )
+                      const SizedBox(height: 24),
+                      Text(
+                        "KTC Logistics",
+                        style: SpatialDesignSystem.headingLarge.copyWith(
+                          color: isDark
+                              ? SpatialDesignSystem.textDarkPrimaryColor
+                              : SpatialDesignSystem.textPrimaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Driver App",
+                        style: SpatialDesignSystem.subtitleLarge.copyWith(
+                          color: isDark
+                              ? SpatialDesignSystem.textDarkSecondaryColor
+                              : SpatialDesignSystem.textSecondaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      
+                      // Login Form
+                      GlassCard(
+                        width: size.width > 600 ? 500 : null,
+                        padding: const EdgeInsets.all(24),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Log In",
+                                style: SpatialDesignSystem.headingMedium.copyWith(
+                                  color: isDark
+                                      ? SpatialDesignSystem.textDarkPrimaryColor
+                                      : SpatialDesignSystem.textPrimaryColor,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Please sign in to continue",
+                                style: SpatialDesignSystem.bodyMedium.copyWith(
+                                  color: isDark
+                                      ? SpatialDesignSystem.textDarkSecondaryColor
+                                      : SpatialDesignSystem.textSecondaryColor,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              
+                              // Email Field
+                              SpatialTextField(
+                                label: "Email",
+                                hint: "Enter your email",
+                                controller: _emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                prefix: const Icon(Icons.email_outlined),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your email';
+                                  }
+                                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                                    return 'Please enter a valid email';
+                                  }
+                                  return null;
+                                },
+                                isGlass: true,
+                              ),
+                              const SizedBox(height: 16),
+                              
+                              // Password Field
+                              SpatialTextField(
+                                label: "Password",
+                                hint: "Enter your password",
+                                controller: _passwordController,
+                                obscureText: _obscurePassword,
+                                prefix: const Icon(Icons.lock_outline),
+                                suffix: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your password';
+                                  }
+                                  if (value.length < 6) {
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null;
+                                },
+                                isGlass: true,
+                              ),
+                              const SizedBox(height: 16),
+                              
+                              // Forgot Password Link
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () {
+                                    // Navigate to forgot password screen
+                                  },
+                                  child: Text(
+                                    "Forgot Password?",
+                                    style: SpatialDesignSystem.subtitleSmall.copyWith(
+                                      color: SpatialDesignSystem.primaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              
+                              // Login Button
+                              SpatialButton(
+                                text: "Log In",
+                                onPressed: _isLoading ? () {} : _handleLogin,
+                                isGradient: true,
+                                width: double.infinity,
+                              ),
+                              
+                              const SizedBox(height: 16),
+                              
+                              // Biometric Login
+                              Align(
+                                alignment: Alignment.center,
+                                child: TextButton.icon(
+                                  onPressed: _handleBiometricLogin,
+                                  icon: const Icon(Icons.fingerprint),
+                                  label: Text(
+                                    "Login with Fingerprint",
+                                    style: SpatialDesignSystem.subtitleSmall,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // Version Info
+                      Text(
+                        "v1.0.0 (2025)",
+                        style: SpatialDesignSystem.captionText.copyWith(
+                          color: isDark
+                              ? SpatialDesignSystem.textDarkSecondaryColor.withOpacity(0.6)
+                              : SpatialDesignSystem.textSecondaryColor.withOpacity(0.6),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20.0),
-                Image.asset('Assets/Logo/logo-black.png', height: 150 ),
-                const SizedBox(height: 30.0),
-                Container(
-                  alignment: Alignment.center,
-                  child: const TextCustom(text: 'Welcome back!', fontSize: 35, fontWeight: FontWeight.bold, color: Color(0xff14222E) ),
-                ),
-                const SizedBox(height: 5.0),
-                Align(
-                  alignment: Alignment.center,
-                  child: const TextCustom(text: 'Use your credentials below and login to your account.', textAlign: TextAlign.center, color: Colors.grey, maxLine: 2, fontSize: 16),
-                ),
-                const SizedBox(height: 50.0),
-                const TextCustom(text: 'Email Address'),
-                const SizedBox(height: 5.0),
-                FormFieldFrave(
-                  controller: _emailController,
-                  hintText: 'email@frave.com',
-                  keyboardType: TextInputType.emailAddress,
-                  validator: validatedEmail,
-                ),
-                const SizedBox(height: 20.0),
-                const TextCustom(text: 'Password'),
-                const SizedBox(height: 5.0),
-                FormFieldFrave(
-                  controller: _passwordController,
-                  hintText: '********',
-                  isPassword: true,
-                  validator: passwordValidator,
-                ),
-                const SizedBox(height: 10.0),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: InkWell(
-                    onTap: () => Navigator.push(context, routeFrave(page: ForgotPasswordScreen())),
-                    child: TextCustom(text: 'Forgot Password?', fontSize: 17, color: ColorsFrave.primaryColor )
-                  )
-                ),
-                const SizedBox(height: 40.0),
-                BtnFrave(
-                  text: 'Login',
-                  fontSize: 21,
-                  height: 50,
-                  fontWeight: FontWeight.w500,
-                  onPressed: () {
-                    if( _keyForm.currentState!.validate() ){
-    
-                      authBloc.add( LoginEvent(_emailController.text, _passwordController.text));
-    
-                    }
-                  },
-                )
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
+  }
+
+  void _handleLogin() {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+      
+      // Simulate API call
+      Future.delayed(const Duration(seconds: 2), () {
+        setState(() {
+          _isLoading = false;
+        });
+        
+        // Navigate to dashboard
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      });
+    }
+  }
+
+  void _handleBiometricLogin() async {
+    // Show biometric authentication dialog
+    setState(() {
+      _isLoading = true;
+    });
+    
+    // Simulate biometric auth
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() {
+        _isLoading = false;
+      });
+      
+      // Navigate to dashboard
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    });
   }
 }

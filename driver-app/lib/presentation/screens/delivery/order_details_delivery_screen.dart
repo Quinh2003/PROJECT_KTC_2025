@@ -5,7 +5,7 @@ import 'package:ktc_logistics_driver/data/env/environment.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/domain/models/response/order_details_response.dart';
 import 'package:ktc_logistics_driver/domain/models/response/orders_by_status_response.dart';
-import 'package:ktc_logistics_driver/domain/services/services.dart';
+import 'package:ktc_logistics_driver/services/orders_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/date_custom.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
@@ -27,6 +27,7 @@ class OrdersDetailsDeliveryScreen extends StatefulWidget {
 class _OrdersDetailsDeliveryScreenState extends State<OrdersDetailsDeliveryScreen> {
 
   late MylocationmapBloc mylocationmapBloc;
+  final _env = Environment.getInstance();
 
   @override
   void initState() {
@@ -157,7 +158,7 @@ class _OrdersDetailsDeliveryScreenState extends State<OrdersDetailsDeliveryScree
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
-                                  image: NetworkImage( (widget.order.clientImage != '') ? '${Environment.endpointBase}${widget.order.clientImage}' : '${Environment.endpointBase}without-image.png')
+                                  image: NetworkImage( (widget.order.clientImage != '') ? '${_env.endpointBase}${widget.order.clientImage}' : '${_env.endpointBase}without-image.png')
                                 )
                               ),
                             ),
@@ -231,6 +232,7 @@ class _ListProductsDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _env = Environment.getInstance();
     return ListView.separated(
       padding: EdgeInsets.symmetric(horizontal: 10.0),
       itemCount: listProductDetails.length,
@@ -245,7 +247,7 @@ class _ListProductsDetails extends StatelessWidget {
                 width: 45,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage('${Environment.endpointBase}${listProductDetails[i].picture}')
+                    image: NetworkImage('${_env.endpointBase}${listProductDetails[i].picture}')
                   )
                 ),
               ),

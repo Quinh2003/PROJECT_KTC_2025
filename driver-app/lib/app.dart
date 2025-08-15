@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import 'package:ktc_logistics_driver/presentation/screens/login_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/onboarding_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/dashboard_screen_spatial.dart';
+import 'package:ktc_logistics_driver/presentation/screens/login/login_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/onboarding/onboarding_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/dashboard/dashboard_screen_spatial.dart';
+import 'package:ktc_logistics_driver/presentation/screens/order/order_detail_screen.dart';
 import 'package:ktc_logistics_driver/injection/spatial_dependency_injection.dart';
 
 class AppRouter {
@@ -15,9 +16,14 @@ class AppRouter {
       case '/onboarding':
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case '/login':
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        return MaterialPageRoute(builder: (_) => LoginScreen());
       case '/dashboard':
         return MaterialPageRoute(builder: (_) => const DashboardScreenSpatial());
+      case '/order-detail':
+        final orderId = settings.arguments as String? ?? 'Unknown';
+        return MaterialPageRoute(
+          builder: (_) => OrderDetailScreen(orderId: orderId),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

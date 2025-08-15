@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'presentation/screens/order_detail_screen.dart';
-import 'presentation/screens/route_map_screen.dart';
+import 'presentation/screens/order/order_detail_screen.dart';
+import 'presentation/screens/map/route_map_screen.dart';
 
 // This is a demo main file to showcase the new Spatial UI screens
 // For production, integrate these routes into the existing main.dart
