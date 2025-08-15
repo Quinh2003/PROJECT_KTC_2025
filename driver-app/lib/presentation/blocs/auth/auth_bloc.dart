@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import '../../../domain/usecases/usecases_merged.dart';
+import '../../../domain/usecases/usecases.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 import 'user_model.dart';
