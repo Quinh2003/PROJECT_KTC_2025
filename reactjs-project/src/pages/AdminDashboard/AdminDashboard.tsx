@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { User } from "../../types/User";
+import { fetchUsers, fetchActivityLogs, type User as APIUser } from "../../services/adminAPI";
 import UserTable from "./UserTable";
 import RoleTable from "./RoleTable";
 import SystemConfigForm from "./SystemConfigForm";
@@ -18,17 +19,79 @@ interface AdminDashboardProps {
 }
 
 export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
-  const [active, setActive] = useState<AdminTab>("users"); // Sử dụng AdminTab
+  const [active, setActive] = useState<AdminTab>("users");
+  const [users, setUsers] = useState<User[]>([]);
+  const [auditCount, setAuditCount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Helper function to format numbers (e.g., 1200 -> "1.2K")
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    }
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    }
+    return num.toString();
+  };
+
+  // Callback function for AuditLogTable to update audit count
+  const handleAuditCountUpdate = useCallback((newCount: number) => {
+    console.log("Updating audit count from", auditCount, "to", newCount);
+    setAuditCount(newCount);
+  }, [auditCount]);
+
+  // Chỉ fetchUsers khi lần đầu vào trang, còn lại cập nhật trực tiếp qua UserTable
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      
+      try {
+        // Fetch users
+        const userData = await fetchUsers();
+        const mappedUsers = userData.map((u: APIUser) => {
+          return {
+            id: typeof u.id === 'string' ? parseInt(u.id) : u.id,
+            name: u.fullName || u.username || "",
+            email: u.email,
+            role: u.role?.roleName || "",
+            status: u.status?.name?.toLowerCase() === "active" ? "active" : "inactive",
+            lastLogin: "-", // Will be updated from backend later
+            phone: u.phone || "",
+            password: u.password || "",
+          } as User;
+        });
+        setUsers(mappedUsers);
+
+        // Fetch audit logs count
+        const logs = await fetchActivityLogs();
+        console.log("Initial fetch - audit logs:", logs.length, "logs");
+        setAuditCount(logs.length);
+        
+        setError(null);
+      } catch (err: unknown) {
+        console.error("Failed to fetch initial data:", err);
+        setError("Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Initial fetch only - no auto-refresh
+    fetchData();
+  }, []);
+
+  const uniqueRoles = Array.from(new Set(users.map(u => u.role)));
   const stats = [
     {
       label: "Total Users",
-      value: "2,345",
+      value: users.length.toLocaleString(),
       icon: <MdManageAccounts className="text-3xl text-blue-600" />,
     },
     {
-      label: "Active Roles",
-      value: "15",
+      label: "Total Roles",
+      value: uniqueRoles.length.toLocaleString(),
       icon: <RiShieldKeyholeLine className="text-3xl text-green-600" />,
     },
     {
@@ -38,7 +101,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
     },
     {
       label: "Audit Events",
-      value: "1.2K",
+      value: formatNumber(auditCount),
       icon: <HiOutlineDocumentReport className="text-3xl text-purple-600" />,
     },
   ];
@@ -52,7 +115,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
         role="admin"
       />
       {/* Main content */}
-      <main className="flex-1 flex flex-col bg-transparent overflow-y-auto h-screen">
+      <main className="flex-1 flex flex-col bg-transparent h-screen">
         {/* Header */}
         <Navbar
           user={user}
@@ -80,8 +143,8 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
               : ""
           }
         />
-        {/* Stats cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6 md:mt-8 px-4 md:px-10">
+        {/* Stats cards - Fixed */}
+        <div className="flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-3 md:mt-4 px-4 md:px-10">
           {stats.map((s, idx) => (
             <div
               key={idx}
@@ -99,12 +162,14 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
             </div>
           ))}
         </div>
-        {/* Content */}
-        <div className="flex-1 p-4 md:p-10">
-          {active === "users" && <UserTable />}
-          {active === "roles" && <RoleTable />}
-          {active === "settings" && <SystemConfigForm />}
-          {active === "logs" && <AuditLogTable />}
+        {/* Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4 md:p-10 pt-3 md:pt-4">
+            {active === "users" && <UserTable users={users} setUsers={setUsers} />}
+            {active === "roles" && <RoleTable />}
+            {active === "settings" && <SystemConfigForm />}
+            {active === "logs" && <AuditLogTable onAuditCountUpdate={handleAuditCountUpdate} />}
+          </div>
         </div>
       </main>
     </div>

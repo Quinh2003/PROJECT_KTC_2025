@@ -1,22 +1,9 @@
-
 import React, { useState, useMemo } from "react";
 import { Edit, Eye, MoreVertical, Calendar, AlertCircle, CheckCircle, Clock } from "lucide-react";
+import type { FleetVehicle } from "../../types/dashboard";
 
-export interface Vehicle {
-  id: number;
-  licensePlate: string;
-  type: string;
-  brand: string;
-  model: string;
-  year: number;
-  status: "Hoạt động" | "Bảo trì" | "Cần bảo trì";
-  lastMaintenance: string;
-  nextMaintenance: string;
-  driver: string;
-  mileage: number;
-}
-
-export const initialVehicles: Vehicle[] = [
+// eslint-disable-next-line react-refresh/only-export-components
+export const initialVehicles: FleetVehicle[] = [
   {
     id: 1,
     licensePlate: "51A-12345",
@@ -59,15 +46,15 @@ export const initialVehicles: Vehicle[] = [
 ];
 
 interface VehicleTableProps {
-  vehicles: Vehicle[];
-  onEdit?: (vehicle: Vehicle) => void;
-  onView?: (vehicle: Vehicle) => void;
+  vehicles: FleetVehicle[];
+  onEdit?: (vehicle: FleetVehicle) => void;
+  onView?: (vehicle: FleetVehicle) => void;
   onAssignDriver?: (vehicleId: number) => void;
   onScheduleMaintenance?: (vehicleId: number) => void;
 }
 
 // Enhanced Status Badge Component
-const StatusBadge = React.memo<{ status: Vehicle["status"] }>(({ status }) => {
+const StatusBadge = React.memo<{ status: FleetVehicle["status"] }>(({ status }) => {
   const statusConfig = useMemo(() => {
     switch (status) {
       case "Hoạt động":
@@ -109,9 +96,9 @@ StatusBadge.displayName = "StatusBadge";
 
 // Action Dropdown Component
 const ActionDropdown = React.memo<{
-  vehicle: Vehicle;
-  onEdit?: (vehicle: Vehicle) => void;
-  onView?: (vehicle: Vehicle) => void;
+  vehicle: FleetVehicle;
+  onEdit?: (vehicle: FleetVehicle) => void;
+  onView?: (vehicle: FleetVehicle) => void;
   onAssignDriver?: (vehicleId: number) => void;
   onScheduleMaintenance?: (vehicleId: number) => void;
 }>(({ vehicle, onEdit, onView, onAssignDriver, onScheduleMaintenance }) => {
