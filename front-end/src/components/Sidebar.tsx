@@ -29,6 +29,7 @@ interface MenuItem<T extends TabType> {
 }
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ALL_MENUS: Record<UserRole, MenuItem<any>[]> = {
   dispatcher: [
     { key: "orders", label: "Orders", icon: <MdManageAccounts /> },
@@ -55,7 +56,6 @@ const ALL_MENUS: Record<UserRole, MenuItem<any>[]> = {
 };
 
 function getMenu<T extends TabType>(role: UserRole): MenuItem<T>[] {
-  // @ts-ignore
   return ALL_MENUS[role] as MenuItem<T>[];
 }
 
