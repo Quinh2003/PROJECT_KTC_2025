@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import '../../../domain/usecases/usecases_spatial.dart';
-import '../../../domain/models/response/auth_response.dart' as auth_models;
-import '../../../data/repositories/repository_implementations.dart';
+import '../../../domain/usecases/usecases_merged.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
+import 'user_model.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase _loginUseCase;
@@ -43,7 +42,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       if (authResponse.success) {
         // Convert từ auth_models.User sang repository User
-        final user = User(
+        final user = UserModel(
           id: authResponse.user.uid,
           email: authResponse.user.email,
           name: authResponse.user.name,
@@ -74,9 +73,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (isLoggedIn) {
         final user = await _getCurrentUserUseCase.call(NoParams());
         if (user != null) {
+          // Create UserModel from User
+          final userModel = UserModel(
+            id: user.uid,
+            email: user.email,
+            name: user.name,
+            phone: user.phone,
+            avatar: user.image.isNotEmpty ? user.image : null,
+            rating: 4.8, // Default rating
+            totalDeliveries: 0, // Default value
+          );
+          
           emit(AuthenticatedState(
-            user: user,
-            token: 'mock_token_${user.id}',
+            user: userModel,
+            token: 'mock_token_${userModel.id}',
           ));
         } else {
           emit(UnauthenticatedState());
@@ -118,7 +128,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (state is AuthenticatedState) {
         final currentState = state as AuthenticatedState;
         // Create updated user with new data
-        final updatedUser = User(
+        final updatedUser = UserModel(
           id: currentState.user.id,
           email: event.userData['email'] ?? currentState.user.email,
           name: event.userData['name'] ?? currentState.user.name,

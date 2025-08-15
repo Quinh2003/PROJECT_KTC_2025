@@ -1,7 +1,7 @@
 // auth_services.dart
 // Service để xử lý authentication với Spring Boot backend
 
-import '../services/api_service.dart';
+import 'api_service.dart';
 import '../domain/models/response/auth_response.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -48,6 +48,3 @@ class AuthServices {
     await _apiService.logout();
   }
 }
-
-// Instance global của AuthServices
-final authServices = AuthServices();

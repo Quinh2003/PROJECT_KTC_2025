@@ -1,30 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
-// Dependencies
-import 'package:ktc_logistics_driver/injection/dependency_injection.dart';
-import 'package:ktc_logistics_driver/presentation/blocs/auth/auth_bloc.dart';
-import 'package:ktc_logistics_driver/presentation/blocs/auth/auth_event.dart';
-import 'package:ktc_logistics_driver/presentation/blocs/auth/auth_state.dart';
-import 'package:ktc_logistics_driver/presentation/blocs/tracking/tracking_bloc.dart';
+// Dependency Injection
+import 'injection/dependency_injection.dart';
 
-// UI
-import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_login_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/dashboard_screen_spatial.dart';
+// Services
+import 'services/auth_services.dart';
+import 'services/api_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Setup dependency injection with simplified approach
+  // Setup dependency injection
   await setupDependencyInjection();
   
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
-  State<MyApp> createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'KTC Logistics Driver',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        useMaterial3: true,
+      ),
+      home: const HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final authServices = GetIt.instance<AuthServices>();
+    
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('KTC Logistics Driver'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Welcome to KTC Logistics Driver App',
+              style: TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final isLoggedIn = await authServices.isLoggedIn();
+                  if (!context.mounted) return;
+                  
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Login status: $isLoggedIn')),
+                  );
+                } catch (e) {
+                  if (!context.mounted) return;
+                  
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              },
+              child: const Text('Check Login Status'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _MyAppState extends State<MyApp> {
@@ -46,34 +101,43 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [ 
         // Core authentication and tracking BLoCs with dependency injection
-        BlocProvider(create: (context) => getIt<AuthSpatial.AuthBloc>()..add(AuthSpatialEvent.CheckLoginEvent())),
-        BlocProvider(create: (context) => getIt<TrackingSpatial.TrackingBloc>()),
-        
-        // Other app BLoCs (can be updated to use DI later)
-        BlocProvider(create: (context) => GeneralBloc()),
-        BlocProvider(create: (context) => ProductsBloc()),
-        BlocProvider(create: (context) => CartBloc()),
-        BlocProvider(create: (context) => UserBloc()),
-        BlocProvider(create: (context) => MylocationmapBloc()),
-        BlocProvider(create: (context) => PaymentsBloc()),
-        BlocProvider(create: (context) => OrdersBloc()),
-        BlocProvider(create: (context) => DeliveryBloc()),
-        BlocProvider(create: (context) => MapdeliveryBloc()),
-        BlocProvider(create: (context) => MapclientBloc()),
+        BlocProvider(create: (context) => getIt<AuthBloc>()..add(CheckLoginEvent())),
+        BlocProvider(create: (context) => getIt<TrackingBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'KTC Logistics Driver - Spatial UI',
+        title: 'KTC Logistics Driver',
         
-        // Use Spatial design theme
-        theme: SpatialTheme.lightTheme,
-        darkTheme: SpatialTheme.darkTheme,
-        themeMode: ThemeMode.system,
+        // Use Material theme
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF00AB6B),
+            brightness: Brightness.light,
+          ),
+          textTheme: const TextTheme(
+            displayLarge: TextStyle(
+              fontSize: 28.0,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF333333),
+            ),
+            titleMedium: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF333333),
+            ),
+            bodyMedium: TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.normal,
+              color: Color(0xFF666666),
+            ),
+          ),
+        ),
         
         // App routing based on authentication state
-        home: BlocBuilder<AuthSpatial.AuthBloc, AuthSpatialState.AuthState>(
+        home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            if (state is AuthSpatialState.AuthenticatedState) {
+            if (state is AuthenticatedState) {
               return const DashboardScreenSpatial();
             } else {
               return const SpatialLoginScreen();

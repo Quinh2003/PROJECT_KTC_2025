@@ -8,12 +8,13 @@ import 'package:ktc_logistics_driver/domain/models/response/orders_by_status_res
 
 class DeliveryServices {
 
+  final _env = Environment.getInstance();
 
   Future<List<Delivery>> getAlldelivery() async {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.get(Uri.parse('${Environment.endpointApi}/get-all-delivery'),
+    final resp = await http.get(Uri.parse('${_env.endpointApi}/get-all-delivery'),
       headers: { 'Accept' : 'application/json', 'xx-token' : token! }
     );
 
@@ -25,7 +26,7 @@ class DeliveryServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.get(Uri.parse('${Environment.endpointApi}/get-all-orders-by-delivery/$statusOrder'),
+    final resp = await http.get(Uri.parse('${_env.endpointApi}/get-all-orders-by-delivery/$statusOrder'),
       headers: { 'Accept' : 'application/json', 'xx-token' : token! }
     );
 

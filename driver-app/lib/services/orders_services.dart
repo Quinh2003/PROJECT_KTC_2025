@@ -11,6 +11,7 @@ import 'package:ktc_logistics_driver/domain/models/response/response_default.dar
 
 class OrdersServices {
 
+  final _env = Environment.getInstance();
 
   Future<ResponseDefault> addNewOrders(int uidAddress, double total, String typePayment, List<ProductCart> products) async {
 
@@ -23,7 +24,7 @@ class OrdersServices {
       "products"    : products 
     };
 
-    final resp = await http.post(Uri.parse('${Environment.endpointApi}/add-new-orders'),
+    final resp = await http.post(Uri.parse('${_env.endpointApi}/add-new-orders'),
       headers: {'Content-type' : 'application/json', 'xx-token' : token!},
       body: json.encode(data)
     );
@@ -36,7 +37,7 @@ class OrdersServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.get(Uri.parse('${Environment.endpointApi}/get-orders-by-status/$status'),
+    final resp = await http.get(Uri.parse('${_env.endpointApi}/get-orders-by-status/$status'),
       headers: {'Accept' : 'application/json', 'xx-token' : token!},
     );
     return OrdersByStatusResponse.fromJson(jsonDecode(resp.body)).ordersResponse;
@@ -47,7 +48,7 @@ class OrdersServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.get(Uri.parse('${Environment.endpointApi}/get-details-order-by-id/$idOrder'),
+    final resp = await http.get(Uri.parse('${_env.endpointApi}/get-details-order-by-id/$idOrder'),
       headers: {'Accept' : 'application/json', 'xx-token' : token!},
     );
     return OrderDetailsResponse.fromJson( jsonDecode(resp.body)).detailsOrder;
@@ -58,7 +59,7 @@ class OrdersServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.put(Uri.parse('${Environment.endpointApi}/update-status-order-dispatched'),
+    final resp = await http.put(Uri.parse('${_env.endpointApi}/update-status-order-dispatched'),
       headers: { 'Accept' : 'application/json', 'xx-token' : token! },
       body: {
         'idDelivery' : idDelivery,
@@ -74,7 +75,7 @@ class OrdersServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.put(Uri.parse('${Environment.endpointApi}/update-status-order-on-way/$idOrder'),
+    final resp = await http.put(Uri.parse('${_env.endpointApi}/update-status-order-on-way/$idOrder'),
       headers: { 'Accept' : 'application/json', 'xx-token' : token! },
       body: {
         'latitude' : latitude,
@@ -90,7 +91,7 @@ class OrdersServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.put(Uri.parse('${Environment.endpointApi}/update-status-order-delivered/$idOrder'),
+    final resp = await http.put(Uri.parse('${_env.endpointApi}/update-status-order-delivered/$idOrder'),
       headers: { 'Accept' : 'application/json', 'xx-token' : token! },
     );
     return ResponseDefault.fromJson( jsonDecode( resp.body ));
@@ -101,7 +102,7 @@ class OrdersServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.get(Uri.parse('${Environment.endpointApi}/get-list-orders-for-client'),
+    final resp = await http.get(Uri.parse('${_env.endpointApi}/get-list-orders-for-client'),
       headers: {'Accept' : 'application/json', 'xx-token' : token!}
     );
     

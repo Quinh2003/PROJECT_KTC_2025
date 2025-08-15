@@ -1,8 +1,8 @@
-import 'package:ktc_logistics_driver/domain/repositories/repository_interfaces.dart';
-import 'package:ktc_logistics_driver/domain/models/response/auth_response.dart';
-import 'package:ktc_logistics_driver/data/services/mock_auth_service.dart';
-import 'package:ktc_logistics_driver/data/services/mock_data_service.dart';
-import 'package:ktc_logistics_driver/data/services/notification_service.dart';
+import '../../domain/repositories/repository_interfaces.dart';
+import '../../domain/models/response/auth_response.dart';
+import '../../services/mock_auth_service.dart';
+import '../../services/mock_data_service.dart';
+import '../../services/notification_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// AuthRepository Implementation using Mock Service

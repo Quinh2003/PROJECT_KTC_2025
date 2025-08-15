@@ -15,6 +15,9 @@ class ProductsServices {
   final debouncer = DeBouncer(duration: Duration(milliseconds: 800));
   final StreamController<List<Productsdb>> _streamController = StreamController<List<Productsdb>>.broadcast(); 
   Stream<List<Productsdb>> get searchProducts => _streamController.stream;
+  
+  // Environment instance
+  final _env = Environment.getInstance();
 
   void dispose() {
     _streamController.close();
@@ -24,7 +27,7 @@ class ProductsServices {
 
     final token = await secureStorage.readToken();
 
-    var request = http.MultipartRequest('POST', Uri.parse('${Environment.endpointApi}/add-new-products'))
+    var request = http.MultipartRequest('POST', Uri.parse('${_env.endpointApi}/add-new-products'))
       ..headers['Accept'] = 'application/json'
       ..headers['xx-token'] = token!
       ..fields['name'] = name
@@ -46,7 +49,7 @@ class ProductsServices {
 
     final token = await secureStorage.readToken();
 
-    final response = await http.get(Uri.parse('${Environment.endpointApi}/get-products-top-home'),
+    final response = await http.get(Uri.parse('${_env.endpointApi}/get-products-top-home'),
       headers: {'Accept' : 'application/json', 'xx-token' : token!}
     );
 
@@ -58,7 +61,7 @@ class ProductsServices {
 
     final token = await secureStorage.readToken();
 
-    final response = await http.get(Uri.parse('${Environment.endpointApi}/get-images-products/$id'),
+    final response = await http.get(Uri.parse('${_env.endpointApi}/get-images-products/$id'),
       headers: {'Accept' : 'application/json', 'xx-token' : token!}
     );
 
@@ -73,7 +76,7 @@ class ProductsServices {
 
       final token = await secureStorage.readToken();
 
-      final response = await http.get(Uri.parse('${Environment.endpointApi}/search-product-for-name/$productName'),
+      final response = await http.get(Uri.parse('${_env.endpointApi}/search-product-for-name/$productName'),
         headers: { 'Accept' :  'application/json', 'xx-token' : token! }
       );
 
@@ -92,7 +95,7 @@ class ProductsServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.get(Uri.parse('${Environment.endpointApi}/search-product-for-category/$idCategory'),
+    final resp = await http.get(Uri.parse('${_env.endpointApi}/search-product-for-category/$idCategory'),
       headers: {'Accept' : 'application/json', 'xx-token' : token!}
     );
 
@@ -104,7 +107,7 @@ class ProductsServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.get(Uri.parse('${Environment.endpointApi}/list-porducts-admin'),
+    final resp = await http.get(Uri.parse('${_env.endpointApi}/list-porducts-admin'),
       headers: {'Content-Type' : 'application/json', 'xx-token' : token!}
     );
 
@@ -116,7 +119,7 @@ class ProductsServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.put(Uri.parse('${Environment.endpointApi}/update-status-product'),
+    final resp = await http.put(Uri.parse('${_env.endpointApi}/update-delivered-product'),
       headers: {'Accept' : 'application/json', 'xx-token' : token!},
       body: {
         'idProduct' : idProduct,
@@ -132,7 +135,7 @@ class ProductsServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.delete(Uri.parse('${Environment.endpointApi}/delete-product/$idProduct'),
+    final resp = await http.delete(Uri.parse('${_env.endpointApi}/delete-product/$idProduct'),
       headers: {'Accept' : 'application/json', 'xx-token' : token!}
     );
 
