@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import 'package:ktc_logistics_driver/presentation/blocs/auth/auth_bloc.dart' as AuthSpatial;
-import 'package:ktc_logistics_driver/presentation/blocs/auth/auth_state.dart' as AuthSpatialState;
-import 'package:ktc_logistics_driver/presentation/blocs/auth/auth_event.dart' as AuthSpatialEvent;
-import 'package:ktc_logistics_driver/presentation/blocs/tracking/tracking_bloc.dart' as TrackingSpatial;
+
+// Dependencies
+import 'package:ktc_logistics_driver/injection/dependency_injection.dart';
+import 'package:ktc_logistics_driver/presentation/blocs/auth/auth_bloc.dart';
+import 'package:ktc_logistics_driver/presentation/blocs/auth/auth_event.dart';
+import 'package:ktc_logistics_driver/presentation/blocs/auth/auth_state.dart';
+import 'package:ktc_logistics_driver/presentation/blocs/tracking/tracking_bloc.dart';
+
+// UI
 import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_login_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/dashboard_screen_spatial.dart';
-import 'package:ktc_logistics_driver/injection/spatial_dependency_injection.dart';
-import 'package:ktc_logistics_driver/presentation/design/spatial_design_system.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Setup dependency injection with mock services (replacing Firebase)
-  await setupSpatialDependencyInjection();
+  // Setup dependency injection with simplified approach
+  await setupDependencyInjection();
   
   runApp(MyApp());
 }

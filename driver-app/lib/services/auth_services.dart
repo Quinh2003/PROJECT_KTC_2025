@@ -1,8 +1,8 @@
 // auth_services.dart
 // Service để xử lý authentication với Spring Boot backend
 
-import 'package:ktc_logistics_driver/data/services/api_service.dart';
-import 'package:ktc_logistics_driver/domain/models/response/auth_response.dart';
+import '../services/api_service.dart';
+import '../domain/models/response/auth_response.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthServices {
@@ -11,6 +11,11 @@ class AuthServices {
   
   // Instance của FlutterSecureStorage để lưu/đọc token
   final _secureStorage = const FlutterSecureStorage();
+
+  // Singleton pattern
+  static final AuthServices _instance = AuthServices._internal();
+  factory AuthServices() => _instance;
+  AuthServices._internal();
 
   // Đăng nhập với email và password
   Future<AuthResponse> loginController(String email, String password) async {
@@ -46,5 +51,3 @@ class AuthServices {
 
 // Instance global của AuthServices
 final authServices = AuthServices();
-
-
