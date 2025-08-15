@@ -113,3 +113,83 @@ export async function deleteUser(id: string | number): Promise<boolean> {
   if (!res.ok) throw new Error("Failed to delete user");
   return true;
 }
+
+// Activity Logs API
+export type ActivityLog = {
+  id: number;
+  time: string;
+  user: string;
+  action: string;
+  detail: string;
+  status: string;
+  role?: string;
+};
+
+export async function fetchActivityLogs(params?: {
+  dateFrom?: string;
+  dateTo?: string;
+  actionType?: string;
+  userId?: number;
+  page?: number;
+  size?: number;
+}, retries = 3): Promise<ActivityLog[]> {
+  const makeRequest = async (): Promise<ActivityLog[]> => {
+    const token = localStorage.getItem("token");
+    
+    // Build query parameters
+    const queryParams = new URLSearchParams();
+    if (params?.dateFrom) queryParams.append('dateFrom', params.dateFrom);
+    if (params?.dateTo) queryParams.append('dateTo', params.dateTo);
+    if (params?.actionType) queryParams.append('actionType', params.actionType);
+    if (params?.userId) queryParams.append('userId', params.userId.toString());
+    if (params?.page !== undefined) queryParams.append('page', params.page.toString());
+    if (params?.size !== undefined) queryParams.append('size', params.size.toString());
+    
+    const url = `http://localhost:8080/api/admin/activity-logs${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+    
+    const res = await fetch(url, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      credentials: 'include', // Include cookies for session management
+    });
+    
+    if (!res.ok) {
+      if (res.status === 403) {
+        throw new Error(`Authentication failed (403) - Session may have expired`);
+      } else if (res.status === 401) {
+        throw new Error(`Authentication failed (401) - Please login again`);
+      }
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
+    return res.json();
+  };
+
+  // Retry logic for handling temporary network/auth issues
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const result = await makeRequest();
+      console.log(`fetchActivityLogs: Success on attempt ${attempt}`, result.length, 'logs');
+      return result;
+    } catch (error) {
+      console.error(`fetchActivityLogs: Attempt ${attempt} failed:`, error);
+      
+      // If it's an auth error (401/403), don't retry
+      if (error instanceof Error && (error.message.includes('401') || error.message.includes('403'))) {
+        throw error;
+      }
+      
+      // If last attempt, throw error
+      if (attempt === retries) {
+        throw error;
+      }
+      
+      // Wait before retry (exponential backoff)
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+    }
+  }
+
+  throw new Error('All retry attempts failed');
+}
