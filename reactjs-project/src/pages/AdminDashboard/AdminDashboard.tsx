@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { User } from "../../types/User";
-import { fetchUsers } from "../../services/adminAPI";
+import { fetchUsers, fetchActivityLogs, type User as APIUser } from "../../services/adminAPI";
 import UserTable from "./UserTable";
 import RoleTable from "./RoleTable";
 import SystemConfigForm from "./SystemConfigForm";
@@ -21,49 +21,65 @@ interface AdminDashboardProps {
 export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
   const [active, setActive] = useState<AdminTab>("users");
   const [users, setUsers] = useState<User[]>([]);
+  const [auditCount, setAuditCount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Helper function to format numbers (e.g., 1200 -> "1.2K")
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    }
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    }
+    return num.toString();
+  };
+
+  // Callback function for AuditLogTable to update audit count
+  const handleAuditCountUpdate = useCallback((newCount: number) => {
+    console.log("Updating audit count from", auditCount, "to", newCount);
+    setAuditCount(newCount);
+  }, [auditCount]);
+
   // Chỉ fetchUsers khi lần đầu vào trang, còn lại cập nhật trực tiếp qua UserTable
   useEffect(() => {
-    setLoading(true);
-    fetchUsers()
-      .then(data => {
-        const mappedUsers = data.map((u: any) => {
-          let roleIcon = null;
-          switch (u.role?.roleName) {
-            case "DISPATCHER":
-              roleIcon = <span style={{fontWeight: 'bold'}}>D</span>; break;
-            case "FLEET":
-              roleIcon = <span style={{fontWeight: 'bold'}}>F</span>; break;
-            case "DRIVER":
-              roleIcon = <span style={{fontWeight: 'bold'}}>Dr</span>; break;
-            case "ADMIN":
-              roleIcon = <span style={{fontWeight: 'bold'}}>A</span>; break;
-            case "OPERATIONS":
-              roleIcon = <span style={{fontWeight: 'bold'}}>O</span>; break;
-            default:
-              roleIcon = null;
-          }
+    const fetchData = async () => {
+      setLoading(true);
+      
+      try {
+        // Fetch users
+        const userData = await fetchUsers();
+        const mappedUsers = userData.map((u: APIUser) => {
           return {
-            id: u.id,
+            id: typeof u.id === 'string' ? parseInt(u.id) : u.id,
             name: u.fullName || u.username || "",
             email: u.email,
             role: u.role?.roleName || "",
-            roleIcon,
             status: u.status?.name?.toLowerCase() === "active" ? "active" : "inactive",
-            lastLogin: u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-",
+            lastLogin: "-", // Will be updated from backend later
             phone: u.phone || "",
             password: u.password || "",
-          };
+          } as User;
         });
         setUsers(mappedUsers);
+
+        // Fetch audit logs count
+        const logs = await fetchActivityLogs();
+        console.log("Initial fetch - audit logs:", logs.length, "logs");
+        setAuditCount(logs.length);
+        
         setError(null);
-      })
-      .catch(() => {
-        setError("Failed to fetch users");
-      })
-      .finally(() => setLoading(false));
+      } catch (err: unknown) {
+        console.error("Failed to fetch initial data:", err);
+        setError("Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Initial fetch only - no auto-refresh
+    fetchData();
   }, []);
 
   const uniqueRoles = Array.from(new Set(users.map(u => u.role)));
@@ -85,7 +101,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
     },
     {
       label: "Audit Events",
-      value: "1.2K",
+      value: formatNumber(auditCount),
       icon: <HiOutlineDocumentReport className="text-3xl text-purple-600" />,
     },
   ];
@@ -151,7 +167,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
           {active === "users" && <UserTable users={users} setUsers={setUsers} />}
           {active === "roles" && <RoleTable />}
           {active === "settings" && <SystemConfigForm />}
-          {active === "logs" && <AuditLogTable />}
+          {active === "logs" && <AuditLogTable onAuditCountUpdate={handleAuditCountUpdate} />}
         </div>
       </main>
     </div>
