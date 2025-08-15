@@ -261,7 +261,7 @@ export default function UserTable({ users, setUsers }: { users: User[]; setUsers
   };
 
   return (
-    <div className="bg-white rounded-xl shadow p-6">
+    <div className="bg-white rounded-xl shadow p-8">
       <div className="flex justify-between items-center mb-4">
         <input
           className="border rounded px-4 py-2 w-72"

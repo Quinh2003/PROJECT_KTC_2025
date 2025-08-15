@@ -115,7 +115,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
         role="admin"
       />
       {/* Main content */}
-      <main className="flex-1 flex flex-col bg-transparent overflow-y-auto h-screen">
+      <main className="flex-1 flex flex-col bg-transparent h-screen">
         {/* Header */}
         <Navbar
           user={user}
@@ -143,8 +143,8 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
               : ""
           }
         />
-        {/* Stats cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6 md:mt-8 px-4 md:px-10">
+        {/* Stats cards - Fixed */}
+        <div className="flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-3 md:mt-4 px-4 md:px-10">
           {stats.map((s, idx) => (
             <div
               key={idx}
@@ -162,12 +162,14 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
             </div>
           ))}
         </div>
-        {/* Content */}
-        <div className="flex-1 p-4 md:p-10">
-          {active === "users" && <UserTable users={users} setUsers={setUsers} />}
-          {active === "roles" && <RoleTable />}
-          {active === "settings" && <SystemConfigForm />}
-          {active === "logs" && <AuditLogTable onAuditCountUpdate={handleAuditCountUpdate} />}
+        {/* Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4 md:p-10 pt-3 md:pt-4">
+            {active === "users" && <UserTable users={users} setUsers={setUsers} />}
+            {active === "roles" && <RoleTable />}
+            {active === "settings" && <SystemConfigForm />}
+            {active === "logs" && <AuditLogTable onAuditCountUpdate={handleAuditCountUpdate} />}
+          </div>
         </div>
       </main>
     </div>
