@@ -3,6 +3,7 @@
 
 import '../repositories/repository_interfaces.dart';
 import '../models/response/auth_response.dart';
+import '../models/tracking_model.dart';
 
 abstract class UseCase<Type, Params> {
   Future<Type> call(Params params);
@@ -19,7 +20,7 @@ class NoParams {}
 class LoginUseCase implements UseCase<AuthResponse, LoginParams> {
   final AuthRepository repository;
   
-  LoginUseCase(this.repository);
+  LoginUseCase({required this.repository});
   
   @override
   Future<AuthResponse> call(LoginParams params) async {
@@ -30,7 +31,7 @@ class LoginUseCase implements UseCase<AuthResponse, LoginParams> {
 class LogoutUseCase implements UseCase<void, NoParams> {
   final AuthRepository repository;
   
-  LogoutUseCase(this.repository);
+  LogoutUseCase({required this.repository});
   
   @override
   Future<void> call(NoParams params) async {
@@ -41,7 +42,7 @@ class LogoutUseCase implements UseCase<void, NoParams> {
 class CheckLoginStatusUseCase implements UseCase<bool, NoParams> {
   final AuthRepository repository;
   
-  CheckLoginStatusUseCase(this.repository);
+  CheckLoginStatusUseCase({required this.repository});
   
   @override
   Future<bool> call(NoParams params) async {
@@ -106,80 +107,100 @@ class GetLocationStreamUseCase implements StreamUseCase<Map<String, dynamic>, No
   }
 }
 
-class UpdateLocationUseCase implements UseCase<void, LocationParams> {
+class GetTrackingHistoryUseCase implements UseCase<List<Map<String, dynamic>>, TrackingHistoryParams> {
   final TrackingRepository repository;
   
-  UpdateLocationUseCase(this.repository);
+  GetTrackingHistoryUseCase({required this.repository});
   
   @override
-  Future<void> call(LocationParams params) async {
-    return await repository.updateLocation(params.latitude, params.longitude);
-  }
-}
-
-class GetTrackingHistoryUseCase implements UseCase<List<TrackingPoint>, TrackingHistoryParams> {
-  final TrackingRepository repository;
-  
-  GetTrackingHistoryUseCase(this.repository);
-  
-  @override
-  Future<List<TrackingPoint>> call(TrackingHistoryParams params) async {
+  Future<List<Map<String, dynamic>>> call(TrackingHistoryParams params) async {
     return await repository.getTrackingHistory(
       driverId: params.driverId,
       vehicleId: params.vehicleId,
-      startDate: params.startDate,
-      endDate: params.endDate,
+      startDate: params.startDate != null ? DateTime.parse(params.startDate!) : null,
+      endDate: params.endDate != null ? DateTime.parse(params.endDate!) : null,
     );
   }
 }
 
 // ======== Delivery Use Cases ========
 
-class GetActiveDeliveriesUseCase implements UseCase<List<OrderModel>, NoParams> {
+class GetActiveDeliveriesUseCase implements UseCase<List<Map<String, dynamic>>, NoParams> {
   final DeliveryRepository repository;
   
-  GetActiveDeliveriesUseCase(this.repository);
+  GetActiveDeliveriesUseCase({required this.repository});
   
   @override
-  Future<List<OrderModel>> call(NoParams params) async {
+  Future<List<Map<String, dynamic>>> call(NoParams params) async {
     return await repository.getActiveDeliveries();
   }
 }
 
-class GetDeliveryDetailsUseCase implements UseCase<OrderModel, DeliveryDetailsParams> {
+class GetDeliveryByIdUseCase implements UseCase<Map<String, dynamic>, DeliveryDetailsParams> {
   final DeliveryRepository repository;
   
-  GetDeliveryDetailsUseCase(this.repository);
+  GetDeliveryByIdUseCase({required this.repository});
   
   @override
-  Future<OrderModel> call(DeliveryDetailsParams params) async {
-    return await repository.getDeliveryById(params.orderId);
+  Future<Map<String, dynamic>> call(DeliveryDetailsParams params) async {
+    return await repository.getDeliveryById(params.deliveryId);
   }
 }
 
-class UpdateDeliveryStatusUseCase implements UseCase<void, UpdateDeliveryStatusParams> {
+class ConfirmPickupUseCase implements UseCase<void, ConfirmPickupParams> {
   final DeliveryRepository repository;
   
-  UpdateDeliveryStatusUseCase(this.repository);
+  ConfirmPickupUseCase({required this.repository});
   
   @override
-  Future<void> call(UpdateDeliveryStatusParams params) async {
-    return await repository.updateDeliveryStatus(params.orderId, params.status);
+  Future<void> call(ConfirmPickupParams params) async {
+    return await repository.confirmPickup(params.deliveryId);
   }
 }
 
-class MarkAsDeliveredUseCase implements UseCase<void, MarkAsDeliveredParams> {
+class ConfirmDeliveryUseCase implements UseCase<void, ConfirmDeliveryParams> {
   final DeliveryRepository repository;
   
-  MarkAsDeliveredUseCase(this.repository);
+  ConfirmDeliveryUseCase({required this.repository});
   
   @override
-  Future<void> call(MarkAsDeliveredParams params) async {
-    return await repository.markAsDelivered(
-      params.orderId, 
-      params.signature, 
-      params.photo
-    );
+  Future<void> call(ConfirmDeliveryParams params) async {
+    return await repository.confirmDelivery(params.deliveryId, params.deliveryData);
+  }
+}
+
+class ReportProblemUseCase implements UseCase<void, ReportProblemParams> {
+  final DeliveryRepository repository;
+  
+  ReportProblemUseCase({required this.repository});
+  
+  @override
+  Future<void> call(ReportProblemParams params) async {
+    return await repository.reportProblem(params.deliveryId, params.problemType, params.description);
+  }
+}
+
+class GetDeliveryHistoryUseCase implements UseCase<List<Map<String, dynamic>>, DeliveryHistoryParams> {
+  final DeliveryRepository repository;
+  
+  GetDeliveryHistoryUseCase({required this.repository});
+  
+  @override
+  Future<List<Map<String, dynamic>>> call(DeliveryHistoryParams params) async {
+    return await repository.getDeliveryHistory(limit: params.limit, offset: params.offset);
+  }
+}
+
+// ======== Notification Use Cases ========
+
+class SendNotificationUseCase implements UseCase<void, SendNotificationParams> {
+  final NotificationRepository repository;
+  
+  SendNotificationUseCase({required this.repository});
+  
+  @override
+  Future<void> call(SendNotificationParams params) async {
+    return await repository.sendNotification(params.title, params.message, data: params.data);
   }
 }
 
@@ -190,13 +211,6 @@ class LoginParams {
   final String password;
   
   LoginParams({required this.email, required this.password});
-}
-
-class LocationParams {
-  final double latitude;
-  final double longitude;
-  
-  LocationParams({required this.latitude, required this.longitude});
 }
 
 class TrackingHistoryParams {
@@ -214,28 +228,43 @@ class TrackingHistoryParams {
 }
 
 class DeliveryDetailsParams {
-  final String orderId;
+  final String deliveryId;
   
-  DeliveryDetailsParams({required this.orderId});
+  DeliveryDetailsParams({required this.deliveryId});
 }
 
-class UpdateDeliveryStatusParams {
-  final String orderId;
-  final DeliveryStatus status;
+class ConfirmPickupParams {
+  final String deliveryId;
   
-  UpdateDeliveryStatusParams({required this.orderId, required this.status});
+  ConfirmPickupParams({required this.deliveryId});
 }
 
-class MarkAsDeliveredParams {
-  final String orderId;
-  final String signature;
-  final String photo;
+class ConfirmDeliveryParams {
+  final String deliveryId;
+  final Map<String, dynamic> deliveryData;
   
-  MarkAsDeliveredParams({
-    required this.orderId,
-    required this.signature,
-    required this.photo,
-  });
+  ConfirmDeliveryParams({required this.deliveryId, required this.deliveryData});
 }
 
+class ReportProblemParams {
+  final String deliveryId;
+  final String problemType;
+  final String description;
+  
+  ReportProblemParams({required this.deliveryId, required this.problemType, required this.description});
+}
 
+class DeliveryHistoryParams {
+  final int limit;
+  final int offset;
+  
+  DeliveryHistoryParams({this.limit = 20, this.offset = 0});
+}
+
+class SendNotificationParams {
+  final String title;
+  final String message;
+  final Map<String, dynamic>? data;
+  
+  SendNotificationParams({required this.title, required this.message, this.data});
+}

@@ -16,6 +16,9 @@ class SocketService {
   // Instance của FlutterSecureStorage để lấy token
   final _storage = const FlutterSecureStorage();
 
+  // Environment instance
+  final _env = Environment.getInstance();
+
   // Singleton pattern cho SocketService
   static final SocketService _instance = SocketService._internal();
   factory SocketService() => _instance;
@@ -46,7 +49,7 @@ class SocketService {
     try {
       // Khởi tạo kết nối socket
       _socket = IO.io(
-        Environment.socketUrl,
+        _env.socketUrl,
         IO.OptionBuilder()
             .setTransports(['websocket'])
             .disableAutoConnect()
@@ -98,7 +101,7 @@ class SocketService {
   // Đăng ký các event listeners
   void _registerEventHandlers() {
     // Khi nhận được đơn hàng mới
-    _socket.on(Environment.newOrderEvent, (data) {
+    _socket.on(_env.newOrderEvent, (data) {
       // Xử lý sự kiện đơn hàng mới
       if (data != null) {
         try {
@@ -116,7 +119,7 @@ class SocketService {
     });
     
     // Khi đơn hàng được cập nhật
-    _socket.on(Environment.orderUpdatedEvent, (data) {
+    _socket.on(_env.orderUpdatedEvent, (data) {
       // Xử lý sự kiện đơn hàng cập nhật
       if (data != null) {
         try {
@@ -134,7 +137,7 @@ class SocketService {
     });
     
     // Khi đơn hàng bị hủy
-    _socket.on(Environment.orderCancelledEvent, (data) {
+    _socket.on(_env.orderCancelledEvent, (data) {
       // Xử lý sự kiện đơn hàng bị hủy
       if (data != null) {
         try {
@@ -156,7 +159,7 @@ class SocketService {
   // Emit vị trí tài xế lên server
   void emitDriverLocation(double latitude, double longitude) {
     if (_isConnected) {
-      _socket.emit(Environment.locationUpdateEvent, {
+      _socket.emit(_env.locationUpdateEvent, {
         'latitude': latitude,
         'longitude': longitude,
         'timestamp': DateTime.now().toIso8601String(),
@@ -167,7 +170,7 @@ class SocketService {
   // Emit trạng thái tài xế lên server
   void emitDriverStatus(DriverStatus status) {
     if (_isConnected) {
-      _socket.emit(Environment.statusUpdateEvent, status.toJson());
+      _socket.emit(_env.statusUpdateEvent, status.toJson());
     }
   }
   

@@ -7,12 +7,13 @@ import 'package:ktc_logistics_driver/domain/models/response/response_default.dar
 
 class CategoryServices {
 
+  final _env = Environment.getInstance();
 
   Future<ResponseDefault> addNewCategory(String nameCategory, String descriptionCategory) async {
 
     final token = await secureStorage.readToken();
 
-    final response = await http.post(Uri.parse('${Environment.endpointApi}/add-categories'),
+    final response = await http.post(Uri.parse('${_env.endpointApi}/add-categories'),
       headers: {  'Accept' : 'application/json', 'xx-token' : token! },
       body: {
         'category' : nameCategory,
@@ -28,7 +29,7 @@ class CategoryServices {
 
     final token = await secureStorage.readToken();
 
-    final response = await http.get(Uri.parse('${Environment.endpointApi}/get-all-categories'),
+    final response = await http.get(Uri.parse('${_env.endpointApi}/get-all-categories'),
       headers: {  'Accept' : 'application/json', 'xx-token' : token! }
     );
 
@@ -40,7 +41,7 @@ class CategoryServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.delete(Uri.parse('${Environment.endpointApi}/delete-category/'+ uidCategory ),
+    final resp = await http.delete(Uri.parse('${_env.endpointApi}/delete-category/'+ uidCategory ),
       headers: { 'Content-type' : 'application/json', 'xx-token' : token! }
     );
 

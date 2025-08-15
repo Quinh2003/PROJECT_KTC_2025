@@ -4,11 +4,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:ktc_logistics_driver/data/env/environment.dart';
-import 'package:ktc_logistics_driver/domain/models/response/auth_response.dart';
-import 'package:ktc_logistics_driver/domain/models/response/order_response.dart' as order_models;
-import 'package:ktc_logistics_driver/domain/models/response/delivery_response.dart';
-import 'package:ktc_logistics_driver/domain/models/response/orders_by_status_response.dart' as status_models;
+import '../data/env/environment.dart';
+import '../domain/models/response/auth_response.dart';
+import '../domain/models/response/order_response.dart' as order_models;
+import '../domain/models/response/delivery_response.dart';
+import '../domain/models/response/orders_by_status_response.dart' as status_models;
 
 class ApiService {
   // Instance của FlutterSecureStorage để lưu JWT token
@@ -16,6 +16,9 @@ class ApiService {
   
   // HTTP Client với timeout
   final _client = http.Client();
+  
+  // Environment instance
+  final _env = Environment.getInstance();
   
   // Singleton pattern cho ApiService
   static final ApiService _instance = ApiService._internal();
@@ -28,7 +31,7 @@ class ApiService {
   Future<AuthResponse> login(String email, String password) async {
     try {
       final response = await _client.post(
-        Uri.parse(Environment.loginUrl),
+        Uri.parse(_env.loginUrl),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': email,
@@ -69,7 +72,7 @@ class ApiService {
       
       // Kiểm tra token bằng cách gọi API protected
       final response = await _client.get(
-        Uri.parse(Environment.userProfileUrl),
+        Uri.parse(_env.userProfileUrl),
         headers: await _getAuthHeaders(),
       );
       
@@ -84,7 +87,7 @@ class ApiService {
     try {
       // Gọi API logout
       await _client.post(
-        Uri.parse(Environment.logoutUrl),
+        Uri.parse(_env.logoutUrl),
         headers: await _getAuthHeaders(),
       );
     } catch (e) {
@@ -104,7 +107,7 @@ class ApiService {
       final uid = await _storage.read(key: 'uid');
       
       final response = await _client.get(
-        Uri.parse('${Environment.ordersUrl}?status=$status&driverId=$uid'),
+        Uri.parse('${_env.ordersUrl}?status=$status&driverId=$uid'),
         headers: await _getAuthHeaders(),
       );
       
@@ -124,7 +127,7 @@ class ApiService {
   Future<order_models.OrdersResponse> getAllOrders({int page = 1, int perPage = 10}) async {
     try {
       final response = await _client.get(
-        Uri.parse('${Environment.ordersUrl}?page=$page&perPage=$perPage'),
+        Uri.parse('${_env.ordersUrl}?page=$page&perPage=$perPage'),
         headers: await _getAuthHeaders(),
       );
       
@@ -144,7 +147,7 @@ class ApiService {
   Future<Map<String, dynamic>> getOrderDetail(String orderId) async {
     try {
       final response = await _client.get(
-        Uri.parse('${Environment.ordersUrl}/$orderId'),
+        Uri.parse('${_env.ordersUrl}/$orderId'),
         headers: await _getAuthHeaders(),
       );
       
@@ -164,7 +167,7 @@ class ApiService {
   Future<Map<String, dynamic>> updateOrderStatus(String orderId, String status) async {
     try {
       final response = await _client.patch(
-        Uri.parse('${Environment.orderStatusUrl}/$orderId/status'),
+        Uri.parse('${_env.orderStatusUrl}/$orderId/status'),
         headers: await _getAuthHeaders(),
         body: jsonEncode({
           'status': status,
@@ -187,7 +190,7 @@ class ApiService {
   Future<Map<String, dynamic>> getOrderTracking(String orderId) async {
     try {
       final response = await _client.get(
-        Uri.parse('${Environment.orderTrackingUrl}/$orderId/tracking'),
+        Uri.parse('${_env.orderTrackingUrl}/$orderId/tracking'),
         headers: await _getAuthHeaders(),
       );
       
@@ -209,7 +212,7 @@ class ApiService {
   Future<Map<String, dynamic>> getAllDeliveries({int page = 1, int perPage = 10}) async {
     try {
       final response = await _client.get(
-        Uri.parse('${Environment.deliveriesUrl}?page=$page&perPage=$perPage'),
+        Uri.parse('${_env.deliveriesUrl}?page=$page&perPage=$perPage'),
         headers: await _getAuthHeaders(),
       );
       
@@ -229,7 +232,7 @@ class ApiService {
   Future<DeliveryResponse> getDeliveryDetail(String deliveryId) async {
     try {
       final response = await _client.get(
-        Uri.parse('${Environment.deliveriesUrl}/$deliveryId'),
+        Uri.parse('${_env.deliveriesUrl}/$deliveryId'),
         headers: await _getAuthHeaders(),
       );
       
@@ -249,7 +252,7 @@ class ApiService {
   Future<Map<String, dynamic>> getDeliveryTracking(String deliveryId) async {
     try {
       final response = await _client.get(
-        Uri.parse('${Environment.deliveryTrackingUrl}/$deliveryId/tracking'),
+        Uri.parse('${_env.deliveryTrackingUrl}/$deliveryId/tracking'),
         headers: await _getAuthHeaders(),
       );
       
@@ -271,7 +274,7 @@ class ApiService {
   Future<Map<String, dynamic>> getAllRoutes({int page = 1, int perPage = 10}) async {
     try {
       final response = await _client.get(
-        Uri.parse('${Environment.routesUrl}?page=$page&perPage=$perPage'),
+        Uri.parse('${_env.routesUrl}?page=$page&perPage=$perPage'),
         headers: await _getAuthHeaders(),
       );
       
@@ -291,7 +294,7 @@ class ApiService {
   Future<Map<String, dynamic>> getRouteDetail(String routeId) async {
     try {
       final response = await _client.get(
-        Uri.parse('${Environment.routesUrl}/$routeId'),
+        Uri.parse('${_env.routesUrl}/$routeId'),
         headers: await _getAuthHeaders(),
       );
       
@@ -311,7 +314,7 @@ class ApiService {
   Future<Map<String, dynamic>> getRouteTracking(String routeId) async {
     try {
       final response = await _client.get(
-        Uri.parse('${Environment.routeTrackingUrl}/$routeId/tracking'),
+        Uri.parse('${_env.routeTrackingUrl}/$routeId/tracking'),
         headers: await _getAuthHeaders(),
       );
       
@@ -333,7 +336,7 @@ class ApiService {
   Future<Map<String, dynamic>> updateDriverLocation(double latitude, double longitude) async {
     try {
       final response = await _client.post(
-        Uri.parse(Environment.updateLocationUrl),
+        Uri.parse(_env.updateLocationUrl),
         headers: await _getAuthHeaders(),
         body: jsonEncode({
           'latitude': latitude,
@@ -358,7 +361,7 @@ class ApiService {
   Future<Map<String, dynamic>> getVehicleLocation(String vehicleId) async {
     try {
       final response = await _client.get(
-        Uri.parse('${Environment.vehicleTrackingUrl}/$vehicleId'),
+        Uri.parse('${_env.vehicleTrackingUrl}/$vehicleId'),
         headers: await _getAuthHeaders(),
       );
       
@@ -384,7 +387,7 @@ class ApiService {
       if (startDate != null) queryParams['startDate'] = startDate;
       if (endDate != null) queryParams['endDate'] = endDate;
       
-      final uri = Uri.parse(Environment.trackingHistoryUrl).replace(queryParameters: queryParams);
+      final uri = Uri.parse(_env.trackingHistoryUrl).replace(queryParameters: queryParams);
       
       final response = await _client.get(
         uri,
@@ -409,7 +412,7 @@ class ApiService {
   Future<AuthResponse> getDriverProfile() async {
     try {
       final response = await _client.get(
-        Uri.parse(Environment.userProfileUrl),
+        Uri.parse(_env.userProfileUrl),
         headers: await _getAuthHeaders(),
       );
       
@@ -429,7 +432,7 @@ class ApiService {
   Future<AuthResponse> updateDriverProfile(Map<String, dynamic> profileData) async {
     try {
       final response = await _client.put(
-        Uri.parse(Environment.updateUserProfileUrl),
+        Uri.parse(_env.updateUserProfileUrl),
         headers: await _getAuthHeaders(),
         body: jsonEncode(profileData),
       );
@@ -450,7 +453,7 @@ class ApiService {
   Future<Map<String, dynamic>> updateDriverStatus(String status) async {
     try {
       final response = await _client.post(
-        Uri.parse('${Environment.userProfileUrl}/status'),
+        Uri.parse('${_env.userProfileUrl}/status'),
         headers: await _getAuthHeaders(),
         body: jsonEncode({
           'status': status,

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../data/repositories/repository_implementations.dart';
+import 'user_model.dart';
 
 abstract class AuthState extends Equatable {
   @override
@@ -11,7 +11,7 @@ class AuthInitialState extends AuthState {}
 class AuthLoadingState extends AuthState {}
 
 class AuthenticatedState extends AuthState {
-  final User user;
+  final UserModel user;
   final String token;
 
   AuthenticatedState({required this.user, required this.token});

@@ -52,7 +52,7 @@ dependencies:
   flutter_local_notifications: ^19.4.0
   
   # Firebase
-  firebase_messaging: ^14.7.16
+  firebase_messaging: ^14.7.10
   firebase_core: ^2.24.2
   
   # New additions for Spatial UI
