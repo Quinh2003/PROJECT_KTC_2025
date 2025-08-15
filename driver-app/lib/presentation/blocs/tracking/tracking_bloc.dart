@@ -7,18 +7,22 @@ import 'tracking_event.dart';
 import 'tracking_state.dart';
 
 class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
-  final StartTrackingUseCase _startTrackingUseCase;
-  final StopTrackingUseCase _stopTrackingUseCase;
+  final StartRouteTrackingUseCase _startRouteTrackingUseCase;
+  final EndRouteTrackingUseCase _endRouteTrackingUseCase;
+  final UpdateLocationUseCase _updateLocationUseCase;
+  final GetTrackingHistoryUseCase _getTrackingHistoryUseCase;
   
   StreamSubscription<Position>? _positionStreamSubscription;
   
   TrackingBloc({
-    required StartTrackingUseCase startTrackingUseCase,
-    required StopTrackingUseCase stopTrackingUseCase,
-    required GetCurrentLocationUseCase getCurrentLocationUseCase,
-    required GetLocationStreamUseCase getLocationStreamUseCase,
-  }) : _startTrackingUseCase = startTrackingUseCase,
-       _stopTrackingUseCase = stopTrackingUseCase,
+    required StartRouteTrackingUseCase startRouteTrackingUseCase,
+    required EndRouteTrackingUseCase endRouteTrackingUseCase,
+    required UpdateLocationUseCase updateLocationUseCase,
+    required GetTrackingHistoryUseCase getTrackingHistoryUseCase,
+  }) : _startRouteTrackingUseCase = startRouteTrackingUseCase,
+       _endRouteTrackingUseCase = endRouteTrackingUseCase,
+       _updateLocationUseCase = updateLocationUseCase,
+       _getTrackingHistoryUseCase = getTrackingHistoryUseCase,
        super(TrackingInitialState()) {
     
     on<StartTrackingEvent>(_onStartTracking);
@@ -62,8 +66,15 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
         return;
       }
       
-      // Start tracking using use case
-      await _startTrackingUseCase.call(NoParams());
+      // Start location tracking (no need for use case here, just start GPS)
+      emit(TrackingActiveState(
+        driverId: event.driverId,
+        vehicleId: event.vehicleId,
+        routeId: event.routeId,
+        interval: const Duration(seconds: 10),
+        accuracy: 'high',
+        startedAt: DateTime.now(),
+      ));
       
       // Start location tracking
       _positionStreamSubscription?.cancel();
@@ -113,8 +124,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
       await _positionStreamSubscription?.cancel();
       _positionStreamSubscription = null;
       
-      await _stopTrackingUseCase.call(NoParams());
-      
+      // Stop GPS tracking (no use case needed)
       emit(TrackingInactiveState());
     } catch (e) {
       emit(TrackingErrorState(error: 'Failed to stop tracking: ${e.toString()}'));
@@ -131,7 +141,9 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
       
       // Send the location update to the server through use case
       try {
-        // Update location using use case (mock implementation)
+        // Update location using use case
+        await _updateLocationUseCase.call(event.trackingPoint);
+        
         emit(currentState.copyWith(
           lastLocation: event.trackingPoint,
         ));
@@ -205,13 +217,26 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
         add(StartTrackingEvent(driverId: event.driverId, vehicleId: event.vehicleId));
       }
       
-      emit(RouteTrackingActiveState(
-        routeId: event.routeId,
-        driverId: event.driverId,
-        vehicleId: event.vehicleId,
-        trackingPoints: [],
-        startedAt: DateTime.now(),
-      ));
+      // Start route tracking using use case
+      final success = await _startRouteTrackingUseCase.call(
+        StartRouteTrackingParams(
+          routeId: event.routeId,
+          driverId: event.driverId,
+          vehicleId: event.vehicleId,
+        ),
+      );
+      
+      if (success) {
+        emit(RouteTrackingActiveState(
+          routeId: event.routeId,
+          driverId: event.driverId,
+          vehicleId: event.vehicleId,
+          trackingPoints: [],
+          startedAt: DateTime.now(),
+        ));
+      } else {
+        emit(TrackingErrorState(error: 'Failed to start route tracking'));
+      }
     } catch (e) {
       emit(TrackingErrorState(error: 'Failed to start route tracking: ${e.toString()}'));
     }
@@ -222,17 +247,26 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     Emitter<TrackingState> emit
   ) async {
     try {
-      // If we're in route tracking state, go back to regular tracking
-      if (state is RouteTrackingActiveState) {
-        final routeState = state as RouteTrackingActiveState;
-        emit(TrackingActiveState(
-          driverId: routeState.driverId,
-          vehicleId: routeState.vehicleId,
-          routeId: null,
-          interval: const Duration(seconds: 10),
-          accuracy: 'high',
-          startedAt: routeState.startedAt,
-        ));
+      // End route tracking using use case
+      final success = await _endRouteTrackingUseCase.call(
+        EndRouteTrackingParams(routeId: event.routeId),
+      );
+      
+      if (success) {
+        // If we're in route tracking state, go back to regular tracking
+        if (state is RouteTrackingActiveState) {
+          final routeState = state as RouteTrackingActiveState;
+          emit(TrackingActiveState(
+            driverId: routeState.driverId,
+            vehicleId: routeState.vehicleId,
+            routeId: null,
+            interval: const Duration(seconds: 10),
+            accuracy: 'high',
+            startedAt: routeState.startedAt,
+          ));
+        }
+      } else {
+        emit(TrackingErrorState(error: 'Failed to end route tracking'));
       }
     } catch (e) {
       emit(TrackingErrorState(error: 'Failed to end route tracking: ${e.toString()}'));
@@ -297,13 +331,17 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     try {
       emit(TrackingHistoryLoadingState());
       
-      // Mock tracking history for now
-      final history = <TrackingPoint>[];
-      
-      await Future.delayed(const Duration(seconds: 1));
+      // Fetch tracking history using use case
+      final response = await _getTrackingHistoryUseCase.call(
+        TrackingHistoryParams(
+          driverId: event.driverId,
+          startDate: event.startDate.toIso8601String(),
+          endDate: event.endDate.toIso8601String(),
+        ),
+      );
       
       emit(TrackingHistoryLoadedState(
-        trackingPoints: history,
+        trackingPoints: response.trackingPoints,
         startDate: event.startDate,
         endDate: event.endDate,
       ));

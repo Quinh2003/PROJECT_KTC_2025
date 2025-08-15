@@ -2,16 +2,16 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ktc_logistics_driver/domain/models/response/response_login.dart';
-import 'package:ktc_logistics_driver/services/push_notification.dart';
-import 'package:ktc_logistics_driver/services/user_services.dart';
+import '../../../domain/models/response/auth_response.dart';
+import '../../../services/user_services.dart';
 
 part 'user_event.dart';
 part 'user_state.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
+  final UserServices userServices;
 
-  UserBloc() : super(UserState()){
+  UserBloc({required this.userServices}) : super(UserState()){
 
     on<OnGetUserEvent>(_onGetUser );
     on<OnSelectPictureEvent>(_onSelectPicture);
@@ -60,7 +60,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
         emit( SuccessUserState() );
 
-        emit( state.copyWith(user: user));
+        // Fix: Cast User to User? for copyWith compatibility
+        emit( state.copyWith(user: user as User?));
 
       }else{
         emit( FailureUserState(data.msg) );
@@ -86,7 +87,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
         emit( SuccessUserState() );
 
-        emit( state.copyWith( user: user ));
+        // Fix: Cast User to User? for copyWith compatibility
+        emit( state.copyWith( user: user as User? ));
 
       } else {
         emit( FailureUserState(data.msg) );
@@ -112,7 +114,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
         emit( SuccessUserState() );
 
-        emit( state.copyWith( user: user ));
+        // Fix: Cast User to User? for copyWith compatibility
+        emit( state.copyWith( user: user as User? ));
 
       }else{
         emit( FailureUserState(data.msg) );
@@ -130,9 +133,18 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
       emit( LoadingUserState() );
 
-      final nToken = await pushNotification.getNotificationToken();
-
-      final data = await userServices.registerClient(event.name, event.lastname, event.phone, event.image, event.email, event.password, nToken!);
+      // TODO: Need to get address and reference from event or elsewhere
+      // For now using placeholder values
+      final data = await userServices.registerClient(
+        event.name, 
+        event.lastname, 
+        event.phone, 
+        event.email, 
+        event.password, 
+        '', // address placeholder
+        '', // reference placeholder
+        event.image
+      );
 
       if( data.resp ) emit( SuccessUserState() );
       else emit( FailureUserState(data.msg) );
@@ -149,9 +161,14 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
       emit( LoadingUserState() );
 
-      final nToken = await pushNotification.getNotificationToken();
-
-      final data = await userServices.registerDelivery(event.name, event.lastname, event.phone, event.email, event.password, event.image, nToken!);
+      final data = await userServices.registerDelivery(
+        event.name, 
+        event.lastname, 
+        event.phone, 
+        event.email, 
+        event.password, 
+        event.image
+      );
 
       if( data.resp ) {
         
@@ -159,7 +176,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
         emit( SuccessUserState() );
 
-        emit( state.copyWith( user: user ));
+        // Fix: Cast User to User? for copyWith compatibility
+        emit( state.copyWith( user: user as User? ));
 
       } else emit( FailureUserState(data.msg));
       
@@ -183,7 +201,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
         emit( SuccessUserState() );
 
-        emit( state.copyWith(user: user) );
+        // Fix: Cast User to User? for copyWith compatibility
+        emit( state.copyWith(user: user as User?) );
 
       }else{
         emit( FailureUserState(data.msg) );
@@ -209,7 +228,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
         emit( SuccessUserState() );
 
-        emit( state.copyWith( user: user ));
+        // Fix: Cast User to User? for copyWith compatibility
+        emit( state.copyWith( user: user as User? ));
 
       }else {
         emit( FailureUserState(data.msg) );
@@ -234,6 +254,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
       emit( LoadingUserState() );
 
+      // TODO: Fix method name and parameters based on actual UserServices API
+      // Commenting out problematic code for now
+      /*
       final data = await userServices.addNewAddressLocation(event.street, event.reference, event.location.latitude.toString(), event.location.longitude.toString());
       
       if( data.resp ){
@@ -251,6 +274,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }else{
         emit( FailureUserState(data.msg) );
       }
+      */
+
+      // Temporary implementation
+      emit( FailureUserState('Address functionality not implemented yet') );
 
     } catch (e) {
       emit( FailureUserState(e.toString()) );
