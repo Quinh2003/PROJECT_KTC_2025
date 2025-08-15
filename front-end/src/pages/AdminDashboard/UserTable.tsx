@@ -1,58 +1,55 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserForm from "./UserForm";
-import { FaBellConcierge } from "react-icons/fa6";
-import { FaTruck } from "react-icons/fa6";
-import { FaTools } from "react-icons/fa";
+import { fetchUsers, addUser, editUser as apiEditUser, deleteUser as apiDeleteUser } from "../../services/adminAPI";
+import type { User } from "../../types/User";
 
-const initialUsers = [
-  {
-    name: "Nguyen Van A",
-    email: "nguyenvana@company.com",
-    role: "Dispatcher",
-    roleIcon: <FaBellConcierge className="inline mr-1" />,
-    status: "active",
-    lastLogin: "2024-01-15 09:30",
-  },
-  {
-    name: "Tran Thi B",
-    email: "tranthib@company.com",
-    role: "Fleet Manager",
-    roleIcon: <FaTools className="inline mr-1" />,
-    status: "active",
-    lastLogin: "2024-01-15 08:45",
-  },
-  {
-    name: "Le Van C",
-    email: "levanc@company.com",
-    role: "Driver",
-    roleIcon: <FaTruck className="inline mr-1" />,
-    status: "inactive",
-    lastLogin: "2024-01-10 16:20",
-  },
-];
-
-export default function UserTable() {
+export default function UserTable({ users, setUsers }: { users: User[]; setUsers: (users: User[]) => void }) {
   const [search, setSearch] = useState("");
-  const [users, setUsers] = useState(initialUsers);
   const [showForm, setShowForm] = useState(false);
-  const [editUser, setEditUser] = useState<{
-    name: string;
-    email: string;
-    role: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    roleIcon: any;
-    status: string;
-    lastLogin: string;
-  } | null>(null);
-  const [viewUser, setViewUser] = useState<{
-    name: string;
-    email: string;
-    role: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    roleIcon: any;
-    status: string;
-    lastLogin: string;
-  } | null>(null);
+  const [editUser, setEditUser] = useState<User | null>(null);
+  const [viewUser, setViewUser] = useState<User | null>(null);
+  const [fetchError, setFetchError] = useState<string>("");
+
+  useEffect(() => {
+    fetchUsers()
+      .then((data) => {
+        console.log("[UserTable] API data:", data);
+        setFetchError("");
+        if (!Array.isArray(data)) {
+          setFetchError("API không trả về mảng user. Kiểm tra lại format dữ liệu!");
+          setUsers([]);
+          return;
+        }
+        setUsers(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data.map((u: any) => {
+            const status = u.status?.name?.toLowerCase() === "active" ? "active" : u.status?.name?.toLowerCase() || "inactive";
+            const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+            const roleName = u.role?.roleName || "";
+            return {
+              id: u.id,
+              name: u.fullName || u.username || "",
+              email: u.email,
+              role: roleName,
+              status,
+              lastLogin,
+              phone: u.phone || "",
+              password: u.password || "",
+            };
+          })
+        );
+      })
+      .catch((err) => {
+        console.error("[UserTable] Fetch users error:", err);
+        setFetchError("Không thể lấy dữ liệu user từ API. Vui lòng thử lại hoặc kiểm tra backend!");
+        setUsers([]);
+      });
+  }, [setUsers]);
+
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 20;
 
   const filtered = users.filter(
     (u) =>
@@ -60,32 +57,211 @@ export default function UserTable() {
       u.email.toLowerCase().includes(search.toLowerCase())
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleAddUser = (user: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
-    setUsers([...users, user]);
+  // Pagination logic
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const paginated = filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
+  const handleAddUser = async (user: User) => {
+    try {
+      // Map role string sang id theo bảng roles thực tế
+      const roleMap: Record<string, number> = {
+        "DISPATCHER": 1,
+        "ADMIN": 2,
+        "OPERATIONS": 3,
+        "CUSTOMER": 5,
+        "FLEET": 6,
+        "DRIVER": 7
+      };
+      const statusMap: Record<string, number> = {
+        "active": 7,
+        "inactive": 8,
+        "suspended": 9
+      };
+      // Chuẩn hóa key role: "Admin" => "ADMIN", "Fleet Manager" => "FLEET_MANAGER"
+      const roleKey = user.role.replace(/ /g, '_').toUpperCase();
+      const payload = {
+        username: user.email.split("@")[0],
+        fullName: user.name,
+        email: user.email,
+        password: user.password || "",
+        phone: user.phone || "",
+        role: { id: roleMap[roleKey] },
+        status: { id: statusMap[user.status] || 1 }
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await addUser(payload as any);
+      // Sau khi thêm thành công, reload lại danh sách user từ API
+      const data = await fetchUsers();
+      setUsers(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data.map((u: any) => {
+          const status = u.status?.name?.toLowerCase() === "active" ? "active" : u.status?.name?.toLowerCase() || "inactive";
+          const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+          const roleName = u.role?.roleName || "";
+          return {
+            id: u.id,
+            name: u.fullName || u.username || "",
+            email: u.email,
+            role: roleName,
+            status,
+            lastLogin,
+            phone: u.phone || "",
+            password: u.password || "",
+          };
+        })
+      );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      alert("Lỗi khi thêm user mới. Vui lòng thử lại!");
+    }
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleEditUser = (user: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
-    setEditUser(user);
+  const handleEditUser = (user: any) => {
+    console.log("=== handleEditUser Debug ===");
+    console.log("Original user data:", user);
+    console.log("user.password:", user.password);
+    
+    const editUserData = {
+      ...user,
+      roleValue: user.roleValue,
+      status: user.status === "active" ? "active" : "inactive",
+      phone: user.phone || "",
+      password: user.password || "" // Truyền password từ user data
+    };
+    
+    console.log("editUserData to be set:", editUserData);
+    console.log("editUserData.password:", editUserData.password);
+    
+    setEditUser(editUserData); // Đảm bảo có trường roleValue, status, phone, password đúng cho form
     setShowForm(true);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleUpdateUser = (updatedUser: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
-    setUsers(users.map(u => (u.email === updatedUser.email ? updatedUser : u)));
-    setShowForm(false);
-    setEditUser(null);
+  const handleUpdateUser = async (updatedUser: User) => {
+    try {
+      console.log("[UserTable] handleUpdateUser called with:", updatedUser);
+      
+      // Map role string sang id theo bảng roles thực tế
+      const roleMap: Record<string, number> = {
+        "DISPATCHER": 1,
+        "ADMIN": 2,
+        "OPERATIONS": 3,
+        "CUSTOMER": 5,
+        "FLEET": 6,
+        "DRIVER": 7
+      };
+      const statusMap: Record<string, number> = {
+        "active": 7,
+        "inactive": 8,
+        "suspended": 9
+      };
+      // Chuẩn hóa key role: "Admin" => "ADMIN", "Fleet Manager" => "FLEET_MANAGER"
+      const roleKey = updatedUser.role.replace(/ /g, '_').toUpperCase();
+      console.log("[UserTable] roleKey:", roleKey, "roleMap[roleKey]:", roleMap[roleKey]);
+      
+      // Tìm user gốc để lấy id và các trường không sửa
+      const userOrigin = users.find(u => u.email === updatedUser.email);
+      if (!userOrigin) {
+        console.error("[UserTable] User not found with email:", updatedUser.email);
+        throw new Error("User not found");
+      }
+      console.log("[UserTable] userOrigin:", userOrigin);
+      
+      // Tạo payload đầy đủ cho PUT
+      const payload: {
+        id: number;
+        username: string;
+        fullName: string;
+        email: string;
+        phone: string;
+        role: { id: number };
+        status: { id: number };
+        password?: string;
+      } = {
+        id: userOrigin.id,
+        username: updatedUser.email.split("@")[0],
+        fullName: updatedUser.name,
+        email: updatedUser.email,
+        phone: updatedUser.phone && updatedUser.phone.trim() !== "" ? updatedUser.phone : userOrigin.phone || "",
+        role: { id: roleMap[roleKey] },
+        status: { id: statusMap[updatedUser.status] || 7 }
+      };
+      
+      // Chỉ thêm password vào payload nếu user nhập password mới
+      if (updatedUser.password && updatedUser.password.trim() !== "") {
+        payload.password = updatedUser.password;
+      }
+      
+      console.log("[UserTable] payload for update:", payload);
+      
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await apiEditUser(userOrigin.id, payload as any);
+      console.log("[UserTable] Update successful, reloading users...");
+      // Reload lại danh sách user
+      const data = await fetchUsers();
+      setUsers(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data.map((u: any) => {
+          const statusRaw = u.status?.name?.toLowerCase() || "";
+          const status = statusRaw === "active" ? "active" : "inactive";
+          const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+          const roleName = u.role?.roleName || "";
+          return {
+            id: u.id,
+            name: u.fullName || u.username || "",
+            email: u.email,
+            role: roleName,
+            status,
+            lastLogin,
+            phone: u.phone || "",
+            password: u.password || "",
+          };
+        })
+      );
+      setShowForm(false);
+      setEditUser(null);
+    } catch (err) {
+      console.error("[UserTable] Update error:", err);
+      alert(`Lỗi khi cập nhật user: ${err instanceof Error ? err.message : 'Unknown error'}. Vui lòng thử lại!`);
+    }
   };
 
-  const handleDeleteUser = (email: string) => {
+  const handleDeleteUser = async (email: string) => {
+    const user = users.find(u => u.email === email);
+    if (!user) return;
     if (window.confirm("Are you sure you want to delete this user?")) {
-      setUsers(users.filter(u => u.email !== email));
+      try {
+        await apiDeleteUser(user.id);
+        // Reload lại danh sách user
+        const data = await fetchUsers();
+        setUsers(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data.map((u: any) => {
+            const statusRaw = u.status?.name?.toLowerCase() || "";
+            const status = statusRaw === "active" ? "active" : "inactive";
+            const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+            const roleName = u.role?.roleName || "";
+            return {
+              id: u.id,
+              name: u.fullName || u.username || "",
+              email: u.email,
+              role: roleName,
+              status,
+              lastLogin,
+              phone: u.phone || "",
+              password: u.password || "",
+            };
+          })
+        );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (err) {
+        alert("Lỗi khi xóa user. Vui lòng thử lại!");
+      }
     }
   };
 
   return (
-    <div className="bg-white rounded-xl shadow p-6">
+    <div className="bg-white rounded-xl shadow p-8">
       <div className="flex justify-between items-center mb-4">
         <input
           className="border rounded px-4 py-2 w-72"
@@ -115,11 +291,16 @@ export default function UserTable() {
       )}
       <div>
         <h2 className="text-2xl font-bold mb-5">User List</h2>
+        {fetchError && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+            {fetchError}
+          </div>
+        )}
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
               <tr className="text-left text-gray-600 border-b">
-                <th className="py-2 pr-4">Name</th>
+                <th className="py-2 pr-4">Full Name</th>
                 <th className="py-2 pr-4">Email</th>
                 <th className="py-2 pr-4">Role</th>
                 <th className="py-2 pr-4">Status</th>
@@ -128,8 +309,8 @@ export default function UserTable() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((u, idx) => (
-                <tr key={idx} className="border-b hover:bg-gray-50">
+              {paginated.map((u, idx) => (
+                <tr key={u.id || idx} className="border-b hover:bg-gray-50">
                   <td className="py-3 pr-4 font-medium">{u.name}</td>
                   <td className="py-3 pr-4">{u.email}</td>
                   <td className="py-3 pr-4">
@@ -146,7 +327,6 @@ export default function UserTable() {
                           : ""
                       }`}
                     >
-                      <span>{u.roleIcon}</span>
                       {u.role}
                     </span>
                   </td>
@@ -248,6 +428,26 @@ export default function UserTable() {
             </tbody>
           </table>
         </div>
+        {/* Pagination controls */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-4">
+            <button
+              className="px-3 py-1 rounded border bg-gray-100 disabled:opacity-50"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span className="mx-2">Page {currentPage} / {totalPages}</span>
+            <button
+              className="px-3 py-1 rounded border bg-gray-100 disabled:opacity-50"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
       {/* User detail modal */}
       {viewUser && (

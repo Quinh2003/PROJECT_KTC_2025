@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaUserCog, FaCheck, FaTimes } from "react-icons/fa";
 
 interface OrdersAssignmentProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   orders?: any[];
 }
 
