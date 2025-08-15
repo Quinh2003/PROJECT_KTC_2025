@@ -51,6 +51,10 @@ dependencies:
   # Local Notifications (no Firebase)
   flutter_local_notifications: ^19.4.0
   
+  # Firebase
+  firebase_messaging: ^14.7.16
+  firebase_core: ^2.24.2
+  
   # New additions for Spatial UI
   glassmorphism: ^3.0.0
   cached_network_image: ^3.3.1

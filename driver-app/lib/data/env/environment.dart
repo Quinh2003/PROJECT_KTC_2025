@@ -3,31 +3,69 @@
 // Cấu hình môi trường kết nối với Spring Boot backend
 
 class Environment {
-  // Base URL của Spring Boot backend (10.0.2.2 là localhost của máy host khi chạy từ emulator)
-  static const String endpointBase = 'http://10.0.2.2:8080/';
-  static const String endpointApi = 'http://10.0.2.2:8080/api';
+  // Singleton instance
+  static final Environment _instance = Environment._internal();
   
-  // URL cho WebSocket
-  static const String socketUrl = 'http://10.0.2.2:8080';
+  // Factory constructor to get instance
+  factory Environment.getInstance() => _instance;
+  
+  Environment._internal();
+  
+  // Base URL settings
+  final String apiBaseUrl = 'http://10.0.2.2:8080/api';
+  final String socketUrl = 'http://10.0.2.2:8080';
+  
+  // Map services
+  final String mapboxAccessToken = 'pk.your_mapbox_access_token_here';
   
   // API Endpoints - Authentication
-  static const String loginUrl = '$endpointApi/auth/login';
-  static const String logoutUrl = '$endpointApi/auth/logout';
-  static const String registerUrl = '$endpointApi/auth/register';
-  static const String googleLoginUrl = '$endpointApi/auth/google-credential';
+  final String loginUrl = 'auth/login';
+  final String logoutUrl = 'auth/logout';
+  final String registerUrl = 'auth/register';
   
   // API Endpoints - Users & Drivers
-  static const String userProfileUrl = '$endpointApi/users/profile';
-  static const String updateUserProfileUrl = '$endpointApi/users/profile';
+  final String userProfileUrl = 'users/profile';
+  final String updateUserProfileUrl = 'users/profile';
   
   // API Endpoints - Orders
-  static const String ordersUrl = '$endpointApi/orders';
-  static const String orderStatusUrl = '$endpointApi/orders'; // + /{id}/status
-  static const String orderTrackingUrl = '$endpointApi/orders'; // + /{id}/tracking
+  final String ordersUrl = 'orders';
+  final String orderStatusUrl = 'orders'; // + /{id}/status
+  final String orderTrackingUrl = 'orders'; // + /{id}/tracking
   
   // API Endpoints - Deliveries
-  static const String deliveriesUrl = '$endpointApi/deliveries';
-  static const String deliveryTrackingUrl = '$endpointApi/deliveries'; // + /{id}/tracking
+  final String deliveriesUrl = 'deliveries';
+  final String deliveryTrackingUrl = 'deliveries'; // + /{id}/tracking
+  
+  // API Endpoints - Routes
+  final String routesUrl = 'routes';
+  final String routeTrackingUrl = 'routes'; // + /{id}/tracking
+  
+  // API Endpoints - GPS Tracking
+  final String updateLocationUrl = 'tracking/update';
+  final String vehicleTrackingUrl = 'tracking/vehicles'; // + /{id}
+  final String trackingHistoryUrl = 'tracking/history';
+  
+  // Socket Events
+  final String newOrderEvent = 'new_order';
+  final String orderUpdatedEvent = 'order_updated';
+  final String orderCancelledEvent = 'order_cancelled';
+  final String locationUpdateEvent = 'driver_location';
+  final String statusUpdateEvent = 'driver_status';
+  
+  // Order Status
+  final String orderStatusPending = 'PENDING';
+  final String orderStatusAssigned = 'ASSIGNED';
+  final String orderStatusPickedUp = 'PICKED_UP';
+  final String orderStatusDelivering = 'DELIVERING';
+  final String orderStatusDelivered = 'DELIVERED';
+  final String orderStatusCancelled = 'CANCELLED';
+  
+  // Driver Status
+  final String driverStatusOffline = 'OFFLINE';
+  final String driverStatusOnline = 'ONLINE';
+  final String driverStatusBusy = 'BUSY';
+  final String driverStatusResting = 'RESTING';
+}
   
   // API Endpoints - Routes
   static const String routesUrl = '$endpointApi/routes';
