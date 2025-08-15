@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ktc_logistics_driver/data/env/environment.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/domain/models/response/products_top_home_response.dart';
-import 'package:ktc_logistics_driver/domain/services/products_services.dart';
+import 'package:ktc_logistics_driver/services/products_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 import 'package:ktc_logistics_driver/presentation/screens/admin/products/add_new_product_screen.dart';
@@ -82,6 +82,7 @@ class _GridViewListProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _env = Environment.getInstance();
 
     return GridView.builder(
       physics: const BouncingScrollPhysics(),
@@ -105,7 +106,7 @@ class _GridViewListProduct extends StatelessWidget {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     scale: 7,
-                    image: NetworkImage('${Environment.endpointBase}${listProducts[i].picture}')
+                    image: NetworkImage('${_env.endpointBase}${listProducts[i].picture}')
                   )
                 ),
               ),

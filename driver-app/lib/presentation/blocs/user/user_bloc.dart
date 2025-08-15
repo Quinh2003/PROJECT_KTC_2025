@@ -3,8 +3,8 @@ import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ktc_logistics_driver/domain/models/response/response_login.dart';
-import 'package:ktc_logistics_driver/domain/services/push_notification.dart';
-import 'package:ktc_logistics_driver/domain/services/user_services.dart';
+import 'package:ktc_logistics_driver/services/push_notification.dart';
+import 'package:ktc_logistics_driver/services/user_services.dart';
 
 part 'user_event.dart';
 part 'user_state.dart';

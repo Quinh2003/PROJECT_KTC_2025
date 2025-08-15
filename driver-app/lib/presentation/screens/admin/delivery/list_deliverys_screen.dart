@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ktc_logistics_driver/data/env/environment.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/domain/models/response/get_all_delivery_response.dart';
-import 'package:ktc_logistics_driver/domain/services/services.dart';
+import 'package:ktc_logistics_driver/services/delivery_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 import 'package:ktc_logistics_driver/presentation/screens/admin/delivery/add_new_delivery_screen.dart';
@@ -93,7 +93,7 @@ class _ListDelivery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    final _env = Environment.getInstance();
     final userBloc = BlocProvider.of<UserBloc>(context);
     
     return (listDelivery.length != 0)
@@ -129,7 +129,7 @@ class _ListDelivery extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                          image: NetworkImage('${Environment.endpointBase}${listDelivery[i].image}')
+                          image: NetworkImage('${_env.endpointBase}${listDelivery[i].image}')
                         )
                       ),
                     ),

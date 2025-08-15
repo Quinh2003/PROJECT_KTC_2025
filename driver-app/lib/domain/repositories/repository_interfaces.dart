@@ -1,13 +1,8 @@
 // Domain layer - Repository interfaces
 // Định nghĩa contracts cho các repository
 
-import 'package:geolocator/geolocator.dart';
-
 // Import các models đã có
 import '../models/response/auth_response.dart';
-import '../models/tracking_model.dart';
-import '../models/notification_model.dart';
-import '../models/order_model.dart';
 
 abstract class AuthRepository {
   Future<AuthResponse> login(String email, String password);
@@ -17,18 +12,7 @@ abstract class AuthRepository {
   Future<User?> getCurrentUser();
 }
 
-abstract class TrackingRepository {
-  Future<void> startTracking();
-  Future<void> stopTracking();
-  Future<Map<String, dynamic>> getCurrentLocation();
-  Stream<Map<String, dynamic>> getLocationStream();
-  Future<List<Map<String, dynamic>>> getTrackingHistory({
-    String? driverId,
-    String? vehicleId,
-    DateTime? startDate,
-    DateTime? endDate,
-  });
-}
+// Note: TrackingRepository is defined in tracking_repository.dart due to its complexity
 
 enum DeliveryStatus { pending, inProgress, delivered, failed }
 

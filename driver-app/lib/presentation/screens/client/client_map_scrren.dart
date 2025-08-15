@@ -97,6 +97,8 @@ class _InfoCardClient extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _env = Environment.getInstance();
+    
     return Container(
       padding: const EdgeInsets.all(10.0),
       width: MediaQuery.of(context).size.width,
@@ -117,7 +119,7 @@ class _InfoCardClient extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
-                    image: NetworkImage('${Environment.endpointBase}${orderClient.imageDelivery}')
+                    image: NetworkImage('${_env.endpointBase}${orderClient.imageDelivery}')
                   )
                 ), 
               ),

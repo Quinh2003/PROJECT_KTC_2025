@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 
-import '../design/spatial_ui.dart';
+import '../../design/spatial_ui.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -329,8 +329,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           _isLoading = false;
         });
         
-        // Navigate to main screen
-        Navigator.pushReplacementNamed(context, '/');
+        // Navigate to dashboard
+        Navigator.pushReplacementNamed(context, '/dashboard');
       });
     }
   }
@@ -347,10 +347,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         _isLoading = false;
       });
       
-      // Navigate to main screen
-      Navigator.pushReplacementNamed(context, '/');
+      // Navigate to dashboard
+      Navigator.pushReplacementNamed(context, '/dashboard');
     });
   }
 }
-
-

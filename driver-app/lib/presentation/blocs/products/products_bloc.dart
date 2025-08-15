@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ktc_logistics_driver/domain/services/category_services.dart';
-import 'package:ktc_logistics_driver/domain/services/products_services.dart';
+import 'package:ktc_logistics_driver/services/category_services.dart';
+import 'package:ktc_logistics_driver/services/products_services.dart';
 
 part 'products_event.dart';
 part 'products_state.dart';

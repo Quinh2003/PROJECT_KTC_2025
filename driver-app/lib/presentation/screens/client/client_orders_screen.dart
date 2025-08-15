@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ktc_logistics_driver/domain/models/response/orders_client_response.dart';
-import 'package:ktc_logistics_driver/domain/services/services.dart';
+import 'package:ktc_logistics_driver/services/orders_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/date_custom.dart';
 import 'package:ktc_logistics_driver/presentation/screens/client/client_details_order_screen.dart';

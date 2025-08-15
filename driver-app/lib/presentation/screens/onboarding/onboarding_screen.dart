@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ktc_logistics_driver/presentation/design/spatial_ui.dart';
-import 'package:ktc_logistics_driver/presentation/screens/login_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/login/login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
@@ -62,7 +62,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     } else {
       // Navigate to login screen
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        MaterialPageRoute(builder: (_) => LoginScreen()),
       );
     }
   }
@@ -70,7 +70,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _onSkipTap() {
     // Navigate to login screen
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      MaterialPageRoute(builder: (_) => LoginScreen()),
     );
   }
   
@@ -79,7 +79,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: SpatialDesignSystem.backgroundGradient,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              SpatialDesignSystem.primaryColor.withOpacity(0.1),
+              SpatialDesignSystem.backgroundColor,
+            ],
+          ),
         ),
         child: SafeArea(
           child: Column(
@@ -91,9 +98,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: _currentPage < _onboardingData.length - 1
                       ? SpatialButton(
-                          label: 'Bỏ qua',
+                          text: 'Bỏ qua',
                           onPressed: _onSkipTap,
-                          isPrimary: false,
+                          isOutlined: true,
                         )
                       : const SizedBox.shrink(),
                 ),
@@ -127,11 +134,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     
                     // Next button
                     SpatialButton(
-                      label: _currentPage < _onboardingData.length - 1
+                      text: _currentPage < _onboardingData.length - 1
                           ? 'Tiếp tục'
                           : 'Bắt đầu',
                       onPressed: _onNextTap,
-                      icon: _currentPage < _onboardingData.length - 1
+                      iconData: _currentPage < _onboardingData.length - 1
                           ? Icons.arrow_forward
                           : Icons.login,
                     ),
@@ -174,7 +181,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           // Title
           Text(
             data['title'],
-            style: SpatialDesignSystem.headingLarge(context).copyWith(
+            style: SpatialDesignSystem.headingLarge.copyWith(
               color: color,
               fontSize: 28,
             ),
@@ -186,7 +193,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           // Description
           Text(
             data['description'],
-            style: SpatialDesignSystem.bodyLarge(context),
+            style: SpatialDesignSystem.bodyLarge,
             textAlign: TextAlign.center,
           ),
         ],

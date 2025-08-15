@@ -8,6 +8,7 @@ import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 class ImagePickerFrave extends StatelessWidget {
 
   final ImagePicker _picker = ImagePicker();
+  final _env = Environment.getInstance();
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +54,7 @@ class ImagePickerFrave extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                          image: NetworkImage(Environment.endpointBase+ state.user!.image.toString()),
+                          image: NetworkImage(_env.endpointBase+ state.user!.image.toString()),
                           fit: BoxFit.cover
                         )
                       ),

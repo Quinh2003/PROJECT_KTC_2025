@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ktc_logistics_driver/domain/models/response/products_top_home_response.dart';
-import 'package:ktc_logistics_driver/domain/services/services.dart';
+import 'package:ktc_logistics_driver/services/products_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/StaggeredDualView.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/screens/client/details_product_screen.dart';

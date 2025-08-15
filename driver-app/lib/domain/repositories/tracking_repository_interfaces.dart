@@ -1,7 +1,12 @@
-import 'package:geolocator/geolocator.dart';
-
 import '../models/tracking_model.dart';
 
+/// TrackingRepository - Specialized repository for location tracking and route management
+/// This repository handles all tracking-related operations including:
+/// - Real-time location updates
+/// - Route tracking and management  
+/// - Delivery tracking lifecycle
+/// - Driver route assignments
+/// - Tracking history and analytics
 abstract class TrackingRepository {
   /// Update current driver location
   Future<LocationUpdateResponse> updateLocation(TrackingPoint trackingPoint);
