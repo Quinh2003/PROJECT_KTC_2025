@@ -1,0 +1,77 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.ktc.logistics.ktc_logistics_driver.app-mergeDebugResources-48:/values-kk/values-kk.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\phanh\\.gradle\\caches\\8.14.3\\transforms\\a6e515fb7a5cbb94d7f26e2da6e12c73\\transformed\\jetified-play-services-basement-18.4.0\\res\\values-kk\\values.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "0",
+                        "startOffsets": "195",
+                        "endColumns": "159",
+                        "endOffsets": "354"
+                    },
+                    "to": {
+                        "startLines": "17",
+                        "startColumns": "4",
+                        "startOffsets": "1760",
+                        "endColumns": "163",
+                        "endOffsets": "1919"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\phanh\\.gradle\\caches\\8.14.3\\transforms\\6390556ebf851270b4129e06ded57ce5\\transformed\\browser-1.8.0\\res\\values-kk\\values-kk.xml",
+                    "from": {
+                        "startLines": "2,3,4,5",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "55,155,259,367",
+                        "endColumns": "99,103,107,104",
+                        "endOffsets": "150,254,362,467"
+                    },
+                    "to": {
+                        "startLines": "27,28,29,30",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "2991,3091,3195,3303",
+                        "endColumns": "99,103,107,104",
+                        "endOffsets": "3086,3190,3298,3403"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\phanh\\.gradle\\caches\\8.14.3\\transforms\\9de09a540ed3f754e7905f9ee876bd31\\transformed\\core-1.16.0\\res\\values-kk\\values-kk.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,155,257,359,462,566,663,774",
+                        "endColumns": "99,101,101,102,103,96,110,100",
+                        "endOffsets": "150,252,354,457,561,658,769,870"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,31",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,155,257,359,462,566,663,3408",
+                        "endColumns": "99,101,101,102,103,96,110,100",
+                        "endOffsets": "150,252,354,457,561,658,769,3504"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\phanh\\.gradle\\caches\\8.14.3\\transforms\\f8b18a454327097616921b16c3d17085\\transformed\\jetified-play-services-base-18.5.0\\res\\values-kk\\values.xml",
+                    "from": {
+                        "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
+                        "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                        "startOffsets": "193,292,441,563,665,801,923,1042,1147,1308,1410,1563,1688,1837,1990,2049,2104",
+                        "endColumns": "98,148,121,101,135,121,118,104,160,101,152,124,148,152,58,54,73",
+                        "endOffsets": "291,440,562,664,800,922,1041,1146,1307,1409,1562,1687,1836,1989,2048,2103,2177"
+                    },
+                    "to": {
+                        "startLines": "9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "774,877,1030,1156,1262,1402,1528,1651,1924,2089,2195,2352,2481,2634,2791,2854,2913",
+                        "endColumns": "102,152,125,105,139,125,122,108,164,105,156,128,152,156,62,58,77",
+                        "endOffsets": "872,1025,1151,1257,1397,1523,1646,1755,2084,2190,2347,2476,2629,2786,2849,2908,2986"
+                    }
+                }
+            ]
+        }
+    ]
+}
