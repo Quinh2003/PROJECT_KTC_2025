@@ -43,3 +43,13 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# APK files
+*.apk
+
+# Native libraries
+**/libflutter.so
+**/arm64-v8a/libflutter.so
+**/armeabi-v7a/libflutter.so
+**/x86_64/libflutter.so
+**/x86/libflutter.so
