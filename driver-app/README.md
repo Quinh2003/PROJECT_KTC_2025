@@ -1,6 +1,6 @@
 # 📱 KTC Logistics Driver Mobile App 2025
 
-**FastRoute** là ứng dụng di động dành cho tài xế giao hàng, phát triển bằng Flutter với giao diện Spatial UI hiện đại: bố cục đa tầng, hiệu ứng chuyển động, hiển thị trực quan bản đồ và thông tin theo ngữ cảnh. Được xây dựng theo nguyên tắc **Clean Architecture**, ứng dụng dễ bảo trì, mở rộng và test, với sự phân tách rõ ràng giữa UI, business logic và data layers. Ứng dụng tối ưu cho thao tác ngoài trời, giúp tài xế tập trung và xử lý đơn hàng nhanh chóng, an toàn.
+**FastRoute** là ứng dụng di động dành cho tài xế giao hàng, phát triển bằng Flutter với giao diện **Spatial UI** hiện đại: bố cục đa tầng, hiệu ứng chuyển động, hiển thị trực quan bản đồ và thông tin theo ngữ cảnh. Được xây dựng theo nguyên tắc **Clean Architecture**, ứng dụng dễ bảo trì, mở rộng và test, với sự phân tách rõ ràng giữa UI, business logic và data layers. Ứng dụng tối ưu cho thao tác ngoài trời, giúp tài xế tập trung và xử lý đơn hàng nhanh chóng, an toàn.
 
 ## 🚀 Tính năng chính
 
@@ -184,6 +184,7 @@ flutter pub get
   - Đặt token vào `lib/data/env/map_keys.dart`
 
 #### Chạy ứng dụng
+
 ```bash
 # Khởi động thiết bị ảo trong AVD hoặc kết nối thiết bị thật (USB debugging)
 flutter run
@@ -195,7 +196,74 @@ flutter build apk --release
 flutter install
 ```
 
+### Bước 3: Build APK để cài đặt trên thiết bị
+
+#### Build Debug APK (cho development)
+
+```bash
+# Build debug APK
+flutter build apk --debug
+
+# Hoặc sử dụng script tự động (nếu có lỗi về đường dẫn APK)
+.\build_apk.ps1
+```
+
+#### Build Release APK (cho production)
+
+```bash
+# Clean project trước khi build
+flutter clean
+flutter pub get
+
+# Build release APK
+flutter build apk --release
+
+# APK sẽ được tạo tại: build/app/outputs/flutter-apk/app-release.apk
+```
+
+#### Cài đặt APK trên thiết bị
+
+```bash
+# Via ADB (thiết bị kết nối USB)
+adb install build/app/outputs/flutter-apk/app-debug.apk
+
+# Hoặc copy file APK vào thiết bị và cài đặt thủ công
+# Đảm bảo enable "Install from Unknown Sources" trên Android
+```
+
+### Bước 4: Tài khoản test để đăng nhập
+
+Ứng dụng có sẵn các tài khoản test sau:
+
+#### 🚛 **Tài xế 1 - Xe tải**
+
+- **Email**: `driver@ktc.com`
+- **Mật khẩu**: `123456`
+- **Tên**: Nguyễn Văn An
+- **Số điện thoại**: +84 901 234 567
+- **Phương tiện**: Xe tải nhỏ Hyundai Porter (29A-12345)
+- **Tải trọng**: 1.5 tấn
+
+#### 🏍️ **Tài xế 2 - Xe máy**
+
+- **Email**: `driver2@ktc.com`
+- **Mật khẩu**: `123456`
+- **Tên**: Trần Thị Lan
+- **Số điện thoại**: +84 902 345 678
+- **Phương tiện**: Xe máy Honda Lead (29B1-67890)
+- **Tải trọng**: 30 kg
+
+#### 📱 **Cách sử dụng tài khoản test**
+
+1. Mở ứng dụng sau khi cài đặt
+2. Chọn "Đăng nhập"
+3. Nhập một trong hai tài khoản trên
+4. Khám phá các tính năng: nhận đơn hàng, xem bản đồ, cập nhật trạng thái giao hàng
+
+> **Lưu ý**: Hiện tại app đang sử dụng mock data, không cần kết nối backend server. Tất cả dữ liệu đơn hàng và thông tin tài xế đều được mô phỏng để demo tính năng.
+
 #### Debug và Hot Reload
+
 ```bash
 # Connect device qua USB
 adb devices
@@ -244,7 +312,7 @@ q    # Quit
 
 ### Common Issues
 
-**1. Gradle build fails**
+#### 1. Gradle build fails
 
 ```bash
 cd android
@@ -254,19 +322,19 @@ flutter clean
 flutter pub get
 ```
 
-**2. Permission issues**
+#### 2. Permission issues
 
 - Enable USB Debugging
 - Allow "Install from Unknown Sources"
 - Grant location permissions
 
-**3. Firebase không hoạt động** (tạm thời sử dụng)
+#### 3. Firebase không hoạt động (tạm thời sử dụng)
 
 - Kiểm tra `google-services.json`
 - Verify Firebase project configuration
 - Check FCM token generation
 
-**4. Maps không hiển thị**
+#### 4. Maps không hiển thị
 
 ```bash
 # Kiểm tra MapBox token
