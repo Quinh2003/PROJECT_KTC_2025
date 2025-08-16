@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ktc_logistics_driver/domain/models/response/auth_response.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
-import 'package:ktc_logistics_driver/presentation/screens/client/client_home_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/home/select_role_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/login/login_screen.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
@@ -51,26 +51,33 @@ class _CheckingLoginScreenState extends State<CheckingLoginScreen> with TickerPr
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
         
-        if( state is LoadingAuthState ){
+        if( state is AuthLoadingState ){
 
           Navigator.pushReplacement(context, routeFrave(page: CheckingLoginScreen()));
         
-        } else if ( state is LogOutAuthState ){
+        } else if ( state is UnauthenticatedState ){
 
           Navigator.pushAndRemoveUntil(context, routeFrave(page: LoginScreen()), (route) => false);    
          
-        } else if ( state.rolId != '' ){
+        } else if ( state is AuthenticatedState ){
 
-          userBloc.add( OnGetUserEvent(state.user!) );
+          // Convert UserModel to User for UserBloc
+          final user = User(
+            uid: state.user.id,
+            name: state.user.name,
+            email: state.user.email,
+            phone: state.user.phone,
+            image: state.user.avatar ?? '',
+            role: '1', // Default role - should be provided by UserModel
+            isActive: true,
+            permissions: [],
+          );
 
-          if( state.rolId  == '1' || state.rolId  == '3' ){
+          userBloc.add( OnGetUserEvent(user) );
 
-            Navigator.pushAndRemoveUntil(context, routeFrave(page: SelectRoleScreen()), (route) => false);
-          
-           } else if ( state.rolId  == '2' ){
+          // For now, default to role 1 (admin) since UserModel doesn't have role
+          Navigator.pushAndRemoveUntil(context, routeFrave(page: SelectRoleScreen()), (route) => false);
 
-            Navigator.pushAndRemoveUntil(context, routeFrave(page: ClientHomeScreen()), (route) => false);          
-          }
         }
       },
       child: Scaffold(

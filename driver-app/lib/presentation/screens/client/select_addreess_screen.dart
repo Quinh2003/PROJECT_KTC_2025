@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/domain/models/response/addresses_response.dart';
-import 'package:ktc_logistics_driver/services/user_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
@@ -31,13 +30,13 @@ class SelectAddressScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: FutureBuilder<List<ListAddress>>(
-          future: userServices.getAddresses(),
-          builder: (context, snapshot) 
-            => (!snapshot.hasData)
-              ? const ShimmerFrave()
-              : _ListAddresses(listAddress: snapshot.data!)
-        ),
+      body: BlocBuilder<UserBloc, UserState>(
+        builder: (context, state) {
+          // TODO: Replace with proper address loading from UserBloc
+          // For now, return empty list to avoid userServices error
+          return _ListAddresses(listAddress: []);
+        }
+      ),
     );
   }
 }

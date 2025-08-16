@@ -78,7 +78,7 @@ class _ItemButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 7.0),
         decoration: BoxDecoration(
-          color: ( i == index ) ? ColorsFrave.primaryColor.withOpacity(.9) : Colors.transparent,
+          color: ( i == index ) ? ColorsFrave.primaryColor.withValues(alpha: .9) : Colors.transparent,
           borderRadius: BorderRadius.circular(15.0)
         ),
         child: ( i == index ) 

@@ -20,16 +20,16 @@ class DeliveryHomeScreen extends StatelessWidget {
     
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if( state is LoadingAuthState ){
+        if( state is AuthLoadingState ){
           modalLoading(context);
-        } else if ( state is SuccessAuthState ){
+        } else if ( state is AuthSuccessState ){
           Navigator.pop(context);
           modalSuccess(context, 'Picture Change Successfully', () => Navigator.pushReplacement(context, routeFrave(page: DeliveryHomeScreen())));
           Navigator.pop(context);
 
-        } else if ( state is FailureAuthState ){
+        } else if ( state is AuthErrorState ){
           Navigator.pop(context);
-          errorMessageSnack(context, state.error);
+          errorMessageSnack(context, state.message);
         }
       },
       child: Scaffold(
@@ -45,11 +45,25 @@ class DeliveryHomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20.0),
               Center(
-                child: TextCustom(text: authBloc.state.user!.firstName + ' ' + authBloc.state.user!.lastName, fontSize: 25, fontWeight: FontWeight.w500 )
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state is AuthenticatedState) {
+                      return TextCustom(text: state.user.name, fontSize: 25, fontWeight: FontWeight.w500);
+                    }
+                    return TextCustom(text: 'Delivery Driver', fontSize: 25, fontWeight: FontWeight.w500);
+                  }
+                )
               ),
               const SizedBox(height: 5.0),
               Center(
-                child: TextCustom(text: authBloc.state.user!.email, fontSize: 20, color: Colors.grey )
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state is AuthenticatedState) {
+                      return TextCustom(text: state.user.email, fontSize: 20, color: Colors.grey);
+                    }
+                    return TextCustom(text: 'driver@email.com', fontSize: 20, color: Colors.grey);
+                  }
+                )
               ),
               const SizedBox(height: 15.0),
               const TextCustom(text: 'Account', color: Colors.grey ),

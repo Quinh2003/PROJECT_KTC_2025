@@ -47,7 +47,7 @@ class AdminHomeScreen extends StatelessWidget {
               Center(
                 child: BlocBuilder<UserBloc, UserState>(
                   builder: (_, state) 
-                    => TextCustom( text: ( state.user != null) ? state.user!.firstName.toUpperCase() + ' ' + state.user!.lastName.toUpperCase() : '',
+                    => TextCustom( text: ( state.user != null) ? state.user!.name.toUpperCase() : '',
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
                         maxLine: 1,

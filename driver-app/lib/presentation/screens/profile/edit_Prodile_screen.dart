@@ -26,8 +26,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final userBloc = BlocProvider.of<UserBloc>(context).state.user!;
 
-    _nameController = TextEditingController(text: userBloc.firstName);
-    _lastNameController = TextEditingController(text: userBloc.lastName);
+    // Split name into first and last name
+    final nameParts = userBloc.name.split(' ');
+    final firstName = nameParts.isNotEmpty ? nameParts.first : '';
+    final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+
+    _nameController = TextEditingController(text: firstName);
+    _lastNameController = TextEditingController(text: lastName);
     _phoneController = TextEditingController(text: userBloc.phone);
     _emailController = TextEditingController(text: userBloc.email );    
   }
