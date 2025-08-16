@@ -131,8 +131,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       padding: const EdgeInsets.all(20),
       gradient: LinearGradient(
         colors: [
-          SpatialDesignSystem.primaryColor.withOpacity(0.1),
-          SpatialDesignSystem.accentColor.withOpacity(0.05),
+          SpatialDesignSystem.primaryColor.withValues(alpha: 0.1),
+          SpatialDesignSystem.accentColor.withValues(alpha: 0.05),
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -167,10 +167,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: SpatialDesignSystem.warningColor.withOpacity(0.1),
+                  color: SpatialDesignSystem.warningColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: SpatialDesignSystem.warningColor.withOpacity(0.3),
+                    color: SpatialDesignSystem.warningColor.withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),
@@ -188,8 +188,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
           LinearProgressIndicator(
             value: 0.65,
             backgroundColor: isDark
-                ? Colors.white.withOpacity(0.1)
-                : Colors.black.withOpacity(0.05),
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.05),
             valueColor: AlwaysStoppedAnimation<Color>(SpatialDesignSystem.primaryColor),
             borderRadius: BorderRadius.circular(10),
           ),
@@ -501,13 +501,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? Colors.white.withOpacity(0.05)
-                        : Colors.black.withOpacity(0.02),
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : Colors.black.withValues(alpha: 0.02),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: isDark
-                          ? Colors.white.withOpacity(0.1)
-                          : Colors.black.withOpacity(0.05),
+                          ? Colors.white.withValues(alpha: 0.1)
+                          : Colors.black.withValues(alpha: 0.05),
                     ),
                   ),
                   child: Text(
@@ -656,8 +656,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
             color: isCompleted
                 ? SpatialDesignSystem.primaryColor
                 : isDark
-                    ? Colors.white.withOpacity(0.1)
-                    : Colors.black.withOpacity(0.1),
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : Colors.black.withValues(alpha: 0.1),
             shape: BoxShape.circle,
             border: Border.all(
               color: isCompleted
@@ -679,14 +679,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
         color: isCompleted
             ? SpatialDesignSystem.primaryColor
             : isDark
-                ? Colors.white.withOpacity(0.1)
-                : Colors.black.withOpacity(0.1),
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.1),
         thickness: 2,
       ),
       afterLineStyle: LineStyle(
         color: isDark
-            ? Colors.white.withOpacity(0.1)
-            : Colors.black.withOpacity(0.1),
+            ? Colors.white.withValues(alpha: 0.1)
+            : Colors.black.withValues(alpha: 0.1),
         thickness: 2,
       ),
       endChild: Padding(
@@ -719,8 +719,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
               description,
               style: SpatialDesignSystem.bodySmall.copyWith(
                 color: isDark
-                    ? SpatialDesignSystem.textDarkSecondaryColor.withOpacity(0.8)
-                    : SpatialDesignSystem.textSecondaryColor.withOpacity(0.8),
+                    ? SpatialDesignSystem.textDarkSecondaryColor.withValues(alpha: 0.8)
+                    : SpatialDesignSystem.textSecondaryColor.withValues(alpha: 0.8),
               ),
             ),
           ],

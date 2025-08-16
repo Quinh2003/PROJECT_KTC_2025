@@ -148,7 +148,7 @@ class ClientHomeScreen extends StatelessWidget {
                             margin: const EdgeInsets.only(right: 10.0),
                             padding: const EdgeInsets.symmetric(horizontal: 20.0),
                             decoration: BoxDecoration(
-                              color: Color(0xff5469D4).withOpacity(.1),
+                              color: Color(0xff5469D4).withValues(alpha: .1),
                               borderRadius: BorderRadius.circular(25.0)
                             ),
                             child: TextCustom(text: category[i].category),

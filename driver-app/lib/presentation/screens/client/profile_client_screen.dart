@@ -19,15 +19,15 @@ class ProfileClientScreen extends StatelessWidget {
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if( state is LoadingAuthState ){
+        if( state is AuthLoadingState ){
           modalLoading(context);
-        } else if ( state is SuccessAuthState ){
+        } else if ( state is AuthSuccessState ){
           Navigator.pop(context);
           modalSuccess(context, 'Picture Change Successfully', () => Navigator.pushReplacement(context, routeFrave(page: ProfileClientScreen())));
           Navigator.pop(context);
-        } else if ( state is FailureAuthState ){
+        } else if ( state is AuthErrorState ){
           Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: TextCustom(text: state.error, color: Colors.white), backgroundColor: Colors.red));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: TextCustom(text: state.message, color: Colors.white), backgroundColor: Colors.red));
         }
 
       },
@@ -45,11 +45,25 @@ class ProfileClientScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20.0),
               Center(
-                child: TextCustom(text: authBloc.state.user!.firstName + ' ' + authBloc.state.user!.lastName, fontSize: 25, fontWeight: FontWeight.w500 )
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state is AuthenticatedState) {
+                      return TextCustom(text: state.user.name, fontSize: 25, fontWeight: FontWeight.w500);
+                    }
+                    return TextCustom(text: 'User Name', fontSize: 25, fontWeight: FontWeight.w500);
+                  }
+                )
               ),
               const SizedBox(height: 5.0),
               Center(
-                child: TextCustom(text: authBloc.state.user!.email, fontSize: 20, color: Colors.grey )
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state is AuthenticatedState) {
+                      return TextCustom(text: state.user.email, fontSize: 20, color: Colors.grey);
+                    }
+                    return TextCustom(text: 'user@email.com', fontSize: 20, color: Colors.grey);
+                  }
+                )
               ),
               const SizedBox(height: 15.0),
               const TextCustom(text: 'Account', color: Colors.grey ),

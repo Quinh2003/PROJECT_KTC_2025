@@ -30,7 +30,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
               child: Icon(
                 Icons.map,
                 size: 120,
-                color: Colors.blue.withOpacity(0.2),
+                color: Colors.blue.withValues(alpha: 0.2),
               ),
             ),
           ),
@@ -50,7 +50,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
           // Loading Indicator
           if (_isLoading)
             Container(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               child: const Center(
                 child: CircularProgressIndicator(),
               ),
@@ -145,7 +145,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.2),
+                color: Colors.green.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(
@@ -218,7 +218,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                 vertical: 4,
               ),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -297,7 +297,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
       width: 40,
       height: 5,
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.3),
+        color: Colors.grey.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(2.5),
       ),
     );
@@ -391,7 +391,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
         children: [
           // Order Info Card
           GlassContainer(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             child: Column(
               children: [
                 Row(
@@ -424,7 +424,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.2),
+                        color: Colors.orange.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Text(
@@ -590,7 +590,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
                   color: step['isActive'] as bool
-                      ? Colors.blue.withOpacity(0.05)
+                      ? Colors.blue.withValues(alpha: 0.05)
                       : null,
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -600,8 +600,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: step['isActive'] as bool
-                            ? Colors.blue.withOpacity(0.2)
-                            : Colors.grey.withOpacity(0.1),
+                            ? Colors.blue.withValues(alpha: 0.2)
+                            : Colors.grey.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -673,7 +673,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, -5),
               ),
@@ -750,7 +750,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
             itemBuilder: (context, index) {
               final stat = stats[index];
               return GlassContainer(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -793,7 +793,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
           ),
           const SizedBox(height: 16),
           GlassContainer(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             child: Column(
               children: [
                 SizedBox(
@@ -802,7 +802,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                     child: Icon(
                       Icons.show_chart,
                       size: 100,
-                      color: Colors.blue.withOpacity(0.3),
+                      color: Colors.blue.withValues(alpha: 0.3),
                     ),
                   ),
                 ),
@@ -849,7 +849,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1),
+            color: Colors.blue.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -885,7 +885,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
+                        color: Colors.green.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Icon(
@@ -922,10 +922,10 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             width: 1.5,
           ),
         ),
@@ -997,10 +997,10 @@ class GlassButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.3),
+          color: Colors.white.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white.withValues(alpha: 0.5),
             width: 1.5,
           ),
         ),
@@ -1025,15 +1025,15 @@ class GlassContainer extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color ?? Colors.white.withOpacity(0.3),
+        color: color ?? Colors.white.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withOpacity(0.5),
+          color: Colors.white.withValues(alpha: 0.5),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),

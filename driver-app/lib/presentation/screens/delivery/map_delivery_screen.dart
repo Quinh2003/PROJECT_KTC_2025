@@ -133,7 +133,7 @@ class _InformationBottom extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(15.0),
         boxShadow: [
-          BoxShadow(color: Colors.grey.withOpacity(.5), blurRadius: 7, spreadRadius: 5)
+          BoxShadow(color: Colors.grey.withValues(alpha: .5), blurRadius: 7, spreadRadius: 5)
         ]
       ),
       child: Column(

@@ -43,13 +43,13 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is SuccessState || state.authenticated) {
+        if (state is AuthenticatedState || state is AuthSuccessState) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (_) => const DashboardScreenSpatial(),
             ),
           );
-        } else if (state is FailureState) {
+        } else if (state is AuthErrorState) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
@@ -174,7 +174,7 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
   Widget _buildLoginForm() {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        final isLoading = state is LoadingState;
+        final isLoading = state is AuthLoadingState;
         
         return SpatialComponents.glassContainer(
           child: Form(
@@ -364,14 +364,14 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
       child: Container(
         padding: const EdgeInsets.all(SpatialTheme.spaceMD),
         decoration: BoxDecoration(
-          color: SpatialTheme.surfaceLight.withOpacity(0.7),
+          color: SpatialTheme.surfaceLight.withValues(alpha: 0.7),
           borderRadius: SpatialTheme.borderRadiusMedium,
           border: Border.all(
             color: SpatialTheme.glassBorder,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),

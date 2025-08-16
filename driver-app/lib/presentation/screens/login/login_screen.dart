@@ -79,8 +79,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    SpatialDesignSystem.primaryColor.withOpacity(0.3),
-                    SpatialDesignSystem.primaryColor.withOpacity(0.0),
+                    SpatialDesignSystem.primaryColor.withValues(alpha: 0.3),
+                    SpatialDesignSystem.primaryColor.withValues(alpha: 0.0),
                   ],
                 ),
               ),
@@ -96,8 +96,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    SpatialDesignSystem.accentColor.withOpacity(0.2),
-                    SpatialDesignSystem.accentColor.withOpacity(0.0),
+                    SpatialDesignSystem.accentColor.withValues(alpha: 0.2),
+                    SpatialDesignSystem.accentColor.withValues(alpha: 0.0),
                   ],
                 ),
               ),
@@ -124,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: SpatialDesignSystem.primaryColor.withOpacity(0.3),
+                              color: SpatialDesignSystem.primaryColor.withValues(alpha: 0.3),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -259,12 +259,36 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               const SizedBox(height: 24),
                               
                               // Login Button
-                              SpatialButton(
-                                text: "Log In",
-                                onPressed: _isLoading ? () {} : _handleLogin,
-                                isGradient: true,
-                                width: double.infinity,
-                              ),
+                              _isLoading 
+                                ? Container(
+                                    width: double.infinity,
+                                    height: 56,
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          Color(0xFF6366F1),
+                                          Color(0xFF8B5CF6),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Center(
+                                      child: SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : SpatialButton(
+                                    text: "Log In",
+                                    onPressed: _handleLogin,
+                                    isGradient: true,
+                                    width: double.infinity,
+                                  ),
                               
                               const SizedBox(height: 16),
                               
@@ -292,8 +316,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         "v1.0.0 (2025)",
                         style: SpatialDesignSystem.captionText.copyWith(
                           color: isDark
-                              ? SpatialDesignSystem.textDarkSecondaryColor.withOpacity(0.6)
-                              : SpatialDesignSystem.textSecondaryColor.withOpacity(0.6),
+                              ? SpatialDesignSystem.textDarkSecondaryColor.withValues(alpha: 0.6)
+                              : SpatialDesignSystem.textSecondaryColor.withValues(alpha: 0.6),
                         ),
                       ),
                     ],

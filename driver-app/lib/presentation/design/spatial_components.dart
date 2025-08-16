@@ -152,11 +152,11 @@ class SpatialComponents {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: SpatialTheme.surfaceLight.withOpacity(0.8),
+            color: SpatialTheme.surfaceLight.withValues(alpha: 0.8),
             borderRadius: SpatialTheme.borderRadiusMedium,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -192,9 +192,9 @@ class SpatialComponents {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: backgroundColor.withOpacity(0.1),
+        color: backgroundColor.withValues(alpha: 0.1),
         borderRadius: SpatialTheme.borderRadiusSmall,
-        border: Border.all(color: backgroundColor.withOpacity(0.3)),
+        border: Border.all(color: backgroundColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -260,7 +260,7 @@ class SpatialComponents {
         child,
         if (isLoading)
           Container(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             child: Center(
               child: glassContainer(
                 padding: const EdgeInsets.all(24),
@@ -317,7 +317,7 @@ class SpatialComponents {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: SpatialTheme.textTertiary.withOpacity(0.3),
+              color: SpatialTheme.textTertiary.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(2),
             ),
           ),

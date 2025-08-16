@@ -83,7 +83,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              SpatialDesignSystem.primaryColor.withOpacity(0.1),
+              SpatialDesignSystem.primaryColor.withValues(alpha: 0.1),
               SpatialDesignSystem.backgroundColor,
             ],
           ),
@@ -166,7 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             width: 240,
             margin: const EdgeInsets.only(bottom: 40),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -219,7 +219,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         height: isActive ? 12 : 8,
         width: isActive ? 24 : 8,
         decoration: BoxDecoration(
-          color: isActive ? color : Colors.grey.withOpacity(0.3),
+          color: isActive ? color : Colors.grey.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(12),
         ),
       ),

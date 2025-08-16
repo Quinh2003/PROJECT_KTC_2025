@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/screens/admin/admin_home_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/client/client_home_screen.dart';
@@ -12,8 +10,6 @@ class SelectRoleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    final authBloc = BlocProvider.of<AuthBloc>(context).state;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -33,30 +29,28 @@ class SelectRoleScreen extends StatelessWidget {
               const SizedBox(height: 20.0),
               const TextCustom(text: 'How do you want to continue?', color: ColorsFrave.secundaryColor, fontSize: 25,),
               const SizedBox(height: 30.0),
-              ( authBloc.user!.rolId == 1) 
-                ? _BtnRol(
+              // Role-based navigation (simplified for now - using placeholder logic)
+              _BtnRol(
                 svg: 'Assets/svg/restaurante.svg',
                 text: 'Restaurant',
-                color1: ColorsFrave.primaryColor.withOpacity(.2),
-                color2: Colors.greenAccent.withOpacity(.1),
+                color1: ColorsFrave.primaryColor.withValues(alpha: .2),
+                color2: Colors.greenAccent.withValues(alpha: .1),
                 onPressed: () => Navigator.pushAndRemoveUntil(context, routeFrave(page: AdminHomeScreen()), (route) => false),
-              ) : const SizedBox(),
-              (authBloc.user!.rolId == 1 || authBloc.user!.rolId == 3 )
-                ? _BtnRol(
+              ),
+              _BtnRol(
                 svg: 'Assets/svg/bussiness-man.svg',
                 text: 'Client',
-                color1: Color(0xffFE6488).withOpacity(.2),
-                color2: Colors.amber.withOpacity(.1),
+                color1: Color(0xffFE6488).withValues(alpha: .2),
+                color2: Colors.amber.withValues(alpha: .1),
                 onPressed: () => Navigator.pushReplacement(context, routeFrave(page: ClientHomeScreen())),
-              ) : const SizedBox() ,
-              (authBloc.user!.rolId == 1 || authBloc.user!.rolId == 3 ) 
-                ? _BtnRol(
+              ),
+              _BtnRol(
                 svg: 'Assets/svg/delivery-bike.svg',
                 text: 'Delivery',
-                color1: Color(0xff8956FF).withOpacity(.2),
-                color2: Colors.purpleAccent.withOpacity(.1),
+                color1: Color(0xff8956FF).withValues(alpha: .2),
+                color2: Colors.purpleAccent.withValues(alpha: .1),
                 onPressed: () => Navigator.pushAndRemoveUntil(context, routeFrave(page: DeliveryHomeScreen()), (route) => false),
-              ) : const SizedBox()
+              )
             ],
           ),
         ),

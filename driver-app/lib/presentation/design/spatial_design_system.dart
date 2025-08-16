@@ -65,13 +65,13 @@ class SpatialTheme {
   // Shadow definitions
   static List<BoxShadow> get spatialShadow => [
     BoxShadow(
-      color: primaryBlue.withOpacity(0.1),
+      color: primaryBlue.withValues(alpha: 0.1),
       blurRadius: 20,
       spreadRadius: 0,
       offset: const Offset(0, 8),
     ),
     BoxShadow(
-      color: Colors.black.withOpacity(0.05),
+      color: Colors.black.withValues(alpha: 0.05),
       blurRadius: 10,
       spreadRadius: 0,
       offset: const Offset(0, 4),
@@ -80,13 +80,13 @@ class SpatialTheme {
   
   static List<BoxShadow> get elevatedShadow => [
     BoxShadow(
-      color: primaryBlue.withOpacity(0.15),
+      color: primaryBlue.withValues(alpha: 0.15),
       blurRadius: 30,
       spreadRadius: 0,
       offset: const Offset(0, 12),
     ),
     BoxShadow(
-      color: Colors.black.withOpacity(0.08),
+      color: Colors.black.withValues(alpha: 0.08),
       blurRadius: 15,
       spreadRadius: 0,
       offset: const Offset(0, 6),
@@ -95,7 +95,7 @@ class SpatialTheme {
   
   static List<BoxShadow> get glowShadow => [
     BoxShadow(
-      color: primaryBlue.withOpacity(0.3),
+      color: primaryBlue.withValues(alpha: 0.3),
       blurRadius: 25,
       spreadRadius: 0,
       offset: const Offset(0, 0),
@@ -235,7 +235,7 @@ class SpatialTheme {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: surfaceLight.withOpacity(0.8),
+      fillColor: surfaceLight.withValues(alpha: 0.8),
       border: OutlineInputBorder(
         borderRadius: borderRadiusMedium,
         borderSide: BorderSide.none,
