@@ -3,7 +3,7 @@ import OrderOverview from "./OrderOverview";
 import OrderList from "./OrderList";
 import ResourceOverview from "./ResourceOverview";
 import MapboxTrackingMap from "./MapboxTrackingMap";
-import MapErrorBoundary from '../../components/MapErrorBoundary';
+// ...existing code...
 import OrderAssignment from "./OrderAssignment";
 import Sidebar, { type DispatcherTab } from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
@@ -22,11 +22,11 @@ export default function DispatcherDashboard({ user, onLogout }: DispatcherDashbo
       <Sidebar
         activeTab={tab}
         onTabChange={tab => setTab(tab as DispatcherTab)}
-        role="dispatcher"v
+        role="dispatcher"
       />
 
       {/* Main content */}
-      <div className=" flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col">
         <Navbar
           user={user}
           onLogout={onLogout}
@@ -39,9 +39,7 @@ export default function DispatcherDashboard({ user, onLogout }: DispatcherDashbo
               <OrderOverview />
               <div className="mt-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <OrderList />
-                <MapErrorBoundary>
-                  <MapboxTrackingMap />
-                </MapErrorBoundary>
+                <MapboxTrackingMap />
               </div>
             </>
           )}
