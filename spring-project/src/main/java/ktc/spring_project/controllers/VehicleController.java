@@ -173,6 +173,16 @@ public class VehicleController {
         return ResponseEntity.ok(locationData);
     }
 
+    // ...existing code...
+
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> deleteVehicle(@PathVariable Long id, Authentication authentication) {
+    vehicleService.deleteVehicle(id);
+    return ResponseEntity.noContent().build();
+}
+
+// ...existing code...
+
     /**
      * Get active vehicle locations for map display
      * US-MAP-REALTIME-01

@@ -22,7 +22,7 @@ export default function DispatcherDashboard({ user, onLogout }: DispatcherDashbo
       <Sidebar
         activeTab={tab}
         onTabChange={tab => setTab(tab as DispatcherTab)}
-        role="dispatcher"
+        role="dispatcher"v
       />
 
       {/* Main content */}

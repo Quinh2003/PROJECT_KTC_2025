@@ -29,13 +29,14 @@ interface MenuItem<T extends TabType> {
 }
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ALL_MENUS: Record<UserRole, MenuItem<any>[]> = {
   dispatcher: [
     { key: "orders", label: "Orders", icon: <MdManageAccounts /> },
     { key: "resources", label: "Resources", icon: <RiShieldKeyholeLine /> },
     { key: "assignment", label: "Assignment", icon: <AiOutlineSetting /> },
   ],
-  operations: [
+ operations : [
     { key: "overview", label: "Overview", icon: <MdManageAccounts /> },
     { key: "performance", label: "Performance", icon: <AiOutlineSafetyCertificate /> },
     { key: "monitoring", label: "Monitoring", icon: <HiOutlineDocumentReport /> },
@@ -55,7 +56,6 @@ const ALL_MENUS: Record<UserRole, MenuItem<any>[]> = {
 };
 
 function getMenu<T extends TabType>(role: UserRole): MenuItem<T>[] {
-  // @ts-ignore
   return ALL_MENUS[role] as MenuItem<T>[];
 }
 

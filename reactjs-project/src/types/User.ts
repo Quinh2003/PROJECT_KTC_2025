@@ -1,4 +1,6 @@
-export type Role = "ADMIN" | "DISPATCHER" | "FLEET_MANAGER" | "DRIVER" | "OPERATIONS_MANAGER";
+import type { ReactNode } from "react";
+
+export type Role = "ADMIN" | "DISPATCHER" | "FLEET" | "DRIVER" | "OPERATIONS";
 
 export interface User {
   id?: string;
@@ -11,6 +13,8 @@ export interface User {
   createdAt?: string;
   updatedAt?: string;
   isActive?: boolean;
+  fullName: ReactNode;
+  status: string;
 }
 
 export interface AuthUser {
@@ -33,6 +37,8 @@ export interface LoginResponse {
 }
 
 export interface RegisterRequest {
+  fullName: ReactNode;
+  status: string;
   email: string;
   password: string;
   name: string;

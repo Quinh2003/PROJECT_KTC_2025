@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { User } from "../../types/User";
+import { fetchUsers } from "../../services/adminAPI";
 import UserTable from "./UserTable";
 import RoleTable from "./RoleTable";
 import SystemConfigForm from "./SystemConfigForm";
@@ -18,17 +19,63 @@ interface AdminDashboardProps {
 }
 
 export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
-  const [active, setActive] = useState<AdminTab>("users"); // Sử dụng AdminTab
+  const [active, setActive] = useState<AdminTab>("users");
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Chỉ fetchUsers khi lần đầu vào trang, còn lại cập nhật trực tiếp qua UserTable
+  useEffect(() => {
+    setLoading(true);
+    fetchUsers()
+      .then(data => {
+        const mappedUsers = data.map((u: any) => {
+          let roleIcon = null;
+          switch (u.role?.roleName) {
+            case "DISPATCHER":
+              roleIcon = <span style={{fontWeight: 'bold'}}>D</span>; break;
+            case "FLEET_MANAGER":
+              roleIcon = <span style={{fontWeight: 'bold'}}>F</span>; break;
+            case "DRIVER":
+              roleIcon = <span style={{fontWeight: 'bold'}}>Dr</span>; break;
+            case "ADMIN":
+              roleIcon = <span style={{fontWeight: 'bold'}}>A</span>; break;
+            case "OPERATIONS_MANAGER":
+              roleIcon = <span style={{fontWeight: 'bold'}}>O</span>; break;
+            default:
+              roleIcon = null;
+          }
+          return {
+            id: u.id,
+            name: u.fullName || u.username || "",
+            email: u.email,
+            role: u.role?.roleName || "",
+            roleIcon,
+            status: u.status?.name?.toLowerCase() === "active" ? "active" : "inactive",
+            lastLogin: u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-",
+            phone: u.phone || "",
+            password: "",
+          };
+        });
+        setUsers(mappedUsers);
+        setError(null);
+      })
+      .catch(() => {
+        setError("Failed to fetch users");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const uniqueRoles = Array.from(new Set(users.map(u => u.role)));
   const stats = [
     {
       label: "Total Users",
-      value: "2,345",
+      value: users.length.toLocaleString(),
       icon: <MdManageAccounts className="text-3xl text-blue-600" />,
     },
     {
-      label: "Active Roles",
-      value: "15",
+      label: "Total Roles",
+      value: uniqueRoles.length.toLocaleString(),
       icon: <RiShieldKeyholeLine className="text-3xl text-green-600" />,
     },
     {
@@ -101,7 +148,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
         </div>
         {/* Content */}
         <div className="flex-1 p-4 md:p-10">
-          {active === "users" && <UserTable />}
+          {active === "users" && <UserTable users={users} setUsers={setUsers} />}
           {active === "roles" && <RoleTable />}
           {active === "settings" && <SystemConfigForm />}
           {active === "logs" && <AuditLogTable />}

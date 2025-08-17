@@ -1,11 +1,4 @@
-interface Log {
-  time: string;
-  user: string;
-  action: string;
-  detail: string;
-  ip: string;
-  status: "success" | "error";
-}
+import type { Log } from "../../types/dashboard";
 
 const logs: Log[] = [
   {

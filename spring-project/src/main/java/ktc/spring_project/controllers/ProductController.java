@@ -80,6 +80,18 @@ public class ProductController {
         return ResponseEntity.ok(updatedProduct);
     }
 
+    // ...existing code...
+
+@PatchMapping("/{id}")
+public ResponseEntity<Product> patchProduct(
+        @PathVariable Long id,
+        @RequestBody Map<String, Object> updates,
+        Authentication authentication) {
+    Product updatedProduct = productService.patchProduct(id, updates, authentication);
+    return ResponseEntity.ok(updatedProduct);
+}
+
+// ...existing code...
     /**
      * Delete product (soft delete)
      */
