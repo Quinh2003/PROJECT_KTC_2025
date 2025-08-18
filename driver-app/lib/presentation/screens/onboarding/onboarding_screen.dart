@@ -18,7 +18,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       'title': 'Chào mừng đến với KTC Logistics',
       'description': 'Ứng dụng tài xế hiện đại giúp bạn quản lý đơn hàng, theo dõi lộ trình và giao hàng hiệu quả.',
-      'image': 'assets/delivery.svg',
+      'image': 'assets/svg/delivery.svg',
       'color': Colors.blue.shade500,
     },
     {
