@@ -31,21 +31,21 @@ class SelectRoleScreen extends StatelessWidget {
               const SizedBox(height: 30.0),
               // Role-based navigation (simplified for now - using placeholder logic)
               _BtnRol(
-                svg: 'Assets/svg/restaurante.svg',
+                svg: 'assets/svg/restaurante.svg',
                 text: 'Restaurant',
                 color1: ColorsFrave.primaryColor.withValues(alpha: .2),
                 color2: Colors.greenAccent.withValues(alpha: .1),
                 onPressed: () => Navigator.pushAndRemoveUntil(context, routeFrave(page: AdminHomeScreen()), (route) => false),
               ),
               _BtnRol(
-                svg: 'Assets/svg/bussiness-man.svg',
+                svg: 'assets/svg/bussiness-man.svg',
                 text: 'Client',
                 color1: Color(0xffFE6488).withValues(alpha: .2),
                 color2: Colors.amber.withValues(alpha: .1),
                 onPressed: () => Navigator.pushReplacement(context, routeFrave(page: ClientHomeScreen())),
               ),
               _BtnRol(
-                svg: 'Assets/svg/delivery-bike.svg',
+                svg: 'assets/svg/delivery-bike.svg',
                 text: 'Delivery',
                 color1: Color(0xff8956FF).withValues(alpha: .2),
                 color2: Colors.purpleAccent.withValues(alpha: .1),

@@ -74,8 +74,8 @@ class MapclientBloc extends Bloc<MapclientEvent, MapclientState> {
 
   Future<void> _onMarkerClient( OnMarkerClientEvent event, Emitter<MapclientState> emit ) async {
 
-    final marketCustom = await getAssetImageMarker('Assets/food-delivery-marker.png');
-    final iconDestination = await getAssetImageMarker('Assets/delivery-destination.png');
+    final marketCustom = await getAssetImageMarker('assets/food-delivery-marker.png');
+    final iconDestination = await getAssetImageMarker('assets/delivery-destination.png');
 
     final markerDeliver = Marker(
       markerId: MarkerId('markerDeliver'),
@@ -100,7 +100,7 @@ class MapclientBloc extends Bloc<MapclientEvent, MapclientState> {
 
   Future<void> _onPositionDelivery( OnPositionDeliveryEvent event, Emitter<MapclientState> emit ) async {
 
-    final deliveryMarker = await getAssetImageMarker('Assets/food-delivery-marker.png');
+    final deliveryMarker = await getAssetImageMarker('assets/food-delivery-marker.png');
 
     final markerDeliver = Marker(
       markerId: MarkerId('markerDeliver'),

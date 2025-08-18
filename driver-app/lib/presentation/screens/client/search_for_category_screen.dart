@@ -90,7 +90,7 @@ class ListProducts extends StatelessWidget {
   Widget _withoutProducts(){
     return Column(
       children: [
-        SvgPicture.asset('Assets/empty-cart.svg', height: 450),
+        SvgPicture.asset('assets/empty-cart.svg', height: 450),
         const TextCustom(text: 'Without products', fontSize: 21, color: ColorsFrave.primaryColor )
       ],
     );

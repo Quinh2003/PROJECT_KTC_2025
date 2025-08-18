@@ -100,8 +100,8 @@ class MapdeliveryBloc extends Bloc<MapdeliveryEvent, MapdeliveryState> {
 
     // ------------------------ Markets
 
-    final marketCustom = await getAssetImageMarker('Assets/food-delivery-marker.png');
-    final iconDestination = await getAssetImageMarker('Assets/delivery-destination.png');
+    final marketCustom = await getAssetImageMarker('assets/food-delivery-marker.png');
+    final iconDestination = await getAssetImageMarker('assets/delivery-destination.png');
 
     final markerDelivery = Marker(
       markerId: MarkerId('markerDelivery'),

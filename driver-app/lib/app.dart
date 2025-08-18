@@ -7,6 +7,9 @@ import 'package:ktc_logistics_driver/presentation/screens/login/login_screen.dar
 import 'package:ktc_logistics_driver/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/dashboard/dashboard_screen_spatial.dart';
 import 'package:ktc_logistics_driver/presentation/screens/order/order_detail_screen.dart';
+import 'package:ktc_logistics_driver/domain/usecases/usecases.dart';
+import 'package:ktc_logistics_driver/domain/repositories/repository_implementations.dart';
+import 'package:ktc_logistics_driver/services/mock_data_service.dart';
 
 final getIt = GetIt.instance;
 
@@ -49,6 +52,23 @@ class App extends StatelessWidget {
         // TODO: Implement proper dependency injection with use cases
         BlocProvider<UserBloc>(
           create: (context) => UserBloc(userServices: getIt()),
+        ),
+        // Add TrackingBloc with mock implementation to fix Provider error
+        BlocProvider<TrackingBloc>(
+          create: (context) => TrackingBloc(
+            startRouteTrackingUseCase: StartRouteTrackingUseCase(
+              repository: TrackingRepositoryImpl(mockDataService: MockDataService()),
+            ),
+            endRouteTrackingUseCase: EndRouteTrackingUseCase(
+              repository: TrackingRepositoryImpl(mockDataService: MockDataService()),
+            ),
+            updateLocationUseCase: UpdateLocationUseCase(
+              repository: TrackingRepositoryImpl(mockDataService: MockDataService()),
+            ),
+            getTrackingHistoryUseCase: GetTrackingHistoryUseCase(
+              repository: TrackingRepositoryImpl(mockDataService: MockDataService()),
+            ),
+          ),
         ),
       ],
       child: MaterialApp(
