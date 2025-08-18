@@ -70,3 +70,9 @@ android/build/
 **/tmp/
 kernel_blob.bin
 **/kernel_blob.bin
+
+# Block problematic build files and folders for GitHub
+driver-app/android/app/build/intermediates/assets/debug/mergeDebugAssets/flutter_assets/
+driver-app/android/app/build/intermediates/assets/debug/mergeDebugAssets/flutter_assets/kernel_blob.bin
+driver-app/android/app/build/intermediates/merged_native_libs/
+driver-app/android/app/build/intermediates/merged_native_libs/debug/mergeDebugNativeLibs/out/lib/arm64-v8a/libVkLayer_khronos_validation.so
