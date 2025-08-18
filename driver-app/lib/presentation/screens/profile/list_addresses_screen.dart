@@ -175,7 +175,7 @@ class _WithoutListAddress extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset('assets/my-location.svg', height: 400 ),
+          SvgPicture.asset('assets/svg/my-location.svg', height: 400 ),
           const TextCustom(text: 'Without Address', fontSize: 25, fontWeight: FontWeight.w500, color: ColorsFrave.secundaryColor ),
           const SizedBox(height: 80),
         ],

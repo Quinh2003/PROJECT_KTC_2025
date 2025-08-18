@@ -109,7 +109,7 @@ class _ListOrdersClient extends StatelessWidget {
                 ),
             ),
         )
-      : SvgPicture.asset('assets/empty-cart.svg');
+      : SvgPicture.asset('assets/svg/empty-cart.svg');
   }
 
 }
