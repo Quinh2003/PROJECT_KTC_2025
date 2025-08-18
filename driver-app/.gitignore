@@ -43,13 +43,30 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/app/build/
+/android/build/
+android/app/build/
+android/build/
+**/android/**/build/
 
 # APK files
 *.apk
 
-# Native libraries
+# Native libraries - More comprehensive patterns
 **/libflutter.so
-**/arm64-v8a/libflutter.so
-**/armeabi-v7a/libflutter.so
-**/x86_64/libflutter.so
-**/x86/libflutter.so
+**/arm64-v8a/
+**/armeabi-v7a/
+**/x86_64/
+**/x86/
+**/lib/arm64-v8a/
+**/lib/armeabi-v7a/
+**/lib/x86_64/
+**/lib/x86/
+**/*.so
+
+# Build artifacts that were causing GitHub issues
+**/intermediates/
+**/outputs/
+**/tmp/
+kernel_blob.bin
+**/kernel_blob.bin
