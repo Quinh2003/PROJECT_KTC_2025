@@ -5,11 +5,96 @@ import useSimpleTracking from "../../hooks/useSimpleTracking";
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 export default function MapboxTrackingMap() {
+  // State cho lộ trình
+  const [start, setStart] = useState<[number, number] | null>(null);
+  const [end, setEnd] = useState<[number, number] | null>(null);
+  const [route, setRoute] = useState<any>(null);
+  const [waypoints, setWaypoints] = useState<[number, number][]>([]);
+  const [truckPos, setTruckPos] = useState<[number, number] | null>(null);
+  // Hàm lấy lộ trình từ Mapbox Directions API
+  async function handleGetRoute(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    // Nếu có tracking, lấy vị trí xe đầu tiên làm điểm đầu
+    let startPos: [number, number] | null = start;
+    if ((!start || start[0] === undefined || start[1] === undefined) && tracking && tracking.length > 0) {
+      startPos = [tracking[0].longitude, tracking[0].latitude];
+      setStart(startPos);
+    }
+    if (!startPos || !end) return;
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${startPos[0]},${startPos[1]};${end[0]},${end[1]}?geometries=geojson&steps=true&access_token=${MAPBOX_TOKEN}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.routes && data.routes.length > 0) {
+      setRoute(data.routes[0]);
+      const wp = data.routes[0].legs[0].steps.map((step: any) => step.maneuver.location);
+      setWaypoints(wp);
+      // Gửi về BE
+      fetch('/api/routes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          route: data.routes[0],
+          waypoints: wp
+        })
+      });
+    }
+  }
+  // Vẽ polyline lộ trình trên map
+  useEffect(() => {
+    if (!map.current || !route) return;
+    // Xóa layer cũ nếu có
+    if (map.current.getSource('route')) {
+      if (map.current.getLayer('route')) map.current.removeLayer('route');
+      map.current.removeSource('route');
+    }
+    map.current.addSource('route', {
+      type: 'geojson',
+      data: route.geometry
+    });
+    map.current.addLayer({
+      id: 'route',
+      type: 'line',
+      source: 'route',
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      paint: { 'line-color': '#3b82f6', 'line-width': 5 }
+    });
+    // Fit bounds
+    const coords = route.geometry.coordinates;
+    if (coords.length > 1) {
+      map.current.fitBounds([
+        coords[0],
+        coords[coords.length - 1]
+      ], { padding: 50 });
+    }
+  }, [route]);
+  // Mô phỏng xe tải di chuyển qua từng waypoint
+  useEffect(() => {
+    if (!waypoints || waypoints.length === 0) return;
+    let idx = 0;
+    setTruckPos(waypoints[0]);
+    const interval = setInterval(() => {
+      idx++;
+      if (idx < waypoints.length) {
+        setTruckPos(waypoints[idx]);
+        // Gửi vị trí xe về BE nếu cần
+        // fetch('/api/truck-position', { ... })
+      } else {
+        clearInterval(interval);
+      }
+    }, 2000); // 2s qua mỗi waypoint
+    return () => clearInterval(interval);
+  }, [waypoints]);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
+  // Khi chọn xe, cập nhật điểm đầu là vị trí xe đó
+  const handleVehicleClick = (point: any) => {
+    flyToVehicle(point.id);
+    setStart([point.longitude, point.latitude]);
+    setSelectedVehicle(point.id);
+  };
 
   const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || "pk.eyJ1IjoieHVhbmh1eTEiLCJhIjoiY21lN3liN21tMDlzaTJtbXF3MjU0Z2JzaSJ9.vmH3qH_f7qf1ewBC_pJoSg";
 
@@ -137,6 +222,23 @@ export default function MapboxTrackingMap() {
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-4 h-full min-h-[300px] w-full flex flex-col">
+      {/* Form nhập điểm đầu/điểm cuối */}
+      <form onSubmit={handleGetRoute} className="mb-4 flex gap-2">
+        <input
+          type="text"
+          placeholder="Tọa độ điểm đầu (vd: 106.7,10.8)"
+          onChange={e => setStart(e.target.value.split(',').map(Number) as [number, number])}
+          className="border p-2 rounded"
+        />
+        <input
+          type="text"
+          placeholder="Tọa độ điểm cuối (vd: 106.8,10.9)"
+          onChange={e => setEnd(e.target.value.split(',').map(Number) as [number, number])}
+          className="border p-2 rounded"
+        />
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Lấy lộ trình</button>
+      </form>
+
       <div 
         ref={mapContainer} 
         className="flex-1 min-h-[250px] h-[350px] w-full rounded-lg border-2 border-blue-500 relative overflow-hidden"
@@ -145,7 +247,7 @@ export default function MapboxTrackingMap() {
           height: '350px',
           width: '100%',
           position: 'relative',
-          border: '2px solid blue' // Debug border
+          border: '2px solid blue'
         }}
       >
         {!isLoaded && (
@@ -156,13 +258,30 @@ export default function MapboxTrackingMap() {
             </div>
           </div>
         )}
+        {/* Hiển thị marker xe tải tại vị trí truckPos nếu có lộ trình */}
+        {truckPos && (
+          <div style={{position: 'absolute', left: 0, top: 0, zIndex: 20}}>
+            {/* Có thể dùng marker Mapbox hoặc custom icon */}
+          </div>
+        )}
       </div>
-      
+
       <VehicleList 
         tracking={tracking || []}
         selectedVehicle={selectedVehicle}
-        onVehicleClick={(point) => flyToVehicle(point.id)}
+        onVehicleClick={handleVehicleClick}
       />
+      {/* Hiển thị danh sách waypoint nếu có */}
+      {waypoints.length > 0 && (
+        <div className="mt-2 p-2 bg-gray-50 rounded">
+          <div className="font-bold">Danh sách waypoint:</div>
+          <ul className="text-xs">
+            {waypoints.map((wp, idx) => (
+              <li key={idx}>{wp.join(', ')}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

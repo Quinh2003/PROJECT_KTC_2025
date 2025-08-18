@@ -4,7 +4,6 @@ import useSimpleTracking from "../../hooks/useSimpleTracking";
 import { useMapMarkers } from "../../utils/mapUtils";
 import { MapContainer } from "./MapContainer";
 import { VehicleList } from "../VehicleList";
-import { MapDebugInfo } from "./MapDebugInfo";
 
 interface BaseMapProps {
   accessToken: string;
@@ -21,7 +20,6 @@ export const BaseMap: React.FC<BaseMapProps> = ({
   accessToken,
   center,
   zoom,
-  showDebugInfo = false,
   showVehicleList = true,
   height = "350px",
   className = "",
@@ -75,16 +73,6 @@ export const BaseMap: React.FC<BaseMapProps> = ({
           </div>
         )}
         
-        {showDebugInfo && (
-          <div className="p-4 border-t bg-gray-50">
-            <MapDebugInfo
-              token={accessToken}
-              container={mapContainer}
-              mapInstance={map}
-              canvasCount={document.querySelectorAll('.mapboxgl-canvas').length}
-            />
-          </div>
-        )}
       </div>
     </div>
   );
