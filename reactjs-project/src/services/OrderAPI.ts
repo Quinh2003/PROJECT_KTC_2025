@@ -1,5 +1,5 @@
 
-import type { Order, Vehicle } from '../types/Operations';
+import type { Order } from '../types/Operations';
 
 
 export async function addOrder(order: Partial<Order>): Promise<Order> {
@@ -62,11 +62,42 @@ export async function deleteOrder(id: string | number): Promise<boolean> {
 }
 
 
-export async function fetchOrdersRaw(): Promise<Order[]> {
+// Server-side pagination: trả về { data: Order[], total: number }
+export async function fetchOrdersRaw(page = 1, size = 5): Promise<{ data: Order[]; total: number }> {
   const token = localStorage.getItem("token");
-  const res = await fetch("http://localhost:8080/api/orders", {
+  const res = await fetch(`http://localhost:8080/api/orders?page=${page}&size=${size}`, {
     headers: token ? { "Authorization": `Bearer ${token}` } : undefined,
   });
   if (!res.ok) throw new Error("Failed to fetch orders");
-  return res.json();
+  const data = await res.json();
+  // data.data: array, data.totalRecords: number
+  return {
+    data: Array.isArray(data.data) ? data.data : [],
+    total: data.totalRecords || 0
+  };
+}
+
+// Thêm function để lấy tổng số đơn hàng và stats
+export async function fetchOrderStats(): Promise<{
+  totalRecords: number;
+  sampleOrders: Order[];
+}> {
+  const token = localStorage.getItem("token");
+  const res = await fetch("http://localhost:8080/api/orders?page=1&size=200", {
+    headers: token ? { "Authorization": `Bearer ${token}` } : undefined,
+  });
+  if (!res.ok) throw new Error("Failed to fetch order stats");
+  const data = await res.json();
+  
+  // Đảm bảo sắp xếp theo thời gian tạo mới nhất lên đầu
+  const sampleOrders = (data.data || []).sort((a: any, b: any) => {
+    const dateA = new Date(a.createdAt || 0).getTime();
+    const dateB = new Date(b.createdAt || 0).getTime();
+    return dateB - dateA; // Mới nhất lên đầu
+  });
+  
+  return {
+    totalRecords: data.totalRecords || 0,
+    sampleOrders
+  };
 }

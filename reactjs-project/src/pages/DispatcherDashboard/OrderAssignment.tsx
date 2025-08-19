@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchOrdersRaw, updateOrderVehicle } from "../../services/OrderAPI";
-import { fetchVehicles } from "../../services/VehicleListAPI";
+import { fetchVehicleStats } from "../../services/VehicleListAPI";
 import type { Vehicle } from "../../types";
 import { FaUserCog, FaCheck, FaTimes, FaCar, FaSync } from "react-icons/fa";
 
@@ -17,26 +17,37 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
   const [successMessage, setSuccessMessage] = useState("");
   const [editingOrders, setEditingOrders] = useState<{ [orderId: string]: boolean }>({});
   const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 10;
+  const PAGE_SIZE = 5;
 
-  // Sử dụng React Query để cache dữ liệu orders
-  const { data: rawOrders = [], isLoading: ordersLoading, error: ordersError } = useQuery({
-    queryKey: ['orders'], // Cùng key với OrderList để share cache
-    queryFn: fetchOrdersRaw,
+  // Sử dụng React Query để cache dữ liệu orders theo trang (server-side pagination)
+  const {
+    data: ordersPage = { data: [], total: 0 },
+    isLoading: ordersLoading,
+    error: ordersError
+  } = useQuery<{ data: any[]; total: number }, Error>({
+    queryKey: ['orders', currentPage, PAGE_SIZE],
+    queryFn: ({ queryKey }) => {
+      const [, page, size] = queryKey as [string, number, number];
+      return fetchOrdersRaw(page, size);
+    },
+  placeholderData: (previous) => previous,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
   // Sử dụng React Query để cache dữ liệu vehicles
-  const { data: vehicles = [], isLoading: vehiclesLoading, error: vehiclesError } = useQuery({
+  const { data: vehiclesData, isLoading: vehiclesLoading, error: vehiclesError } = useQuery({
     queryKey: ['vehicles'],
-    queryFn: fetchVehicles,
+    queryFn: fetchVehicleStats,
     staleTime: 3 * 60 * 1000, // Cache 3 phút cho vehicles
     refetchOnWindowFocus: false,
   });
 
-  // Map dữ liệu orders
-  const data = rawOrders.map((item: any) => ({
+  // Extract vehicles array from the response
+  const vehicles = vehiclesData?.sampleVehicles || [];
+
+  // Map dữ liệu orders - server trả về { data: [], total: number }
+  const data = (Array.isArray(ordersPage.data) ? ordersPage.data : []).map((item: any): any => ({
     id: Number(item.id),
     code: item.code || item.orderCode || item.id,
     customer: item.customer || item.store?.storeName || "",
@@ -50,26 +61,33 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
     priority: item.priority || item.status?.statusType || "",
     currentDriver: item.currentDriver || item.driver || item.assignedDriver || null,
     assignedVehicle: item.assignedVehicle || item.vehicle || null,
+    createdAt: item.createdAt || "", // Giữ lại để hiển thị
   }));
-
-  // Pagination logic
-  const totalPages = Math.ceil(data.length / PAGE_SIZE);
-  const paginatedData = data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const totalOrders =
+    typeof ordersPage === "object" &&
+    ordersPage !== null &&
+    "total" in ordersPage
+      ? (ordersPage.total as number)
+      : 0;
+  const totalPages = Math.ceil(totalOrders / PAGE_SIZE);
+  const paginatedData: any[] = data; // Đã là dữ liệu trang hiện tại
 
   const loading = ordersLoading || vehiclesLoading;
   const error = ordersError || vehiclesError;
 
-  // Helper function to refresh all data
+  // Helper function to refresh current page data
   const refreshData = async () => {
-    setCurrentPage(1); // Reset to first page when refreshing
     await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ['orders'] }),
+      queryClient.invalidateQueries({ queryKey: ['orders', currentPage, PAGE_SIZE] }),
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
     ]);
   };
 
   // Helper function to get available vehicles (vehicles with assigned drivers)
   const getAvailableVehicles = (): Vehicle[] => {
+    if (!Array.isArray(vehicles)) {
+      return [];
+    }
     return vehicles.filter(vehicle => 
       vehicle.currentDriver // Chỉ lấy xe có tài xế
     );
@@ -77,11 +95,17 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
 
   // Helper function to get vehicle by ID
   const getVehicleById = (vehicleId: string | number): Vehicle | undefined => {
+    if (!Array.isArray(vehicles)) {
+      return undefined;
+    }
     return vehicles.find(vehicle => vehicle.id.toString() === vehicleId.toString());
   };
 
   // Helper function to get driver's vehicle info
   const getDriverVehicle = (driverId: string | number): Vehicle | undefined => {
+    if (!Array.isArray(vehicles)) {
+      return undefined;
+    }
     return vehicles.find(vehicle => 
       vehicle.currentDriver?.id?.toString() === driverId.toString()
     );
@@ -109,7 +133,7 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
       
       // Invalidate queries để refetch dữ liệu mới
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['orders'] }),
+        queryClient.invalidateQueries({ queryKey: ['orders', currentPage, PAGE_SIZE] }),
         queryClient.invalidateQueries({ queryKey: ['vehicles'] })
       ]);
       
@@ -169,7 +193,7 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
       
       // Invalidate queries để refetch dữ liệu mới
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['orders'] }),
+        queryClient.invalidateQueries({ queryKey: ['orders', currentPage, PAGE_SIZE] }),
         queryClient.invalidateQueries({ queryKey: ['vehicles'] })
       ]);
       
@@ -195,10 +219,10 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
           </span>
           <div>
             <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight">Quản lý phân công đơn hàng</h3>
-            <p className="text-gray-600 mt-1">Tổng cộng {data.length} đơn hàng</p>
+            <p className="text-gray-600 mt-1">Tổng cộng {totalOrders} đơn hàng</p>
           </div>
         </div>
-        <button
+        {/* <button
           onClick={refreshData}
           disabled={loading}
           className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white rounded-xl shadow-md font-semibold text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -206,7 +230,7 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
         >
           <FaSync className={`text-lg ${loading ? 'animate-spin' : ''}`} />
           Làm mới
-        </button>
+        </button> */}
       </div>
 
       {loading ? (
@@ -241,7 +265,7 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedData.map((order, index) => (
+                  {paginatedData.map((order: any, index: number) => (
                     <tr
                       key={order.id}
                       className={`border-b border-blue-100/40 hover:bg-blue-50/40 transition-all duration-200 ${
@@ -537,7 +561,10 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
 
           {/* Thông tin trang hiện tại */}
           <div className="text-center mt-4 text-gray-600">
-            Hiển thị {(currentPage - 1) * PAGE_SIZE + 1} - {Math.min(currentPage * PAGE_SIZE, data.length)} trong tổng số {data.length} đơn hàng
+            Hiển thị {data.length > 0 ? ((currentPage - 1) * PAGE_SIZE + 1) : 0}
+            -
+            {data.length > 0 ? ((currentPage - 1) * PAGE_SIZE + data.length) : 0}
+            trong tổng số {totalOrders} đơn hàng
             {totalPages > 1 && (
               <span className="ml-2">| Trang {currentPage} / {totalPages}</span>
             )}

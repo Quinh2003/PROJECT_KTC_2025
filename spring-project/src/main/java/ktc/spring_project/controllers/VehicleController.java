@@ -4,7 +4,9 @@ import ktc.spring_project.entities.User;
 import ktc.spring_project.entities.Vehicle;
 import ktc.spring_project.services.VehicleService;
 import ktc.spring_project.services.UserService;
+import ktc.spring_project.dtos.vehicle.PaginatedVehicleResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,8 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Controller responsible for managing vehicles
@@ -33,22 +37,70 @@ public class VehicleController {
     private UserService userService;
 
     /**
-     * Get all vehicles with optional filters
+     * Get all vehicles with optional filters and pagination
      * US-FLEET-LIST-01
      */
     @GetMapping
-    public ResponseEntity<List<Vehicle>> getAllVehicles(
+    public ResponseEntity<PaginatedVehicleResponseDto> getAllVehicles(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String vehicleType,
             @RequestParam(required = false) Long driverId) {
+        try {
+            // Sử dụng phân trang thật từ database với sắp xếp theo updatedAt descending
+            Page<Vehicle> vehiclePage = vehicleService.getVehiclesPaginated(page, size);
+            
+            // Chuyển đổi Vehicle entities thành DTO để tránh circular reference
+            List<Map<String, Object>> vehicleDTOs = vehiclePage.getContent().stream().map(vehicle -> {
+                Map<String, Object> vehicleDTO = new HashMap<>();
+                vehicleDTO.put("id", vehicle.getId());
+                vehicleDTO.put("licensePlate", vehicle.getLicensePlate());
+                vehicleDTO.put("vehicleType", vehicle.getVehicleType());
+                vehicleDTO.put("capacityWeightKg", vehicle.getCapacityWeightKg());
+                vehicleDTO.put("capacityVolumeM3", vehicle.getCapacityVolumeM3());
+                vehicleDTO.put("notes", vehicle.getNotes());
+                vehicleDTO.put("createdAt", vehicle.getCreatedAt());
+                vehicleDTO.put("updatedAt", vehicle.getUpdatedAt());
+                
+                // Status info
+                if (vehicle.getStatus() != null) {
+                    Map<String, Object> statusDTO = new HashMap<>();
+                    statusDTO.put("id", vehicle.getStatus().getId());
+                    statusDTO.put("name", vehicle.getStatus().getName());
+                    statusDTO.put("statusType", vehicle.getStatus().getStatusType());
+                    statusDTO.put("description", vehicle.getStatus().getDescription());
+                    vehicleDTO.put("status", statusDTO);
+                }
+                
+                // Current driver info
+                if (vehicle.getCurrentDriver() != null) {
+                    Map<String, Object> driverDTO = new HashMap<>();
+                    driverDTO.put("id", vehicle.getCurrentDriver().getId());
+                    driverDTO.put("fullName", vehicle.getCurrentDriver().getFullName());
+                    driverDTO.put("username", vehicle.getCurrentDriver().getUsername());
+                    driverDTO.put("email", vehicle.getCurrentDriver().getEmail());
+                    vehicleDTO.put("currentDriver", driverDTO);
+                }
+                
+                return vehicleDTO;
+            }).collect(Collectors.toList());
 
-        // Sử dụng phương thức cơ bản getAllVehicles() thay vì phương thức không tồn tại
-        List<Vehicle> allVehicles = vehicleService.getAllVehicles();
-
-        // Lọc theo các tiêu chí nếu cần
-        // Đây chỉ là giải pháp tạm thời cho đến khi service được cập nhật đầy đủ
-
-        return ResponseEntity.ok(allVehicles);
+            PaginatedVehicleResponseDto response = PaginatedVehicleResponseDto.builder()
+                    .data(vehicleDTOs)
+                    .pageNumber(page)
+                    .pageSize(size)
+                    .totalRecords(vehiclePage.getTotalElements())
+                    .totalPages(vehiclePage.getTotalPages())
+                    .hasNext(vehiclePage.hasNext())
+                    .hasPrevious(vehiclePage.hasPrevious())
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("Error in getAllVehicles: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     /**

@@ -1,8 +1,9 @@
 
 
 import { useEffect, useState } from "react";
-import { fetchOrdersRaw } from "../../services/OrderAPI";
-import { fetchVehicles, type Vehicle } from "../../services/VehicleListAPI";
+import { fetchOrderStats } from "../../services/OrderAPI";
+import { fetchVehicles } from "../../services/VehicleListAPI";
+import type { Vehicle } from "../../types";
 import { PackageOpen, Truck, Hourglass, CheckCircle } from "lucide-react";
 
 // Khai báo lại type cho Order để tránh lỗi never
@@ -13,8 +14,13 @@ type Order = {
 };
 
 
-export default function StatsCards() {
-  const [orders, setOrders] = useState<Order[]>([]);
+interface StatsCardsProps {
+  refreshTrigger?: number;
+}
+
+export default function StatsCards({ refreshTrigger }: StatsCardsProps) {
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [sampleOrders, setSampleOrders] = useState<Order[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -24,11 +30,12 @@ export default function StatsCards() {
       try {
         setLoading(true);
         setError("");
-        const [ordersData, vehiclesData] = await Promise.all([
-          fetchOrdersRaw(),
+        const [orderStats, vehiclesData] = await Promise.all([
+          fetchOrderStats(),
           fetchVehicles(),
         ]);
-        setOrders(ordersData);
+        setTotalOrders(orderStats.totalRecords);
+        setSampleOrders(orderStats.sampleOrders);
         setVehicles(vehiclesData);
       } catch (err: any) {
         setError(err.message || "Đã xảy ra lỗi");
@@ -37,12 +44,15 @@ export default function StatsCards() {
       }
     };
     getData();
-  }, []);
+  }, [refreshTrigger]);
 
-  // Tính toán số lượng theo trạng thái
-  const totalShipments = orders.length;
+  // Tính toán số lượng theo trạng thái từ sample (ước tính)
+  const totalShipments = totalOrders; // Sử dụng tổng số thật
   const totalVehicles = vehicles.length;
-  const pendingPackages = orders.filter(
+  
+  // Tính tỷ lệ từ sample để ước tính
+  const sampleSize = sampleOrders.length;
+  const pendingInSample = sampleOrders.filter(
     o => (
       typeof o.status === "object" && o.status && typeof (o.status as any).name === "string"
         ? ((o.status as { name: string }).name.toLowerCase() === "pending")
@@ -50,13 +60,17 @@ export default function StatsCards() {
     )
   ).length;
 
-  const deliveredPackages = orders.filter(
+  const deliveredInSample = sampleOrders.filter(
     o => (
       typeof o.status === "object" && o.status && typeof (o.status as any).name === "string"
         ? ((o.status as { name: string }).name.toLowerCase() === "completed")
         : (typeof o.status === "string" && o.status.toLowerCase() === "completed")
     )
   ).length;
+  
+  // Ước tính từ sample
+  const pendingPackages = sampleSize > 0 ? Math.round((pendingInSample / sampleSize) * totalOrders) : 0;
+  const deliveredPackages = sampleSize > 0 ? Math.round((deliveredInSample / sampleSize) * totalOrders) : 0;
   const stats = [
     { label: "Total shipments", value: totalShipments, icon: <PackageOpen size={28} color="#6366f1" /> }, // Indigo
     { label: "Total vehicles", value: totalVehicles, icon: <Truck size={28} color="#10b981" /> }, // Green
