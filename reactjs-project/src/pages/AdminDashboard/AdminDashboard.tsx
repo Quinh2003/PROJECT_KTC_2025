@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import { useState, useEffect, useCallback } from "react";
 import type { User } from "../../types/User";
 import { fetchUsers, fetchActivityLogs, type User as APIUser } from "../../services/adminAPI";
+=======
+import { useState, useEffect } from "react";
+import type { User } from "../../types/User";
+import { fetchUsers } from "../../services/adminAPI";
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 import UserTable from "./UserTable";
 import RoleTable from "./RoleTable";
 import SystemConfigForm from "./SystemConfigForm";
@@ -21,6 +27,7 @@ interface AdminDashboardProps {
 export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
   const [active, setActive] = useState<AdminTab>("users");
   const [users, setUsers] = useState<User[]>([]);
+<<<<<<< HEAD
   const [auditCount, setAuditCount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -80,6 +87,51 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
 
     // Initial fetch only - no auto-refresh
     fetchData();
+=======
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Chỉ fetchUsers khi lần đầu vào trang, còn lại cập nhật trực tiếp qua UserTable
+  useEffect(() => {
+    setLoading(true);
+    fetchUsers()
+      .then(data => {
+        const mappedUsers = data.map((u: any) => {
+          let roleIcon = null;
+          switch (u.role?.roleName) {
+            case "DISPATCHER":
+              roleIcon = <span style={{fontWeight: 'bold'}}>D</span>; break;
+            case "FLEET_MANAGER":
+              roleIcon = <span style={{fontWeight: 'bold'}}>F</span>; break;
+            case "DRIVER":
+              roleIcon = <span style={{fontWeight: 'bold'}}>Dr</span>; break;
+            case "ADMIN":
+              roleIcon = <span style={{fontWeight: 'bold'}}>A</span>; break;
+            case "OPERATIONS_MANAGER":
+              roleIcon = <span style={{fontWeight: 'bold'}}>O</span>; break;
+            default:
+              roleIcon = null;
+          }
+          return {
+            id: u.id,
+            name: u.fullName || u.username || "",
+            email: u.email,
+            role: u.role?.roleName || "",
+            roleIcon,
+            status: u.status?.name?.toLowerCase() === "active" ? "active" : "inactive",
+            lastLogin: u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-",
+            phone: u.phone || "",
+            password: "",
+          };
+        });
+        setUsers(mappedUsers);
+        setError(null);
+      })
+      .catch(() => {
+        setError("Failed to fetch users");
+      })
+      .finally(() => setLoading(false));
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
   }, []);
 
   const uniqueRoles = Array.from(new Set(users.map(u => u.role)));
@@ -152,6 +204,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
             </div>
           ))}
         </div>
+<<<<<<< HEAD
         {/* Content - Scrollable */}
         <div className="flex-1 overflow-y-auto">
           <div className="p-4 md:p-10 pt-3 md:pt-4">
@@ -160,6 +213,14 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
             {active === "settings" && <SystemConfigForm />}
             {active === "logs" && <AuditLogTable onAuditCountUpdate={handleAuditCountUpdate} />}
           </div>
+=======
+        {/* Content */}
+        <div className="flex-1 p-4 md:p-10">
+          {active === "users" && <UserTable users={users} setUsers={setUsers} />}
+          {active === "roles" && <RoleTable />}
+          {active === "settings" && <SystemConfigForm />}
+          {active === "logs" && <AuditLogTable />}
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
         </div>
       </main>
     </div>

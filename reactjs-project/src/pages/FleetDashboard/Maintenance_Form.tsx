@@ -1,21 +1,9 @@
 import React, { useState } from 'react';
+import type { FleetVehicle, Maintenance } from '../../types/dashboard';
 
-interface Vehicle {
-  id: number;
-  type: string;
-  licensePlate: string;
-  status: string;
-}
-
-interface Maintenance {
-  id: number;
-  vehicleId: number;
-  date: string;
-  description: string;
-}
 
 interface MaintenanceFormProps {
-  vehicles: Vehicle[];
+  vehicles: FleetVehicle[];
   onAddMaintenance: (maintenance: Maintenance) => void;
 }
 

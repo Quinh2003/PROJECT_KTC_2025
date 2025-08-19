@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // export interface Vehicle {
 //   id: string;
 //   name: string;
@@ -38,6 +39,26 @@ export interface Vehicle {
   notes?: string;
   updatedAt?: string;
   // ... các trường khác nếu có
+=======
+export interface Vehicle {
+  id: string;
+  name: string;
+  type: 'TRUCK' | 'VAN' | 'MOTORCYCLE';
+  status: 'ACTIVE' | 'MAINTENANCE' | 'IDLE' | 'OUT_OF_SERVICE';
+  driver?: {
+    id: string;
+    name: string;
+    phone: string;
+  };
+  location: {
+    lat: number;
+    lng: number;
+    address: string;
+  };
+  fuel: number; // percentage
+  mileage: number;
+  lastUpdated: string;
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 }
 
 export interface Route {
@@ -136,4 +157,8 @@ export interface OperationsApiResponse<T> {
     total: number;
     totalPages: number;
   };
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5

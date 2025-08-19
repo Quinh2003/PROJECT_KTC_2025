@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 import type {
   Vehicle,
@@ -7,6 +8,10 @@ import type {
   OperationsSummary
 } from '../types/Operations';
 
+=======
+import type { Vehicle, Staff } from "../types/dashboard";
+// API endpoints và các interface để tương tác với backend
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 export const API_BASE_URL = 'http://localhost:8080/api';
 
 export const getAuthHeaders = () => {
@@ -18,6 +23,10 @@ export const getAuthHeaders = () => {
 };
 
 
+<<<<<<< HEAD
+=======
+// API functions
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 export const operationsAPI = {
   // Dashboard overview
   getOverviewStats: async (): Promise<OperationsSummary> => {

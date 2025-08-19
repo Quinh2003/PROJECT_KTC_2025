@@ -83,7 +83,7 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        User user = getUserById(id);
+User user = getUserById(id);
         userRepository.delete(user);
     }
 
@@ -166,8 +166,12 @@ public class UserService {
             if (email == null || name == null || googleId == null) {
                 throw new RuntimeException("Missing required fields from Google API response");
             }
+<<<<<<< HEAD
 
             Optional<User> existingUser = userRepository.findByEmail(email);
+=======
+Optional<User> existingUser = userRepository.findByEmail(email);
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 
             if (existingUser.isPresent()) {
                 User user = existingUser.get();
@@ -241,7 +245,11 @@ public class UserService {
                 newUser.setEmail(email);
                 newUser.setFullName(name);
                 newUser.setGoogleId(googleId);
+<<<<<<< HEAD
                 newUser.setUsername(email);
+=======
+newUser.setUsername(email);
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 
                 // Gán role mặc định USER
                 Role defaultRole = roleRepository.findByRoleName("USER")

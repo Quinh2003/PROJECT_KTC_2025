@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class DeliveryTrackingService {
-    private DeliveryTrackingRepository deliveryTrackingRepository;
+    private final DeliveryTrackingRepository deliveryTrackingRepository;
 
     public List<DeliveryTracking> findAll() {
         return deliveryTrackingRepository.findAll();

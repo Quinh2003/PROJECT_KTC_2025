@@ -60,4 +60,8 @@ export const useSimpleTracking = () => {
   };
 };
 
+<<<<<<< HEAD
 export default useSimpleTracking;
+=======
+export default useSimpleTracking;
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5

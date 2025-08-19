@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useState, useEffect } from "react";
 import { fetchActivityLogs, type ActivityLog } from "../../services/adminAPI";
 
@@ -6,6 +7,9 @@ type DateFilter = "today" | "last7days" | "last30days" | "custom";
 interface AuditLogTableProps {
   onAuditCountUpdate?: (count: number) => void;
 }
+=======
+import type { Log } from "../../types/dashboard";
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 
 export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps) {
   const [logs, setLogs] = useState<ActivityLog[]>([]);

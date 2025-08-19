@@ -37,4 +37,8 @@ export const VehicleList = React.memo(({ tracking, selectedVehicle, onVehicleCli
   );
 });
 
+<<<<<<< HEAD
 export default VehicleList;
+=======
+export default VehicleList;
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5

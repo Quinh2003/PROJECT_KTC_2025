@@ -18,10 +18,13 @@ function getRoleDisplay(roleName: string) {
   }
 }
 
-export default function UserTable() {
+export default function UserTable({ users, setUsers }: { users: any[]; setUsers: (users: any[]) => void }) {
   const [search, setSearch] = useState("");
+<<<<<<< HEAD
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [users, setUsers] = useState<any[]>([]);
+=======
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
   const [showForm, setShowForm] = useState(false);
   const [editUser, setEditUser] = useState<{
     name: string;
@@ -164,8 +167,15 @@ export default function UserTable() {
     setEditUser({
       ...user,
       roleValue: user.roleValue,
+<<<<<<< HEAD
       status: user.status === "active" ? "active" : "inactive"
     }); // Đảm bảo có trường roleValue và status đúng cho form
+=======
+      status: user.status === "active" ? "active" : "inactive",
+      phone: user.phone || "",
+      password: user.password || ""
+    }); // Đảm bảo có trường roleValue, status, phone, password đúng cho form
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
     setShowForm(true);
   };
 
@@ -260,14 +270,35 @@ export default function UserTable() {
             const roleInfo = getRoleDisplay(u.role?.roleName || "");
             const status = u.status?.name?.toLowerCase() === "active" ? "active" : "inactive";
             const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+<<<<<<< HEAD
+=======
+            // Map roleName từ backend về đúng value của select
+            let roleValue = "";
+            const rawRole = (u.role?.roleName || "").replace(/[\s_]+/g, '').toLowerCase();
+            if (rawRole === "admin") roleValue = "Admin";
+            else if (rawRole === "dispatcher") roleValue = "Dispatcher";
+            else if (rawRole === "fleetmanager" || rawRole === "fleet") roleValue = "Fleet Manager";
+            else if (rawRole === "driver") roleValue = "Driver";
+            else if (rawRole === "operationsmanager" || rawRole === "operations") roleValue = "Operations Manager";
+            else roleValue = u.role?.roleName || "";
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
             return {
               id: u.id,
               name: u.fullName || u.username || "",
               email: u.email,
               role: roleInfo.label,
+<<<<<<< HEAD
               roleIcon: roleInfo.icon,
               status,
               lastLogin,
+=======
+              roleValue,
+              roleIcon: roleInfo.icon,
+              status,
+              lastLogin,
+              phone: u.phone || "",
+              password: u.password || "",
+>>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
             };
           })
         );
@@ -318,7 +349,7 @@ export default function UserTable() {
           <table className="min-w-full">
             <thead>
               <tr className="text-left text-gray-600 border-b">
-                <th className="py-2 pr-4">Name</th>
+                <th className="py-2 pr-4">Full Name</th>
                 <th className="py-2 pr-4">Email</th>
                 <th className="py-2 pr-4">Role</th>
                 <th className="py-2 pr-4">Status</th>
