@@ -44,56 +44,39 @@ export default function Dashboard({
   // Phân quyền giao diện theo role
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
-        <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-8 border border-white/30 shadow-xl text-center">
-          <div className="text-2xl font-bold text-gray-800 mb-2">⚠️ Chưa đăng nhập</div>
-          <div className="text-gray-600">Bạn cần đăng nhập để truy cập dashboard!</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-100">
+        <div className="bg-white border border-red-200 rounded-2xl p-8 shadow-xl text-center">
+          <div className="text-2xl font-bold text-gray-800 mb-2">
+            ⚠️ Chưa đăng nhập
+          </div>
+          <div className="text-gray-600">
+            Bạn cần đăng nhập để truy cập dashboard!
+          </div>
         </div>
       </div>
     );
   }
 
   if (user.role === "ADMIN")
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
-        <AdminDashboard user={user} onLogout={onLogout} />
-        {/* <ProtectedInfo data={protectedData} error={error} /> */}
-      </div>
-    );
+    return <AdminDashboard user={user} onLogout={onLogout} />;
   if (user.role === "DISPATCHER")
-    return (
-      <div className="min-h-screen">
-        <DispatcherDashboard user={user} onLogout={onLogout} />
-        {/* <ProtectedInfo data={protectedData} error={error} /> */}
-      </div>
-    );
-  if (user.role === "FLEET_MANAGER")
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
-        <FleetDashboard user={user} onLogout={onLogout} />
-        {/* <ProtectedInfo data={protectedData} error={error} /> */}
-      </div>
-    );
+    return <DispatcherDashboard user={user} onLogout={onLogout} />;
+  if (user.role === "FLEET")
+    return <FleetDashboard user={user} onLogout={onLogout} />;
   if (user.role === "DRIVER")
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
-        <DriverDashboard user={user} onLogout={onLogout} />
-        {/* <ProtectedInfo data={protectedData} error={error} /> */}
-      </div>
-    );
-  if (user.role === "OPERATIONS_MANAGER")
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
-        <OperationsDashboard user={user} onLogout={onLogout} />
-        {/* <ProtectedInfo data={protectedData} error={error} /> */}
-      </div>
-    );
+    return <DriverDashboard user={user} onLogout={onLogout} />;
+  if (user.role === "OPERATIONS")
+    return <OperationsDashboard user={user} onLogout={onLogout} />;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
-      <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-8 border border-white/30 shadow-xl text-center">
-        <div className="text-2xl font-bold text-gray-800 mb-2">❌ Role không hợp lệ</div>
-        <div className="text-gray-600">Không xác định được quyền truy cập của bạn!</div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-100">
+      <div className="bg-white border border-red-200 rounded-2xl p-8 shadow-xl text-center">
+        <div className="text-2xl font-bold text-gray-800 mb-2">
+          ❌ Role không hợp lệ
+        </div>
+        <div className="text-gray-600">
+          Không xác định được quyền truy cập của bạn!
+        </div>
       </div>
     </div>
   );

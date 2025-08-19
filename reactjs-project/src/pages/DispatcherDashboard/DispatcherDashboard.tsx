@@ -21,7 +21,7 @@ export default function DispatcherDashboard({
   const [tab, setTab] = useState<DispatcherTab>("orders");
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
+    <div className="min-h-screen flex">
       <Sidebar
         activeTab={tab}
         onTabChange={tab => setTab(tab as DispatcherTab)}
@@ -29,14 +29,19 @@ export default function DispatcherDashboard({
       />
 
       {/* Main content */}
-      <div className=" flex-1 flex flex-col">
-        <Navbar
-          user={user}
-          onLogout={onLogout}
-          title="Dispatcher Dashboard"
-          subtitle="Track and assign orders to drivers and vehicles"
-        />
-        <main className="flex-1 p-6">
+      <main className="flex-1 flex flex-col rounded-l-[32px] relative z-[60] -ml-10 h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+        {/* Header - Fixed */}
+        <div className="sticky top-0 z-40">
+          <Navbar
+            user={user}
+            onLogout={onLogout}
+            title="Dispatcher Dashboard"
+            subtitle="Track and assign orders to drivers and vehicles"
+          />
+        </div>
+        
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto rounded-bl-[32px] p-6">
           {tab === "orders" && (
             <>
               <OrderOverview />
@@ -48,8 +53,8 @@ export default function DispatcherDashboard({
           )}
           {tab === "resources" && <ResourceOverview />}
           {tab === "assignment" && <OrderAssignment />}
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

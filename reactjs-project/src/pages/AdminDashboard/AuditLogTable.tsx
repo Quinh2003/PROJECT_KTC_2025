@@ -36,42 +36,36 @@ const logs: Log[] = [
 
 export default function AuditLogTable() {
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow border border-gray-100 dark:border-gray-700 p-8">
-      <h2 className="text-2xl font-bold mb-2 dark:text-white flex items-center gap-2">
-        <span role="img" aria-label="log">📝</span> System Logs
+    <div className="bg-white border border-red-100 shadow-lg rounded-2xl p-8">
+      <h2 className="text-2xl font-bold mb-2 text-gray-800 drop-shadow-sm flex items-center gap-2">
+          <span role="img" aria-label="log">📝</span> System Logs
       </h2>
-      <p className="text-gray-500 dark:text-gray-300 mb-6">
-        Track all user activities (logs) in the system
-      </p>
+        <p className="text-gray-600 mb-6">Track all user activities (logs) in the system</p>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-gray-800 rounded-xl">
+        <table className="min-w-full bg-transparent rounded-xl">
           <thead>
-            <tr>
-              <th className="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">Time</th>
-              <th className="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">User</th>
-              <th className="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">Action</th>
-              <th className="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">Detail</th>
-              <th className="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">IP Address</th>
-              <th className="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">Status</th>
+            <tr className="border-b border-red-100">
+              <th className="px-4 py-2 text-left font-semibold text-gray-700">Time</th>
+              <th className="px-4 py-2 text-left font-semibold text-gray-700">User</th>
+              <th className="px-4 py-2 text-left font-semibold text-gray-700">Action</th>
+              <th className="px-4 py-2 text-left font-semibold text-gray-700">Detail</th>
+              <th className="px-4 py-2 text-left font-semibold text-gray-700">IP Address</th>
+              <th className="px-4 py-2 text-left font-semibold text-gray-700">Status</th>
             </tr>
           </thead>
           <tbody>
             {logs.map((log, idx) => (
-              <tr key={idx} className="border-t border-gray-100 dark:border-gray-700">
-                <td className="px-4 py-2">{log.time}</td>
-                <td className="px-4 py-2">{log.user}</td>
-                <td className="px-4 py-2">{log.action}</td>
-                <td className="px-4 py-2">{log.detail}</td>
-                <td className="px-4 py-2">{log.ip}</td>
+              <tr key={idx} className="border-t border-red-50">
+                <td className="px-4 py-2 text-gray-700">{log.time}</td>
+                <td className="px-4 py-2 text-gray-700">{log.user}</td>
+                <td className="px-4 py-2 text-gray-700">{log.action}</td>
+                <td className="px-4 py-2 text-gray-700">{log.detail}</td>
+                <td className="px-4 py-2 text-gray-700">{log.ip}</td>
                 <td className="px-4 py-2">
                   {log.status === "success" ? (
-                    <span className="inline-block px-3 py-1 rounded-full bg-green-500 dark:bg-green-700 text-white text-sm font-semibold">
-                      Success
-                    </span>
+                    <span className="inline-block px-3 py-1 rounded-full bg-red-600 text-white text-sm font-semibold shadow">Success</span>
                   ) : (
-                    <span className="inline-block px-3 py-1 rounded-full bg-red-500 dark:bg-red-700 text-white text-sm font-semibold">
-                      Error
-                    </span>
+                    <span className="inline-block px-3 py-1 rounded-full bg-gray-600 text-white text-sm font-semibold shadow">Error</span>
                   )}
                 </td>
               </tr>

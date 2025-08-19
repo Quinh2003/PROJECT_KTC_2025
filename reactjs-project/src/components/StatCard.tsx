@@ -11,7 +11,7 @@ interface StatCardProps {
 
 export default function StatCard({ title, value, subtitle, trend, icon }: StatCardProps) {
   return (
-    <div className="backdrop-blur-lg bg-white/40 border border-white/30 rounded-xl p-6 transition-all duration-300 hover:bg-white/50 hover:shadow-xl">
+    <div className="bg-white/30 backdrop-blur-xl border border-white/10 shadow-lg rounded-2xl px-6 py-5 flex flex-col justify-between h-full transition-all duration-200 hover:scale-[1.03] hover:shadow-xl hover:bg-black/40">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-gray-700 text-sm font-medium">{title}</h3>
         {icon && (

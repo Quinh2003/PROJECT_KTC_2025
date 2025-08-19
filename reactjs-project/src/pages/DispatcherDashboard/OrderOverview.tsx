@@ -14,12 +14,12 @@ export default function StatsCards() {
       {stats.map((s, i) => {
         const Icon = s.icon;
         return (
-          <div key={i} className="bg-white/30 backdrop-blur-lg rounded-2xl p-6 flex items-center justify-between gap-4 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white/40">
+          <div key={i} className="bg-black/30 backdrop-blur-xl rounded-2xl p-6 flex items-center justify-between gap-4 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-black/40">
             <div>
-              <div className="text-2xl font-bold text-gray-800">{s.value}</div>
-              <div className="text-gray-600 font-medium">{s.label}</div>
+              <div className="text-2xl font-bold text-white">{s.value}</div>
+              <div className="text-slate-300 font-medium">{s.label}</div>
             </div>
-            <Icon className="text-3xl text-blue-600 drop-shadow-sm" />
+            <Icon className="text-3xl text-cyan-400 drop-shadow-sm" />
           </div>
         );
       })}

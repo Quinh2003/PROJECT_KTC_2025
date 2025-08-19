@@ -5,18 +5,18 @@ export default function VehicleList() {
     { plate: "51C-11111", type: "Small truck", driver: "Le Van C", status: "Available" },
   ];
   return (
-    <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-6 border border-white/30 shadow-lg">
-      <div className="text-xl font-bold mb-2 text-gray-800">Vehicle List</div>
-      <div className="text-gray-600 mb-4">Status and vehicle information</div>
+    <div className="bg-black/30 backdrop-blur-xl rounded-2xl p-6 border border-white/10 shadow-lg hover:bg-black/40 transition-all duration-300">
+      <div className="text-xl font-bold mb-2 text-white">Vehicle List</div>
+      <div className="text-slate-300 mb-4">Status and vehicle information</div>
       <div className="flex flex-col gap-4">
         {vehicles.map((v, idx) => (
-          <div key={idx} className="rounded-xl bg-white/40 backdrop-blur-sm border border-white/40 p-4 flex justify-between items-center hover:bg-white/50 transition-all duration-300 shadow-md hover:shadow-lg">
+          <div key={idx} className="rounded-xl bg-black/20 border border-white/10 p-4 flex justify-between items-center hover:bg-black/30 transition-all duration-300 shadow-md hover:shadow-lg">
             <div>
-              <div className="font-semibold text-gray-800">{v.plate}</div>
-              <div className="text-sm text-gray-600">{v.type}</div>
-              <div className="text-sm text-gray-600">Driver: {v.driver}</div>
+              <div className="font-semibold text-white">{v.plate}</div>
+              <div className="text-sm text-slate-400">{v.type}</div>
+              <div className="text-sm text-slate-400">Driver: {v.driver}</div>
             </div>
-            <span className={`px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm ${v.status === "Available" ? "bg-green-200/60 text-green-800 border border-green-300/50" : "bg-red-200/60 text-red-800 border border-red-300/50"}`}>
+            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${v.status === "Available" ? "bg-green-500/20 text-green-300 border border-green-400/30" : "bg-red-500/20 text-red-300 border border-red-400/30"}`}>
               {v.status}
             </span>
           </div>
