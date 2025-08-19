@@ -1,26 +1,293 @@
+import { useState } from "react";
+import { editUser, updateUserStatus } from "../../services/adminAPI";
+import type { User } from "../../types/User";
+import { useDispatcherContext } from "../../contexts/DispatcherContext";
+
 export default function DriverList() {
-  const drivers = [
-    { name: "Tài xế Demo", phone: "0901234567", vehicle: "51A-12345", status: "Available" },
-    { name: "Trần Văn B", phone: "0901234568", vehicle: "51B-67890", status: "Busy" },
-    { name: "Lê Văn C", phone: "0901234569", vehicle: "51C-11111", status: "Available" },
-  ];
+  const { drivers, driversLoading, driversError, refreshDrivers } = useDispatcherContext();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [updatingStatus, setUpdatingStatus] = useState<number | null>(null);
+
+  const toggleDriverStatus = async (driverId: string | number, currentStatus: any) => {
+    try {
+      setUpdatingStatus(Number(driverId));
+      
+      // Xác định trạng thái mới dựa trên status hiện tại
+      const currentStatusName = currentStatus?.name?.toLowerCase() || "";
+      let newStatus: string;
+      
+      if (currentStatusName === "active") {
+        newStatus = "Inactive";
+      } else if (currentStatusName === "inactive") {
+        newStatus = "Active";
+      } else if (currentStatusName === "pending") {
+        newStatus = "Inactive"; // Pending -> Inactive
+      } else {
+        newStatus = "Active"; // Default to Active
+      }
+      
+      console.log(`[DriverList] Updating driver ${driverId} from ${currentStatus?.name} to ${newStatus}`);
+      
+      try {
+        // Thử dùng endpoint riêng cho status trước
+        console.log("[DriverList] Trying updateUserStatus endpoint...");
+        try {
+          await updateUserStatus(driverId, newStatus);
+          console.log("[DriverList] updateUserStatus successful");
+        } catch (statusError) {
+          console.log("[DriverList] updateUserStatus failed, using editUser fallback...", statusError);
+          throw statusError; // Force fallback to editUser
+        }
+      } catch (statusError) {
+        console.log("[DriverList] Using editUser fallback...", statusError);
+        // Nếu endpoint status không có, fallback về editUser
+        const currentDriver = drivers.find(d => d.id === driverId);
+        if (!currentDriver) {
+          throw new Error("Không tìm thấy tài xế");
+        }
+
+        console.log("[DriverList] Current driver found:", currentDriver);
+
+        // Map newStatus to correct statusId
+        const statusMap: Record<string, number> = {
+          "Active": 7,
+          "Inactive": 8,
+          "Pending": 1
+        };
+
+        const updatedDriver: User = {
+          ...currentDriver,
+          status: {
+            id: statusMap[newStatus] || 7,
+            name: newStatus,
+            statusType: "USER",
+            description: currentDriver.status?.description || ""
+          }
+        };
+
+        console.log("[DriverList] Payload for editUser:", updatedDriver);
+        await editUser(driverId, updatedDriver);
+        console.log("[DriverList] editUser successful");
+      }
+      
+      console.log("[DriverList] API call successful, refreshing data...");
+      
+      // Refresh drivers data from context
+      await refreshDrivers(true);
+      
+      console.log("[DriverList] Data refreshed successfully");
+      
+    } catch (err: any) {
+      console.error("Failed to update driver status:", err);
+      // Thông báo lỗi cho user
+      alert(`Lỗi cập nhật trạng thái tài xế: ${err.message}`);
+    } finally {
+      setUpdatingStatus(null);
+    }
+  };
+
+  const filteredDrivers = drivers.filter(driver => {
+    const name = driver.fullName || driver.username || "";
+    return (
+      name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (driver.email?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (driver.phone && driver.phone.includes(searchTerm))
+    );
+  });
+
+  const getStatusBadge = (status: any, driverId: string | number) => {
+    // Kiểm tra nhiều trường hợp status name
+    const statusName = status?.name?.toLowerCase() || "";
+    const isActive = statusName === "active" || statusName === "pending"; // Coi Pending như Active cho test
+    const isUpdating = updatingStatus === Number(driverId);
+    
+    console.log(`[DriverList] Status for driver ${driverId}:`, status, "isActive:", isActive);
+    
+    return (
+      <button
+        onClick={() => toggleDriverStatus(driverId, status)}
+        disabled={isUpdating}
+        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+          isActive 
+            ? "bg-green-100 text-green-800 border border-green-200 hover:bg-green-200" 
+            : "bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200"
+        }`}
+      >
+        {isUpdating ? (
+          <div className="animate-spin w-2 h-2 border border-current border-t-transparent rounded-full"></div>
+        ) : (
+          <div className={`w-2 h-2 rounded-full ${isActive ? "bg-green-500" : "bg-gray-400"}`}></div>
+        )}
+        <span className="text-xs opacity-75">{status?.name || "N/A"}</span>
+      </button>
+    );
+  };
+
   return (
-    <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-6 border border-white/30 shadow-lg">
-      <div className="text-xl font-bold mb-2 text-gray-800">Driver List</div>
-      <div className="text-gray-600 mb-4">Status and driver information</div>
-      <div className="flex flex-col gap-4">
-        {drivers.map((d, idx) => (
-          <div key={idx} className="rounded-xl bg-white/40 backdrop-blur-sm border border-white/40 p-4 flex justify-between items-center hover:bg-white/50 transition-all duration-300 shadow-md hover:shadow-lg">
-            <div>
-              <div className="font-semibold text-gray-800">{d.name}</div>
-              <div className="text-sm text-gray-600">📞 {d.phone}</div>
-              <div className="text-sm text-gray-600">Xe: {d.vehicle}</div>
-            </div>
-            <span className={`px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm ${d.status === "Available" ? "bg-green-200/60 text-green-800 border border-green-300/50" : "bg-red-200/60 text-red-800 border border-red-300/50"}`}>
-              {d.status}
-            </span>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold mb-2">Quản lý tài xế</h2>
+            <button
+              onClick={() => refreshDrivers(true)}
+              disabled={driversLoading}
+              className="px-4 py-2 bg-white/20 hover:bg-white/30 disabled:opacity-50 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
+            >
+              {driversLoading ? (
+                <>
+                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                  Đang tải...
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Làm mới
+                </>
+              )}
+            </button>
           </div>
-        ))}
+          
+        </div>
+      </div>
+
+      {/* Search and Filter Section */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-md border border-white/50">
+        <div className="flex flex-col md:flex-row gap-4 items-center">
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Tìm kiếm theo tên, email hoặc số điện thoại..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90 backdrop-blur-sm"
+            />
+          </div>
+          
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/50 overflow-hidden">
+        {driversLoading ? (
+          <div className="flex items-center justify-center p-12">
+            <div className="flex items-center gap-3">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="text-gray-600 font-medium">Đang tải dữ liệu...</span>
+            </div>
+          </div>
+        ) : driversError ? (
+          <div className="flex items-center justify-center p-12">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Có lỗi xảy ra</h3>
+              <p className="text-red-600">{driversError}</p>
+            </div>
+          </div>
+        ) : filteredDrivers.length === 0 ? (
+          <div className="flex items-center justify-center p-12">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Không tìm thấy tài xế</h3>
+              <p className="text-gray-500">
+                {searchTerm ? "Không có tài xế nào phù hợp với từ khóa tìm kiếm" : "Chưa có tài xế nào trong hệ thống"}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50/80 backdrop-blur-sm">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Tài xế
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Thông tin liên hệ
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Trạng thái
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white/60 backdrop-blur-sm divide-y divide-gray-200">
+                  {filteredDrivers.map((driver) => (
+                    <tr key={driver.id} className="hover:bg-white/80 transition-colors duration-200">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-12 w-12">
+                            <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-lg">
+                              {((driver.fullName || driver.username || "").charAt(0) || "?").toUpperCase()}
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {driver.fullName || driver.username || "(Không tên)"}
+                            </div>
+                            <div className="text-sm text-gray-500">ID: {driver.id}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{driver.email}</div>
+                        <div className="text-sm text-gray-500">{driver.phone || "Chưa cập nhật"}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(driver.status, driver.id ?? "")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4 p-4">
+              {filteredDrivers.map((driver) => (
+                <div key={driver.id} className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-gray-200">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-lg">
+                      {((driver.fullName || driver.username || "").charAt(0) || "?").toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="text-sm font-medium text-gray-900 truncate">
+                            {driver.fullName || driver.username}
+                          </h3>
+                          <p className="text-sm text-gray-500">ID: {driver.id}</p>
+                        </div>
+                        {getStatusBadge(driver.status, driver.id ?? "")}
+                      </div>
+                      <div className="mt-2 space-y-1">
+                        <p className="text-sm text-gray-600">{driver.email}</p>
+                        <p className="text-sm text-gray-600">{driver.phone || "Chưa cập nhật SĐT"}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

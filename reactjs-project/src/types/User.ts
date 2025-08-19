@@ -1,8 +1,80 @@
-export type Role = "ADMIN" | "DISPATCHER" | "FLEET" | "DRIVER" | "OPERATIONS";
+// import type { ReactNode } from "react";
+
+
+export interface Role {
+  id: number;
+  roleName: string;
+  permission?: any;
+  description?: string;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// export interface User {
+//   fullName: ReactNode;
+//   email: string;
+//   password: string;
+//   role: Role;
+//   name: string;
+// }
+
+
 
 export interface User {
+  id?: string | number;
   email: string;
-  password: string;
+  password?: string;
+  role: Role;
+  name?: string;
+  fullName?: string;
+  username?: string;
+  phone?: string;
+  avatar?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  isActive?: boolean;
+  notes?: string | null;
+  googleId?: string | null;
+  status?: {
+    id: number;
+    statusType: string;
+    name: string;
+    description: string;
+    createdAt?: string;
+    updatedAt?: string;
+  };
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
   role: Role;
   name: string;
+  token: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  user: AuthUser;
+  message?: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  name: string;
+  role: Role;
+  phone?: string;
+}
+
+export interface UserApiResponse {
+  success: boolean;
+  data: User | User[];
+  message?: string;
 }

@@ -29,7 +29,7 @@ export default function OperationsDashboard({ user, onLogout }: OperationsDashbo
           user={user}
           onLogout={onLogout}
           title="Operations Manager Dashboard"
-          subtitle="Monitor and manage logistics operations efficiently"
+          subtitle=""
         />
         <main className="flex-1 p-6">
           {tab === "overview" && <OperationsOverview />}

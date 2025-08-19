@@ -54,14 +54,31 @@ public class UserService {
 
     public User updateUser(Long id, User userDetails) {
         User user = getUserById(id);
-        user.setUsername(userDetails.getUsername());
-        user.setEmail(userDetails.getEmail());
-        user.setPassword(userDetails.getPassword());
-        user.setFullName(userDetails.getFullName());
-        user.setPhone(userDetails.getPhone());
-        user.setRole(userDetails.getRole());
-        user.setStatus(userDetails.getStatus());
-        user.setNotes(userDetails.getNotes());
+        // Chỉ cập nhật các trường không null từ userDetails
+        if (userDetails.getUsername() != null) {
+            user.setUsername(userDetails.getUsername());
+        }
+        if (userDetails.getEmail() != null) {
+            user.setEmail(userDetails.getEmail());
+        }
+        if (userDetails.getPassword() != null) {
+            user.setPassword(userDetails.getPassword());
+        }
+        if (userDetails.getFullName() != null) {
+            user.setFullName(userDetails.getFullName());
+        }
+        if (userDetails.getPhone() != null) {
+            user.setPhone(userDetails.getPhone());
+        }
+        if (userDetails.getRole() != null) {
+            user.setRole(userDetails.getRole());
+        }
+        if (userDetails.getStatus() != null) {
+            user.setStatus(userDetails.getStatus());
+        }
+        if (userDetails.getNotes() != null) {
+            user.setNotes(userDetails.getNotes());
+        }
         return userRepository.save(user);
     }
 

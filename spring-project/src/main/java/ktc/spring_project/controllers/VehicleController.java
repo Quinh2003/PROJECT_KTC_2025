@@ -95,19 +95,18 @@ public class VehicleController {
             Authentication authentication) {
 
         Long driverId = driverData.get("driverId");
-
-        // Lấy thông tin phương tiện cần cập nhật
         Vehicle vehicle = vehicleService.getVehicleById(id);
 
-        // Lấy thông tin tài xế
-        User driver = userService.getUserById(driverId);
+        if (driverId == null) {
+            // Nếu driverId null, bỏ gán tài xế
+            vehicle.setCurrentDriver(null);
+        } else {
+            // Gán tài xế mới
+            User driver = userService.getUserById(driverId);
+            vehicle.setCurrentDriver(driver);
+        }
 
-        // Cập nhật tài xế cho phương tiện
-        vehicle.setCurrentDriver(driver);
-
-        // Lưu thông tin phương tiện đã cập nhật
         Vehicle updatedVehicle = vehicleService.updateVehicle(id, vehicle);
-
         return ResponseEntity.ok(updatedVehicle);
     }
 

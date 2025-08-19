@@ -35,7 +35,6 @@ export default function MaintenanceHistory() {
   return (
     <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-6 border border-white/30 shadow-xl">
       <div className="text-xl font-bold mb-2">Lịch sử bảo trì</div>
-      <div className="text-gray-500 mb-4">Theo dõi các hoạt động bảo trì và sửa chữa</div>
       <div className="flex flex-col gap-4">
         {maintenanceHistory.map((item, idx) => (
           <div

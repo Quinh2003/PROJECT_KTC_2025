@@ -1,7 +1,9 @@
 package ktc.spring_project.controllers;
 
+import ktc.spring_project.entities.ActivityLog;
 import ktc.spring_project.entities.Role;
 import ktc.spring_project.entities.Status;
+import ktc.spring_project.services.ActivityLogService;
 import ktc.spring_project.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,8 +13,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Controller responsible for system administration
@@ -28,6 +32,9 @@ public class AdminController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ActivityLogService activityLogService;
 
     /**
      * Get system configurations
@@ -146,9 +153,26 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size) {
 
-        // TODO: Implement AdminService and inject here
-        // List<Map<String, Object>> activityLogs = adminService.getSystemActivityLogs(dateFrom, dateTo, actionType, userId, page, size);
-        return ResponseEntity.ok(List.of());
+        try {
+            List<ActivityLog> logs = activityLogService.getAllActivityLogs();
+            
+            List<Map<String, Object>> activityLogs = logs.stream().map(log -> {
+                Map<String, Object> logMap = new HashMap<>();
+                logMap.put("id", log.getId());
+                logMap.put("time", log.getActionTimestamp() != null ? log.getActionTimestamp().toString() : null);
+                logMap.put("user", log.getActor() != null ? log.getActor().getEmail() : "system");
+                logMap.put("action", log.getActionType() != null ? log.getActionType().toString() : "Unknown");
+                logMap.put("detail", log.getMetadata() != null ? log.getMetadata() : "No details");
+                logMap.put("status", "success"); // Default status, can be enhanced
+                logMap.put("role", log.getRole() != null ? log.getRole().getRoleName() : null);
+                return logMap;
+            }).collect(Collectors.toList());
+            
+            return ResponseEntity.ok(activityLogs);
+        } catch (Exception e) {
+            // Return empty list if service not available
+            return ResponseEntity.ok(List.of());
+        }
     }
 
     /**
