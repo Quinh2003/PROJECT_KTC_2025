@@ -10,7 +10,6 @@ import java.sql.Timestamp;
 public class AddressResponseDTO {
     
     private Long id;
-    private Long orderId;
     private String orderNumber;
     private AddressType addressType;
     private String address;
@@ -41,9 +40,6 @@ public class AddressResponseDTO {
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    
-    public Long getOrderId() { return orderId; }
-    public void setOrderId(Long orderId) { this.orderId = orderId; }
     
     public String getOrderNumber() { return orderNumber; }
     public void setOrderNumber(String orderNumber) { this.orderNumber = orderNumber; }

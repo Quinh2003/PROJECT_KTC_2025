@@ -1,6 +1,8 @@
 package ktc.spring_project.services;
 
 import ktc.spring_project.entities.Order;
+import ktc.spring_project.entities.Address;
+import ktc.spring_project.entities.Vehicle;
 import ktc.spring_project.repositories.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ public class OrderService {
         if (order.getOrderProfitPerOrder() != null && order.getOrderProfitPerOrder().compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Order profit per order cannot be negative");
         }
+        // Có thể kiểm tra address nếu cần
         return orderRepository.save(order);
     }
 
@@ -59,8 +62,19 @@ public class OrderService {
         order.setTotalAmount(orderDetails.getTotalAmount());
         order.setBenefitPerOrder(orderDetails.getBenefitPerOrder());
         order.setOrderProfitPerOrder(orderDetails.getOrderProfitPerOrder());
-        order.setDescription(orderDetails.getDescription());
+        order.setNotes(orderDetails.getNotes());
         order.setCreatedBy(orderDetails.getCreatedBy());
+        order.setAddress(orderDetails.getAddress());
+        // Chỉ cập nhật vehicle nếu có truyền vào (không ghi đè null nếu không truyền)
+        if (orderDetails.getVehicle() != null) {
+            if (orderDetails.getVehicle().getId() != null) {
+                Vehicle vehicle = new Vehicle();
+                vehicle.setId(orderDetails.getVehicle().getId());
+                order.setVehicle(vehicle);
+            } else {
+                order.setVehicle(null);
+            }
+        }
         return orderRepository.save(order);
     }
 
@@ -70,17 +84,19 @@ public class OrderService {
     }
 
     public Object getOrderTrackingInfo(Long orderId) {
-    Order order = getOrderById(orderId); // Lấy order từ DB
+        Order order = getOrderById(orderId); // Lấy order từ DB
 
-    Map<String, Object> tracking = new HashMap<>();
-    tracking.put("orderId", order.getId());
-    // Lấy trạng thái từ entity Status liên kết
-    tracking.put("status", order.getStatus() != null ? order.getStatus().getName() : null);
-    // Lấy vị trí hiện tại (giả sử có trường currentLocation hoặc tracking entity)
-    tracking.put("currentLocation", order.getNotes()); // hoặc order.getCurrentLocation() nếu có
-    // Thời gian cập nhật gần nhất
-    tracking.put("updatedAt", order.getUpdatedAt() != null ? order.getUpdatedAt() : LocalDateTime.now());
+        Map<String, Object> tracking = new HashMap<>();
+        tracking.put("orderId", order.getId());
+        // Lấy trạng thái từ entity Status liên kết
+        tracking.put("status", order.getStatus() != null ? order.getStatus().getName() : null);
+        // Lấy địa chỉ giao hàng nếu có
+        tracking.put("address", order.getAddress() != null ? order.getAddress().getAddress() : null);
+        // Lấy vị trí hiện tại (giả sử có trường currentLocation hoặc tracking entity)
+        tracking.put("currentLocation", order.getNotes()); // hoặc order.getCurrentLocation() nếu có
+        // Thời gian cập nhật gần nhất
+        tracking.put("updatedAt", order.getUpdatedAt() != null ? order.getUpdatedAt() : LocalDateTime.now());
 
-    return tracking;
-}
+        return tracking;
+    }
 }

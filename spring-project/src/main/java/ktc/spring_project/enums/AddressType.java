@@ -3,7 +3,10 @@ package ktc.spring_project.enums;
 public enum AddressType {
     DELIVERY("Delivery"),
     PICKUP("Pickup"),
-    RETURN("Return");
+    RETURN("Return"),
+    HOME("Home"),
+    STORE("Store"),
+    OFFICE("Office");
 
     private final String displayName;
 

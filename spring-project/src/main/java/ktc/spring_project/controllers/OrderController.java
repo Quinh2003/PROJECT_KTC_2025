@@ -21,6 +21,7 @@ import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -70,7 +71,7 @@ public class OrderController {
      * Lấy tất cả đơn hàng
      */
     @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders(
+    public ResponseEntity<List<Map<String, Object>>> getAllOrders(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Long driverId,
             @RequestParam(required = false) Long vehicleId,
@@ -79,8 +80,83 @@ public class OrderController {
 
         try {
             List<Order> allOrders = orderService.getAllOrders();
-            return ResponseEntity.ok(allOrders);
+            
+            // Chuyển đổi Order entities thành DTO để tránh circular reference
+            List<Map<String, Object>> orderDTOs = allOrders.stream().map(order -> {
+                Map<String, Object> orderDTO = new HashMap<>();
+                orderDTO.put("id", order.getId());
+                orderDTO.put("description", order.getDescription());
+                orderDTO.put("notes", order.getNotes());
+                orderDTO.put("totalAmount", order.getTotalAmount());
+                orderDTO.put("benefitPerOrder", order.getBenefitPerOrder());
+                orderDTO.put("orderProfitPerOrder", order.getOrderProfitPerOrder());
+                orderDTO.put("createdAt", order.getCreatedAt());
+                orderDTO.put("updatedAt", order.getUpdatedAt());
+                
+                // Status info
+                if (order.getStatus() != null) {
+                    Map<String, Object> statusDTO = new HashMap<>();
+                    statusDTO.put("id", order.getStatus().getId());
+                    statusDTO.put("name", order.getStatus().getName());
+                    statusDTO.put("statusType", order.getStatus().getStatusType());
+                    orderDTO.put("status", statusDTO);
+                }
+                
+                // Vehicle info
+                if (order.getVehicle() != null) {
+                    Map<String, Object> vehicleDTO = new HashMap<>();
+                    vehicleDTO.put("id", order.getVehicle().getId());
+                    vehicleDTO.put("licensePlate", order.getVehicle().getLicensePlate());
+                    vehicleDTO.put("vehicleType", order.getVehicle().getVehicleType());
+                    
+                    // Current driver info
+                    if (order.getVehicle().getCurrentDriver() != null) {
+                        Map<String, Object> driverDTO = new HashMap<>();
+                        driverDTO.put("id", order.getVehicle().getCurrentDriver().getId());
+                        driverDTO.put("fullName", order.getVehicle().getCurrentDriver().getFullName());
+                        driverDTO.put("phone", order.getVehicle().getCurrentDriver().getPhone());
+                        vehicleDTO.put("currentDriver", driverDTO);
+                    }
+                    orderDTO.put("vehicle", vehicleDTO);
+                }
+                
+                // Address info
+                if (order.getAddress() != null) {
+                    Map<String, Object> addressDTO = new HashMap<>();
+                    addressDTO.put("id", order.getAddress().getId());
+                    addressDTO.put("address", order.getAddress().getAddress());
+                    addressDTO.put("city", order.getAddress().getCity());
+                    addressDTO.put("latitude", order.getAddress().getLatitude());
+                    addressDTO.put("longitude", order.getAddress().getLongitude());
+                    orderDTO.put("address", addressDTO);
+                }
+                
+                // Store info
+                if (order.getStore() != null) {
+                    Map<String, Object> storeDTO = new HashMap<>();
+                    storeDTO.put("id", order.getStore().getId());
+                    storeDTO.put("storeName", order.getStore().getStoreName());
+                    storeDTO.put("address", order.getStore().getAddress());
+                    storeDTO.put("phone", order.getStore().getPhone());
+                    orderDTO.put("store", storeDTO);
+                }
+                
+                // Created by user info
+                if (order.getCreatedBy() != null) {
+                    Map<String, Object> createdByDTO = new HashMap<>();
+                    createdByDTO.put("id", order.getCreatedBy().getId());
+                    createdByDTO.put("fullName", order.getCreatedBy().getFullName());
+                    createdByDTO.put("username", order.getCreatedBy().getUsername());
+                    orderDTO.put("createdBy", createdByDTO);
+                }
+                
+                return orderDTO;
+            }).collect(Collectors.toList());
+            
+            return ResponseEntity.ok(orderDTOs);
         } catch (Exception e) {
+            System.err.println("Error in getAllOrders: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
         }
     }
@@ -126,41 +202,70 @@ public ResponseEntity<Order> putOrder(
 }
 // ...existing code...
 
-// DTO đơn giản để nhận statusId
-public static class UpdateOrderStatusDTO {
-    public Long statusId;
-}
-
-// API cập nhật trạng thái đơn hàng
-@PatchMapping("/{id}/status")
-public ResponseEntity<Order> updateOrderStatus(
-        @PathVariable Long id,
-        @RequestBody UpdateOrderStatusDTO dto) {
-    try {
-        Order order = orderService.getOrderById(id);
-        if (dto.statusId != null) {
-            Status status = new Status();
-            status.setId(dto.statusId != null ? dto.statusId.shortValue() : null);
-            order.setStatus(status);
-        }
-        Order updatedOrder = orderService.createOrder(order); // hoặc orderService.save(order)
-        return ResponseEntity.ok(updatedOrder);
-    } catch (Exception e) {
-        return ResponseEntity.notFound().build();
+    // DTO đơn giản để nhận statusId
+    public static class UpdateOrderStatusDTO {
+        public Long statusId;
     }
-}
-@GetMapping("/{id}/tracking")
-public ResponseEntity<?> getOrderTracking(@PathVariable Long id) {
-    try {
-        // Giả sử bạn có service lấy tracking info
-        Object trackingInfo = orderService.getOrderTrackingInfo(id);
-        if (trackingInfo == null) {
+
+    // DTO đơn giản để nhận vehicleId
+    public static class UpdateOrderVehicleDTO {
+        public Long vehicleId;
+    }
+
+    // API cập nhật trạng thái đơn hàng
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Order> updateOrderStatus(
+            @PathVariable Long id,
+            @RequestBody UpdateOrderStatusDTO dto) {
+        try {
+            Order order = orderService.getOrderById(id);
+            if (dto.statusId != null) {
+                Status status = new Status();
+                status.setId(dto.statusId != null ? dto.statusId.shortValue() : null);
+                order.setStatus(status);
+            }
+            Order updatedOrder = orderService.createOrder(order); // hoặc orderService.save(order)
+            return ResponseEntity.ok(updatedOrder);
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(trackingInfo);
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
     }
-}
+
+    // API cập nhật vehicle cho đơn hàng
+    @PatchMapping("/{id}/vehicle")
+    public ResponseEntity<Order> updateOrderVehicle(
+            @PathVariable Long id,
+            @RequestBody UpdateOrderVehicleDTO dto) {
+        try {
+            Order order = orderService.getOrderById(id);
+            if (dto.vehicleId != null && dto.vehicleId > 0) {
+                // Assign vehicle
+                Vehicle vehicle = new Vehicle();
+                vehicle.setId(dto.vehicleId);
+                order.setVehicle(vehicle);
+            } else {
+                // Unassign vehicle (vehicleId is null or 0)
+                order.setVehicle(null);
+            }
+            Order updatedOrder = orderService.createOrder(order);
+            return ResponseEntity.ok(updatedOrder);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{id}/tracking")
+    public ResponseEntity<?> getOrderTracking(@PathVariable Long id) {
+        try {
+            // Giả sử bạn có service lấy tracking info
+            Object trackingInfo = orderService.getOrderTrackingInfo(id);
+            if (trackingInfo == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(trackingInfo);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
 
 }

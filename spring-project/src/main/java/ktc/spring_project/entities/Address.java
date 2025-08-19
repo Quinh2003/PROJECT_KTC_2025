@@ -16,9 +16,6 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
 
     @Enumerated(EnumType.STRING)
 @Column(name = "address_type", nullable = false, length = 50)
@@ -72,8 +69,6 @@ private AddressType addressType;
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    public Order getOrder() { return order; }
-    public void setOrder(Order order) { this.order = order; }
   
 public AddressType getAddressType() {
     return addressType;

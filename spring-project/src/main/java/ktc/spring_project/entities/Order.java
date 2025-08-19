@@ -1,3 +1,4 @@
+
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
@@ -7,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -14,6 +16,15 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    // Có thể null khi đơn hàng chưa gán xe
+    @ManyToOne
+    @JoinColumn(name = "vehicle_id", nullable = true)
+    private Vehicle vehicle;
+
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -57,6 +68,11 @@ public class Order {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public Address getAddress() { return address; }
+    public void setAddress(Address address) { this.address = address; }
+
+    public Vehicle getVehicle() { return vehicle; }
+    public void setVehicle(Vehicle vehicle) { this.vehicle = vehicle; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }

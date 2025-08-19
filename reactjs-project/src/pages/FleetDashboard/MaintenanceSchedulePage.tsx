@@ -45,7 +45,6 @@ export default function MaintenanceSchedulePage() {
   return (
     <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-6 border border-white/30 shadow-xl">
       <div className="text-xl font-bold mb-2">Lên lịch bảo trì</div>
-      <div className="text-gray-500 mb-6">Tạo lịch bảo trì định kỳ cho phương tiện</div>
       <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
         <div>
           <label className="block text-sm font-medium mb-1">Chọn phương tiện <span className='text-red-500'>*</span></label>

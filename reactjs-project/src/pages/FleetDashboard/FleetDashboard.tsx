@@ -71,7 +71,7 @@ export default function FleetDashboard({ user, onLogout }: FleetDashboardProps) 
           user={user}
           onLogout={onLogout}
           title="Dashboard Quản lý đội xe"
-          subtitle="Quản lý phương tiện và lịch bảo trì định kỳ"
+          subtitle=""
         />
         <div className="p-6 md:p-10 space-y-8">
           {tab === "vehicles" && (
@@ -132,8 +132,7 @@ export default function FleetDashboard({ user, onLogout }: FleetDashboardProps) 
               <div className="bg-white/30 hover:bg-white/40 rounded-xl p-6 shadow-lg">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900">Danh sách phương tiện</h3>
-                    <p className="text-gray-600 mt-1">Quản lý thông tin và trạng thái phương tiện</p>
+                    <h1 className="text-xl font-bold text-gray-900">Danh sách phương tiện</h1>
                   </div>
                 </div>
                 {filteredVehicles.length === 0 ? (
