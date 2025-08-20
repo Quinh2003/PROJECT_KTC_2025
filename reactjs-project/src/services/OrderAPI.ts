@@ -1,5 +1,33 @@
 
-import type { Order } from '../types/Operations';
+import type { Order } from '../types/Order';
+// Chuẩn hóa hàm fetchOrders cho OrderList.tsx
+export interface FetchOrdersResponse {
+  data: Order[];
+  totalPages: number;
+  totalRecords: number;
+}
+
+export async function fetchOrders(page: number, size: number, token: string): Promise<FetchOrdersResponse> {
+  const res = await fetch(`http://localhost:8080/api/orders?page=${page}&size=${size}`, {
+    headers: token ? { "Authorization": `Bearer ${token}` } : undefined,
+  });
+  if (!res.ok) throw new Error("Failed to fetch orders");
+  const data = await res.json();
+  // Map lại trường created_at -> createdAt nếu cần, rồi sort
+  const orders = (data.data || []).map((order: any) => ({
+    ...order,
+    createdAt: order.createdAt || order.created_at || ""
+  })).sort((a: any, b: any) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    return dateB - dateA;
+  });
+  return {
+    data: orders,
+    totalPages: data.totalPages || 1,
+    totalRecords: data.totalRecords || 0,
+  };
+}
 
 
 export async function addOrder(order: Partial<Order>): Promise<Order> {

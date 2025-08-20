@@ -1,4 +1,5 @@
 import { useState } from "react";
+import OrderRow from "./OrderRow";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchOrdersRaw, updateOrderVehicle } from "../../services/OrderAPI";
 import { fetchVehicleStats } from "../../services/VehicleListAPI";
@@ -256,6 +257,7 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
                 <thead className="sticky top-0 z-10">
                   <tr className="bg-gradient-to-r from-blue-100/80 via-white/80 to-blue-50/80 border-b border-blue-200/60 shadow-sm">
                     <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Mã đơn</th>
+                    <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Sản phẩm</th>
                     <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Khách hàng</th>
                     <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Lộ trình</th>
                     <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Ưu tiên</th>
@@ -286,6 +288,12 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
                           >
                             {order.status}
                           </span>
+                        </div>
+                      </td>
+                      <td className="p-5 align-top min-w-[200px]">
+                        {/* Hiển thị tên sản phẩm và tổng số lượng */}
+                        <div className="max-w-xs">
+                          <OrderRow orderId={order.id} />
                         </div>
                       </td>
                       <td className="p-5 align-top min-w-[160px]">

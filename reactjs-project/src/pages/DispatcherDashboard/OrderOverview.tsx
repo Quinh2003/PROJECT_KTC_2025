@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchOrderStats } from "../../services/OrderAPI";
-import { fetchVehicles } from "../../services/VehicleListAPI";
+import { fetchVehicleStats } from "../../services/VehicleListAPI";
 import type { Vehicle } from "../../types";
 import { PackageOpen, Truck, Hourglass, CheckCircle } from "lucide-react";
 
@@ -22,6 +22,7 @@ export default function StatsCards({ refreshTrigger }: StatsCardsProps) {
   const [totalOrders, setTotalOrders] = useState(0);
   const [sampleOrders, setSampleOrders] = useState<Order[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [totalVehicles, setTotalVehicles] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -30,13 +31,14 @@ export default function StatsCards({ refreshTrigger }: StatsCardsProps) {
       try {
         setLoading(true);
         setError("");
-        const [orderStats, vehiclesData] = await Promise.all([
+        const [orderStats, vehicleStats] = await Promise.all([
           fetchOrderStats(),
-          fetchVehicles(),
+          fetchVehicleStats(),
         ]);
         setTotalOrders(orderStats.totalRecords);
         setSampleOrders(orderStats.sampleOrders);
-        setVehicles(vehiclesData);
+        setVehicles(vehicleStats.sampleVehicles);
+        setTotalVehicles(vehicleStats.totalRecords || 0);
       } catch (err: any) {
         setError(err.message || "Đã xảy ra lỗi");
       } finally {
@@ -48,7 +50,7 @@ export default function StatsCards({ refreshTrigger }: StatsCardsProps) {
 
   // Tính toán số lượng theo trạng thái từ sample (ước tính)
   const totalShipments = totalOrders; // Sử dụng tổng số thật
-  const totalVehicles = vehicles.length;
+  // const totalVehicles = vehicles.length; // Đã lấy từ API
   
   // Tính tỷ lệ từ sample để ước tính
   const sampleSize = sampleOrders.length;

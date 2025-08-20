@@ -1,54 +1,42 @@
 // ...existing code...
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect, useCallback } from "react";
+import { fetchOrders } from "../../services/OrderAPI";
+import type { Order } from "../../types/Order";
 
 
 export default function OrderList() {
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 5;
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalRecords, setTotalRecords] = useState(0);
+  // const [totalRecords, setTotalRecords] = useState(0); // Không dùng
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchOrders = async () => {
+  const fetchOrdersCallback = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get(`http://localhost:8080/api/orders`, {
-        params: { page, size: PAGE_SIZE },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      });
-      // Map lại trường created_at -> createdAt nếu cần, rồi sort
-      const orders = (res.data.data || []).map((order: any) => ({
-        ...order,
-        createdAt: order.createdAt || order.created_at || ""
-      })).sort((a: any, b: any) => {
-        const dateA = new Date(a.createdAt).getTime();
-        const dateB = new Date(b.createdAt).getTime();
-        return dateB - dateA; // Mới nhất lên đầu
-      });
-      setOrders(orders);
-      setTotalPages(res.data.totalPages || 1);
-      setTotalRecords(res.data.totalRecords || 0);
+      const token = localStorage.getItem("token") || "";
+      const res = await fetchOrders(page, PAGE_SIZE, token);
+      setOrders(res.data);
+      setTotalPages(res.totalPages);
+      // setTotalRecords(res.totalRecords); // Không dùng
     } catch (err) {
       setError("Không thể tải dữ liệu đơn hàng");
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
 
   useEffect(() => {
-    fetchOrders();
+    fetchOrdersCallback();
     // eslint-disable-next-line
-  }, [page, PAGE_SIZE]);
+  }, [fetchOrdersCallback]);
 
-  const handleRefresh = () => {
-    fetchOrders();
-  };
+  // const handleRefresh = () => {
+  //   fetchOrdersCallback();
+  // };
 
   return (
     <div className="bg-gradient-to-br from-blue-50/80 via-white/90 to-blue-100/80 backdrop-blur-2xl rounded-3xl p-8 border border-white/40 shadow-2xl max-w-full overflow-x-auto">
