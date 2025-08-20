@@ -1,8 +1,5 @@
 plugins {
-    id("com.andro        minSdk = 21
-        targetSdk = 33
-        versionCode = flutter.versionCode
-        versionName = flutter.versionNamepplication")
+    id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
@@ -12,11 +9,10 @@ plugins {
 
 android {
     namespace = "com.ktc.logistics_driver"
-    compileSdk = 33
-
+    compileSdk = 35
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -45,7 +41,7 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
-    
+
     // Cấu hình đặc biệt để đảm bảo APK được đặt vào thư mục Flutter mong đợi
     applicationVariants.all {
         val variant = this
@@ -54,11 +50,15 @@ android {
             val outputFileName = "app-${variant.buildType.name}.apk"
             val flutterOutputDir = "$rootDir/../build/app/outputs/flutter-apk"
             val debugOutputDir = "$rootDir/app/build/outputs/apk/${variant.buildType.name}"
-            
-            doLast {
-                copy {
-                    from("$debugOutputDir/$outputFileName")
-                    into(flutterOutputDir)
+
+            // Fix doLast issue by using tasks.named approach
+            val outputId = this.name
+            tasks.named("package${variant.name.capitalize()}").configure {
+                doLast {
+                    copy {
+                        from("$debugOutputDir/$outputFileName")
+                        into(flutterOutputDir)
+                    }
                 }
             }
         }
@@ -67,10 +67,10 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
-    
+
     // Firebase BoM để đảm bảo version compatibility
     implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
-    
+
     // Firebase products
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
@@ -87,12 +87,13 @@ flutter {
 // Thêm task copy APK sau khi build hoàn tất
 tasks.register("copyApkToFlutterDir") {
     doLast {
-        val sourceDir = "${buildDir}/outputs/apk"
+        // Fix for deprecated buildDir
+        val sourceDir = "${layout.buildDirectory.asFile.get()}/outputs/apk"
         val targetDir = "${rootProject.projectDir}/../build/app/outputs/flutter-apk"
-        
+
         // Tạo thư mục đích nếu chưa tồn tại
         mkdir(targetDir)
-        
+
         // Copy APK debug
         val debugApk = file("${sourceDir}/debug/app-debug.apk")
         if (debugApk.exists()) {
@@ -102,7 +103,7 @@ tasks.register("copyApkToFlutterDir") {
             }
             println("Copied debug APK to ${targetDir}/app-debug.apk")
         }
-        
+
         // Copy APK release
         val releaseApk = file("${sourceDir}/release/app-release.apk")
         if (releaseApk.exists()) {
