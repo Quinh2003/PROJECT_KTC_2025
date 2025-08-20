@@ -19,12 +19,56 @@ Write-Host "`n[1/5] Đang dọn dẹp Flutter cache và build folders..." -Foreg
 flutter clean
 Write-Host "  ✓ Đã dọn dẹp Flutter build folders" -ForegroundColor Gray
 
-# 2. Dọn dẹp Gradle cache trong project
+# 2. Dọn dẹp Gradle cache trong project (cẩn thận để giữ lại các file quan trọng)
 Write-Host "`n[2/5] Đang dọn dẹp Gradle cache trong project..." -ForegroundColor Green
 $projectPath = Get-Location
-Get-ChildItem -Path $projectPath -Recurse -Directory -Filter ".gradle" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-Get-ChildItem -Path $projectPath -Recurse -Directory -Filter "build" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-Write-Host "  ✓ Đã dọn dẹp Gradle cache trong project" -ForegroundColor Gray
+
+# Tạo backup của settings.gradle.kts nếu tồn tại
+$androidDir = Join-Path -Path $projectPath -ChildPath "android"
+$settingsGradleKts = Join-Path -Path $androidDir -ChildPath "settings.gradle.kts"
+$settingsGradle = Join-Path -Path $androidDir -ChildPath "settings.gradle"
+
+if (Test-Path $settingsGradleKts) {
+    Copy-Item $settingsGradleKts "$settingsGradleKts.bak" -Force
+}
+if (Test-Path $settingsGradle) {
+    Copy-Item $settingsGradle "$settingsGradle.bak" -Force
+}
+
+# Dọn dẹp .gradle trong project nhưng không xóa thư mục android
+Get-ChildItem -Path $projectPath -Recurse -Directory -Filter ".gradle" | 
+    Where-Object { $_.FullName -notlike "*\android\*" } | 
+    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+# Dọn dẹp các thư mục build nhưng không xóa thư mục android hoàn toàn
+Get-ChildItem -Path $projectPath -Recurse -Directory -Filter "build" | 
+    Where-Object { $_.FullName -notlike "*\android\*" } | 
+    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+# Xóa thư mục transforms trong Gradle cache của người dùng hiện tại để khắc phục lỗi metadata
+Write-Host "  ! Đang xóa thư mục transforms trong Gradle cache để khắc phục lỗi metadata.bin..." -ForegroundColor Yellow
+$transformsDirs = @(
+    "C:\Users\$env:USERNAME\.gradle\caches\*\transforms*",
+    "C:\Users\$env:USERNAME\.gradle\caches\transforms-*",
+    "D:\gradle_home\caches\*\transforms*",
+    "D:\gradle_home\caches\transforms-*"
+)
+
+foreach ($dir in $transformsDirs) {
+    Remove-Item -Path $dir -Force -Recurse -ErrorAction SilentlyContinue
+}
+
+# Khôi phục settings.gradle.kts từ backup nếu có
+if (Test-Path "$settingsGradleKts.bak") {
+    Copy-Item "$settingsGradleKts.bak" $settingsGradleKts -Force
+    Remove-Item "$settingsGradleKts.bak" -Force
+}
+if (Test-Path "$settingsGradle.bak") {
+    Copy-Item "$settingsGradle.bak" $settingsGradle -Force
+    Remove-Item "$settingsGradle.bak" -Force
+}
+
+Write-Host "  ✓ Đã dọn dẹp Gradle cache trong project (bảo vệ các file quan trọng)" -ForegroundColor Gray
 
 # 3. Dọn dẹp thư mục .dart_tool và các file tạm của Flutter
 Write-Host "`n[3/5] Đang dọn dẹp .dart_tool và các file tạm của Flutter..." -ForegroundColor Green
@@ -57,6 +101,19 @@ if (Test-Path $iosDir) {
 # Hiển thị dung lượng ổ đĩa sau khi dọn dẹp
 Write-Host "`nDung lượng ổ đĩa sau khi dọn dẹp:" -ForegroundColor Magenta
 Get-PSDrive -PSProvider 'FileSystem' | Format-Table -Property Name, Root, @{Name="Used (GB)"; Expression={[math]::Round($_.Used/1GB, 2)}}, @{Name="Free (GB)"; Expression={[math]::Round($_.Free/1GB, 2)}}
+
+# Khôi phục các dependencies
+Write-Host "`n[+] Đang khôi phục các dependencies..." -ForegroundColor Green
+flutter pub get
+Write-Host "  ✓ Đã khôi phục dependencies thành công" -ForegroundColor Gray
+
+# Kiểm tra và khôi phục thư mục android nếu cần
+$androidDir = Join-Path -Path (Get-Location) -ChildPath "android"
+if (-not (Test-Path $androidDir)) {
+    Write-Host "`n[!] Thư mục android không tồn tại, đang khôi phục..." -ForegroundColor Yellow
+    flutter create --platforms=android .
+    Write-Host "  ✓ Đã khôi phục thư mục android thành công" -ForegroundColor Gray
+}
 
 # Hiển thị thông báo hoàn thành
 Write-Host "`n=================================================================" -ForegroundColor Cyan

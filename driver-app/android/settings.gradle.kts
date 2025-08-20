@@ -10,9 +10,26 @@ pluginManagement {
     includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
 
     repositories {
-        google()
+        // Explicitly add Maven Central and Google repositories first for plugin resolution
         mavenCentral()
+        google()
         gradlePluginPortal()
+        // Add Flutter's own Maven repository
+        maven {
+            url = uri("$flutterSdkPath/bin/cache/artifacts/engine/android-gradle-plugin")
+        }
+    }
+}
+
+// Clean the transforms folder to avoid metadata corruption
+gradle.beforeProject {
+    val cacheDir = gradle.gradleUserHomeDir.resolve("caches")
+    if (cacheDir.exists()) {
+        val transformsDir = cacheDir.resolve("transforms")
+        if (transformsDir.exists() && transformsDir.isDirectory) {
+            println("Cleaning Gradle transforms cache to avoid metadata corruption")
+            transformsDir.deleteRecursively()
+        }
     }
 }
 

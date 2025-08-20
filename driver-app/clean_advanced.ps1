@@ -45,10 +45,57 @@ Write-Host "  ✓ Đã cấu hình thư mục cache sang ổ D" -ForegroundColor
 
 # 2. Dọn dẹp Gradle cache
 Write-Host "`n[2/8] Đang dọn dẹp Gradle cache..." -ForegroundColor Green
-Remove-Item -Path "C:\Users\$env:USERNAME\.gradle\caches\*" -Force -Recurse -ErrorAction SilentlyContinue
+
+# Tạo backup của settings.gradle.kts nếu tồn tại
+$androidDir = Join-Path -Path (Split-Path -Parent $PSCommandPath) -ChildPath "android"
+$settingsGradleKts = Join-Path -Path $androidDir -ChildPath "settings.gradle.kts"
+$settingsGradle = Join-Path -Path $androidDir -ChildPath "settings.gradle"
+
+if (Test-Path $settingsGradleKts) {
+    Copy-Item $settingsGradleKts "$settingsGradleKts.bak" -Force
+}
+if (Test-Path $settingsGradle) {
+    Copy-Item $settingsGradle "$settingsGradle.bak" -Force
+}
+
+# Xóa tất cả các thư mục transforms trong Gradle cache để khắc phục lỗi metadata
+Write-Host "  ! Đang xóa các thư mục transforms trong Gradle cache để khắc phục lỗi metadata.bin..." -ForegroundColor Yellow
+$transformsDirs = @(
+    "C:\Users\$env:USERNAME\.gradle\caches\*\transforms*",
+    "C:\Users\$env:USERNAME\.gradle\caches\transforms-*",
+    "D:\gradle_home\caches\*\transforms*",
+    "D:\gradle_home\caches\transforms-*"
+)
+
+foreach ($dir in $transformsDirs) {
+    Remove-Item -Path $dir -Force -Recurse -ErrorAction SilentlyContinue
+}
+
+# Dọn dẹp các cache khác
+Remove-Item -Path "C:\Users\$env:USERNAME\.gradle\caches\*\metadata-*\*" -Force -Recurse -ErrorAction SilentlyContinue
+Remove-Item -Path "C:\Users\$env:USERNAME\.gradle\caches\*\scripts-*\*" -Force -Recurse -ErrorAction SilentlyContinue
 Remove-Item -Path "C:\Users\$env:USERNAME\.gradle\daemon\*" -Force -Recurse -ErrorAction SilentlyContinue
 Remove-Item -Path "C:\Users\$env:USERNAME\.gradle\wrapper\dists\*" -Force -Recurse -ErrorAction SilentlyContinue
-Write-Host "  ✓ Đã dọn dẹp Gradle cache" -ForegroundColor Gray
+
+# Kiểm tra và xóa cache ở ổ D nếu tồn tại
+if (Test-Path "D:\gradle_home") {
+    Remove-Item -Path "D:\gradle_home\caches\*\metadata-*\*" -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path "D:\gradle_home\caches\*\scripts-*\*" -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path "D:\gradle_home\daemon\*" -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path "D:\gradle_home\wrapper\dists\*" -Force -Recurse -ErrorAction SilentlyContinue
+}
+
+# Khôi phục settings.gradle.kts từ backup nếu có
+if (Test-Path "$settingsGradleKts.bak") {
+    Copy-Item "$settingsGradleKts.bak" $settingsGradleKts -Force
+    Remove-Item "$settingsGradleKts.bak" -Force
+}
+if (Test-Path "$settingsGradle.bak") {
+    Copy-Item "$settingsGradle.bak" $settingsGradle -Force
+    Remove-Item "$settingsGradle.bak" -Force
+}
+
+Write-Host "  ✓ Đã dọn dẹp Gradle cache và khắc phục lỗi metadata" -ForegroundColor Gray
 
 # 3. Dọn dẹp Android cache
 Write-Host "`n[3/8] Đang dọn dẹp Android cache..." -ForegroundColor Green
@@ -74,14 +121,42 @@ Write-Host "  ✓ Đã dọn dẹp Windows temp folders" -ForegroundColor Gray
 # 6. Dọn dẹp project folders
 Write-Host "`n[6/8] Đang dọn dẹp project folders..." -ForegroundColor Green
 $projectPath = Split-Path -Parent $PSCommandPath
-Get-ChildItem -Path $projectPath -Recurse -Directory -Filter "build" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-Get-ChildItem -Path $projectPath -Recurse -Directory -Filter ".gradle" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+# Bảo vệ thư mục android và các file cấu hình quan trọng
+$androidDir = Join-Path -Path $projectPath -ChildPath "android"
+$androidExists = Test-Path $androidDir
+
+# Chỉ xóa các thư mục build trong project ngoại trừ android
+Get-ChildItem -Path $projectPath -Recurse -Directory -Filter "build" | 
+    Where-Object { $_.FullName -notlike "*\android\*" } | 
+    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+# Chỉ xóa các thư mục .gradle trong project ngoại trừ android
+Get-ChildItem -Path $projectPath -Recurse -Directory -Filter ".gradle" | 
+    Where-Object { $_.FullName -notlike "*\android\*" } | 
+    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+# Dọn dẹp các thư mục khác
 Get-ChildItem -Path $projectPath -Recurse -Directory -Filter ".dart_tool" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
 Get-ChildItem -Path $projectPath -Recurse -Directory -Filter ".cxx" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-Get-ChildItem -Path $projectPath -Recurse -File -Filter "*.iml" | Remove-Item -Force -ErrorAction SilentlyContinue
+
+# Không xóa file .iml trong thư mục android
+Get-ChildItem -Path $projectPath -Recurse -File -Filter "*.iml" | 
+    Where-Object { $_.FullName -notlike "*\android\*" } | 
+    Remove-Item -Force -ErrorAction SilentlyContinue
+
 Get-ChildItem -Path $projectPath -Recurse -File -Filter "*.bak" | Remove-Item -Force -ErrorAction SilentlyContinue
 Get-ChildItem -Path $projectPath -Recurse -File -Filter "*.log" | Remove-Item -Force -ErrorAction SilentlyContinue
-Write-Host "  ✓ Đã dọn dẹp project folders" -ForegroundColor Gray
+
+# Kiểm tra nếu thư mục android bị xóa, thì khôi phục lại
+if ($androidExists -and -not (Test-Path $androidDir)) {
+    Write-Host "  ! Thư mục android bị mất, đang khôi phục..." -ForegroundColor Yellow
+    # Chạy flutter create để tái tạo thư mục android
+    Set-Location $projectPath
+    & flutter create --platforms=android .
+}
+
+Write-Host "  ✓ Đã dọn dẹp project folders (bảo vệ các file quan trọng)" -ForegroundColor Gray
 
 # 7. Thiết lập và chạy Disk Cleanup
 Write-Host "`n[7/8] Đang thiết lập và chạy Disk Cleanup..." -ForegroundColor Green
@@ -140,6 +215,55 @@ if (Test-Path $gradlePropertiesPath) {
 # Hiển thị dung lượng ổ đĩa sau khi dọn dẹp
 Write-Host "`nDung lượng ổ đĩa sau khi dọn dẹp:" -ForegroundColor Magenta
 Get-PSDrive -PSProvider 'FileSystem' | Format-Table -Property Name, Root, @{Name="Used (GB)"; Expression={[math]::Round($_.Used/1GB, 2)}}, @{Name="Free (GB)"; Expression={[math]::Round($_.Free/1GB, 2)}}
+
+# Khôi phục dependencies và kiểm tra tính toàn vẹn của dự án
+Write-Host "`n[+] Đang khôi phục dependencies và kiểm tra tính toàn vẹn của dự án..." -ForegroundColor Green
+$projectPath = Split-Path -Parent $PSCommandPath
+Set-Location $projectPath
+
+# Kiểm tra thư mục android
+$androidDir = Join-Path -Path $projectPath -ChildPath "android"
+if (-not (Test-Path $androidDir)) {
+    Write-Host "  ! Thư mục android không tồn tại, đang khôi phục..." -ForegroundColor Yellow
+    flutter create --platforms=android .
+    Write-Host "  ✓ Đã khôi phục thư mục android" -ForegroundColor Gray
+}
+
+# Khôi phục pubspec.lock và các dependencies
+flutter pub get
+Write-Host "  ✓ Đã khôi phục dependencies" -ForegroundColor Gray
+
+# Kiểm tra và sửa lỗi plugin loader
+$gradlePluginLoaderError = $false
+$settingsGradlePath = Join-Path -Path $androidDir -ChildPath "settings.gradle"
+$settingsGradleKtsPath = Join-Path -Path $androidDir -ChildPath "settings.gradle.kts"
+
+if (Test-Path $settingsGradleKtsPath) {
+    $settingsContent = Get-Content $settingsGradleKtsPath -Raw
+    if ($settingsContent -match "dev.flutter.flutter-plugin-loader") {
+        # Sửa lỗi plugin loader
+        Write-Host "  ! Phát hiện cấu hình plugin loader có thể gây lỗi, đang sửa..." -ForegroundColor Yellow
+        # Thêm đoạn mã để sửa repository cho plugin loader
+        $updatedContent = $settingsContent -replace "pluginManagement {(\s+)repositories {", "pluginManagement {`$1repositories {`$1    mavenCentral()`$1    google()"
+        Set-Content -Path $settingsGradleKtsPath -Value $updatedContent
+        $gradlePluginLoaderError = $true
+    }
+}
+elseif (Test-Path $settingsGradlePath) {
+    $settingsContent = Get-Content $settingsGradlePath -Raw
+    if ($settingsContent -match "dev.flutter.flutter-plugin-loader") {
+        # Sửa lỗi plugin loader
+        Write-Host "  ! Phát hiện cấu hình plugin loader có thể gây lỗi, đang sửa..." -ForegroundColor Yellow
+        # Thêm đoạn mã để sửa repository cho plugin loader
+        $updatedContent = $settingsContent -replace "pluginManagement {(\s+)repositories {", "pluginManagement {`$1repositories {`$1    mavenCentral()`$1    google()"
+        Set-Content -Path $settingsGradlePath -Value $updatedContent
+        $gradlePluginLoaderError = $true
+    }
+}
+
+if ($gradlePluginLoaderError) {
+    Write-Host "  ✓ Đã sửa cấu hình plugin loader" -ForegroundColor Gray
+}
 
 # Hiển thị thông báo hoàn thành
 Write-Host "`n=================================================================" -ForegroundColor Cyan
