@@ -16,11 +16,9 @@ const roles = [
   { label: "Fleet Manager", value: "Fleet Manager", icon: <FaTools className="inline mr-1" /> },
   { label: "Driver", value: "Driver", icon: <FaTruck className="inline mr-1" /> },
   { label: "Operations Manager", value: "Operations Manager", icon: <FaChartBar className="inline mr-1" /> },
-  { label: "Customer", value: "Customer", icon: <FaChartBar className="inline mr-1" /> },
 ];
 
 export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
-  const [phoneError, setPhoneError] = useState("");
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [role, setRole] = useState(user?.roleValue || roles[0].value);
@@ -41,18 +39,7 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-<<<<<<< HEAD
     console.log("[UserForm] handleSubmit with role:", role);
-=======
-    // Kiểm tra định dạng số điện thoại: chỉ cho phép số, tối thiểu 8 ký tự, tối đa 15 ký tự
-    const phoneRegex = /^\d{8,15}$/;
-    if (phone && !phoneRegex.test(phone)) {
-      setPhoneError("Số điện thoại phải là số và từ 8 đến 15 ký tự!");
-      return;
-    } else {
-      setPhoneError("");
-    }
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
     const selectedRole = roles.find(r => r.value === role) || roles[0];
     const userToSubmit = {
       id: user?.id || "",
@@ -65,10 +52,7 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
       password,
       phone,
     };
-<<<<<<< HEAD
     console.log("[UserForm] Submitting user:", userToSubmit);
-=======
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
     onAdd(userToSubmit);
     onClose();
   };
@@ -98,16 +82,7 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
             type="text"
             value={phone}
             onChange={e => setPhone(e.target.value)}
-<<<<<<< HEAD
           />
-=======
-            pattern="\d{8,15}"
-            title="Số điện thoại phải là số và từ 8 đến 15 ký tự"
-          />
-          {phoneError && (
-            <div className="text-red-500 text-sm mt-1">{phoneError}</div>
-          )}
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
         </div>
         <div>
           <label className="block mb-1 font-semibold">Email</label>

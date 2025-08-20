@@ -226,8 +226,4 @@ export const useMapbox = ({ accessToken, center, zoom, style = 'mapbox://styles/
   };
 };
 
-<<<<<<< HEAD
 export default useMapbox;
-=======
-export default useMapbox;
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5

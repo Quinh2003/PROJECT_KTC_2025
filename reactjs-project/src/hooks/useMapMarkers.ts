@@ -156,8 +156,4 @@ export const useMapMarkers = (
   }, [map, tracking, selectedVehicle, onMarkerClick, isMapLoaded]);
 };
 
-<<<<<<< HEAD
 export default useMapMarkers;
-=======
-export default useMapMarkers;
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5

@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-// constants/roles.ts
-
-export const ROLES = [
-=======
 
 import type { Role } from "../types/dashboard";
 
@@ -18,29 +13,10 @@ export const ROLES: Role[] = [
       "View logs",
     ],
   },
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
   {
     key: "dispatcher",
     name: "Dispatcher",
     icon: "FaBellConcierge",
-<<<<<<< HEAD
-    permissions: [
-      "CREATE_ORDER",
-      "ASSIGN_DRIVER",
-      "VIEW_ORDER",
-      "EDIT_ORDER"
-    ]
-  },
-  {
-    key: "fleet_manager",
-    name: "Fleet Manager",
-    icon: "FaTools",
-    permissions: [
-      "VIEW_VEHICLE",
-      "EDIT_VEHICLE",
-      "ASSIGN_VEHICLE"
-    ]
-=======
     permissions: ["Create order", "Assign vehicle & driver", "View map", "Order management"],
   },
   {
@@ -64,54 +40,12 @@ export const ROLES: Role[] = [
       "Export reports",
       "Monitor KPI",
     ],
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
   },
   {
     key: "driver",
     name: "Driver",
     icon: "FaTruck",
     permissions: [
-<<<<<<< HEAD
-      "VIEW_ORDER",
-      "UPDATE_STATUS"
-    ]
-  },
-  {
-    key: "operations_manager",
-    name: "Operations Manager",
-    icon: "FaUserCog",
-    permissions: [
-      "VIEW_REPORTS",
-      "EDIT_REPORTS"
-    ]
-  }
-];
-
-export const ALL_PERMISSIONS = [
-  "CREATE_ORDER",
-  "ASSIGN_DRIVER",
-  "VIEW_ORDER",
-  "EDIT_ORDER",
-  "VIEW_VEHICLE",
-  "EDIT_VEHICLE",
-  "ASSIGN_VEHICLE",
-  "UPDATE_STATUS",
-  "VIEW_REPORTS",
-  "EDIT_REPORTS"
-];
-
-export const PERMISSION_DESCRIPTIONS: Record<string, string> = {
-  CREATE_ORDER: "Tạo đơn hàng mới.",
-  ASSIGN_DRIVER: "Gán tài xế cho đơn hàng.",
-  VIEW_ORDER: "Xem danh sách đơn hàng.",
-  EDIT_ORDER: "Chỉnh sửa thông tin đơn hàng.",
-  VIEW_VEHICLE: "Xem danh sách phương tiện.",
-  EDIT_VEHICLE: "Chỉnh sửa thông tin phương tiện.",
-  ASSIGN_VEHICLE: "Gán phương tiện cho tài xế.",
-  UPDATE_STATUS: "Cập nhật trạng thái đơn hàng.",
-  VIEW_REPORTS: "Xem báo cáo vận hành.",
-  EDIT_REPORTS: "Chỉnh sửa báo cáo vận hành."
-=======
       "Receive new order",
       "Update delivery status",
       "View route",
@@ -147,5 +81,4 @@ export const PERMISSION_DESCRIPTIONS: Record<string, string> = {
   "View route": "View delivery route.",
   "Send receipt image": "Send receipt image upon delivery.",
   "E-signature": "Electronically sign for delivery confirmation.",
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 };

@@ -128,8 +128,4 @@ export class TrackingService {
 }
 
 // Export singleton instance
-<<<<<<< HEAD
 export const trackingService = TrackingService.getInstance();
-=======
-export const trackingService = TrackingService.getInstance();
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5

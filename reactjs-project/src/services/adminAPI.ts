@@ -1,42 +1,5 @@
-<<<<<<< HEAD
 
 import type { User, UserApiResponse } from "../types/User";
-=======
-// Cập nhật user (PUT - update toàn bộ)
-export async function updateUser(id: string | number, user: User): Promise<User> {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${API_URL}/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
-    body: JSON.stringify(user),
-  });
-  if (!res.ok) throw new Error("Failed to update user (PUT)");
-  return res.json();
-}
-// Admin API service: fetch all users, fetch all drivers, add/edit/delete user
-
-export type User = {
-  id: string | number;
-  username: string;
-  fullName: string;
-  email: string;
-  phone?: string;
-  role?: {
-    id: string | number;
-    roleName: string;
-    description?: string;
-  };
-  status?: {
-    id: string | number;
-    statusType: string;
-    name: string;
-    description?: string;
-  };
-};
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 
 const API_URL = "http://localhost:8080/api/auth/users";
 
@@ -45,10 +8,7 @@ function getAuthHeaders(): HeadersInit | undefined {
   return token ? { Authorization: `Bearer ${token}` } : undefined;
 }
 
-<<<<<<< HEAD
 // Lấy tất cả user
-=======
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 export async function fetchUsers(): Promise<User[]> {
   const headers = getAuthHeaders();
   const res = await fetch(API_URL, headers ? { headers } : undefined);
@@ -56,23 +16,15 @@ export async function fetchUsers(): Promise<User[]> {
   return res.json();
 }
 
-<<<<<<< HEAD
 // Lấy tất cả driver
 export async function fetchDrivers(): Promise<User[]> {
-=======
-export async function fetchDrivers(): Promise<User[]> {
-  // Giả sử role=driver, backend cần hỗ trợ filter này
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
   const headers = getAuthHeaders();
   const res = await fetch(`${API_URL}?role=driver`, headers ? { headers } : undefined);
   if (!res.ok) throw new Error("Failed to fetch drivers");
   return res.json();
 }
 
-<<<<<<< HEAD
 // Thêm user mới
-=======
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 export async function addUser(user: Partial<User>): Promise<User> {
   const token = localStorage.getItem("token");
   const res = await fetch(API_URL, {
@@ -87,7 +39,6 @@ export async function addUser(user: Partial<User>): Promise<User> {
   return res.json();
 }
 
-<<<<<<< HEAD
 // Sửa user (PUT)
 export async function editUser(id: string | number, user: User): Promise<User> {
   const token = localStorage.getItem("token");
@@ -113,40 +64,6 @@ export async function editUser(id: string | number, user: User): Promise<User> {
 }
 
 // Xóa user
-=======
-// Sử dụng PUT để cập nhật toàn bộ user
-export async function editUser(id: string | number, user: User): Promise<User> {
-  console.log("[adminAPI] editUser called with id:", id, "user:", user);
-  const token = localStorage.getItem("token");
-  
-  try {
-    const res = await fetch(`${API_URL}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-      body: JSON.stringify(user),
-    });
-    
-    console.log("[adminAPI] Response status:", res.status, res.statusText);
-    
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error("[adminAPI] Error response:", errorText);
-      throw new Error(`Failed to update user: ${res.status} ${res.statusText} - ${errorText}`);
-    }
-    
-    const result = await res.json();
-    console.log("[adminAPI] Update successful:", result);
-    return result;
-  } catch (error) {
-    console.error("[adminAPI] editUser error:", error);
-    throw error;
-  }
-}
-
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 export async function deleteUser(id: string | number): Promise<boolean> {
   const token = localStorage.getItem("token");
   const res = await fetch(`${API_URL}/${id}`, {
@@ -158,7 +75,6 @@ export async function deleteUser(id: string | number): Promise<boolean> {
   if (!res.ok) throw new Error("Failed to delete user");
   return true;
 }
-<<<<<<< HEAD
 
 // Cập nhật trạng thái user
 export async function updateUserStatus(userId: string | number, status: string): Promise<User> {
@@ -300,5 +216,3 @@ export async function fetchActivityLogs(params?: {
   // Should never reach here
   throw new Error('All retry attempts failed');
 }
-=======
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5

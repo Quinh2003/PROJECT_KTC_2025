@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-import { useState, useEffect, useCallback } from "react";
-import type { User } from "../../types/User";
-import { fetchUsers, fetchActivityLogs, type User as APIUser } from "../../services/adminAPI";
-=======
 import { useState, useEffect } from "react";
 import type { User } from "../../types/User";
 import { fetchUsers } from "../../services/adminAPI";
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
 import UserTable from "./UserTable";
 import RoleTable from "./RoleTable";
 import SystemConfigForm from "./SystemConfigForm";
@@ -27,67 +21,6 @@ interface AdminDashboardProps {
 export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
   const [active, setActive] = useState<AdminTab>("users");
   const [users, setUsers] = useState<User[]>([]);
-<<<<<<< HEAD
-  const [auditCount, setAuditCount] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Helper function to format numbers (e.g., 1200 -> "1.2K")
-  const formatNumber = (num: number): string => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-    }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-    }
-    return num.toString();
-  };
-
-  // Callback function for AuditLogTable to update audit count
-  const handleAuditCountUpdate = useCallback((newCount: number) => {
-    console.log("Updating audit count from", auditCount, "to", newCount);
-    setAuditCount(newCount);
-  }, [auditCount]);
-
-  // Chỉ fetchUsers khi lần đầu vào trang, còn lại cập nhật trực tiếp qua UserTable
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      
-      try {
-        // Fetch users
-        const userData = await fetchUsers();
-        const mappedUsers = userData.map((u: APIUser) => {
-          return {
-            id: typeof u.id === 'string' ? parseInt(u.id) : u.id,
-            name: u.fullName || u.username || "",
-            email: u.email,
-            role: u.role?.roleName || "",
-            status: u.status?.name?.toLowerCase() === "active" ? "active" : "inactive",
-            lastLogin: "-", // Will be updated from backend later
-            phone: u.phone || "",
-            password: u.password || "",
-          } as User;
-        });
-        setUsers(mappedUsers);
-
-        // Fetch audit logs count
-        const logs = await fetchActivityLogs();
-        console.log("Initial fetch - audit logs:", logs.length, "logs");
-        setAuditCount(logs.length);
-        
-        setError(null);
-      } catch (err: unknown) {
-        console.error("Failed to fetch initial data:", err);
-        setError("Failed to fetch data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Initial fetch only - no auto-refresh
-    fetchData();
-=======
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -131,7 +64,6 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
         setError("Failed to fetch users");
       })
       .finally(() => setLoading(false));
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
   }, []);
 
   const uniqueRoles = Array.from(new Set(users.map(u => u.role)));
@@ -204,23 +136,12 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
             </div>
           ))}
         </div>
-<<<<<<< HEAD
-        {/* Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-4 md:p-10 pt-3 md:pt-4">
-            {active === "users" && <UserTable users={users} setUsers={setUsers} />}
-            {active === "roles" && <RoleTable />}
-            {active === "settings" && <SystemConfigForm />}
-            {active === "logs" && <AuditLogTable onAuditCountUpdate={handleAuditCountUpdate} />}
-          </div>
-=======
         {/* Content */}
         <div className="flex-1 p-4 md:p-10">
           {active === "users" && <UserTable users={users} setUsers={setUsers} />}
           {active === "roles" && <RoleTable />}
           {active === "settings" && <SystemConfigForm />}
           {active === "logs" && <AuditLogTable />}
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
         </div>
       </main>
     </div>

@@ -76,8 +76,4 @@ export const BaseMap: React.FC<BaseMapProps> = ({
       </div>
     </div>
   );
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5

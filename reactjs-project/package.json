@@ -11,11 +11,8 @@
   },
   "dependencies": {
     "@react-google-maps/api": "^2.20.7",
-<<<<<<< HEAD
     "@tanstack/react-query": "^5.85.3",
-=======
     "@types/mapbox-gl": "^3.4.1",
->>>>>>> 042a7c16d89d185c6e74a32de79f098e8a6971b5
     "chart.js": "^4.5.0",
     "lucide-react": "^0.539.0",
     "mapbox-gl": "2.15.0",

@@ -6,7 +6,6 @@ import type { Vehicle } from "../../types";
 import { FaUserCog, FaCheck, FaTimes, FaCar, FaSync } from "react-icons/fa";
 
 interface OrdersAssignmentProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   orders?: any[];
 }
 
