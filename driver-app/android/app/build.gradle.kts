@@ -1,5 +1,8 @@
 plugins {
-    id("com.android.application")
+    id("com.andro        minSdk = 21
+        targetSdk = 33
+        versionCode = flutter.versionCode
+        versionName = flutter.versionNamepplication")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
@@ -9,11 +12,11 @@ plugins {
 
 android {
     namespace = "com.ktc.logistics_driver"
-    compileSdk = 35
+    compileSdk = 33
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -38,6 +41,27 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+    
+    // Cấu hình đặc biệt để đảm bảo APK được đặt vào thư mục Flutter mong đợi
+    applicationVariants.all {
+        val variant = this
+        variant.outputs.all {
+            // Chuyển APK đến thư mục Flutter tìm kiếm
+            val outputFileName = "app-${variant.buildType.name}.apk"
+            val flutterOutputDir = "$rootDir/../build/app/outputs/flutter-apk"
+            val debugOutputDir = "$rootDir/app/build/outputs/apk/${variant.buildType.name}"
+            
+            doLast {
+                copy {
+                    from("$debugOutputDir/$outputFileName")
+                    into(flutterOutputDir)
+                }
+            }
+        }
     }
 }
 
@@ -58,4 +82,42 @@ dependencies {
 
 flutter {
     source = "../.."
+}
+
+// Thêm task copy APK sau khi build hoàn tất
+tasks.register("copyApkToFlutterDir") {
+    doLast {
+        val sourceDir = "${buildDir}/outputs/apk"
+        val targetDir = "${rootProject.projectDir}/../build/app/outputs/flutter-apk"
+        
+        // Tạo thư mục đích nếu chưa tồn tại
+        mkdir(targetDir)
+        
+        // Copy APK debug
+        val debugApk = file("${sourceDir}/debug/app-debug.apk")
+        if (debugApk.exists()) {
+            copy {
+                from(debugApk)
+                into(targetDir)
+            }
+            println("Copied debug APK to ${targetDir}/app-debug.apk")
+        }
+        
+        // Copy APK release
+        val releaseApk = file("${sourceDir}/release/app-release.apk")
+        if (releaseApk.exists()) {
+            copy {
+                from(releaseApk)
+                into(targetDir)
+            }
+            println("Copied release APK to ${targetDir}/app-release.apk")
+        }
+    }
+}
+
+// Gắn task copy vào sau khi build
+tasks.whenTaskAdded {
+    if (name.contains("assemble")) {
+        finalizedBy("copyApkToFlutterDir")
+    }
 }
