@@ -8,7 +8,7 @@ import 'package:ktc_logistics_driver/presentation/screens/onboarding/onboarding_
 import 'package:ktc_logistics_driver/presentation/screens/dashboard/dashboard_screen_spatial.dart';
 import 'package:ktc_logistics_driver/presentation/screens/developer_test_screen.dart';
 import 'package:ktc_logistics_driver/domain/usecases/usecases.dart';
-import 'package:ktc_logistics_driver/domain/repositories/repository_implementations.dart';
+import 'package:ktc_logistics_driver/data/repositories/repository_implementations.dart' as mock_repo;
 import 'package:ktc_logistics_driver/services/mock_data_service.dart';
 import 'services/push_notification_service.dart';
 
@@ -66,16 +66,16 @@ class _AppState extends State<App> {
         BlocProvider<TrackingBloc>(
           create: (context) => TrackingBloc(
             startRouteTrackingUseCase: StartRouteTrackingUseCase(
-              repository: TrackingRepositoryImpl(mockDataService: MockDataService()),
+              repository: mock_repo.TrackingRepositoryImpl(mockDataService: MockDataService()),
             ),
             endRouteTrackingUseCase: EndRouteTrackingUseCase(
-              repository: TrackingRepositoryImpl(mockDataService: MockDataService()),
+              repository: mock_repo.TrackingRepositoryImpl(mockDataService: MockDataService()),
             ),
             updateLocationUseCase: UpdateLocationUseCase(
-              repository: TrackingRepositoryImpl(mockDataService: MockDataService()),
+              repository: mock_repo.TrackingRepositoryImpl(mockDataService: MockDataService()),
             ),
             getTrackingHistoryUseCase: GetTrackingHistoryUseCase(
-              repository: TrackingRepositoryImpl(mockDataService: MockDataService()),
+              repository: mock_repo.TrackingRepositoryImpl(mockDataService: MockDataService()),
             ),
           ),
         ),
