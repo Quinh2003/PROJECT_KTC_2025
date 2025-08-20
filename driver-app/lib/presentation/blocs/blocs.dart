@@ -1,12 +1,10 @@
-// Spatial BLoCs exports - Export all BLoCs for easy import
+// BLoCs exports - Export only main bloc files (events/states are included via 'part of')
 export 'auth/auth_bloc.dart';
-export 'auth/auth_event.dart';
-export 'auth/auth_state.dart';
+export 'auth/auth_event.dart';  // Auth uses separate files, not 'part of'
+export 'auth/auth_state.dart';  // Auth uses separate files, not 'part of'
 export 'tracking/tracking_bloc.dart';
-export 'tracking/tracking_event.dart';
-export 'tracking/tracking_state.dart';
-
-// Legacy BLoCs exports (giữ đầy đủ như blocs.dart cũ)
+export 'tracking/tracking_event.dart';  // Tracking uses separate files, not 'part of'
+export 'tracking/tracking_state.dart';  // Tracking uses separate files, not 'part of'
 export 'cart/cart_bloc.dart';
 export 'delivery/delivery_bloc.dart';
 export 'general/general_bloc.dart';

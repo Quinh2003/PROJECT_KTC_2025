@@ -18,9 +18,9 @@ class SpatialDesignSystem {
   static const Color darkSurfaceColor = Color(0xFF1E1E1E);
   
   // Transparent colors for glass effect
-  static Color glassBackground = Colors.white.withOpacity(0.15);
-  static Color glassBorderColor = Colors.white.withOpacity(0.25);
-  static Color glassShadowColor = Colors.black.withOpacity(0.1);
+  static Color glassBackground = Colors.white.withValues(alpha: 0.15);
+  static Color glassBorderColor = Colors.white.withValues(alpha: 0.25);
+  static Color glassShadowColor = Colors.black.withValues(alpha: 0.1);
   
   // Text colors
   static const Color textPrimaryColor = Color(0xFF212121);
@@ -123,7 +123,7 @@ class SpatialDesignSystem {
   // Shadows
   static List<BoxShadow> get cardShadow => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.05),
+      color: Colors.black.withValues(alpha: 0.05),
       blurRadius: 10,
       offset: const Offset(0, 4),
     ),
@@ -131,7 +131,7 @@ class SpatialDesignSystem {
   
   static List<BoxShadow> get elevatedShadow => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.1),
+      color: Colors.black.withValues(alpha: 0.1),
       blurRadius: 20,
       offset: const Offset(0, 8),
     ),
@@ -200,7 +200,7 @@ class GlassCard extends StatelessWidget {
         borderRadius: borderRadius ?? SpatialDesignSystem.borderRadiusLarge,
         boxShadow: boxShadow ?? [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             spreadRadius: 0,
             offset: const Offset(0, 4),
@@ -215,13 +215,13 @@ class GlassCard extends StatelessWidget {
             padding: padding,
             decoration: BoxDecoration(
               color: backgroundColor ?? (isDark
-                  ? Colors.white.withOpacity(0.05)
-                  : Colors.white.withOpacity(0.3)),
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.white.withValues(alpha: 0.3)),
               borderRadius: borderRadius ?? SpatialDesignSystem.borderRadiusLarge,
               border: Border.all(
                 color: borderColor ?? (isDark
-                    ? Colors.white.withOpacity(0.1)
-                    : Colors.white.withOpacity(0.4)),
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : Colors.white.withValues(alpha: 0.4)),
                 width: 1,
               ),
               gradient: gradient,
@@ -264,8 +264,8 @@ class StatCard extends StatelessWidget {
     return GlassCard(
       padding: const EdgeInsets.all(16),
       backgroundColor: backgroundColor ?? (isDark
-          ? Colors.white.withOpacity(0.05)
-          : Colors.white.withOpacity(0.3)),
+          ? Colors.white.withValues(alpha: 0.05)
+          : Colors.white.withValues(alpha: 0.3)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -283,7 +283,7 @@ class StatCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: (iconColor ?? SpatialDesignSystem.primaryColor).withOpacity(0.1),
+                  color: (iconColor ?? SpatialDesignSystem.primaryColor).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -446,7 +446,7 @@ class SpatialButton extends StatelessWidget {
             borderRadius: SpatialDesignSystem.borderRadiusMedium,
             boxShadow: [
               BoxShadow(
-                color: (backgroundColor ?? SpatialDesignSystem.primaryColor).withOpacity(0.3),
+                color: (backgroundColor ?? SpatialDesignSystem.primaryColor).withValues(alpha: 0.3),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -574,20 +574,20 @@ class SpatialTextField extends StatelessWidget {
                   suffixIcon: suffix,
                   hintStyle: SpatialDesignSystem.bodyMedium.copyWith(
                     color: isDark
-                        ? SpatialDesignSystem.textDarkSecondaryColor.withOpacity(0.5)
-                        : SpatialDesignSystem.textSecondaryColor.withOpacity(0.5),
+                        ? SpatialDesignSystem.textDarkSecondaryColor.withValues(alpha: 0.5)
+                        : SpatialDesignSystem.textSecondaryColor.withValues(alpha: 0.5),
                   ),
                   filled: true,
                   fillColor: isDark
-                      ? Colors.white.withOpacity(0.05)
-                      : Colors.white.withOpacity(0.3),
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.white.withValues(alpha: 0.3),
                   contentPadding: const EdgeInsets.all(16),
                   border: OutlineInputBorder(
                     borderRadius: SpatialDesignSystem.borderRadiusMedium,
                     borderSide: BorderSide(
                       color: isDark
-                          ? Colors.white.withOpacity(0.1)
-                          : Colors.white.withOpacity(0.4),
+                          ? Colors.white.withValues(alpha: 0.1)
+                          : Colors.white.withValues(alpha: 0.4),
                       width: 1,
                     ),
                   ),
@@ -595,8 +595,8 @@ class SpatialTextField extends StatelessWidget {
                     borderRadius: SpatialDesignSystem.borderRadiusMedium,
                     borderSide: BorderSide(
                       color: isDark
-                          ? Colors.white.withOpacity(0.1)
-                          : Colors.white.withOpacity(0.4),
+                          ? Colors.white.withValues(alpha: 0.1)
+                          : Colors.white.withValues(alpha: 0.4),
                       width: 1,
                     ),
                   ),
@@ -646,8 +646,8 @@ class SpatialTextField extends StatelessWidget {
             suffixIcon: suffix,
             hintStyle: SpatialDesignSystem.bodyMedium.copyWith(
               color: isDark
-                  ? SpatialDesignSystem.textDarkSecondaryColor.withOpacity(0.5)
-                  : SpatialDesignSystem.textSecondaryColor.withOpacity(0.5),
+                  ? SpatialDesignSystem.textDarkSecondaryColor.withValues(alpha: 0.5)
+                  : SpatialDesignSystem.textSecondaryColor.withValues(alpha: 0.5),
             ),
             filled: true,
             fillColor: isDark
@@ -658,8 +658,8 @@ class SpatialTextField extends StatelessWidget {
               borderRadius: SpatialDesignSystem.borderRadiusMedium,
               borderSide: BorderSide(
                 color: isDark
-                    ? Colors.white.withOpacity(0.1)
-                    : Colors.black.withOpacity(0.1),
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : Colors.black.withValues(alpha: 0.1),
                 width: 1,
               ),
             ),
@@ -667,8 +667,8 @@ class SpatialTextField extends StatelessWidget {
               borderRadius: SpatialDesignSystem.borderRadiusMedium,
               borderSide: BorderSide(
                 color: isDark
-                    ? Colors.white.withOpacity(0.1)
-                    : Colors.black.withOpacity(0.1),
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : Colors.black.withValues(alpha: 0.1),
                 width: 1,
               ),
             ),

@@ -133,7 +133,7 @@ class _InformationBottom extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(15.0),
         boxShadow: [
-          BoxShadow(color: Colors.grey.withOpacity(.5), blurRadius: 7, spreadRadius: 5)
+          BoxShadow(color: Colors.grey.withValues(alpha: .5), blurRadius: 7, spreadRadius: 5)
         ]
       ),
       child: Column(
@@ -305,7 +305,7 @@ class _BtnGoogleMap extends StatelessWidget {
           maxRadius: 25,
           child: InkWell(
             onTap: () async => await urlLauncherFrave.openMapLaunch(order.latitude, order.longitude),
-            child: Image.asset('Assets/google-map.png', height: 30)
+            child: Image.asset('assets/google-map.png', height: 30)
           )
         ),
       );

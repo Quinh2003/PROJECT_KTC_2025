@@ -18,25 +18,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       'title': 'Chào mừng đến với KTC Logistics',
       'description': 'Ứng dụng tài xế hiện đại giúp bạn quản lý đơn hàng, theo dõi lộ trình và giao hàng hiệu quả.',
-      'image': 'Assets/svg/delivery.svg',
+      'image': 'assets/svg/delivery.svg',
       'color': Colors.blue.shade500,
     },
     {
       'title': 'Theo dõi đơn hàng trực quan',
       'description': 'Dễ dàng nắm bắt thông tin đơn hàng, lịch trình và cập nhật trạng thái một cách nhanh chóng.',
-      'image': 'Assets/svg/order-tracking.svg',
+      'image': 'assets/svg/order-tracking.svg',
       'color': Colors.purple.shade500,
     },
     {
       'title': 'Tối ưu lộ trình',
       'description': 'Định tuyến thông minh giúp bạn tiết kiệm thời gian và nhiên liệu với lộ trình tối ưu nhất.',
-      'image': 'Assets/svg/route-optimization.svg',
+      'image': 'assets/svg/route-optimization.svg',
       'color': Colors.green.shade500,
     },
     {
       'title': 'Sẵn sàng bắt đầu?',
       'description': 'Đăng nhập ngay để bắt đầu sử dụng những tính năng tuyệt vời của KTC Logistics.',
-      'image': 'Assets/svg/ready-to-go.svg',
+      'image': 'assets/svg/ready-to-go.svg',
       'color': Colors.orange.shade500,
     },
   ];
@@ -83,7 +83,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              SpatialDesignSystem.primaryColor.withOpacity(0.1),
+              SpatialDesignSystem.primaryColor.withValues(alpha: 0.1),
               SpatialDesignSystem.backgroundColor,
             ],
           ),
@@ -166,7 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             width: 240,
             margin: const EdgeInsets.only(bottom: 40),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -219,7 +219,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         height: isActive ? 12 : 8,
         width: isActive ? 24 : 8,
         decoration: BoxDecoration(
-          color: isActive ? color : Colors.grey.withOpacity(0.3),
+          color: isActive ? color : Colors.grey.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(12),
         ),
       ),

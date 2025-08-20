@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 import '../../domain/models/tracking_model.dart';
 import '../../domain/repositories/tracking_repository_interfaces.dart';
-import '../../infrastructure/services/environment.dart';
+import '../env/environment.dart';
 
 class TrackingRepositoryImpl implements TrackingRepository {
   final String baseUrl;

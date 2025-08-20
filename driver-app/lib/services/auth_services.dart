@@ -1,50 +1,99 @@
-// auth_services.dart
-// Service để xử lý authentication với Spring Boot backend
-
-import 'api_service.dart';
-import '../domain/models/response/auth_response.dart';
+import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import '../data/env/environment.dart';
+import '../domain/models/response/response_login.dart';
 
 class AuthServices {
-  // Instance của ApiService để gọi API
-  final _apiService = ApiService();
-  
-  // Instance của FlutterSecureStorage để lưu/đọc token
-  final _secureStorage = const FlutterSecureStorage();
+  final FlutterSecureStorage secureStorage;
 
-  // Singleton pattern
-  static final AuthServices _instance = AuthServices._internal();
-  factory AuthServices() => _instance;
-  AuthServices._internal();
+  AuthServices({required this.secureStorage});
 
-  // Đăng nhập với email và password
-  Future<AuthResponse> loginController(String email, String password) async {
-    return await _apiService.login(email, password);
-  }
+  /// Login với HTTP request thay vì Firebase Auth
+  Future<ResponseLogin> loginController(String email, String password) async {
+    try {
+      final env = Environment.getInstance();
+      final response = await http.post(
+        Uri.parse('${env.endpointApi}/login-email-id'),
+        headers: {'Accept': 'application/json'},
+        body: {
+          'email': email,
+          'password': password,
+        },
+      );
 
-  // Làm mới token (renew token)
-  Future<AuthResponse> renewLoginController() async {
-    // Kiểm tra token có hợp lệ không
-    final isValid = await _apiService.checkTokenValidity();
-    
-    if (!isValid) {
-      throw Exception('Token invalid or expired');
+      return ResponseLogin.fromJson(jsonDecode(response.body));
+    } catch (e) {
+      return ResponseLogin(
+        resp: false,
+        msg: e.toString(),
+        token: '',
+        user: User(
+          uid: 0,
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          image: '',
+          rolId: 0,
+          notificationToken: '',
+        ),
+      );
     }
-    
-    // Lấy thông tin profile để tự động đăng nhập lại
-    return await _apiService.getDriverProfile();
   }
-  
-  // Kiểm tra đã đăng nhập chưa
-  Future<bool> isLoggedIn() async {
-    final token = await _secureStorage.read(key: 'token');
-    if (token == null) return false;
-    
-    return await _apiService.checkTokenValidity();
+
+  /// Renew token
+  Future<ResponseLogin> renewLoginController() async {
+    try {
+      final token = await secureStorage.read(key: 'token');
+      final env = Environment.getInstance();
+
+      final response = await http.get(
+        Uri.parse('${env.endpointApi}/renew-token-login'),
+        headers: {
+          'Accept': 'application/json',
+          'xx-token': token!,
+        },
+      );
+
+      return ResponseLogin.fromJson(jsonDecode(response.body));
+    } catch (e) {
+      return ResponseLogin(
+        resp: false,
+        msg: e.toString(),
+        token: '',
+        user: User(
+          uid: 0,
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          image: '',
+          rolId: 0,
+          notificationToken: '',
+        ),
+      );
+    }
   }
-  
-  // Đăng xuất
+
+  /// Logout
   Future<void> logout() async {
-    await _apiService.logout();
+    await secureStorage.delete(key: 'token');
+    await secureStorage.deleteAll();
+  }
+
+  /// Check if user is logged in
+  Future<bool> isLoggedIn() async {
+    final token = await secureStorage.read(key: 'token');
+    return token != null;
+  }
+
+  /// Get stored token
+  Future<String?> getToken() async {
+    return await secureStorage.read(key: 'token');
   }
 }
+
+final authServices = AuthServices(
+  secureStorage: const FlutterSecureStorage(),
+);

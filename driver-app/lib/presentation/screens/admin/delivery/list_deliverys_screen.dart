@@ -152,7 +152,7 @@ class _ListDelivery extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset('Assets/no-data.svg', height: 290),
+          SvgPicture.asset('assets/svg/no-data.svg', height: 290),
           const SizedBox(height: 20.0),
           const TextCustom(text: 'Without Delivery men', color: ColorsFrave.primaryColor, fontSize: 20)
         ],

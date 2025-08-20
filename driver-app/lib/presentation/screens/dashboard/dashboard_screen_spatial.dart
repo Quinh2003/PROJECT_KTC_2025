@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import '../../design/spatial_ui.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import '../../blocs/tracking/tracking_state.dart';
 
 class DashboardScreenSpatial extends StatefulWidget {
   const DashboardScreenSpatial({Key? key}) : super(key: key);
@@ -98,8 +97,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
         bottomRight: Radius.circular(16),
       ),
       backgroundColor: isDark
-          ? Colors.black.withOpacity(0.3)
-          : Colors.white.withOpacity(0.6),
+          ? Colors.black.withValues(alpha: 0.3)
+          : Colors.white.withValues(alpha: 0.6),
       child: Column(
         children: [
           const SizedBox(height: 24),
@@ -227,7 +226,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? SpatialDesignSystem.primaryColor.withOpacity(0.1)
+              ? SpatialDesignSystem.primaryColor.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: isSelected
@@ -274,8 +273,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
         bottomRight: Radius.circular(16),
       ),
       backgroundColor: isDark
-          ? Colors.black.withOpacity(0.3)
-          : Colors.white.withOpacity(0.6),
+          ? Colors.black.withValues(alpha: 0.3)
+          : Colors.white.withValues(alpha: 0.6),
       child: Row(
         children: [
           // Menu Icon for Mobile
@@ -304,8 +303,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withOpacity(0.05)
-                  : Colors.white.withOpacity(0.3),
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.white.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Stack(
@@ -357,8 +356,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
               child: CircleAvatar(
                 radius: 18,
                 backgroundColor: isDark
-                    ? Colors.white.withOpacity(0.1)
-                    : Colors.white.withOpacity(0.8),
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : Colors.white.withValues(alpha: 0.8),
                 child: Text(
                   "TN",
                   style: TextStyle(
@@ -578,8 +577,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
       padding: const EdgeInsets.all(20),
       gradient: LinearGradient(
         colors: [
-          SpatialDesignSystem.primaryColor.withOpacity(0.1),
-          SpatialDesignSystem.accentColor.withOpacity(0.05),
+          SpatialDesignSystem.primaryColor.withValues(alpha: 0.1),
+          SpatialDesignSystem.accentColor.withValues(alpha: 0.05),
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -601,10 +600,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: SpatialDesignSystem.successColor.withOpacity(0.1),
+                  color: SpatialDesignSystem.successColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: SpatialDesignSystem.successColor.withOpacity(0.3),
+                    color: SpatialDesignSystem.successColor.withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),
@@ -822,10 +821,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
               height: 50,
               decoration: BoxDecoration(
                 color: isNext
-                    ? SpatialDesignSystem.primaryColor.withOpacity(0.1)
+                    ? SpatialDesignSystem.primaryColor.withValues(alpha: 0.1)
                     : (isDark
-                        ? Colors.white.withOpacity(0.05)
-                        : Colors.black.withOpacity(0.05)),
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : Colors.black.withValues(alpha: 0.05)),
                 borderRadius: BorderRadius.circular(8),
                 border: isNext
                     ? Border.all(
@@ -897,8 +896,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: isNext
-                              ? SpatialDesignSystem.primaryColor.withOpacity(0.1)
-                              : SpatialDesignSystem.warningColor.withOpacity(0.1),
+                              ? SpatialDesignSystem.primaryColor.withValues(alpha: 0.1)
+                              : SpatialDesignSystem.warningColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
@@ -1024,7 +1023,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
@@ -1058,8 +1057,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                   time,
                   style: SpatialDesignSystem.captionText.copyWith(
                     color: isDark
-                        ? SpatialDesignSystem.textDarkSecondaryColor.withOpacity(0.7)
-                        : SpatialDesignSystem.textSecondaryColor.withOpacity(0.7),
+                        ? SpatialDesignSystem.textDarkSecondaryColor.withValues(alpha: 0.7)
+                        : SpatialDesignSystem.textSecondaryColor.withValues(alpha: 0.7),
                   ),
                 ),
               ],

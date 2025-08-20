@@ -3,10 +3,12 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    // Google Services plugin for Firebase
+    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.ktc.logistics.ktc_logistics_driver"
+    namespace = "com.ktc.logistics_driver"
     compileSdk = 35
 
     compileOptions {
@@ -21,7 +23,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.ktc.logistics.ktc_logistics_driver"
+        applicationId = "com.ktc.logistics_driver"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24
@@ -41,6 +43,17 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    
+    // Firebase BoM để đảm bảo version compatibility
+    implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
+    
+    // Firebase products
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-messaging")
+    implementation("com.google.firebase:firebase-database")
 }
 
 flutter {

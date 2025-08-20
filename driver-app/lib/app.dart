@@ -1,29 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/presentation/screens/login/login_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/dashboard/dashboard_screen_spatial.dart';
-import 'package:ktc_logistics_driver/presentation/screens/order/order_detail_screen.dart';
-import 'package:ktc_logistics_driver/injection/spatial_dependency_injection.dart';
+import 'package:ktc_logistics_driver/presentation/screens/developer_test_screen.dart';
+import 'package:ktc_logistics_driver/domain/usecases/usecases.dart';
+import 'package:ktc_logistics_driver/domain/repositories/repository_implementations.dart';
+import 'package:ktc_logistics_driver/services/mock_data_service.dart';
+import 'services/push_notification_service.dart';
+
+final getIt = GetIt.instance;
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => const SplashScreen());
+        return MaterialPageRoute(builder: (_) => const DeveloperTestScreen()); // Debug menu first
+      case '/debug':
+        return MaterialPageRoute(builder: (_) => const DeveloperTestScreen());
       case '/onboarding':
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case '/login':
         return MaterialPageRoute(builder: (_) => LoginScreen());
       case '/dashboard':
         return MaterialPageRoute(builder: (_) => const DashboardScreenSpatial());
-      case '/order-detail':
-        final orderId = settings.arguments as String? ?? 'Unknown';
-        return MaterialPageRoute(
-          builder: (_) => OrderDetailScreen(orderId: orderId),
-        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
@@ -36,21 +39,45 @@ class AppRouter {
   }
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  @override
+  void initState() {
+    super.initState();
+    pushNotificationService.onMessagingListener();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(
-          create: (context) => getIt<AuthBloc>()..add(CheckLoginEvent()),
+        // Temporarily using simplified BLoC providers without dependency injection
+        // TODO: Implement proper dependency injection with use cases
+        BlocProvider<UserBloc>(
+          create: (context) => UserBloc(userServices: getIt()),
         ),
-        BlocProvider<OrdersBloc>(
-          create: (context) => getIt<OrdersBloc>(),
-        ),
+        // Add TrackingBloc with mock implementation to fix Provider error
         BlocProvider<TrackingBloc>(
-          create: (context) => getIt<TrackingBloc>(),
+          create: (context) => TrackingBloc(
+            startRouteTrackingUseCase: StartRouteTrackingUseCase(
+              repository: TrackingRepositoryImpl(mockDataService: MockDataService()),
+            ),
+            endRouteTrackingUseCase: EndRouteTrackingUseCase(
+              repository: TrackingRepositoryImpl(mockDataService: MockDataService()),
+            ),
+            updateLocationUseCase: UpdateLocationUseCase(
+              repository: TrackingRepositoryImpl(mockDataService: MockDataService()),
+            ),
+            getTrackingHistoryUseCase: GetTrackingHistoryUseCase(
+              repository: TrackingRepositoryImpl(mockDataService: MockDataService()),
+            ),
+          ),
         ),
       ],
       child: MaterialApp(
@@ -120,7 +147,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     await Future.delayed(const Duration(seconds: 3));
     
     // Check if the user has completed onboarding using secure storage
-    final storage = getIt<FlutterSecureStorage>();
+    const storage = FlutterSecureStorage();
     final hasCompletedOnboarding = await storage.read(key: 'onboarding_completed') == 'true';
     
     if (context.mounted) {
@@ -128,16 +155,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         // Navigate to onboarding screen
         Navigator.of(context).pushReplacementNamed('/onboarding');
       } else {
-        // Listen to authentication state
-        context.read<AuthBloc>().stream.listen((state) {
-          if (state is AuthenticatedState) {
-            // Navigate to dashboard
-            Navigator.of(context).pushReplacementNamed('/dashboard');
-          } else if (state is UnauthenticatedState) {
-            // Navigate to login screen
-            Navigator.of(context).pushReplacementNamed('/login');
-          }
-        });
+        // For now, navigate directly to login since we don't have proper auth state
+        // TODO: Implement proper authentication state listening
+        Navigator.of(context).pushReplacementNamed('/login');
       }
     }
   }
@@ -177,7 +197,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
@@ -199,7 +219,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     color: Colors.white,
                     shadows: [
                       Shadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         offset: const Offset(0, 2),
                         blurRadius: 4,
                       ),
@@ -212,14 +232,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   'Đồng hành cùng mọi hành trình',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
                 const SizedBox(height: 60),
                 // Loading indicator
                 CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.white.withOpacity(0.9),
+                    Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
               ],
