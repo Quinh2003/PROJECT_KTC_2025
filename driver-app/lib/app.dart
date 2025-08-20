@@ -6,10 +6,11 @@ import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/presentation/screens/login/login_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/dashboard/dashboard_screen_spatial.dart';
-import 'package:ktc_logistics_driver/presentation/screens/order/order_detail_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/developer_test_screen.dart';
 import 'package:ktc_logistics_driver/domain/usecases/usecases.dart';
 import 'package:ktc_logistics_driver/domain/repositories/repository_implementations.dart';
 import 'package:ktc_logistics_driver/services/mock_data_service.dart';
+import 'services/push_notification_service.dart';
 
 final getIt = GetIt.instance;
 
@@ -17,18 +18,15 @@ class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => const SplashScreen());
+        return MaterialPageRoute(builder: (_) => const DeveloperTestScreen()); // Debug menu first
+      case '/debug':
+        return MaterialPageRoute(builder: (_) => const DeveloperTestScreen());
       case '/onboarding':
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case '/login':
         return MaterialPageRoute(builder: (_) => LoginScreen());
       case '/dashboard':
         return MaterialPageRoute(builder: (_) => const DashboardScreenSpatial());
-      case '/order-detail':
-        final orderId = settings.arguments as String? ?? 'Unknown';
-        return MaterialPageRoute(
-          builder: (_) => OrderDetailScreen(orderId: orderId),
-        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
@@ -41,8 +39,19 @@ class AppRouter {
   }
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  @override
+  void initState() {
+    super.initState();
+    pushNotificationService.onMessagingListener();
+  }
 
   @override
   Widget build(BuildContext context) {

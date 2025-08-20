@@ -18,25 +18,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       'title': 'Chào mừng đến với KTC Logistics',
       'description': 'Ứng dụng tài xế hiện đại giúp bạn quản lý đơn hàng, theo dõi lộ trình và giao hàng hiệu quả.',
-      'image': 'assets/delivery.svg',
+      'image': 'assets/svg/delivery.svg',
       'color': Colors.blue.shade500,
     },
     {
       'title': 'Theo dõi đơn hàng trực quan',
       'description': 'Dễ dàng nắm bắt thông tin đơn hàng, lịch trình và cập nhật trạng thái một cách nhanh chóng.',
-      'image': 'assets/delivery-destination.png',
+      'image': 'assets/svg/order-tracking.svg',
       'color': Colors.purple.shade500,
     },
     {
       'title': 'Tối ưu lộ trình',
       'description': 'Định tuyến thông minh giúp bạn tiết kiệm thời gian và nhiên liệu với lộ trình tối ưu nhất.',
-      'image': 'assets/google-map.png',
+      'image': 'assets/svg/route-optimization.svg',
       'color': Colors.green.shade500,
     },
     {
       'title': 'Sẵn sàng bắt đầu?',
       'description': 'Đăng nhập ngay để bắt đầu sử dụng những tính năng tuyệt vời của KTC Logistics.',
-      'image': 'assets/svg/delivery-bike.svg',
+      'image': 'assets/svg/ready-to-go.svg',
       'color': Colors.orange.shade500,
     },
   ];
