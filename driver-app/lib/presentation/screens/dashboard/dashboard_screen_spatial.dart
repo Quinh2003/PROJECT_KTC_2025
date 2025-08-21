@@ -226,6 +226,24 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
         setState(() {
           _selectedIndex = index;
         });
+        
+        // Thêm điều hướng đến trang tương ứng
+        switch(index) {
+          case 0: // Dashboard - đã ở trang hiện tại
+            break;
+          case 1: // My Deliveries
+            Navigator.pushNamed(context, '/delivery-orders');
+            break;
+          case 2: // Routes
+            Navigator.pushNamed(context, '/routes');
+            break;
+          case 3: // History
+            Navigator.pushNamed(context, '/order-history');
+            break;
+          case 4: // Profile
+            Navigator.pushNamed(context, '/profile');
+            break;
+        }
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -305,50 +323,63 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           const Spacer(),
           
           // Notification Badge
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.05)
-                  : Colors.white.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Stack(
-              children: [
-                Icon(
-                  Icons.notifications_outlined,
-                  color: isDark
-                      ? SpatialDesignSystem.textDarkPrimaryColor
-                      : SpatialDesignSystem.textPrimaryColor,
-                ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: SpatialDesignSystem.errorColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isDark
-                            ? SpatialDesignSystem.darkBackgroundColor
-                            : SpatialDesignSystem.backgroundColor,
-                        width: 1.5,
+          GestureDetector(
+            onTap: () {
+              // Mở trang thông báo
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Tính năng thông báo đang được phát triển'),
+                  duration: Duration(seconds: 2),
+                )
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : Colors.white.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Stack(
+                children: [
+                  Icon(
+                    Icons.notifications_outlined,
+                    color: isDark
+                        ? SpatialDesignSystem.textDarkPrimaryColor
+                        : SpatialDesignSystem.textPrimaryColor,
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: SpatialDesignSystem.errorColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isDark
+                              ? SpatialDesignSystem.darkBackgroundColor
+                              : SpatialDesignSystem.backgroundColor,
+                          width: 1.5,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           
+          // Add space
           const SizedBox(width: 16),
           
           // Avatar
           GestureDetector(
             onTap: () {
               // Navigate to profile
+              Navigator.pushNamed(context, '/profile');
             },
             child: Container(
               padding: const EdgeInsets.all(2),
@@ -391,20 +422,20 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Cải thiện tiêu đề với phong cách hấp dẫn hơn
+              // Cải thiện tiêu đề với phong cách hấp dẫn hơn và giảm kích thước
               RichText(
                 text: TextSpan(
                   children: [
                     TextSpan(
                       text: "Good Morning,\n",
-                      style: SpatialDesignSystem.headingMedium.copyWith(
+                      style: SpatialDesignSystem.headingSmall.copyWith(
                         color: isDark
                             ? SpatialDesignSystem.textDarkPrimaryColor
                             : SpatialDesignSystem.textPrimaryColor,
                       ),
                     ),
                     TextSpan(
-                      text: "Trần Ngọc",
+                      text: "Việt Hùng",
                       style: SpatialDesignSystem.headingLarge.copyWith(
                         color: SpatialDesignSystem.primaryColor,
                         fontWeight: FontWeight.bold,
@@ -805,9 +836,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
             text: "View All Deliveries",
             onPressed: () {
               // Navigate to deliveries page
-              setState(() {
-                _selectedIndex = 1;
-              });
+              Navigator.pushNamed(context, '/delivery-orders');
             },
             iconData: Icons.view_list,
             isOutlined: true,
@@ -1096,6 +1125,24 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
         setState(() {
           _selectedIndex = index;
         });
+        
+        // Thêm điều hướng đến trang tương ứng
+        switch(index) {
+          case 0: // Dashboard - đã ở trang hiện tại
+            break;
+          case 1: // My Deliveries
+            Navigator.pushNamed(context, '/delivery-orders');
+            break;
+          case 2: // Routes
+            Navigator.pushNamed(context, '/routes');
+            break;
+          case 3: // History
+            Navigator.pushNamed(context, '/order-history');
+            break;
+          case 4: // Profile
+            Navigator.pushNamed(context, '/profile');
+            break;
+        }
       },
       type: BottomNavigationBarType.fixed,
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -1151,7 +1198,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: Offset(0, 10),
           ),
@@ -1165,7 +1212,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(
@@ -1206,7 +1253,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           Text(
             'Get ready for efficient and fast delivery routes',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),

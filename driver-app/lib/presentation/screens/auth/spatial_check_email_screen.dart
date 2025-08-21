@@ -77,7 +77,7 @@ class SpatialCheckEmailScreen extends StatelessWidget {
         const SizedBox(height: SpatialTheme.spaceLG),
         
         Text(
-          'Kiểm tra email của bạn',
+          'Check Your Email',
           style: SpatialTheme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w600,
             color: Colors.white,
@@ -85,9 +85,9 @@ class SpatialCheckEmailScreen extends StatelessWidget {
         ),
         const SizedBox(height: SpatialTheme.spaceSM),
         Text(
-          'Chúng tôi đã gửi hướng dẫn đặt lại mật khẩu đến email của bạn.',
+          'We have sent password reset instructions to your email.',
           style: SpatialTheme.textTheme.bodyMedium?.copyWith(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
           ),
           textAlign: TextAlign.center,
         ),
@@ -96,13 +96,35 @@ class SpatialCheckEmailScreen extends StatelessWidget {
   }
 
   Widget _buildEmailCard() {
-    return SpatialComponents.glassContainer(
-      useDarkMode: true,
+    return Container(
+      padding: const EdgeInsets.all(SpatialTheme.spaceMD),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF2A2D3E).withValues(alpha: 0.75),
+            Color(0xFF1F2133).withValues(alpha: 0.9),
+          ],
+        ),
+        borderRadius: SpatialTheme.borderRadiusMedium,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.15),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Email đã gửi đến',
+            'Email Sent To',
             style: SpatialTheme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
               color: Colors.white,
@@ -113,10 +135,10 @@ class SpatialCheckEmailScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(SpatialTheme.spaceMD),
             decoration: BoxDecoration(
-              color: SpatialTheme.surfaceColorLight.withOpacity(0.2),
+              color: SpatialTheme.surfaceColorLight.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(SpatialTheme.radiusMD),
               border: Border.all(
-                color: SpatialTheme.borderColorLight.withOpacity(0.1),
+                color: SpatialTheme.borderColorLight.withValues(alpha: 0.1),
               ),
             ),
             child: Row(
@@ -142,15 +164,18 @@ class SpatialCheckEmailScreen extends StatelessWidget {
           const SizedBox(height: SpatialTheme.spaceLG),
           
           Text(
-            'Không nhận được email?',
+            'Did not receive the email?',
             style: SpatialTheme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w500,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: SpatialTheme.spaceSM),
           Text(
-            'Vui lòng kiểm tra thư mục Spam hoặc thử gửi lại sau 60 giây.',
-            style: SpatialTheme.textTheme.bodySmall,
+            'Please check your spam folder or try resending after 60 seconds.',
+            style: SpatialTheme.textTheme.bodySmall?.copyWith(
+              color: Colors.white.withValues(alpha: 0.7),
+            ),
           ),
           
           const SizedBox(height: SpatialTheme.spaceLG),
@@ -163,8 +188,9 @@ class SpatialCheckEmailScreen extends StatelessWidget {
                 // Implement resend logic
               },
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: SpatialTheme.primaryBlue),
+                side: const BorderSide(color: Colors.white),
                 padding: const EdgeInsets.symmetric(vertical: SpatialTheme.spaceMD),
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(SpatialTheme.radiusMD),
                 ),
@@ -174,7 +200,7 @@ class SpatialCheckEmailScreen extends StatelessWidget {
                 children: [
                   Icon(FontAwesomeIcons.rotateRight, size: 16),
                   SizedBox(width: SpatialTheme.spaceSM),
-                  Text('Gửi lại email'),
+                  Text('Resend Email'),
                 ],
               ),
             ),
@@ -189,12 +215,27 @@ class SpatialCheckEmailScreen extends StatelessWidget {
       children: [
         SizedBox(
           width: double.infinity,
-          child: SpatialComponents.gradientButton(
-            text: 'Trở về đăng nhập',
+          child: ElevatedButton.icon(
+            icon: Icon(FontAwesomeIcons.arrowLeft, size: 16),
+            label: Text(
+              'Back to Login',
+              style: SpatialTheme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
             onPressed: () => Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (_) => const SpatialLoginScreen()),
             ),
-            icon: FontAwesomeIcons.arrowLeft,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black87,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: SpatialTheme.borderRadiusMedium,
+              ),
+              elevation: 0,
+            ),
           ),
         ),
         
@@ -210,19 +251,22 @@ class SpatialCheckEmailScreen extends StatelessWidget {
             ),
             const SizedBox(width: SpatialTheme.spaceSM),
             Text(
-              'Cần hỗ trợ? ',
+              'Need help? ',
               style: SpatialTheme.textTheme.bodyMedium?.copyWith(
-                color: SpatialTheme.textColorSecondary,
+                color: Colors.white.withValues(alpha: 0.7),
               ),
             ),
             TextButton(
               onPressed: () {
                 // Implement support action
               },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
               child: Text(
-                'Liên hệ hỗ trợ',
+                'Contact Support',
                 style: TextStyle(
-                  color: SpatialTheme.primaryBlue,
+                  color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
               ),

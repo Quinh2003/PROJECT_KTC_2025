@@ -5,20 +5,30 @@ import 'package:ktc_logistics_driver/domain/models/response/orders_by_status_res
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/presentation/components/card_orders_delivery.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
+import 'package:ktc_logistics_driver/presentation/design/spatial_ui.dart';
 import 'package:ktc_logistics_driver/presentation/screens/delivery/order_details_delivery_screen.dart';
-import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 
 class ListOrdersDeliveryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark 
+          ? SpatialDesignSystem.darkBackgroundColor 
+          : SpatialDesignSystem.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const TextCustom(text: 'List of orders'),
+        backgroundColor: isDark 
+          ? SpatialDesignSystem.darkBackgroundColor 
+          : SpatialDesignSystem.backgroundColor,
+        title: TextCustom(
+          text: 'List of orders', 
+          color: isDark
+            ? SpatialDesignSystem.textDarkPrimaryColor
+            : SpatialDesignSystem.textPrimaryColor,
+        ),
         centerTitle: true,
         elevation: 0,
         leadingWidth: 80,
@@ -26,9 +36,17 @@ class ListOrdersDeliveryScreen extends StatelessWidget {
           onTap: () => Navigator.pop(context),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.arrow_back_ios_new_rounded, size: 19, color: ColorsFrave.primaryColor ),
-              TextCustom(text: 'Back', fontSize: 17, color: ColorsFrave.primaryColor )
+            children: [
+              Icon(
+                Icons.arrow_back_ios_new_rounded, 
+                size: 19, 
+                color: SpatialDesignSystem.primaryColor 
+              ),
+              TextCustom(
+                text: 'Back', 
+                fontSize: 17, 
+                color: SpatialDesignSystem.primaryColor
+              )
             ],
           ),
         ),
@@ -67,7 +85,12 @@ class _ListOrdersForDelivery extends StatelessWidget {
         children: [
           Center(child: SvgPicture.asset('assets/svg/no-data.svg', height: 300)),
           const SizedBox(height: 15.0),
-          const TextCustom(text: 'Without Orders', color: ColorsFrave.primaryColor, fontWeight: FontWeight.w500, fontSize: 21)
+          TextCustom(
+            text: 'No Orders Available', 
+            color: SpatialDesignSystem.primaryColor, 
+            fontWeight: FontWeight.w500, 
+            fontSize: 21
+          )
         ],
       );
   }

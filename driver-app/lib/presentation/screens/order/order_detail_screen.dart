@@ -4,9 +4,17 @@ import 'dart:ui';
 
 import '../../design/spatial_ui.dart';
 
+// Tab chứa dữ liệu cấu hình
+class OrderTab {
+  final String text;
+  final Widget Function() contentBuilder;
+
+  OrderTab({required this.text, required this.contentBuilder});
+}
+
 class OrderDetailScreen extends StatefulWidget {
   final String orderId;
-  
+
   const OrderDetailScreen({
     Key? key,
     required this.orderId,
@@ -16,18 +24,28 @@ class OrderDetailScreen extends StatefulWidget {
   State<OrderDetailScreen> createState() => _OrderDetailScreenState();
 }
 
-class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTickerProviderStateMixin {
+class _OrderDetailScreenState extends State<OrderDetailScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+  late List<OrderTab> _tabs;
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+
+    // Khởi tạo danh sách tab một lần duy nhất
+    _tabs = [
+      OrderTab(text: "Details", contentBuilder: _buildDetailsTab),
+      OrderTab(text: "Route", contentBuilder: _buildRouteTab),
+      OrderTab(text: "Timeline", contentBuilder: _buildTimelineTab),
+    ];
+
+    _tabController = TabController(length: _tabs.length, vsync: this);
     _tabController.addListener(() {
       setState(() {});
     });
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -37,7 +55,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       backgroundColor: isDark
           ? SpatialDesignSystem.darkBackgroundColor
@@ -81,7 +99,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
             padding: const EdgeInsets.all(16.0),
             child: _buildStatusCard(),
           ),
-          
+
           // Tab Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -94,28 +112,43 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                   borderRadius: SpatialDesignSystem.borderRadiusMedium,
                   color: SpatialDesignSystem.primaryColor,
                 ),
+                // Cải thiện style cho text
+                labelStyle: SpatialDesignSystem.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                // Thêm padding bên ngoài để điều chỉnh chiều cao của toàn bộ TabBar
+                padding: const EdgeInsets.symmetric(vertical: 4),
                 labelColor: Colors.white,
                 unselectedLabelColor: isDark
                     ? SpatialDesignSystem.textDarkSecondaryColor
                     : SpatialDesignSystem.textSecondaryColor,
-                tabs: const [
-                  Tab(text: "Details"),
-                  Tab(text: "Route"),
-                  Tab(text: "Timeline"),
-                ],
+                isScrollable: false,
+                // Sử dụng tab tùy chỉnh với padding bên trong thay vì chỉ dùng text
+                tabs: _tabs
+                    .map((tab) => Tab(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            // Đảm bảo tab có chiều rộng tối thiểu để tránh quá sát với viền
+                            width: MediaQuery.of(context).size.width / 3.5,
+                            alignment: Alignment.center,
+                            child: Text(
+                              tab.text,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ))
+                    .toList(),
               ),
             ),
           ),
-          
+
           // Tab Content
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildDetailsTab(),
-                _buildRouteTab(),
-                _buildTimelineTab(),
-              ],
+              children: _tabs.map((tab) => tab.contentBuilder()).toList(),
             ),
           ),
         ],
@@ -123,10 +156,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       bottomNavigationBar: _buildBottomBar(),
     );
   }
-  
+
   Widget _buildStatusCard() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return GlassCard(
       padding: const EdgeInsets.all(20),
       gradient: LinearGradient(
@@ -165,12 +198,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: SpatialDesignSystem.warningColor.withValues(alpha: 0.1),
+                  color:
+                      SpatialDesignSystem.warningColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: SpatialDesignSystem.warningColor.withValues(alpha: 0.3),
+                    color:
+                        SpatialDesignSystem.warningColor.withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),
@@ -190,7 +226,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
             backgroundColor: isDark
                 ? Colors.white.withValues(alpha: 0.1)
                 : Colors.black.withValues(alpha: 0.05),
-            valueColor: AlwaysStoppedAnimation<Color>(SpatialDesignSystem.primaryColor),
+            valueColor:
+                AlwaysStoppedAnimation<Color>(SpatialDesignSystem.primaryColor),
             borderRadius: BorderRadius.circular(10),
           ),
           const SizedBox(height: 10),
@@ -218,10 +255,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ),
     );
   }
-  
+
   Widget _buildDetailsTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -262,9 +299,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Delivery Info
           GlassCard(
             padding: const EdgeInsets.all(16),
@@ -300,9 +337,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Order Details
           GlassCard(
             padding: const EdgeInsets.all(16),
@@ -348,10 +385,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ),
     );
   }
-  
+
   Widget _buildInfoRow(IconData icon, String label, String value) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -391,10 +428,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ),
     );
   }
-  
+
   Widget _buildRouteTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -435,9 +472,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Route Details
           GlassCard(
             padding: const EdgeInsets.all(16),
@@ -479,9 +516,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Delivery Instructions
           GlassCard(
             padding: const EdgeInsets.all(16),
@@ -498,6 +535,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                 ),
                 const SizedBox(height: 16),
                 Container(
+                  width: double.infinity, // Ensure full width
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: isDark
@@ -533,10 +571,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ),
     );
   }
-  
+
   Widget _buildTimelineTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -590,9 +628,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
             ],
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Delivery Notes
         GlassCard(
           padding: const EdgeInsets.all(16),
@@ -633,7 +671,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ],
     );
   }
-  
+
   Widget _buildTimelineTile(
     String title,
     String time,
@@ -643,7 +681,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
     bool isLast = false,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return TimelineTile(
       alignment: TimelineAlign.start,
       isFirst: isFirst,
@@ -719,8 +757,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
               description,
               style: SpatialDesignSystem.bodySmall.copyWith(
                 color: isDark
-                    ? SpatialDesignSystem.textDarkSecondaryColor.withValues(alpha: 0.8)
-                    : SpatialDesignSystem.textSecondaryColor.withValues(alpha: 0.8),
+                    ? SpatialDesignSystem.textDarkSecondaryColor
+                        .withValues(alpha: 0.8)
+                    : SpatialDesignSystem.textSecondaryColor
+                        .withValues(alpha: 0.8),
               ),
             ),
           ],
@@ -728,42 +768,82 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ),
     );
   }
-  
+
   Widget _buildBottomBar() {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(
-              child: SpatialButton(
-                text: "Call Customer",
-                onPressed: () {
-                  // Call customer logic
-                },
-                iconData: Icons.phone,
-                isOutlined: true,
+        child: screenWidth < 400
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // First button (Call)
+                  SpatialButton(
+                    text: "Call Customer",
+                    onPressed: () {
+                      // Call customer logic
+                    },
+                    iconData: Icons.phone,
+                    isOutlined: true,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                  ),
+                  const SizedBox(height: 10),
+                  // Second button (Mark as Delivered)
+                  SpatialButton(
+                    text: "Mark as Delivered",
+                    onPressed: () {
+                      // Mark as delivered logic
+                      _showDeliveryConfirmationDialog();
+                    },
+                    iconData: Icons.check_circle,
+                    isGradient: true,
+                    gradient: SpatialDesignSystem.successGradient,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                  ),
+                ],
+              )
+            // For wider screens, use a Row layout with smaller padding
+            : Row(
+                children: [
+                  Expanded(
+                    child: SpatialButton(
+                      text: "Call",
+                      onPressed: () {
+                        // Call customer logic
+                      },
+                      iconData: Icons.phone,
+                      isOutlined: true,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 12),
+                    ),
+                  ),
+                  const SizedBox(width: 10), // Reduced spacing between buttons
+                  Expanded(
+                    child: SpatialButton(
+                      text: "Mark Delivered",
+                      onPressed: () {
+                        // Mark as delivered logic
+                        _showDeliveryConfirmationDialog();
+                      },
+                      iconData: Icons.check_circle,
+                      isGradient: true,
+                      gradient: SpatialDesignSystem.successGradient,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 12),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: SpatialButton(
-                text: "Mark as Delivered",
-                onPressed: () {
-                  // Mark as delivered logic
-                  _showDeliveryConfirmationDialog();
-                },
-                iconData: Icons.check_circle,
-                isGradient: true,
-                gradient: SpatialDesignSystem.successGradient,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
-  
+
   void _showDeliveryConfirmationDialog() {
     showDialog(
       context: context,
