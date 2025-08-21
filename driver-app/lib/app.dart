@@ -3,13 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import 'package:ktc_logistics_driver/presentation/screens/login/login_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_login_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/dashboard/dashboard_screen_spatial.dart';
 import 'package:ktc_logistics_driver/presentation/screens/developer_test_screen.dart';
 import 'package:ktc_logistics_driver/domain/usecases/usecases.dart';
 import 'package:ktc_logistics_driver/data/repositories/repository_implementations.dart' as mock_repo;
 import 'package:ktc_logistics_driver/services/mock_data_service.dart';
+import 'package:ktc_logistics_driver/services/mock_auth_service.dart';
 import 'services/push_notification_service.dart';
 
 final getIt = GetIt.instance;
@@ -24,7 +25,7 @@ class AppRouter {
       case '/onboarding':
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case '/login':
-        return MaterialPageRoute(builder: (_) => LoginScreen());
+        return MaterialPageRoute(builder: (_) => const SpatialLoginScreen());
       case '/dashboard':
         return MaterialPageRoute(builder: (_) => const DashboardScreenSpatial());
       default:
@@ -61,6 +62,35 @@ class _AppState extends State<App> {
         // TODO: Implement proper dependency injection with use cases
         BlocProvider<UserBloc>(
           create: (context) => UserBloc(userServices: getIt()),
+        ),
+        // Add AuthBloc provider to fix the "Provider<AuthBloc> not found" error
+        BlocProvider<AuthBloc>(
+          create: (context) => AuthBloc(
+            loginUseCase: LoginUseCase(
+              repository: mock_repo.AuthRepositoryImpl(
+                mockAuthService: MockAuthService(),
+                secureStorage: const FlutterSecureStorage(),
+              ),
+            ),
+            logoutUseCase: LogoutUseCase(
+              repository: mock_repo.AuthRepositoryImpl(
+                mockAuthService: MockAuthService(),
+                secureStorage: const FlutterSecureStorage(),
+              ),
+            ),
+            checkLoginStatusUseCase: CheckLoginStatusUseCase(
+              repository: mock_repo.AuthRepositoryImpl(
+                mockAuthService: MockAuthService(),
+                secureStorage: const FlutterSecureStorage(),
+              ),
+            ),
+            getCurrentUserUseCase: GetCurrentUserUseCase(
+              repository: mock_repo.AuthRepositoryImpl(
+                mockAuthService: MockAuthService(),
+                secureStorage: const FlutterSecureStorage(),
+              ),
+            ),
+          ),
         ),
         // Add TrackingBloc with mock implementation to fix Provider error
         BlocProvider<TrackingBloc>(

@@ -56,11 +56,16 @@ class SpatialTheme {
   static const Color textSecondary = Color(0xFF666666);
   static const Color textTertiary = Color(0xFF999999);
   static const Color textLight = Color(0xFFFFFFFF);
+  static const Color textColorSecondary = Color(0xFF757575);
   
   // Surface Colors
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color surfaceDark = Color(0xFF1E1E1E);
   static const Color surfaceElevated = Color(0xFFF5F5F5);
+  static const Color surfaceColorLight = Color(0xFFFFFFFF);
+  
+  // Border Colors
+  static const Color borderColorLight = Color(0xFFE0E0E0);
   
   // Shadow definitions
   static List<BoxShadow> get spatialShadow => [
@@ -188,6 +193,12 @@ class SpatialTheme {
   static const BorderRadius borderRadiusMedium = BorderRadius.all(Radius.circular(12));
   static const BorderRadius borderRadiusLarge = BorderRadius.all(Radius.circular(16));
   static const BorderRadius borderRadiusXL = BorderRadius.all(Radius.circular(24));
+  
+  // Border Radius Values
+  static const double radiusSM = 8.0;
+  static const double radiusMD = 12.0;
+  static const double radiusLG = 16.0;
+  static const double radiusXL = 24.0;
   
   // Spacing
   static const double spaceXS = 4;

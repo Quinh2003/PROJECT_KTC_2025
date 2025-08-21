@@ -7,9 +7,9 @@ import 'package:ktc_logistics_driver/presentation/screens/delivery/list_orders_d
 import 'package:ktc_logistics_driver/presentation/screens/delivery/order_delivered_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/delivery/order_on_way_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/home/select_role_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/intro/checking_login_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/onboarding/spatial_checking_login_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/profile/change_password_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/profile/edit_Prodile_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/profile/edit_profile_screen.dart';
 
 class DeliveryHomeScreen extends StatelessWidget {
 
@@ -142,7 +142,7 @@ class DeliveryHomeScreen extends StatelessWidget {
                 colorIcon: 0xffF02849,
                 onPressed: () {
                   authBloc.add(LogOutEvent());
-                  Navigator.pushAndRemoveUntil(context, routeFrave(page: CheckingLoginScreen()), (route) => false);
+                  Navigator.pushAndRemoveUntil(context, routeFrave(page: SpatialCheckingLoginScreen()), (route) => false);
                 },
               ),
             ],

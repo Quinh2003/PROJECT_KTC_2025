@@ -8,9 +8,9 @@ import 'package:ktc_logistics_driver/presentation/screens/admin/delivery/list_de
 import 'package:ktc_logistics_driver/presentation/screens/admin/orders_admin/orders_admin_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/admin/products/list_products_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/home/select_role_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/intro/checking_login_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/onboarding/spatial_checking_login_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/profile/change_password_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/profile/edit_Prodile_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/profile/edit_profile_screen.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class AdminHomeScreen extends StatelessWidget {
@@ -154,7 +154,7 @@ class AdminHomeScreen extends StatelessWidget {
                   authBloc.add(LogOutEvent());
                   Navigator.pushAndRemoveUntil(
                     context,
-                    routeFrave(page: CheckingLoginScreen()), (route) => false);
+                    routeFrave(page: SpatialCheckingLoginScreen()), (route) => false);
                 },
               ),
             ],

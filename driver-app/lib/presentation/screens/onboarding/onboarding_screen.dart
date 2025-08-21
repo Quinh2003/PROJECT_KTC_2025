@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:ui';
 import 'package:ktc_logistics_driver/presentation/design/spatial_ui.dart';
-import 'package:ktc_logistics_driver/presentation/screens/login/login_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
@@ -18,46 +18,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   
   final List<Map<String, dynamic>> _onboardingData = [
     {
-      'title': 'Chào mừng đến với FastRoute',
+      'title': 'Chào mừng đến với \nFastRoute',
       'description': 'Ứng dụng giao hàng thế hệ mới với giao diện Spatial UI hiện đại, được thiết kế riêng cho tài xế KTC Logistics.',
       'image': 'assets/svg/delivery.svg',
       'color': const Color(0xFF0A84FF), // Apple Vision Pro blue
     },
     {
-      'title': 'Quản lý đơn hàng thông minh',
+      'title': 'Quản lý đơn hàng \nthông minh',
       'description': 'Nhận đơn hàng theo thời gian thực, xem chi tiết, cập nhật trạng thái và quản lý lịch sử giao hàng dễ dàng.',
       'image': 'assets/svg/order-tracking.svg',
       'color': const Color(0xFF32D74B), // Apple Vision Pro green
     },
     {
-      'title': 'Bản đồ & điều hướng tiên tiến',
+      'title': 'Bản đồ & điều hướng \nvới AI',
       'description': 'Tích hợp MapBox với GPS tracking, tối ưu tuyến đường thời gian thực và hiển thị vị trí pickup/delivery rõ ràng.',
       'image': 'assets/svg/route-optimization.svg',
       'color': const Color(0xFF5E5CE6), // Apple Vision Pro indigo
     },
     {
-      'title': 'Xác nhận giao hàng đa phương tiện',
-      'description': 'Chụp ảnh xác nhận, lấy chữ ký khách hàng và đồng bộ tự động với hệ thống quản lý trung tâm.',
-      'image': 'assets/svg/ready-to-go.svg',
-      'color': const Color(0xFF64D2FF), // Apple Vision Pro light blue
-    },
-    {
-      'title': 'Thông báo thông minh',
-      'description': 'Nhận thông báo đơn hàng mới và cập nhật từ dispatcher theo thời gian thực, không bỏ lỡ bất kỳ thông tin quan trọng nào.',
-      'image': 'assets/svg/delivery.svg',
-      'color': const Color(0xFFFF9F0A), // Apple Vision Pro orange
-    },
-    {
-      'title': 'Tối ưu cho điều kiện thực tế',
-      'description': 'Giao diện dễ đọc ngoài trời, tương tác nhanh và tiết kiệm pin cho hành trình dài.',
-      'image': 'assets/svg/order-tracking.svg',
-      'color': const Color(0xFF30D158), // Apple Vision Pro mint
-    },
-    {
       'title': 'Sẵn sàng bắt đầu?',
       'description': 'Đăng nhập ngay để trải nghiệm ứng dụng giao hàng hiệu quả nhất dành cho tài xế chuyên nghiệp.',
       'image': 'assets/svg/ready-to-go.svg',
-      'color': const Color(0xFF0A84FF), // Apple Vision Pro blue
+      'color': const Color(0xFFFF9F0A), // Apple Vision Pro blue
     },
   ];
   
@@ -82,7 +64,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     } else {
       // Navigate to login screen
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => LoginScreen()),
+        MaterialPageRoute(builder: (context) => const SpatialLoginScreen()),
       );
     }
   }
@@ -90,7 +72,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _onSkipTap() {
     // Navigate to login screen
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => LoginScreen()),
+      MaterialPageRoute(builder: (context) => const SpatialLoginScreen()),
     );
   }
   

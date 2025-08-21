@@ -13,6 +13,7 @@ class SpatialComponents {
     EdgeInsetsGeometry? margin,
     BorderRadius? borderRadius,
     bool elevated = false,
+    bool useDarkMode = true, // Set dark mode as default
   }) {
     return Container(
       width: width,
@@ -23,14 +24,17 @@ class SpatialComponents {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
+          colors: useDarkMode ? [
+            Colors.white.withOpacity(0.1),
+            Colors.white.withOpacity(0.05),
+          ] : [
             SpatialTheme.glassLight,
             SpatialTheme.glassDark,
           ],
         ),
         borderRadius: borderRadius ?? SpatialTheme.borderRadiusMedium,
         border: Border.all(
-          color: SpatialTheme.glassBorder,
+          color: useDarkMode ? Colors.white.withOpacity(0.2) : SpatialTheme.glassBorder,
           width: 1,
         ),
         boxShadow: elevated ? SpatialTheme.elevatedShadow : SpatialTheme.spatialShadow,
@@ -49,6 +53,7 @@ class SpatialComponents {
     BorderRadius? borderRadius,
     Color? backgroundColor,
     bool glowing = false,
+    bool useDarkMode = true, // Set dark mode as default
   }) {
     return Container(
       width: width,
@@ -56,7 +61,7 @@ class SpatialComponents {
       margin: margin,
       padding: padding ?? const EdgeInsets.all(SpatialTheme.spaceMD),
       decoration: BoxDecoration(
-        color: backgroundColor ?? SpatialTheme.surfaceLight,
+        color: backgroundColor ?? (useDarkMode ? SpatialTheme.surfaceDark.withOpacity(0.8) : SpatialTheme.surfaceLight),
         borderRadius: borderRadius ?? SpatialTheme.borderRadiusLarge,
         boxShadow: glowing ? SpatialTheme.glowShadow : SpatialTheme.spatialShadow,
       ),
@@ -137,23 +142,32 @@ class SpatialComponents {
     String? Function(String?)? validator,
     TextInputType? keyboardType,
     bool enabled = true,
+    bool useDarkMode = false, // Added dark mode support
   }) {
+    final Color textColor = useDarkMode ? Colors.white.withOpacity(0.8) : SpatialTheme.textSecondary;
+    final Color backgroundColor = useDarkMode 
+        ? Colors.white.withOpacity(0.1) 
+        : SpatialTheme.surfaceLight.withValues(alpha: 0.8);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: SpatialTheme.textSecondary,
+            color: textColor,
           ),
         ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: SpatialTheme.surfaceLight.withValues(alpha: 0.8),
+            color: backgroundColor,
             borderRadius: SpatialTheme.borderRadiusMedium,
+            border: useDarkMode 
+                ? Border.all(color: Colors.white.withOpacity(0.15))
+                : null,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.05),
@@ -168,17 +182,51 @@ class SpatialComponents {
             keyboardType: keyboardType,
             validator: validator,
             enabled: enabled,
+            style: TextStyle(
+              color: useDarkMode ? Colors.white : SpatialTheme.textPrimary,
+            ),
             decoration: InputDecoration(
               hintText: hint,
-              prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: SpatialTheme.textTertiary) : null,
+              prefixIcon: prefixIcon != null 
+                ? Icon(prefixIcon, color: useDarkMode ? Colors.white.withOpacity(0.5) : SpatialTheme.textTertiary) 
+                : null,
               suffixIcon: suffixIcon,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              hintStyle: const TextStyle(color: SpatialTheme.textTertiary),
+              hintStyle: TextStyle(color: useDarkMode ? Colors.white.withOpacity(0.5) : SpatialTheme.textTertiary),
             ),
           ),
         ),
       ],
+    );
+  }
+  
+  /// Icon Button
+  static Widget iconButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    Color? color,
+    double? size,
+    bool elevated = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: SpatialTheme.surfaceLight.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(SpatialTheme.radiusMD),
+        boxShadow: elevated ? SpatialTheme.spatialShadow : null,
+        border: Border.all(
+          color: SpatialTheme.borderColorLight.withOpacity(0.1),
+        ),
+      ),
+      child: InkWell(
+        onTap: onPressed,
+        child: Icon(
+          icon,
+          color: color ?? SpatialTheme.textSecondary,
+          size: size ?? 20,
+        ),
+      ),
     );
   }
   
@@ -332,10 +380,11 @@ class SpatialComponents {
   static Widget backgroundContainer({
     required Widget child,
     Gradient? gradient,
+    bool useDarkMode = true, // Set dark mode as default
   }) {
     return Container(
       decoration: BoxDecoration(
-        gradient: gradient ?? SpatialTheme.backgroundGradient,
+        gradient: gradient ?? (useDarkMode ? SpatialTheme.darkBackgroundGradient : SpatialTheme.backgroundGradient),
       ),
       child: child,
     );

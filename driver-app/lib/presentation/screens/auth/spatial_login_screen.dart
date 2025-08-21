@@ -46,7 +46,7 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
         if (state is AuthenticatedState || state is AuthSuccessState) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (_) => const DashboardScreenSpatial(),
+              builder: (context) => const DashboardScreenSpatial(),
             ),
           );
         } else if (state is AuthErrorState) {
@@ -64,12 +64,14 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
       },
       child: Scaffold(
         body: SpatialComponents.backgroundContainer(
+          useDarkMode: true,
           child: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(SpatialTheme.spaceLG),
+              padding: const EdgeInsets.symmetric(horizontal: SpatialTheme.spaceLG, vertical: SpatialTheme.spaceSM),
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  const SizedBox(height: SpatialTheme.space2XL),
+                  const SizedBox(height: SpatialTheme.spaceSM),
                   
                   // Logo & Welcome Section
                   _buildHeader().animate().fadeIn(duration: 800.ms).slideY(
@@ -120,6 +122,7 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
         // Logo Container
         SpatialComponents.spatialCard(
           padding: const EdgeInsets.all(SpatialTheme.spaceLG),
+          useDarkMode: true,
           child: Column(
             children: [
               Container(
@@ -141,12 +144,13 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                 'KTC Logistics',
                 style: SpatialTheme.textTheme.displayMedium?.copyWith(
                   fontWeight: FontWeight.w700,
+                  color: Colors.white,
                 ),
               ),
               Text(
                 'Driver App',
                 style: SpatialTheme.textTheme.titleMedium?.copyWith(
-                  color: SpatialTheme.textSecondary,
+                  color: Colors.white.withOpacity(0.7),
                 ),
               ),
             ],
@@ -159,12 +163,15 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
           'Chào mừng trở lại!',
           style: SpatialTheme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
         ),
         const SizedBox(height: SpatialTheme.spaceSM),
         Text(
           'Đăng nhập để bắt đầu làm việc hôm nay',
-          style: SpatialTheme.textTheme.bodyMedium,
+          style: SpatialTheme.textTheme.bodyMedium?.copyWith(
+            color: Colors.white.withOpacity(0.7),
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -186,6 +193,7 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                   'Thông tin đăng nhập',
                   style: SpatialTheme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w600,
+                    color: SpatialTheme.textLight,
                   ),
                 ),
                 const SizedBox(height: SpatialTheme.spaceLG),
@@ -198,6 +206,7 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                   prefixIcon: FontAwesomeIcons.envelope,
                   keyboardType: TextInputType.emailAddress,
                   enabled: !isLoading,
+                  useDarkMode: true,
                   validator: (value) {
                     if (value?.isEmpty ?? true) {
                       return 'Vui lòng nhập email';
@@ -219,6 +228,7 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                   prefixIcon: FontAwesomeIcons.lock,
                   obscureText: _obscurePassword,
                   enabled: !isLoading,
+                  useDarkMode: true,
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword 
@@ -249,18 +259,38 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                 // Remember Me & Forgot Password
                 Row(
                   children: [
-                    Checkbox(
-                      value: _rememberMe,
-                      onChanged: isLoading ? null : (value) {
-                        setState(() {
-                          _rememberMe = value ?? false;
-                        });
-                      },
-                      activeColor: SpatialTheme.primaryBlue,
+                    Theme(
+                      data: ThemeData(
+                        checkboxTheme: CheckboxThemeData(
+                          fillColor: MaterialStateProperty.resolveWith<Color>(
+                            (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.disabled)) {
+                                return Colors.grey.withOpacity(.5);
+                              }
+                              return SpatialTheme.primaryBlue;
+                            },
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ),
+                      child: Checkbox(
+                        value: _rememberMe,
+                        onChanged: isLoading ? null : (value) {
+                          setState(() {
+                            _rememberMe = value ?? false;
+                          });
+                        },
+                        activeColor: SpatialTheme.primaryBlue,
+                        checkColor: Colors.white,
+                      ),
                     ),
                     Text(
                       'Ghi nhớ đăng nhập',
-                      style: SpatialTheme.textTheme.bodyMedium,
+                      style: SpatialTheme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.white.withOpacity(0.9),
+                      ),
                     ),
                     const Spacer(),
                     TextButton(
@@ -270,7 +300,7 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                       child: Text(
                         'Quên mật khẩu?',
                         style: TextStyle(
-                          color: SpatialTheme.primaryBlue,
+                          color: SpatialTheme.primaryCyan,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -307,13 +337,14 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
             'Đăng nhập nhanh',
             style: SpatialTheme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: SpatialTheme.spaceMD),
           Text(
             'Chọn tài khoản demo để trải nghiệm ứng dụng',
             style: SpatialTheme.textTheme.bodySmall?.copyWith(
-              color: SpatialTheme.textSecondary,
+              color: Colors.white.withOpacity(0.7),
             ),
           ),
           const SizedBox(height: SpatialTheme.spaceMD),
@@ -364,14 +395,14 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
       child: Container(
         padding: const EdgeInsets.all(SpatialTheme.spaceMD),
         decoration: BoxDecoration(
-          color: SpatialTheme.surfaceLight.withValues(alpha: 0.7),
+          color: Colors.white.withOpacity(0.12),
           borderRadius: SpatialTheme.borderRadiusMedium,
           border: Border.all(
-            color: SpatialTheme.glassBorder,
+            color: Colors.white.withOpacity(0.15),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withValues(alpha: 0.15),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -388,6 +419,7 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
               name,
               style: SpatialTheme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
               textAlign: TextAlign.center,
               maxLines: 1,
@@ -396,7 +428,7 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
             Text(
               vehicleType,
               style: SpatialTheme.textTheme.bodySmall?.copyWith(
-                color: SpatialTheme.textTertiary,
+                color: Colors.white.withOpacity(0.6),
               ),
               textAlign: TextAlign.center,
               maxLines: 1,
@@ -414,14 +446,14 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
         Text(
           'KTC Logistics Driver App v1.0.0',
           style: SpatialTheme.textTheme.bodySmall?.copyWith(
-            color: SpatialTheme.textTertiary,
+            color: Colors.white.withOpacity(0.5),
           ),
         ),
         const SizedBox(height: SpatialTheme.spaceSM),
         Text(
           '© 2025 KTC Logistics. All rights reserved.',
           style: SpatialTheme.textTheme.bodySmall?.copyWith(
-            color: SpatialTheme.textTertiary,
+            color: Colors.white.withOpacity(0.5),
           ),
           textAlign: TextAlign.center,
         ),

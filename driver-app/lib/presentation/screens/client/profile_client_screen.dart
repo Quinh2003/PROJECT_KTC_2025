@@ -4,9 +4,9 @@ import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 import 'package:ktc_logistics_driver/presentation/screens/client/client_orders_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/intro/checking_login_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/onboarding/spatial_checking_login_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/profile/change_password_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/profile/edit_Prodile_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/profile/edit_profile_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/profile/list_addresses_screen.dart';
 
 
@@ -127,7 +127,7 @@ class ProfileClientScreen extends StatelessWidget {
                 colorIcon: 0xffF02849,
                 onPressed: () {
                   authBloc.add(LogOutEvent());
-                  Navigator.pushAndRemoveUntil(context, routeFrave(page: CheckingLoginScreen()), (route) => false);
+                  Navigator.pushAndRemoveUntil(context, routeFrave(page: SpatialCheckingLoginScreen()), (route) => false);
                 },
               ),
             ],
