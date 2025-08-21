@@ -1,18 +1,30 @@
 import { useEffect, useState } from "react";
 import UserForm from "./UserForm";
-import { fetchUsers, addUser, editUser as apiEditUser, deleteUser as apiDeleteUser } from "../../services/adminAPI";
-import { FaBellConcierge, FaTruck } from "react-icons/fa6";
-import { FaTools } from "react-icons/fa";
+import {
+  fetchUsers,
+  addUser,
+  editUser as apiEditUser,
+  deleteUser as apiDeleteUser,
+} from "../../services/adminAPI";
+import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
 
 // Helper to map API role to display name and icon
 function getRoleDisplay(roleName: string) {
   switch (roleName) {
     case "DISPATCHER":
-      return { label: "Dispatcher", icon: <FaBellConcierge className="inline mr-1" /> };
+      return { label: "Dispatcher", icon: null };
     case "FLEET_MANAGER":
-      return { label: "Fleet Manager", icon: <FaTools className="inline mr-1" /> };
+    case "FLEET":
+      return { label: "Fleet Manager", icon: null };
     case "DRIVER":
-      return { label: "Driver", icon: <FaTruck className="inline mr-1" /> };
+      return { label: "Driver", icon: null };
+    case "ADMIN":
+      return { label: "Admin", icon: null };
+    case "OPERATIONS_MANAGER":
+    case "OPERATIONS":
+      return { label: "Operations Manager", icon: null };
+    case "CUSTOMER":
+      return { label: "Customer", icon: null };
     default:
       return { label: roleName, icon: null };
   }
@@ -49,23 +61,37 @@ export default function UserTable() {
         console.log("[UserTable] API data:", data);
         setFetchError("");
         if (!Array.isArray(data)) {
-          setFetchError("API không trả về mảng user. Kiểm tra lại format dữ liệu!");
+          setFetchError(
+            "API không trả về mảng user. Kiểm tra lại format dữ liệu!"
+          );
           setUsers([]);
           return;
         }
         setUsers(
           data.map((u: any) => {
             const roleInfo = getRoleDisplay(u.role?.roleName || "");
-            const status = u.status?.name?.toLowerCase() === "active" ? "active" : u.status?.name?.toLowerCase() || "inactive";
-            const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+            const status =
+              u.status?.name?.toLowerCase() === "active"
+                ? "active"
+                : u.status?.name?.toLowerCase() || "inactive";
+            const lastLogin = u.updatedAt
+              ? new Date(u.updatedAt).toLocaleString()
+              : "-";
             // Map roleName từ backend về đúng value của select (loại bỏ dấu gạch dưới, khoảng trắng, so sánh chữ thường)
             let roleValue = "";
-            const rawRole = (u.role?.roleName || "").replace(/[\s_]+/g, '').toLowerCase();
+            const rawRole = (u.role?.roleName || "")
+              .replace(/[\s_]+/g, "")
+              .toLowerCase();
             if (rawRole === "admin") roleValue = "Admin";
             else if (rawRole === "dispatcher") roleValue = "Dispatcher";
-            else if (rawRole === "fleetmanager" || rawRole === "fleet") roleValue = "Fleet Manager";
+            else if (rawRole === "fleetmanager" || rawRole === "fleet")
+              roleValue = "Fleet Manager";
             else if (rawRole === "driver") roleValue = "Driver";
-            else if (rawRole === "operationsmanager" || rawRole === "operations") roleValue = "Operations Manager";
+            else if (
+              rawRole === "operationsmanager" ||
+              rawRole === "operations"
+            )
+              roleValue = "Operations Manager";
             else roleValue = u.role?.roleName || "";
             return {
               id: u.id,
@@ -84,11 +110,12 @@ export default function UserTable() {
       })
       .catch((err) => {
         console.error("[UserTable] Fetch users error:", err);
-        setFetchError("Không thể lấy dữ liệu user từ API. Vui lòng thử lại hoặc kiểm tra backend!");
+        setFetchError(
+          "Không thể lấy dữ liệu user từ API. Vui lòng thử lại hoặc kiểm tra backend!"
+        );
         setUsers([]);
       });
   }, []);
-
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -102,27 +129,37 @@ export default function UserTable() {
 
   // Pagination logic
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
-  const paginated = filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+  const paginated = filtered.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleAddUser = async (user: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; }) => {
+  const handleAddUser = async (user: {
+    name: string;
+    email: string;
+    role: string;
+    roleIcon: any;
+    status: string;
+    lastLogin: string;
+  }) => {
     try {
       // Map role string sang id theo bảng roles thực tế
       const roleMap: Record<string, number> = {
-        "DISPATCHER": 1,
-        "ADMIN": 2,
-        "OPERATIONS_MANAGER": 3,
-        "CUSTOMER": 5,
-        "FLEET_MANAGER": 6,
-        "DRIVER": 7
+        DISPATCHER: 1,
+        ADMIN: 2,
+        OPERATIONS_MANAGER: 3,
+        CUSTOMER: 5,
+        FLEET_MANAGER: 6,
+        DRIVER: 7,
       };
       const statusMap: Record<string, number> = {
-        "active": 7,
-        "inactive": 8,
-        "suspended": 9
+        active: 7,
+        inactive: 8,
+        suspended: 9,
       };
       // Chuẩn hóa key role: "Admin" => "ADMIN", "Fleet Manager" => "FLEET_MANAGER"
-      const roleKey = user.role.replace(/ /g, '_').toUpperCase();
+      const roleKey = user.role.replace(/ /g, "_").toUpperCase();
       const payload = {
         username: user.email.split("@")[0],
         fullName: user.name,
@@ -130,7 +167,7 @@ export default function UserTable() {
         password: (user as any).password || "", // lấy từ form
         phone: (user as any).phone || "",
         role: { id: roleMap[roleKey] },
-        status: { id: statusMap[user.status] || 1 }
+        status: { id: statusMap[user.status] || 1 },
       };
       await addUser(payload);
       // Sau khi thêm thành công, reload lại danh sách user từ API
@@ -138,8 +175,13 @@ export default function UserTable() {
       setUsers(
         data.map((u: any) => {
           const roleInfo = getRoleDisplay(u.role?.roleName || "");
-          const status = u.status?.name?.toLowerCase() === "active" ? "active" : u.status?.name?.toLowerCase() || "inactive";
-          const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+          const status =
+            u.status?.name?.toLowerCase() === "active"
+              ? "active"
+              : u.status?.name?.toLowerCase() || "inactive";
+          const lastLogin = u.updatedAt
+            ? new Date(u.updatedAt).toLocaleString()
+            : "-";
           return {
             id: u.id,
             name: u.fullName || u.username || "",
@@ -153,7 +195,7 @@ export default function UserTable() {
           };
         })
       );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       alert("Lỗi khi thêm user mới. Vui lòng thử lại!");
     }
@@ -164,57 +206,80 @@ export default function UserTable() {
     setEditUser({
       ...user,
       roleValue: user.roleValue,
-      status: user.status === "active" ? "active" : "inactive"
+      status: user.status === "active" ? "active" : "inactive",
     }); // Đảm bảo có trường roleValue và status đúng cho form
     setShowForm(true);
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleUpdateUser = async (updatedUser: { name: string; email: string; role: string; roleIcon: any; status: string; lastLogin: string; password?: string; phone?: string; }) => {
+  const handleUpdateUser = async (updatedUser: {
+    name: string;
+    email: string;
+    role: string;
+    roleIcon: any;
+    status: string;
+    lastLogin: string;
+    password?: string;
+    phone?: string;
+  }) => {
     try {
       console.log("[UserTable] handleUpdateUser called with:", updatedUser);
-      
+
       // Map role string sang id theo bảng roles thực tế
       const roleMap: Record<string, number> = {
-        "DISPATCHER": 1,
-        "ADMIN": 2,
-        "OPERATIONS_MANAGER": 3,
-        "CUSTOMER": 5,
-        "FLEET_MANAGER": 6,
-        "DRIVER": 7
+        DISPATCHER: 1,
+        ADMIN: 2,
+        OPERATIONS_MANAGER: 3,
+        CUSTOMER: 5,
+        FLEET_MANAGER: 6,
+        DRIVER: 7,
       };
       const statusMap: Record<string, number> = {
-        "active": 7,
-        "inactive": 8,
-        "suspended": 9
+        active: 7,
+        inactive: 8,
+        suspended: 9,
       };
       // Chuẩn hóa key role: "Admin" => "ADMIN", "Fleet Manager" => "FLEET_MANAGER"
-      const roleKey = updatedUser.role.replace(/ /g, '_').toUpperCase();
-      console.log("[UserTable] roleKey:", roleKey, "roleMap[roleKey]:", roleMap[roleKey]);
-      
+      const roleKey = updatedUser.role.replace(/ /g, "_").toUpperCase();
+      console.log(
+        "[UserTable] roleKey:",
+        roleKey,
+        "roleMap[roleKey]:",
+        roleMap[roleKey]
+      );
+
       // Tìm user gốc để lấy id và các trường không sửa
-      const userOrigin = users.find(u => u.email === updatedUser.email);
+      const userOrigin = users.find((u) => u.email === updatedUser.email);
       if (!userOrigin) {
-        console.error("[UserTable] User not found with email:", updatedUser.email);
+        console.error(
+          "[UserTable] User not found with email:",
+          updatedUser.email
+        );
         throw new Error("User not found");
       }
       console.log("[UserTable] userOrigin:", userOrigin);
-      
+
       // Tạo payload đầy đủ cho PUT
       const payload: any = {
         id: userOrigin.id,
         username: updatedUser.email.split("@")[0],
         fullName: updatedUser.name,
         email: updatedUser.email,
-        password: updatedUser.password && updatedUser.password.trim() !== "" ? updatedUser.password : userOrigin.password || "",
-        phone: updatedUser.phone && updatedUser.phone.trim() !== "" ? updatedUser.phone : userOrigin.phone || "",
+        password:
+          updatedUser.password && updatedUser.password.trim() !== ""
+            ? updatedUser.password
+            : userOrigin.password || "",
+        phone:
+          updatedUser.phone && updatedUser.phone.trim() !== ""
+            ? updatedUser.phone
+            : userOrigin.phone || "",
         role: { id: roleMap[roleKey] },
         status: { id: statusMap[updatedUser.status] || 7 },
         notes: userOrigin.notes || null,
-        googleId: userOrigin.googleId || null
+        googleId: userOrigin.googleId || null,
       };
       console.log("[UserTable] payload for update:", payload);
-      
+
       await apiEditUser(userOrigin.id, payload);
       console.log("[UserTable] Update successful, reloading users...");
       // Reload lại danh sách user
@@ -224,7 +289,9 @@ export default function UserTable() {
           const roleInfo = getRoleDisplay(u.role?.roleName || "");
           const statusRaw = u.status?.name?.toLowerCase() || "";
           const status = statusRaw === "active" ? "active" : "inactive";
-          const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+          const lastLogin = u.updatedAt
+            ? new Date(u.updatedAt).toLocaleString()
+            : "-";
           return {
             id: u.id,
             name: u.fullName || u.username || "",
@@ -242,12 +309,16 @@ export default function UserTable() {
       setEditUser(null);
     } catch (err) {
       console.error("[UserTable] Update error:", err);
-      alert(`Lỗi khi cập nhật user: ${err instanceof Error ? err.message : 'Unknown error'}. Vui lòng thử lại!`);
+      alert(
+        `Lỗi khi cập nhật user: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }. Vui lòng thử lại!`
+      );
     }
   };
 
   const handleDeleteUser = async (email: string) => {
-    const user = users.find(u => u.email === email);
+    const user = users.find((u) => u.email === email);
     if (!user) return;
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
@@ -258,8 +329,13 @@ export default function UserTable() {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           data.map((u: any) => {
             const roleInfo = getRoleDisplay(u.role?.roleName || "");
-            const status = u.status?.name?.toLowerCase() === "active" ? "active" : "inactive";
-            const lastLogin = u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-";
+            const status =
+              u.status?.name?.toLowerCase() === "active"
+                ? "active"
+                : "inactive";
+            const lastLogin = u.updatedAt
+              ? new Date(u.updatedAt).toLocaleString()
+              : "-";
             return {
               id: u.id,
               name: u.fullName || u.username || "",
@@ -271,7 +347,7 @@ export default function UserTable() {
             };
           })
         );
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
         alert("Lỗi khi xóa user. Vui lòng thử lại!");
       }
@@ -335,37 +411,41 @@ export default function UserTable() {
                     <span
                       className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold ${
                         u.role === "Dispatcher"
-                          ? "bg-black text-white"
+                          ? "text-purple-700" // Tím đậm
                           : u.role === "Fleet Manager"
-                          ? "bg-gray-100 text-black"
+                          ? "text-blue-700" // Xanh dương đậm
                           : u.role === "Driver"
-                          ? "bg-yellow-50 text-black"
+                          ? "text-amber-700" // Vàng đậm
                           : u.role === "Operations Manager"
-                          ? "bg-orange-100 text-black"
-                          : ""
+                          ? "text-pink-700" // Cam đậm
+                          : u.role === "Admin"
+                          ? "text-yellow-700" // Đỏ đậm
+                          : u.role === "Customer"
+                          ? "text-emerald-700" // Xanh lá đậm
+                          : "text-gray-800"
                       }`}
                     >
-                      <span>{u.roleIcon}</span>
+                      {u.roleIcon && <span>{u.roleIcon}</span>}
                       {u.role}
                     </span>
                   </td>
                   <td className="py-3 pr-4">
-                  {u.status === "active" ? (
-                    <span className="inline-flex items-center px-4 py-1 rounded-full bg-white border border-green-300 text-green-700 text-sm font-semibold gap-2">
-                      <span className="w-4 h-4 rounded-full border border-green-300 flex items-center justify-center">
-                        <span className="w-2.5 h-2.5 rounded-full bg-green-400 block"></span>
+                    {u.status === "active" ? (
+                      <span className="inline-flex items-center px-4 py-1 rounded-full bg-white border border-green-300 text-green-700 text-sm font-semibold gap-2">
+                        <span className="w-4 h-4 rounded-full border border-green-300 flex items-center justify-center">
+                          <span className="w-2.5 h-2.5 rounded-full bg-green-400 block"></span>
+                        </span>
+                        Active
                       </span>
-                      Active
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center px-4 py-1 rounded-full bg-white border border-gray-300 text-gray-500 text-sm font-semibold gap-2">
-                      <span className="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center">
-                        <span className="w-2.5 h-2.5 rounded-full bg-gray-400 block"></span>
+                    ) : (
+                      <span className="inline-flex items-center px-4 py-1 rounded-full bg-white border border-gray-300 text-gray-500 text-sm font-semibold gap-2">
+                        <span className="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center">
+                          <span className="w-2.5 h-2.5 rounded-full bg-gray-400 block"></span>
+                        </span>
+                        Inactive
                       </span>
-                      Inactive
-                    </span>
-                  )}
-                </td>
+                    )}
+                  </td>
                   <td className="py-3 pr-4">{u.lastLogin}</td>
                   <td className="py-3 pr-4 flex gap-2">
                     <button
@@ -373,66 +453,22 @@ export default function UserTable() {
                       title="Edit"
                       onClick={() => handleEditUser(u)}
                     >
-                      <svg width="20" height="20" fill="none">
-                        <path
-                          d="M4 13.5V16h2.5l7.1-7.1-2.5-2.5L4 13.5z"
-                          stroke="#222"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M14.7 6.3a1 1 0 0 0 0-1.4l-1.6-1.6a1 1 0 0 0-1.4 0l-1.1 1.1 3 3 1.1-1.1z"
-                          stroke="#222"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                      <FiEdit size={18} />
                     </button>
                     <button
                       className="p-2 rounded hover:bg-gray-200"
                       title="View"
                       onClick={() => setViewUser(u)}
                     >
-                      <svg width="20" height="20" fill="none">
-                        <circle
-                          cx="10"
-                          cy="10"
-                          r="8"
-                          stroke="#222"
-                          strokeWidth="1.5"
-                        />
-                        <circle
-                          cx="10"
-                          cy="10"
-                          r="3"
-                          stroke="#222"
-                          strokeWidth="1.5"
-                        />
-                      </svg>
+                      <FiEye size={18} />
                     </button>
                     <button
                       className="p-2 rounded hover:bg-red-100"
                       title="Delete"
                       onClick={() => handleDeleteUser(u.email)}
                     >
-                      <svg width="20" height="20" fill="none">
-                        <rect
-                          x="5"
-                          y="7"
-                          width="10"
-                          height="8"
-                          rx="2"
-                          stroke="#ef4444"
-                          strokeWidth="1.5"
-                        />
-                        <path
-                          d="M8 7V5a2 2 0 0 1 4 0v2"
-                          stroke="#ef4444"
-                          strokeWidth="1.5"
-                        />
-                      </svg>
+                      <FiTrash2 size={18} color="#ef4444" />{" "}
+                      {/* Màu đỏ cho icon xóa */}
                     </button>
                   </td>
                 </tr>
@@ -457,7 +493,9 @@ export default function UserTable() {
             >
               Previous
             </button>
-            <span className="mx-2">Page {currentPage} / {totalPages}</span>
+            <span className="mx-2">
+              Page {currentPage} / {totalPages}
+            </span>
             <button
               className="px-3 py-1 rounded border bg-gray-100 disabled:opacity-50"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
@@ -473,12 +511,26 @@ export default function UserTable() {
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
             <h2 className="text-xl font-bold mb-2">User Information</h2>
-            <div><b>Name:</b> {viewUser.name}</div>
-            <div><b>Email:</b> {viewUser.email}</div>
-            <div><b>Role:</b> {viewUser.role}</div>
-            <div><b>Status:</b> {viewUser.status === "active" ? "Active" : "Inactive"}</div>
-            <div><b>Last Login:</b> {viewUser.lastLogin}</div>
-            <button className="mt-4 px-4 py-2 rounded bg-teal-600 text-white" onClick={() => setViewUser(null)}>
+            <div>
+              <b>Name:</b> {viewUser.name}
+            </div>
+            <div>
+              <b>Email:</b> {viewUser.email}
+            </div>
+            <div>
+              <b>Role:</b> {viewUser.role}
+            </div>
+            <div>
+              <b>Status:</b>{" "}
+              {viewUser.status === "active" ? "Active" : "Inactive"}
+            </div>
+            <div>
+              <b>Last Login:</b> {viewUser.lastLogin}
+            </div>
+            <button
+              className="mt-4 px-4 py-2 rounded bg-teal-600 text-white"
+              onClick={() => setViewUser(null)}
+            >
               Close
             </button>
           </div>

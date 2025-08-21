@@ -120,18 +120,15 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
         <Navbar
           user={user}
           onLogout={onLogout}
-          title={
-            active === "users"
-              ? "User Management Dashboard"
-              : active === "roles"
+          title={active === "users"
+            ? "User Management Dashboard"
+            : active === "roles"
               ? "Role Permissions Dashboard"
               : active === "settings"
-              ? "System Configuration Dashboard"
-              : active === "logs"
-              ? "System Logs Dashboard"
-              : "Admin Dashboard"
-          }
-         
+                ? "System Configuration Dashboard"
+                : active === "logs"
+                  ? "System Logs Dashboard"
+                  : "Admin Dashboard"} subtitle={""}         
         />
         {/* Stats cards - Fixed */}
         <div className="flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-3 md:mt-4 px-4 md:px-10">
