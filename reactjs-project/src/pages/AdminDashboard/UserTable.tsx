@@ -30,7 +30,11 @@ function getRoleDisplay(roleName: string) {
   }
 }
 
-export default function UserTable() {
+interface UserTableProps {
+  onUserCountUpdate?: () => void;
+}
+
+export default function UserTable({ onUserCountUpdate }: UserTableProps) {
   const [search, setSearch] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [users, setUsers] = useState<any[]>([]);
@@ -68,6 +72,7 @@ export default function UserTable() {
           return;
         }
         setUsers(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           data.map((u: any) => {
             const roleInfo = getRoleDisplay(u.role?.roleName || "");
             const status =
@@ -135,12 +140,11 @@ export default function UserTable() {
     currentPage * rowsPerPage
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleAddUser = async (user: {
     name: string;
     email: string;
     role: string;
-    roleIcon: any;
+    roleIcon: React.ReactNode;
     status: string;
     lastLogin: string;
   }) => {
@@ -165,15 +169,19 @@ export default function UserTable() {
         username: user.email.split("@")[0],
         fullName: user.name,
         email: user.email,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         password: (user as any).password || "", // lấy từ form
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         phone: (user as any).phone || "",
         role: { id: roleMap[roleKey] },
         status: { id: statusMap[user.status] || 1 },
       };
-      await addUser(payload);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await addUser(payload as any);
       // Sau khi thêm thành công, reload lại danh sách user từ API
       const data = await fetchUsers();
       setUsers(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data.map((u: any) => {
           const roleInfo = getRoleDisplay(u.role?.roleName || "");
           const status =
@@ -214,6 +222,10 @@ export default function UserTable() {
           };
         })
       );
+      // Call callback to update parent dashboard stats
+      if (onUserCountUpdate) {
+        onUserCountUpdate();
+      }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       alert("Lỗi khi thêm user mới. Vui lòng thử lại!");
@@ -230,12 +242,11 @@ export default function UserTable() {
     setShowForm(true);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleUpdateUser = async (updatedUser: {
     name: string;
     email: string;
     role: string;
-    roleIcon: any;
+    roleIcon: React.ReactNode;
     status: string;
     lastLogin: string;
     password?: string;
@@ -279,6 +290,7 @@ export default function UserTable() {
       console.log("[UserTable] userOrigin:", userOrigin);
 
       // Tạo payload đầy đủ cho PUT
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
         id: userOrigin.id,
         username: updatedUser.email.split("@")[0],
@@ -304,6 +316,7 @@ export default function UserTable() {
       // Reload lại danh sách user
       const data = await fetchUsers();
       setUsers(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data.map((u: any) => {
           const roleInfo = getRoleDisplay(u.role?.roleName || "");
           const statusRaw = u.status?.name?.toLowerCase() || "";
@@ -402,6 +415,10 @@ export default function UserTable() {
             };
           })
         );
+        // Call callback to update parent dashboard stats
+        if (onUserCountUpdate) {
+          onUserCountUpdate();
+        }
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
         alert("Lỗi khi xóa user. Vui lòng thử lại!");

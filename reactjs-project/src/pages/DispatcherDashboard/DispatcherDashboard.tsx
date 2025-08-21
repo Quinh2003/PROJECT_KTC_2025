@@ -1,7 +1,6 @@
 import { useState } from "react";
 import OrderOverview from "./OrderOverview";
 import OrderList from "./OrderList";
-import ResourceOverview from "./ResourceOverview";
 import OrderAssignment from "./OrderAssignment";
 import Sidebar, { type DispatcherTab } from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";

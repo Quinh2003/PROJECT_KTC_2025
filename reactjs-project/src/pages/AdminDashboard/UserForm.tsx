@@ -1,5 +1,16 @@
 import { useState, useEffect } from "react";
-import type { User } from "../../types/dashboard";
+
+// Định nghĩa User interface cho UserForm
+interface User {
+  id?: number;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  lastLogin: string;
+  phone?: string;
+  password?: string;
+}
 
 // Có thể import icons hoặc sử dụng Unicode
 // import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -24,7 +35,7 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
   const [email, setEmail] = useState(user?.email || "");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const [role, setRole] = useState(user?.roleValue || roles[0].value);
+  const [role, setRole] = useState(user?.role || roles[0].value);
   const [status, setStatus] = useState(
     user?.status === "inactive" 
       ? "inactive" 
@@ -34,7 +45,6 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
   );
   const [password, setPassword] = useState(user?.password || "");
   const [phone, setPhone] = useState(user?.phone || "");
-  const [showPassword, setShowPassword] = useState(false);  // Thêm state kiểm soát hiển thị mật khẩu
 
   // Format số điện thoại
   const formatPhoneNumber = (value: string) => {
@@ -54,7 +64,7 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
   useEffect(() => {
     setName(user?.name || "");
     setEmail(user?.email || "");
-    setRole(user?.roleValue || roles[0].value);
+    setRole(user?.role || roles[0].value);
     
     // Fix status mapping
     if (user?.status === "inactive") {
@@ -66,7 +76,6 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
     }
     
     setPassword(user?.password || "");
-    setShowPassword(false); // Reset lại trạng thái hiển thị mật khẩu khi form thay đổi
     
     // Format số điện thoại khi load
     if (user?.phone) {
@@ -154,7 +163,7 @@ const handleSubmit = (e: React.FormEvent) => {
     const cleanPhone = phone.replace(/\s/g, '');
     
     const userToSubmit = {
-      id: user?.id || "",
+      id: user?.id || undefined,
       name,
       email,
       role,
