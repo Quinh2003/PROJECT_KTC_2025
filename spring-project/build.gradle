@@ -51,3 +51,7 @@ tasks.withType(JavaCompile).configureEach {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+bootJar {
+    mainClass = 'ktc.spring_project.SpringProjectApplication'
+}

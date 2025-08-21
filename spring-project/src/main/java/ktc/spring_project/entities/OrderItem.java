@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import ktc.spring_project.config.MoneyFormatSerializer;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -20,7 +22,7 @@ public class OrderItem {
     @Column(nullable = false)
     private Integer quantity;
 
-
+    @JsonSerialize(using = MoneyFormatSerializer.class)
     @Column(name = "shipping_fee")
     private BigDecimal shippingFee;
 
