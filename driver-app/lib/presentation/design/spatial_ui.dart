@@ -3,6 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:ui';
 
+// Extension for Color to make it easier to create transparent colors
+extension ColorExtension on Color {
+  Color withValues({int? red, int? green, int? blue, double? alpha}) {
+    return Color.fromRGBO(
+      red ?? this.red,
+      green ?? this.green,
+      blue ?? this.blue,
+      alpha ?? this.opacity,
+    );
+  }
+}
+
 class SpatialDesignSystem {
   // Color palette
   static const Color primaryColor = Color(0xFF1E88E5);
