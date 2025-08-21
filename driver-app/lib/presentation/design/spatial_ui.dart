@@ -272,14 +272,19 @@ class StatCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: SpatialDesignSystem.subtitleSmall.copyWith(
-                  color: isDark
-                      ? SpatialDesignSystem.textDarkSecondaryColor
-                      : SpatialDesignSystem.textSecondaryColor,
+              // Sửa: Thêm Expanded để giải quyết overflow
+              Expanded(
+                child: Text(
+                  title,
+                  style: SpatialDesignSystem.subtitleSmall.copyWith(
+                    color: isDark
+                        ? SpatialDesignSystem.textDarkSecondaryColor
+                        : SpatialDesignSystem.textSecondaryColor,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -302,6 +307,7 @@ class StatCard extends StatelessWidget {
                   ? SpatialDesignSystem.textDarkPrimaryColor
                   : SpatialDesignSystem.textPrimaryColor,
             ),
+            overflow: TextOverflow.ellipsis, // Sửa: Thêm overflow ellipsis
           ),
           if (showArrow && changePercentage != null) ...[
             const SizedBox(height: 8),
@@ -320,12 +326,16 @@ class StatCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  'from last month',
-                  style: SpatialDesignSystem.captionText.copyWith(
-                    color: isDark
-                        ? SpatialDesignSystem.textDarkSecondaryColor
-                        : SpatialDesignSystem.textSecondaryColor,
+                // Sửa: Thêm Expanded để giải quyết overflow
+                Expanded(
+                  child: Text(
+                    'from last month',
+                    style: SpatialDesignSystem.captionText.copyWith(
+                      color: isDark
+                          ? SpatialDesignSystem.textDarkSecondaryColor
+                          : SpatialDesignSystem.textSecondaryColor,
+                    ),
+                    overflow: TextOverflow.ellipsis, // Sửa: Thêm overflow ellipsis
                   ),
                 ),
               ],

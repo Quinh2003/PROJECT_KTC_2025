@@ -15,6 +15,8 @@ class DashboardScreenSpatial extends StatefulWidget {
 class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
   int _selectedIndex = 0;
   bool _isSidebarExpanded = true;
+  // Thêm biến để hiển thị onboarding
+  bool _showOnboarding = true; 
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +52,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Hiển thị onboarding nếu cần
+                        if (_showOnboarding)
+                          _buildOnboarding(context),
+                          
                         // Welcome Section
                         _buildWelcomeSection(context),
                         const SizedBox(height: 24),
@@ -385,12 +391,26 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Good Morning, Trần Ngọc",
-                style: SpatialDesignSystem.headingMedium.copyWith(
-                  color: isDark
-                      ? SpatialDesignSystem.textDarkPrimaryColor
-                      : SpatialDesignSystem.textPrimaryColor,
+              // Cải thiện tiêu đề với phong cách hấp dẫn hơn
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "Good Morning,\n",
+                      style: SpatialDesignSystem.headingMedium.copyWith(
+                        color: isDark
+                            ? SpatialDesignSystem.textDarkPrimaryColor
+                            : SpatialDesignSystem.textPrimaryColor,
+                      ),
+                    ),
+                    TextSpan(
+                      text: "Trần Ngọc",
+                      style: SpatialDesignSystem.headingLarge.copyWith(
+                        color: SpatialDesignSystem.primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 8),
@@ -1103,6 +1123,119 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           label: "Profile",
         ),
       ],
+    );
+  }
+
+  // Thêm phương thức để hiển thị onboarding
+  Widget _buildOnboarding(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [
+                  Color(0xFF1E1E2C),
+                  Color(0xFF2D2D44),
+                ]
+              : [
+                  Color(0xFF6A11CB),
+                  Color(0xFF2575FC),
+                ],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 20,
+            offset: Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  Icons.waving_hand_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome to KTC Logistics',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Your Delivery Partner',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Get ready for efficient and fast delivery routes',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.9),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                _showOnboarding = false;
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: isDark ? Color(0xFF2D2D44) : Color(0xFF6A11CB),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              'Get Started',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
