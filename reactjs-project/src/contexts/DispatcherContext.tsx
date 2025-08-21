@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { fetchOrdersRaw } from '../services/OrderAPI';
-import { fetchVehicles } from '../services/VehicleListAPI';
+import { fetchVehicleStats } from '../services/VehicleListAPI';
 import { fetchDrivers } from '../services/adminAPI';
 import type { Vehicle } from '../types/Operations';
 import type { User } from '../types/User';
@@ -85,7 +86,7 @@ export const DispatcherProvider = ({ children }: DispatcherProviderProps) => {
       setOrdersError('');
       const data = await fetchOrdersRaw();
       
-      const mapped = data.map((item: any) => ({
+      const mapped = data.data.map((item: any) => ({
         id: String(item.id),
         status: item.status?.name || '',
         priority: item.priority || item.status?.statusType || '',
@@ -115,8 +116,10 @@ export const DispatcherProvider = ({ children }: DispatcherProviderProps) => {
     try {
       setVehiclesLoading(true);
       setVehiclesError('');
-      const data = await fetchVehicles();
-      setVehicles(data);
+      
+      // Sử dụng fetchVehicleStats để lấy tất cả vehicles
+      const stats = await fetchVehicleStats();
+      setVehicles(stats.sampleVehicles);
       setVehiclesLastFetch(now);
     } catch (err: any) {
       setVehiclesError(err.message || 'Đã xảy ra lỗi');
