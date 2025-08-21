@@ -87,6 +87,7 @@ export default function UserTable() {
             else if (rawRole === "fleetmanager" || rawRole === "fleet")
               roleValue = "Fleet Manager";
             else if (rawRole === "driver") roleValue = "Driver";
+            else if (rawRole === "customer") roleValue = "Customer";
             else if (
               rawRole === "operationsmanager" ||
               rawRole === "operations"
@@ -182,11 +183,29 @@ export default function UserTable() {
           const lastLogin = u.updatedAt
             ? new Date(u.updatedAt).toLocaleString()
             : "-";
+          // Map roleName từ backend về đúng value của select
+          let roleValue = "";
+          const rawRole = (u.role?.roleName || "")
+            .replace(/[\s_]+/g, "")
+            .toLowerCase();
+          if (rawRole === "admin") roleValue = "Admin";
+          else if (rawRole === "dispatcher") roleValue = "Dispatcher";
+          else if (rawRole === "fleetmanager" || rawRole === "fleet")
+            roleValue = "Fleet Manager";
+          else if (rawRole === "driver") roleValue = "Driver";
+          else if (rawRole === "customer") roleValue = "Customer";
+          else if (
+            rawRole === "operationsmanager" ||
+            rawRole === "operations"
+          )
+            roleValue = "Operations Manager";
+          else roleValue = u.role?.roleName || "";
           return {
             id: u.id,
             name: u.fullName || u.username || "",
             email: u.email,
             role: roleInfo.label,
+            roleValue,
             roleIcon: roleInfo.icon,
             status,
             lastLogin,
@@ -292,11 +311,29 @@ export default function UserTable() {
           const lastLogin = u.updatedAt
             ? new Date(u.updatedAt).toLocaleString()
             : "-";
+          // Map roleName từ backend về đúng value của select
+          let roleValue = "";
+          const rawRole = (u.role?.roleName || "")
+            .replace(/[\s_]+/g, "")
+            .toLowerCase();
+          if (rawRole === "admin") roleValue = "Admin";
+          else if (rawRole === "dispatcher") roleValue = "Dispatcher";
+          else if (rawRole === "fleetmanager" || rawRole === "fleet")
+            roleValue = "Fleet Manager";
+          else if (rawRole === "driver") roleValue = "Driver";
+          else if (rawRole === "customer") roleValue = "Customer";
+          else if (
+            rawRole === "operationsmanager" ||
+            rawRole === "operations"
+          )
+            roleValue = "Operations Manager";
+          else roleValue = u.role?.roleName || "";
           return {
             id: u.id,
             name: u.fullName || u.username || "",
             email: u.email,
             role: roleInfo.label,
+            roleValue,
             roleIcon: roleInfo.icon,
             status,
             lastLogin,
@@ -336,11 +373,29 @@ export default function UserTable() {
             const lastLogin = u.updatedAt
               ? new Date(u.updatedAt).toLocaleString()
               : "-";
+            // Map roleName từ backend về đúng value của select
+            let roleValue = "";
+            const rawRole = (u.role?.roleName || "")
+              .replace(/[\s_]+/g, "")
+              .toLowerCase();
+            if (rawRole === "admin") roleValue = "Admin";
+            else if (rawRole === "dispatcher") roleValue = "Dispatcher";
+            else if (rawRole === "fleetmanager" || rawRole === "fleet")
+              roleValue = "Fleet Manager";
+            else if (rawRole === "driver") roleValue = "Driver";
+            else if (rawRole === "customer") roleValue = "Customer";
+            else if (
+              rawRole === "operationsmanager" ||
+              rawRole === "operations"
+            )
+              roleValue = "Operations Manager";
+            else roleValue = u.role?.roleName || "";
             return {
               id: u.id,
               name: u.fullName || u.username || "",
               email: u.email,
               role: roleInfo.label,
+              roleValue,
               roleIcon: roleInfo.icon,
               status,
               lastLogin,
