@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function Home() {
+export default function PublicHome() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [trackingCode, setTrackingCode] = useState("");
@@ -77,11 +77,6 @@ export default function Home() {
   const handleLoginRedirect = () => {
     // Redirect to Next.js login page
     router.push("/login");
-  };
-
-  const handleRegisterRedirect = () => {
-    // Redirect to Next.js register page
-    router.push("/register");
   };
 
   const handleCreateOrder = () => {
@@ -157,12 +152,6 @@ export default function Home() {
                     className="border border-red-600 text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors"
                   >
                     Đăng nhập
-                  </button>
-                  <button
-                    onClick={handleRegisterRedirect}
-                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-                  >
-                    Đăng ký
                   </button>
                 </>
               )}

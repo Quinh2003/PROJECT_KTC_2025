@@ -15,6 +15,8 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller responsible for authentication
@@ -63,10 +65,17 @@ public ResponseEntity<Map<String, Object>> login(
 //     return ResponseEntity.ok(createdUser);
 // }
 @PostMapping("/users")
-public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
     System.out.println("==> Đã vào createUser");
-    User createdUser = userService.createUser(user);
-    return ResponseEntity.ok(createdUser);
+    try {
+        User createdUser = userService.createUser(user);
+        return ResponseEntity.ok(createdUser);
+    } catch (RuntimeException e) {
+        // Return error response with proper message
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", e.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
 }
 // Cập nhật toàn bộ thông tin người dùng
 @PutMapping("/users/{id}")
