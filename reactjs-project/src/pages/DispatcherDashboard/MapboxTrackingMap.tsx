@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import SearchBox from "../../components/SearchBox";
 import { getRoute, postRoute } from "../../services/mapboxAPI";
 import mapboxgl from 'mapbox-gl';
 import VehicleList from "../../components/VehicleList";
 import useSimpleTracking from "../../hooks/useSimpleTracking";
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { fetchOrders } from "../../services/OrderAPI";
+import { searchLocation } from "../../services/mapboxAPI";
 
 export default function MapboxTrackingMap() {
   // Warehouse type
@@ -79,6 +80,13 @@ export default function MapboxTrackingMap() {
   // State cho lộ trình
   const [start, setStart] = useState<[number, number] | null>(null);
   const [end, setEnd] = useState<[number, number] | null>(null);
+  // State cho nhập mã đơn hàng
+  const [orderCode, setOrderCode] = useState("");
+  const [orderLoading, setOrderLoading] = useState(false);
+  const [orderError, setOrderError] = useState("");
+  // State hiển thị thông tin đơn hàng đã tìm
+  const [orderInfo, setOrderInfo] = useState<any>(null);
+
     type Route = {
       geometry: {
         coordinates: [number, number][];
@@ -95,7 +103,8 @@ export default function MapboxTrackingMap() {
     const [route, setRoute] = useState<Route | null>(null);
   const [waypoints, setWaypoints] = useState<[number, number][]>([]);
   const [truckPos, setTruckPos] = useState<[number, number] | null>(null);
-  // ...existing state declarations...
+  // Thêm state cho kết quả route
+  const [routeInfo, setRouteInfo] = useState<{distance?: number, duration?: number} | null>(null);
 
   const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || "pk.eyJ1IjoieHVhbmh1eTEiLCJhIjoiY21lN3liN21tMDlzaTJtbXF3MjU0Z2JzaSJ9.vmH3qH_f7qf1ewBC_pJoSg";
 
@@ -123,7 +132,6 @@ export default function MapboxTrackingMap() {
       setStart(startPos);
     }
     if (!startPos || !end) return;
-    // Lấy danh sách warehouse đã chọn làm waypoint
     const waypointsArr: [number, number][] = warehouses
       .filter(wh => selectedWarehouses.includes(wh.id))
       .map(wh => [wh.longitude, wh.latitude] as [number, number]);
@@ -133,7 +141,16 @@ export default function MapboxTrackingMap() {
         setRoute(data.routes[0]);
         const wp = data.routes[0].legs.flatMap((leg: { steps: Array<{ maneuver: { location: [number, number] } }> }) => leg.steps.map((step: { maneuver: { location: [number, number] } }) => step.maneuver.location));
         setWaypoints(wp);
-        await postRoute(data.routes[0], wp);
+        // Luôn set quãng đường và thời gian dự kiến trước khi postRoute
+        setRouteInfo({
+          distance: data.routes[0].distance, // mét
+          duration: data.routes[0].duration // giây
+        });
+        try {
+          await postRoute(data.routes[0], wp);
+        } catch (err) {
+          console.error("Lỗi gửi lộ trình về backend:", err);
+        }
       }
     } catch (err) {
       console.error("Lỗi lấy lộ trình:", err);
@@ -305,8 +322,99 @@ export default function MapboxTrackingMap() {
     );
   }
 
+  async function geocodeAddress(address: string): Promise<[number, number] | null> {
+    try {
+      const results = await searchLocation(address);
+      if (results && results.length > 0) {
+        // Nominatim trả về lat/lon dạng chuỗi
+        return [parseFloat(results[0].lon), parseFloat(results[0].lat)];
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  }
+
   return (
-  <div className="bg-white rounded-xl shadow-lg p-4 w-full flex flex-col gap-4" style={{ minHeight: '500px' }}>
+    <div className="bg-white rounded-xl shadow-lg p-4 w-full flex flex-col gap-4" style={{ minHeight: '500px' }}>
+      {/* Nhập mã đơn hàng để tự động điền tọa độ */}
+      <div className="mb-2">
+        <div className="font-bold text-blue-600 mb-1">Nhập mã đơn hàng để tự động điền điểm từ/đến:</div>
+        <form
+          className="flex gap-2 mb-2"
+          onSubmit={async e => {
+            e.preventDefault();
+            setOrderLoading(true);
+            setOrderError("");
+            setOrderInfo(null);
+            try {
+              const token = localStorage.getItem("token") || "";
+              const res = await fetchOrders(1, 10, token);
+              console.log("fetchOrders result:", res);
+              const found = res.data.find(o => o.id.toString() === orderCode);
+              console.log("Order found:", found);
+              if (!found) {
+                setOrderError("Không tìm thấy đơn hàng với mã này.");
+                setOrderLoading(false);
+                return;
+              }
+              setOrderInfo(found);
+              // Lấy địa chỉ điểm đầu/điểm cuối
+              const startAddress = found.store?.address || "";
+              const endAddress = found.address?.address || "";
+              console.log("Start address:", startAddress);
+              console.log("End address:", endAddress);
+              if (!startAddress || !endAddress) {
+                setOrderError("Đơn hàng chưa có đủ địa chỉ điểm từ/đến.");
+                setOrderLoading(false);
+                return;
+              }
+              // Geocode địa chỉ
+              const startCoords = await geocodeAddress(startAddress);
+              const endCoords = await geocodeAddress(endAddress);
+              console.log("Start coords:", startCoords);
+              console.log("End coords:", endCoords);
+              if (!startCoords || !endCoords) {
+                setOrderError("Không chuyển được địa chỉ thành tọa độ. Vui lòng kiểm tra lại địa chỉ.");
+                setOrderLoading(false);
+                return;
+              }
+              setStart(startCoords);
+              setEnd(endCoords);
+              setRoute(null);
+              setWaypoints([]);
+              setOrderLoading(false);
+            } catch (err) {
+              console.error("Lỗi khi lấy thông tin đơn hàng hoặc chuyển địa chỉ:", err);
+              setOrderError("Lỗi khi lấy thông tin đơn hàng hoặc chuyển địa chỉ.");
+              setOrderLoading(false);
+            }
+          }}
+        >
+          <input
+            type="text"
+            className="border px-3 py-1 rounded w-40"
+            placeholder="Nhập mã đơn hàng"
+            value={orderCode}
+            onChange={e => setOrderCode(e.target.value)}
+          />
+          <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">Tìm đơn hàng</button>
+          {orderLoading && <span className="ml-2 text-gray-500">Đang tải...</span>}
+          {orderError && <span className="ml-2 text-red-500">{orderError}</span>}
+        </form>
+        {/* Hiển thị thông tin đơn hàng dưới ô nhập */}
+        {orderInfo && (
+          <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-xl shadow">
+            <div className="font-bold text-blue-700 mb-1">Thông tin đơn hàng:</div>
+            <div className="text-sm text-gray-700">
+              <div><span className="font-semibold">Từ:</span> {orderInfo.store?.address}</div>
+              <div><span className="font-semibold">Đến:</span> {orderInfo.address?.address}</div>
+              <div><span className="font-semibold">Quãng đường:</span> {routeInfo && routeInfo.distance !== undefined ? `${(routeInfo.distance/1000).toFixed(2)} km` : "-"}</div>
+              <div><span className="font-semibold">Thời gian dự kiến:</span> {routeInfo && routeInfo.duration !== undefined ? `${Math.round(routeInfo.duration/60)} phút` : "-"}</div>
+            </div>
+          </div>
+        )}
+      </div>
       {/* Chọn warehouse để lấy lộ trình */}
       <div className="mb-2">
         <div className="font-bold text-blue-600 mb-1">Chọn các warehouse để lấy lộ trình:</div>
@@ -330,26 +438,8 @@ export default function MapboxTrackingMap() {
           ))}
         </div>
       </div>
-      {/* Form nhập điểm đầu/điểm cuối */}
-      <form onSubmit={handleGetRoute} className="mb-4 flex gap-2">
-        <SearchBox
-          placeholder="Nhập tên địa điểm hoặc tọa độ điểm đầu (ví dụ: Hồ Chí Minh hoặc 106.7,10.8)"
-          onSelect={coords => {
-            setStart(coords);
-            setRoute(null);
-            setWaypoints([]);
-          }}
-        />
-        <SearchBox
-          placeholder="Nhập tên địa điểm hoặc tọa độ điểm cuối (ví dụ: Hà Nội hoặc 106.8,10.9)"
-          onSelect={coords => {
-            setEnd(coords);
-            setRoute(null);
-            setWaypoints([]);
-          }}
-        />
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Lấy lộ trình</button>
-      </form>
+      {/* Nút lấy lộ trình */}
+      <button onClick={handleGetRoute} className="bg-blue-500 text-white px-4 py-2 rounded mb-4">Lấy lộ trình</button>
 
       <div 
   ref={mapContainer}
