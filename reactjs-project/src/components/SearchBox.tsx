@@ -12,6 +12,8 @@ const SearchBox: React.FC<SearchBoxProps> = ({ placeholder, onSelect }) => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedInfo, setSelectedInfo] = useState<any | null>(null);
+  // Tạo session_token cho mỗi phiên nhập
+  const sessionTokenRef = React.useRef<string>(Math.random().toString(36).substring(2));
 
   // Suggest API
   const handleSearch = async (value: string) => {
@@ -20,7 +22,8 @@ const SearchBox: React.FC<SearchBoxProps> = ({ placeholder, onSelect }) => {
     if (!value.trim()) return setSuggestions([]);
     setLoading(true);
     try {
-      const res = await fetch(`https://api.mapbox.com/search/searchbox/v1/suggest?q=${encodeURIComponent(value)}&language=vi&access_token=${MAPBOX_TOKEN}`);
+      const session_token = sessionTokenRef.current;
+      const res = await fetch(`https://api.mapbox.com/search/searchbox/v1/suggest?q=${encodeURIComponent(value)}&language=vi&session_token=${session_token}&access_token=${MAPBOX_TOKEN}`);
       const data = await res.json();
       setSuggestions(data.suggestions || []);
     } catch {
@@ -35,7 +38,8 @@ const SearchBox: React.FC<SearchBoxProps> = ({ placeholder, onSelect }) => {
     setSuggestions([]);
     setLoading(true);
     try {
-      const res = await fetch(`https://api.mapbox.com/search/searchbox/v1/retrieve/${suggestion.mapbox_id}?access_token=${MAPBOX_TOKEN}`);
+      const session_token = sessionTokenRef.current;
+      const res = await fetch(`https://api.mapbox.com/search/searchbox/v1/retrieve/${suggestion.mapbox_id}?session_token=${session_token}&access_token=${MAPBOX_TOKEN}`);
       const data = await res.json();
       if (data && data.features && data.features[0]) {
         const feature = data.features[0];

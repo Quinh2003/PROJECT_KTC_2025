@@ -95,6 +95,25 @@ export default function MapboxTrackingMap() {
     const [route, setRoute] = useState<Route | null>(null);
   const [waypoints, setWaypoints] = useState<[number, number][]>([]);
   const [truckPos, setTruckPos] = useState<[number, number] | null>(null);
+  // ...existing state declarations...
+
+  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || "pk.eyJ1IjoieHVhbmh1eTEiLCJhIjoiY21lN3liN21tMDlzaTJtbXF3MjU0Z2JzaSJ9.vmH3qH_f7qf1ewBC_pJoSg";
+
+  // Get tracking data
+  const { tracking, error } = useSimpleTracking();
+
+  // Đưa flyToVehicle xuống sau khi khai báo tracking
+  const flyToVehicle = React.useCallback((vehicleId: number) => {
+    if (!map.current || !tracking) return;
+    const vehicle = tracking.find(v => v.id === vehicleId);
+    if (!vehicle) return;
+    map.current.flyTo({
+      center: [vehicle.longitude, vehicle.latitude],
+      zoom: 15,
+      duration: 1000
+    });
+    setSelectedVehicle(vehicleId);
+  }, [tracking]);
   // Hàm lấy lộ trình từ Mapbox Directions API
   async function handleGetRoute(e?: React.FormEvent) {
     if (e) e.preventDefault();
@@ -179,11 +198,6 @@ export default function MapboxTrackingMap() {
     setStart([point.longitude, point.latitude]);
     setSelectedVehicle(point.id);
   };
-
-  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || "pk.eyJ1IjoieHVhbmh1eTEiLCJhIjoiY21lN3liN21tMDlzaTJtbXF3MjU0Z2JzaSJ9.vmH3qH_f7qf1ewBC_pJoSg";
-
-  // Get tracking data
-  const { tracking, error } = useSimpleTracking();
 
   // Initialize map
   useEffect(() => {
@@ -282,18 +296,6 @@ export default function MapboxTrackingMap() {
     }
   }, [isLoaded, tracking, selectedVehicle, warehouses, end, flyToVehicle]);
 
-  // Fly to vehicle function
-  const flyToVehicle = React.useCallback((vehicleId: number) => {
-    if (!map.current || !tracking) return;
-    const vehicle = tracking.find(v => v.id === vehicleId);
-    if (!vehicle) return;
-    map.current.flyTo({
-      center: [vehicle.longitude, vehicle.latitude],
-      zoom: 15,
-      duration: 1000
-    });
-    setSelectedVehicle(vehicleId);
-  }, [tracking]);
 
   if (error) {
     return (
