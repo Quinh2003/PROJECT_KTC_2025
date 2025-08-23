@@ -128,30 +128,33 @@ public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
     /**
      * Forgot password - send reset email
      * US-AUTH-FORGOT-01
+     * Frontend gửi email qua body, backend kiểm tra email, tạo token reset, gửi email hướng dẫn đặt lại mật khẩu
      */
     @PostMapping("/forgot-password")
     public ResponseEntity<Map<String, String>> forgotPassword(
             @RequestBody Map<String, String> requestData) {
-
+        // Lấy email từ request
         String email = requestData.get("email");
+        // Gọi service xử lý gửi email reset password
         authService.sendPasswordResetEmail(email);
-
+        // Trả về thông báo cho frontend
         return ResponseEntity.ok(Map.of("message", "Password reset email sent"));
     }
 
     /**
      * Reset password with token
      * US-AUTH-FORGOT-01
+     * Frontend gửi token và mật khẩu mới, backend xác thực token và cập nhật mật khẩu
      */
     @PostMapping("/reset-password")
     public ResponseEntity<Map<String, String>> resetPassword(
             @Valid @RequestBody Map<String, String> resetData) {
-
+        // Lấy token và mật khẩu mới từ request
         String token = resetData.get("token");
         String newPassword = resetData.get("newPassword");
-
+        // Gọi service xử lý reset password
         authService.resetPassword(token, newPassword);
-
+        // Trả về thông báo cho frontend
         return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
     }
 

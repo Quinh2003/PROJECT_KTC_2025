@@ -213,25 +213,30 @@ public class UserService {
 
             Optional<User> existingUser = userRepository.findByEmail(email);
 
+            Role customerRole = roleRepository.findByRoleName("CUSTOMER")
+                .orElseThrow(() -> new RuntimeException("Role CUSTOMER not found"));
+
             if (existingUser.isPresent()) {
                 User user = existingUser.get();
                 if (user.getGoogleId() == null) {
                     user.setGoogleId(googleId);
-                    userRepository.save(user);
                 }
+                // Luôn gán role CUSTOMER khi đăng nhập Google
+                user.setRole(customerRole);
+                userRepository.save(user);
                 return user;
             } else {
+                // Tạo mới user với role CUSTOMER
                 User newUser = new User();
                 newUser.setEmail(email);
                 newUser.setFullName(name);
                 newUser.setGoogleId(googleId);
                 newUser.setUsername(email);
-
-                // Gán role mặc định USER
-                Role defaultRole = roleRepository.findByRoleName("USER")
-                    .orElseThrow(() -> new RuntimeException("Default role USER not found"));
-                newUser.setRole(defaultRole);
-
+                newUser.setRole(customerRole);
+                // Gán password mặc định cho user Google
+                String defaultPassword = passwordEncoder.encode("GOOGLE_LOGIN");
+                newUser.setPassword(defaultPassword);
+                System.out.println("[GoogleLogin] Password before save: " + newUser.getPassword());
                 return userRepository.save(newUser);
             }
 
@@ -273,25 +278,30 @@ public class UserService {
 
             Optional<User> existingUser = userRepository.findByEmail(email);
 
+            Role customerRole = roleRepository.findByRoleName("CUSTOMER")
+                .orElseThrow(() -> new RuntimeException("Role CUSTOMER not found"));
+
             if (existingUser.isPresent()) {
                 User user = existingUser.get();
                 if (user.getGoogleId() == null) {
                     user.setGoogleId(googleId);
-                    userRepository.save(user);
                 }
+                // Luôn gán role CUSTOMER khi đăng nhập Google
+                user.setRole(customerRole);
+                userRepository.save(user);
                 return user;
             } else {
+                // Tạo mới user với role CUSTOMER
                 User newUser = new User();
                 newUser.setEmail(email);
                 newUser.setFullName(name);
                 newUser.setGoogleId(googleId);
                 newUser.setUsername(email);
-
-                // Gán role mặc định USER
-                Role defaultRole = roleRepository.findByRoleName("USER")
-                    .orElseThrow(() -> new RuntimeException("Default role USER not found"));
-                newUser.setRole(defaultRole);
-
+                newUser.setRole(customerRole);
+                // Gán password mặc định cho user Google
+                String defaultPassword = passwordEncoder.encode("GOOGLE_LOGIN");
+                newUser.setPassword(defaultPassword);
+                System.out.println("[GoogleLoginWithCredential] Password before save: " + newUser.getPassword());
                 return userRepository.save(newUser);
             }
 

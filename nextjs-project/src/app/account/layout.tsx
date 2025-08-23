@@ -17,8 +17,12 @@ export default function AccountLayout({ children }: AccountLayoutProps) {
 
   useEffect(() => {
     // Check authentication and role
-    const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
+    let storedUser = null;
+    let token = null;
+    if (typeof window !== "undefined") {
+      storedUser = localStorage.getItem("user");
+      token = localStorage.getItem("token");
+    }
 
     if (!storedUser || !token) {
       router.push("/login");
@@ -30,7 +34,9 @@ export default function AccountLayout({ children }: AccountLayoutProps) {
     // Verify user is customer
     if (userData.role?.toLowerCase() !== "customer") {
       alert("Truy cập không được phép!");
-      localStorage.clear();
+      if (typeof window !== "undefined") {
+        localStorage.clear();
+      }
       router.push("/login");
       return;
     }
@@ -40,7 +46,9 @@ export default function AccountLayout({ children }: AccountLayoutProps) {
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.clear();
+    if (typeof window !== "undefined") {
+      localStorage.clear();
+    }
     router.push("/login");
   };
 
