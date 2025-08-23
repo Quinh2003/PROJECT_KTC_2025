@@ -3,6 +3,7 @@ import 'package:timeline_tile/timeline_tile.dart';
 import 'dart:ui';
 
 import '../../design/spatial_ui.dart';
+import '../map/route_map_screen.dart';
 
 // Tab chứa dữ liệu cấu hình
 class OrderTab {
@@ -769,6 +770,21 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
     );
   }
 
+  // Flag to track if order is accepted
+  bool _isOrderAccepted = false;
+
+  // Navigate to map screen
+  void _navigateToRouteMap() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RouteMapScreen(
+          routeId: widget.orderId,
+        ),
+      ),
+    );
+  }
+
   Widget _buildBottomBar() {
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -779,7 +795,28 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // First button (Call)
+                  // Navigation button (shows only when order is accepted)
+                  if (_isOrderAccepted)
+                    SpatialButton(
+                      text: "Navigation Map",
+                      onPressed: _navigateToRouteMap,
+                      iconData: Icons.map,
+                      isGradient: true,
+                      gradient: LinearGradient(
+                        colors: [
+                          SpatialDesignSystem.primaryColor,
+                          SpatialDesignSystem.accentColor,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                    ),
+                  if (_isOrderAccepted) const SizedBox(height: 10),
+                  
+                  // Call button
                   SpatialButton(
                     text: "Call Customer",
                     onPressed: () {
@@ -792,51 +829,137 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                         horizontal: 16, vertical: 10),
                   ),
                   const SizedBox(height: 10),
-                  // Second button (Mark as Delivered)
-                  SpatialButton(
-                    text: "Mark as Delivered",
-                    onPressed: () {
-                      // Mark as delivered logic
-                      _showDeliveryConfirmationDialog();
-                    },
-                    iconData: Icons.check_circle,
-                    isGradient: true,
-                    gradient: SpatialDesignSystem.successGradient,
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
-                  ),
+                  
+                  // Accept or Delivered button (based on state)
+                  _isOrderAccepted
+                      ? SpatialButton(
+                          text: "Mark as Delivered",
+                          onPressed: () {
+                            // Mark as delivered logic
+                            _showDeliveryConfirmationDialog();
+                          },
+                          iconData: Icons.check_circle,
+                          isGradient: true,
+                          gradient: SpatialDesignSystem.successGradient,
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                        )
+                      : SpatialButton(
+                          text: "Accept Order",
+                          onPressed: () {
+                            // Accept order and show navigation option
+                            setState(() {
+                              _isOrderAccepted = true;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Order accepted! You can now navigate to the delivery location."),
+                                backgroundColor: SpatialDesignSystem.successColor,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          },
+                          iconData: Icons.delivery_dining,
+                          isGradient: true,
+                          gradient: LinearGradient(
+                            colors: [
+                              SpatialDesignSystem.primaryColor,
+                              SpatialDesignSystem.accentColor,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                        ),
                 ],
               )
             // For wider screens, use a Row layout with smaller padding
-            : Row(
+            : Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: SpatialButton(
-                      text: "Call",
-                      onPressed: () {
-                        // Call customer logic
-                      },
-                      iconData: Icons.phone,
-                      isOutlined: true,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 12),
-                    ),
-                  ),
-                  const SizedBox(width: 10), // Reduced spacing between buttons
-                  Expanded(
-                    child: SpatialButton(
-                      text: "Mark Delivered",
-                      onPressed: () {
-                        // Mark as delivered logic
-                        _showDeliveryConfirmationDialog();
-                      },
-                      iconData: Icons.check_circle,
+                  // Navigation button (shows only when order is accepted)
+                  if (_isOrderAccepted)
+                    SpatialButton(
+                      text: "Navigation Map",
+                      onPressed: _navigateToRouteMap,
+                      iconData: Icons.map,
                       isGradient: true,
-                      gradient: SpatialDesignSystem.successGradient,
+                      gradient: LinearGradient(
+                        colors: [
+                          SpatialDesignSystem.primaryColor,
+                          SpatialDesignSystem.accentColor,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      width: double.infinity,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 12),
+                          horizontal: 16, vertical: 10),
                     ),
+                  if (_isOrderAccepted) const SizedBox(height: 10),
+                  
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SpatialButton(
+                          text: "Call",
+                          onPressed: () {
+                            // Call customer logic
+                          },
+                          iconData: Icons.phone,
+                          isOutlined: true,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 12),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _isOrderAccepted
+                            ? SpatialButton(
+                                text: "Mark Delivered",
+                                onPressed: () {
+                                  // Mark as delivered logic
+                                  _showDeliveryConfirmationDialog();
+                                },
+                                iconData: Icons.check_circle,
+                                isGradient: true,
+                                gradient: SpatialDesignSystem.successGradient,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 12),
+                              )
+                            : SpatialButton(
+                                text: "Accept Order",
+                                onPressed: () {
+                                  // Accept order and show navigation option
+                                  setState(() {
+                                    _isOrderAccepted = true;
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text("Order accepted! You can now navigate to the delivery location."),
+                                      backgroundColor: SpatialDesignSystem.successColor,
+                                      duration: Duration(seconds: 3),
+                                    ),
+                                  );
+                                },
+                                iconData: Icons.delivery_dining,
+                                isGradient: true,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    SpatialDesignSystem.primaryColor,
+                                    SpatialDesignSystem.accentColor,
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 12),
+                              ),
+                      ),
+                    ],
                   ),
                 ],
               ),

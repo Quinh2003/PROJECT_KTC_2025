@@ -20,6 +20,8 @@ dependencies:
   shimmer: ^3.0.0
   carousel_slider: ^5.1.1
   timeline_tile: ^2.0.0
+  mapbox_maps_flutter: ^2.10.0
+  location: ^5.0.0
   
   # State Management
   bloc: ^9.0.0

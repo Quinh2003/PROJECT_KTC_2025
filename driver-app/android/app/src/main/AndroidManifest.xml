@@ -36,6 +36,9 @@
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyAA6NAaCO_wqNsUjjp86q8JcTBoQZRtW20"/>
+        <!-- Mapbox Access Token -->
+        <meta-data android:name="com.mapbox.token" 
+               android:value="pk.eyJ1IjoiaHVuZ3BxMyIsImEiOiJjbHR3M3JzdXQwYzE5MnFteDFjYXRlcDEzIn0.GDrXTFKq1wn-FZSiTGrfew" />
                
         <activity
             android:name=".MainActivity"
