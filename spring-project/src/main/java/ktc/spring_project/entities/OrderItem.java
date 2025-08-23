@@ -20,8 +20,6 @@ public class OrderItem {
     @Column(nullable = false)
     private Integer quantity;
 
-    @Column(name = "unit_price")    
-    private BigDecimal unitPrice;
 
     @Column(name = "shipping_fee")
     private BigDecimal shippingFee;
@@ -66,13 +64,6 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
 
     public BigDecimal getShippingFee() {
         return shippingFee;

@@ -1,87 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
+import SearchBox from "../../components/SearchBox";
+import { getRoute, postRoute } from "../../services/mapboxAPI";
 import mapboxgl from 'mapbox-gl';
 import VehicleList from "../../components/VehicleList";
 import useSimpleTracking from "../../hooks/useSimpleTracking";
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-
-// Component tìm kiếm địa điểm hoặc tọa độ, trả về [lng, lat]
-interface SearchBoxProps {
-  placeholder: string;
-  onSelect: (coords: [number, number]) => void;
-}
-
-const SearchBox: React.FC<SearchBoxProps> = ({ placeholder, onSelect }) => {
-  const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<{ name: string; coords: [number, number] }[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  // Hàm tìm kiếm địa điểm qua Nominatim (OpenStreetMap)
-  const handleSearch = async (value: string) => {
-    setQuery(value);
-    if (!value || value.match(/^\s*$/)) {
-      setSuggestions([]);
-      return;
-    }
-    // Nếu nhập đúng định dạng tọa độ thì trả về luôn
-    const coordMatch = value.match(/^\s*(-?\d{1,3}\.\d+),\s*(-?\d{1,2}\.\d+)\s*$/);
-    if (coordMatch) {
-      const lng = parseFloat(coordMatch[1]);
-      const lat = parseFloat(coordMatch[2]);
-      setSuggestions([{ name: `Tọa độ: ${lng},${lat}`, coords: [lng, lat] }]);
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&addressdetails=1&limit=5`);
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
-        setSuggestions(data.map((item: any) => ({
-          name: item.display_name,
-          coords: [parseFloat(item.lon), parseFloat(item.lat)]
-        })));
-      } else {
-        setSuggestions([]);
-      }
-    } catch {
-      setSuggestions([]);
-    }
-    setLoading(false);
-  };
-
-  return (
-    <div className="relative w-64">
-      <input
-        type="text"
-        value={query}
-        placeholder={placeholder}
-        onChange={e => handleSearch(e.target.value)}
-        className="border p-2 rounded w-full"
-      />
-      {loading && <div className="absolute left-0 top-full bg-white p-2 text-xs">Đang tìm kiếm...</div>}
-      {suggestions.length > 0 ? (
-        <ul className="absolute left-0 top-full bg-white border rounded shadow w-full z-10">
-          {suggestions.map((s, idx) => (
-            <li
-              key={idx}
-              className="p-2 cursor-pointer hover:bg-blue-100 text-xs"
-              onClick={() => {
-                setQuery(s.name);
-                setSuggestions([]);
-                onSelect(s.coords);
-              }}
-            >{s.name}</li>
-          ))}
-        </ul>
-      ) : (!loading && query.trim() !== '' && (
-        <div className="absolute left-0 top-full bg-white p-2 text-xs text-red-500 border rounded shadow w-full z-10">Không tìm thấy địa điểm phù hợp. Vui lòng thử lại hoặc nhập địa chỉ khác.</div>
-      ))}
-    </div>
-  );
-};
 export default function MapboxTrackingMap() {
+  // Warehouse type
+  type Warehouse = {
+    id: number;
+    name: string;
+    longitude: number;
+    latitude: number;
+    address: string;
+  };
   // Danh sách warehouse mẫu
-  const [warehouses] = useState([
+  const [warehouses] = useState<Warehouse[]>([
     {
       id: 1,
       name: "Warehouse TP.HCM",
@@ -144,13 +79,25 @@ export default function MapboxTrackingMap() {
   // State cho lộ trình
   const [start, setStart] = useState<[number, number] | null>(null);
   const [end, setEnd] = useState<[number, number] | null>(null);
-  const [route, setRoute] = useState<any>(null);
+    type Route = {
+      geometry: {
+        coordinates: [number, number][];
+      };
+      legs: Array<{
+        steps: Array<{
+          maneuver: {
+            location: [number, number];
+          };
+        }>;
+      }>;
+      // ...other Mapbox route fields
+    };
+    const [route, setRoute] = useState<Route | null>(null);
   const [waypoints, setWaypoints] = useState<[number, number][]>([]);
   const [truckPos, setTruckPos] = useState<[number, number] | null>(null);
   // Hàm lấy lộ trình từ Mapbox Directions API
   async function handleGetRoute(e?: React.FormEvent) {
     if (e) e.preventDefault();
-    // Nếu có tracking, lấy vị trí xe đầu tiên làm điểm đầu
     let startPos: [number, number] | null = start;
     if ((!start || start[0] === undefined || start[1] === undefined) && tracking && tracking.length > 0) {
       startPos = [tracking[0].longitude, tracking[0].latitude];
@@ -158,28 +105,19 @@ export default function MapboxTrackingMap() {
     }
     if (!startPos || !end) return;
     // Lấy danh sách warehouse đã chọn làm waypoint
-    const waypointsStr = warehouses
+    const waypointsArr: [number, number][] = warehouses
       .filter(wh => selectedWarehouses.includes(wh.id))
-      .map(wh => `${wh.longitude},${wh.latitude}`)
-      .join(';');
-    // Tạo URL Mapbox Directions API với các điểm dừng
-    // Format: start;wp1;wp2;...;end
-    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${startPos[0]},${startPos[1]};${waypointsStr}${waypointsStr ? ';' : ''}${end[0]},${end[1]}?geometries=geojson&steps=true&access_token=${MAPBOX_TOKEN}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (data.routes && data.routes.length > 0) {
-      setRoute(data.routes[0]);
-      const wp = data.routes[0].legs.flatMap((leg: any) => leg.steps.map((step: any) => step.maneuver.location));
-      setWaypoints(wp);
-      // Gửi về BE
-      fetch('/api/routes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          route: data.routes[0],
-          waypoints: wp
-        })
-      });
+      .map(wh => [wh.longitude, wh.latitude] as [number, number]);
+    try {
+      const data = await getRoute(startPos, waypointsArr, end, MAPBOX_TOKEN);
+      if (data.routes && data.routes.length > 0) {
+        setRoute(data.routes[0]);
+        const wp = data.routes[0].legs.flatMap((leg: { steps: Array<{ maneuver: { location: [number, number] } }> }) => leg.steps.map((step: { maneuver: { location: [number, number] } }) => step.maneuver.location));
+        setWaypoints(wp);
+        await postRoute(data.routes[0], wp);
+      }
+    } catch (err) {
+      console.error("Lỗi lấy lộ trình:", err);
     }
   }
   // Vẽ polyline lộ trình trên map
@@ -192,7 +130,10 @@ export default function MapboxTrackingMap() {
     }
     map.current.addSource('route', {
       type: 'geojson',
-      data: route.geometry
+      data: {
+        type: "LineString",
+        coordinates: route.geometry.coordinates
+      }
     });
     map.current.addLayer({
       id: 'route',
@@ -233,7 +174,7 @@ export default function MapboxTrackingMap() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
   // Khi chọn xe, cập nhật điểm đầu là vị trí xe đó
-  const handleVehicleClick = (point: any) => {
+    const handleVehicleClick = (point: { id: number; longitude: number; latitude: number }) => {
     flyToVehicle(point.id);
     setStart([point.longitude, point.latitude]);
     setSelectedVehicle(point.id);
@@ -287,7 +228,7 @@ export default function MapboxTrackingMap() {
       }
       setIsLoaded(false);
     };
-  }, []);
+  }, [MAPBOX_TOKEN]);
 
   // Add markers when map is loaded and tracking data is available
   useEffect(() => {
@@ -339,23 +280,20 @@ export default function MapboxTrackingMap() {
         }
       });
     }
-  }, [isLoaded, tracking, selectedVehicle, warehouses]);
+  }, [isLoaded, tracking, selectedVehicle, warehouses, end, flyToVehicle]);
 
   // Fly to vehicle function
-  const flyToVehicle = (vehicleId: number) => {
+  const flyToVehicle = React.useCallback((vehicleId: number) => {
     if (!map.current || !tracking) return;
-    
     const vehicle = tracking.find(v => v.id === vehicleId);
     if (!vehicle) return;
-
     map.current.flyTo({
       center: [vehicle.longitude, vehicle.latitude],
       zoom: 15,
       duration: 1000
     });
-    
     setSelectedVehicle(vehicleId);
-  };
+  }, [tracking]);
 
   if (error) {
     return (
@@ -366,7 +304,7 @@ export default function MapboxTrackingMap() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-4 h-full min-h-[300px] w-full flex flex-col gap-4">
+  <div className="bg-white rounded-xl shadow-lg p-4 w-full flex flex-col gap-4" style={{ minHeight: '500px' }}>
       {/* Chọn warehouse để lấy lộ trình */}
       <div className="mb-2">
         <div className="font-bold text-blue-600 mb-1">Chọn các warehouse để lấy lộ trình:</div>
@@ -412,15 +350,9 @@ export default function MapboxTrackingMap() {
       </form>
 
       <div 
-        ref={mapContainer} 
-        className="flex-1 min-h-[250px] h-[350px] w-full rounded-lg border-2 border-blue-500 relative overflow-hidden"
-        style={{
-          minHeight: '250px',
-          height: '350px',
-          width: '100%',
-          position: 'relative',
-          border: '2px solid blue'
-        }}
+  ref={mapContainer}
+  className="w-full rounded-lg border-2 border-blue-500 relative overflow-hidden"
+  style={{ minHeight: '400px', width: '100%', position: 'relative', border: '2px solid blue' }}
       >
         {!isLoaded && (
           <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10 pointer-events-none">
@@ -443,30 +375,7 @@ export default function MapboxTrackingMap() {
         selectedVehicle={selectedVehicle}
         onVehicleClick={handleVehicleClick}
       />
-      {/* Hiển thị danh sách waypoint nếu có */}
-      {waypoints.length > 0 && (
-        <div className="mt-2 p-2 bg-gray-50 rounded">
-          <div className="font-bold mb-1">Chi tiết lộ trình:</div>
-          {route && route.legs && route.legs.length > 0 && (
-            <ul className="text-xs mb-2">
-              {route.legs.map((leg: any, idx: number) => (
-                <li key={idx} className="mb-1">
-                  <span className="font-semibold">Đoạn {idx + 1}:</span> 
-                  {leg.summary ? <span>{leg.summary} - </span> : null}
-                  <span>Quãng đường: {(leg.distance/1000).toFixed(2)} km</span>,
-                  <span> Thời gian dự tính: {Math.round(leg.duration/60)} phút</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          <div className="font-bold">Danh sách waypoint:</div>
-          <ul className="text-xs">
-            {waypoints.map((wp, idx) => (
-              <li key={idx}>{wp.join(', ')}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+  {/* Đã ẩn phần hiển thị chi tiết lộ trình và waypoint */}
     </div>
   );
 }
