@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import 'package:ktc_logistics_driver/domain/models/product_cart.dart';
+import 'package:ktc_logistics_driver/domain/models/order/product_cart.dart';
 import 'package:ktc_logistics_driver/domain/models/response/images_products_response.dart';
 import 'package:ktc_logistics_driver/domain/models/response/products_top_home_response.dart';
 import 'package:ktc_logistics_driver/services/products_services.dart';

@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import '../../domain/models/tracking_model.dart';
+import '../../domain/models/delivery/tracking_model.dart' hide RoutesResponse, RouteResponse;
+import '../../domain/models/map/backend_route_models.dart';
 import '../../domain/repositories/tracking_repository_interfaces.dart';
 import '../env/environment.dart';
 

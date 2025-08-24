@@ -3,8 +3,8 @@
 
 import '../repositories/repository_interfaces.dart';
 import '../repositories/tracking_repository_interfaces.dart';
-import '../models/response/auth_response.dart';
-import '../models/tracking_model.dart';
+import '../models/auth/auth_response.dart';
+import '../models/delivery/tracking_model.dart';
 
 abstract class UseCase<Type, Params> {
   Future<Type> call(Params params);
@@ -24,8 +24,8 @@ class LoginUseCase implements UseCase<AuthResponse, LoginParams> {
   LoginUseCase({required this.repository});
   
   @override
-  Future<AuthResponse> call(LoginParams params) async {
-    return await repository.login(params.email, params.password);
+  Future<AuthResponse> call(LoginParams params) {
+    return repository.login(params.email, params.password);
   }
 }
 
@@ -96,8 +96,8 @@ class UpdateLocationUseCase implements UseCase<LocationUpdateResponse, TrackingP
   UpdateLocationUseCase({required this.repository});
   
   @override
-  Future<LocationUpdateResponse> call(TrackingPoint params) async {
-    return await repository.updateLocation(params);
+  Future<LocationUpdateResponse> call(TrackingPoint params) {
+    return repository.updateLocation(params);
   }
 }
 
@@ -107,8 +107,8 @@ class GetTrackingHistoryUseCase implements UseCase<TrackingHistoryResponse, Trac
   GetTrackingHistoryUseCase({required this.repository});
   
   @override
-  Future<TrackingHistoryResponse> call(TrackingHistoryParams params) async {
-    return await repository.getTrackingHistory(
+  Future<TrackingHistoryResponse> call(TrackingHistoryParams params) {
+    return repository.getTrackingHistory(
       driverId: params.driverId!,
       startDate: DateTime.parse(params.startDate!),
       endDate: DateTime.parse(params.endDate!),

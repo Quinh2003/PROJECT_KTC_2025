@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ktc_logistics_driver/domain/models/pay_type.dart';
+import 'package:ktc_logistics_driver/domain/models/order/order_status.dart';
 import 'package:ktc_logistics_driver/domain/models/response/orders_by_status_response.dart';
 import 'package:ktc_logistics_driver/services/orders_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
@@ -14,7 +14,7 @@ class OrdersAdminScreen extends StatelessWidget {
   Widget build(BuildContext context){
 
     return DefaultTabController(
-      length: payType.length, 
+      length: orderStatus.length, 
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -38,15 +38,15 @@ class OrdersAdminScreen extends StatelessWidget {
             unselectedLabelColor: Colors.grey,
             indicator: FraveIndicatorTabBar(),
             isScrollable: true,
-            tabs: List<Widget>.generate(payType.length, (i) 
+            tabs: List<Widget>.generate(orderStatus.length, (i) 
               => Tab(
-                  child: Text(payType[i], style: GoogleFonts.getFont('Roboto', fontSize: 17))
+                  child: Text(orderStatus[i], style: GoogleFonts.getFont('Roboto', fontSize: 17))
                 )
             )
           ),
         ),
         body: TabBarView(
-          children: payType.map((e) 
+          children: orderStatus.map((e) 
             => FutureBuilder<List<OrdersResponse>>(
                 future: ordersServices.getOrdersByStatus(e),
                 builder: (context, snapshot) 

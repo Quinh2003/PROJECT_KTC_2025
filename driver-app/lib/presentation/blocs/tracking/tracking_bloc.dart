@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:geolocator/geolocator.dart';
-import '../../../domain/models/tracking_model.dart' hide TrackingEvent;
+import '../../../domain/models/delivery/tracking_model.dart' hide TrackingEvent;
 import '../../../domain/usecases/usecases.dart';
 import 'tracking_event.dart';
 import 'tracking_state.dart';

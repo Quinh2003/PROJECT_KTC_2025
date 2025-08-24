@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:ktc_logistics_driver/domain/models/product_cart.dart';
+import 'package:ktc_logistics_driver/domain/models/order/product_cart.dart';
 
 part 'cart_event.dart';
 part 'cart_state.dart';

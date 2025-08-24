@@ -136,7 +136,7 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  gradient: SpatialTheme.primaryGradient,
+                  gradient: SpatialTheme.accentGradient,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: SpatialTheme.glowShadow,
                 ),

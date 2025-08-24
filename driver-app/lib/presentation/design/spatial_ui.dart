@@ -28,6 +28,8 @@ class SpatialDesignSystem {
   static const Color surfaceColor = Color(0xFFFFFFFF);
   static const Color darkBackgroundColor = Color(0xFF121212);
   static const Color darkSurfaceColor = Color(0xFF1E1E1E);
+  static const Color darkSurfaceColorSecondary = Color(0xFF2C2C2C);
+  static const Color lightGrey = Color(0xFFE0E0E0);
   
   // Transparent colors for glass effect
   static Color glassBackground = Colors.white.withValues(alpha: 0.15);

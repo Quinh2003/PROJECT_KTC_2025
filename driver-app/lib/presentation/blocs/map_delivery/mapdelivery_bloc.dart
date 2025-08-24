@@ -26,7 +26,6 @@ class MapdeliveryBloc extends Bloc<MapdeliveryEvent, MapdeliveryState> {
 
   late GoogleMapController _mapController;
   late IO.Socket _socket;
-  final mapBoxServices = MapBoxServices();
 
   Polyline _myRouteDestinationDelivery = Polyline(
     polylineId: PolylineId('myRouteDestinationDelivery'),
@@ -85,10 +84,10 @@ class MapdeliveryBloc extends Bloc<MapdeliveryEvent, MapdeliveryState> {
   Future<void> _onMarkertDelivery( OnMarkertsDeliveryEvent event, Emitter<MapdeliveryState> emit ) async {
 
     // Polylines 
-
+    final mapBoxServices = MapBoxServices();
     final mapBoxResponse = await mapBoxServices.getCoordsOriginAndDestinationDelivery(event.location, event.destination);
 
-    final geometry = mapBoxResponse.routes[0].geometry;
+    final geometry = mapBoxResponse.routePolyline;
 
     final points = PolylinePoints.decodePolyline(geometry.toString());
     final List<LatLng> routeCoords = points.map((point) => LatLng(point.latitude, point.longitude)).toList();
@@ -100,8 +99,8 @@ class MapdeliveryBloc extends Bloc<MapdeliveryEvent, MapdeliveryState> {
 
     // ------------------------ Markets
 
-    final marketCustom = await getAssetImageMarker('assets/food-delivery-marker.png');
-    final iconDestination = await getAssetImageMarker('assets/delivery-destination.png');
+    final marketCustom = await getAssetImageMarker('assets/delivery-marker.png');
+    final iconDestination = await getAssetImageMarker('assets/destination-marker.png');
 
     final markerDelivery = Marker(
       markerId: MarkerId('markerDelivery'),

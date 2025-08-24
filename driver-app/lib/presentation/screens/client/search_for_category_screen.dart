@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:ktc_logistics_driver/domain/models/response/products_top_home_response.dart';
-import 'package:ktc_logistics_driver/services/products_services.dart';
-import 'package:ktc_logistics_driver/presentation/components/StaggeredDualView.dart';
-import 'package:ktc_logistics_driver/presentation/components/components.dart';
-import 'package:ktc_logistics_driver/presentation/screens/client/details_product_screen.dart';
-import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
+import '../../../domain/models/response/products_top_home_response.dart';
+import '../../../services/products_services.dart';
+import '../../components/staggered_dual_view.dart';
+import '../../components/components.dart';
+import './details_product_screen.dart';
+import '../../themes/colors_frave.dart';
 
 class SearchForCategoryScreen extends StatelessWidget {
 

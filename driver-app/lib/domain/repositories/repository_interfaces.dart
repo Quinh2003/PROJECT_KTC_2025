@@ -2,7 +2,7 @@
 // Định nghĩa contracts cho các repository
 
 // Import các models đã có
-import '../models/response/auth_response.dart';
+import '../models/auth/auth_response.dart';
 
 abstract class AuthRepository {
   Future<AuthResponse> login(String email, String password);

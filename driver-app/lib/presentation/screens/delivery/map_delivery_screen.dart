@@ -305,7 +305,7 @@ class _BtnGoogleMap extends StatelessWidget {
           maxRadius: 25,
           child: InkWell(
             onTap: () async => await urlLauncherFrave.openMapLaunch(order.latitude, order.longitude),
-            child: Image.asset('assets/google-map.png', height: 30)
+            child: Image.asset('assets/map.png', height: 30)
           )
         ),
       );
