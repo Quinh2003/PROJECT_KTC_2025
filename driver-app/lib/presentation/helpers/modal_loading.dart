@@ -11,7 +11,7 @@ void modalLoading(BuildContext context){
     builder: (context) 
       => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-        content: Container(
+        content: SizedBox(
           height: 100,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

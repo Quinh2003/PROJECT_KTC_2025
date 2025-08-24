@@ -11,6 +11,8 @@ import 'package:ktc_logistics_driver/presentation/screens/admin/delivery/add_new
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class ListDeliverysScreen extends StatefulWidget {
+  const ListDeliverysScreen({super.key});
+
 
   @override
   State<ListDeliverysScreen> createState() => _ListDeliverysScreenState();
@@ -93,10 +95,10 @@ class _ListDelivery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
     final userBloc = BlocProvider.of<UserBloc>(context);
     
-    return (listDelivery.length != 0)
+    return (listDelivery.isNotEmpty)
     ? ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         itemCount: listDelivery.length,
@@ -129,7 +131,7 @@ class _ListDelivery extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                          image: NetworkImage('${_env.endpointBase}${listDelivery[i].image}')
+                          image: NetworkImage('${env.endpointBase}${listDelivery[i].image}')
                         )
                       ),
                     ),

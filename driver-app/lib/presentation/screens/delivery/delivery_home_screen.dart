@@ -12,6 +12,8 @@ import 'package:ktc_logistics_driver/presentation/screens/profile/change_passwor
 import 'package:ktc_logistics_driver/presentation/screens/profile/edit_profile_screen.dart';
 
 class DeliveryHomeScreen extends StatelessWidget {
+  const DeliveryHomeScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {

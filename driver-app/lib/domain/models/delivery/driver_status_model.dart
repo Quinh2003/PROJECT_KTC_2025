@@ -63,7 +63,7 @@ class DriverStatus {
     String? currentOrderId,
   }) {
     return DriverStatus(
-      driverId: this.driverId,
+      driverId: driverId,
       isOnline: isOnline ?? this.isOnline,
       isAvailable: isAvailable ?? this.isAvailable,
       status: status ?? this.status,

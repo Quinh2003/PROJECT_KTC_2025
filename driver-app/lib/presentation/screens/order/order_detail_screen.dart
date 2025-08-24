@@ -18,9 +18,9 @@ class OrderDetailScreen extends StatefulWidget {
   final String orderId;
 
   const OrderDetailScreen({
-    Key? key,
+    super.key,
     required this.orderId,
-  }) : super(key: key);
+  });
 
   @override
   State<OrderDetailScreen> createState() => _OrderDetailScreenState();

@@ -54,7 +54,9 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
       double total= 0.00;
 
-      product.forEach((p) => total = total + (p.price * p.quantity));
+      for (var p in product) {
+        total = total + (p.price * p.quantity);
+      }
 
       return emit( state.copyWith(
         products: product,
@@ -71,7 +73,9 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     product.removeAt(event.index);
 
     double total = 0.00;
-    product.forEach((p) => total = total + p.price );
+    for (var p in product) {
+      total = total + p.price;
+    }
 
     emit( state.copyWith(
       products: product,
@@ -87,7 +91,9 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     product[event.plus].quantity++;
 
     double total = 0.00;
-    product.forEach((p) => total = total + (p.price * p.quantity));
+    for (var p in product) {
+      total = total + (p.price * p.quantity);
+    }
 
     return emit( state.copyWith(
       products: product,
@@ -104,7 +110,9 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     
     double total = 0.00;
 
-    product.forEach((p) => total = total - ( p.price *  p.quantity ));
+    for (var p in product) {
+      total = total - ( p.price *  p.quantity );
+    }
 
     return emit( state.copyWith(
       products: product,

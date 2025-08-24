@@ -1,4 +1,4 @@
-library restaurant.thememapsfrave;
+library;
 
 
 const themeMapsFrave = [

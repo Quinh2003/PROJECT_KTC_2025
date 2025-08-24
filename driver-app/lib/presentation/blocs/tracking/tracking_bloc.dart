@@ -213,7 +213,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   ) async {
     try {
       // First make sure we're tracking location
-      if (!(state is TrackingActiveState)) {
+      if (state is! TrackingActiveState) {
         add(StartTrackingEvent(driverId: event.driverId, vehicleId: event.vehicleId));
       }
       

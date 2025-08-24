@@ -93,7 +93,7 @@ class _ListDeliveryModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
     final deliveryBloc = BlocProvider.of<DeliveryBloc>(context);
 
     return ListView.builder(
@@ -118,7 +118,7 @@ class _ListDeliveryModal extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50.0),
                     image: DecorationImage(
-                      image: NetworkImage('${_env.endpointBase}${listDelivery[i].image}')
+                      image: NetworkImage('${env.endpointBase}${listDelivery[i].image}')
                     )
                   ),
                 ),

@@ -11,7 +11,7 @@ class MapclientState {
     this.isReadyMapClient = false,
 
     Map<String, Marker>? markerClient
-  }) : this.markerClient = markerClient ?? Map();
+  }) : markerClient = markerClient ?? <String, Marker>{};
 
 
   MapclientState copyWith({ bool? isReadyMapClient, Map<String, Marker>? markerClient  })

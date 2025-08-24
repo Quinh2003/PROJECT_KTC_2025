@@ -10,7 +10,7 @@ extension ColorExtension on Color {
       red ?? this.red,
       green ?? this.green,
       blue ?? this.blue,
-      alpha ?? this.opacity,
+      alpha ?? opacity,
     );
   }
 }
@@ -191,7 +191,7 @@ class GlassCard extends StatelessWidget {
   final Gradient? gradient;
   
   const GlassCard({
-    Key? key,
+    super.key,
     required this.child,
     this.width,
     this.height,
@@ -201,7 +201,7 @@ class GlassCard extends StatelessWidget {
     this.borderColor,
     this.boxShadow,
     this.gradient,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -260,7 +260,7 @@ class StatCard extends StatelessWidget {
   final String? changePercentage;
   
   const StatCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     required this.icon,
@@ -269,7 +269,7 @@ class StatCard extends StatelessWidget {
     this.showArrow = false,
     this.isPositive = true,
     this.changePercentage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -377,7 +377,7 @@ class SpatialButton extends StatelessWidget {
   final Gradient? gradient;
   
   const SpatialButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.iconData,
@@ -390,7 +390,7 @@ class SpatialButton extends StatelessWidget {
     this.height,
     this.padding,
     this.gradient,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -543,7 +543,7 @@ class SpatialTextField extends StatelessWidget {
   final bool enabled;
   
   const SpatialTextField({
-    Key? key,
+    super.key,
     required this.label,
     this.hint,
     this.controller,
@@ -556,7 +556,7 @@ class SpatialTextField extends StatelessWidget {
     this.isGlass = false,
     this.maxLines = 1,
     this.enabled = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

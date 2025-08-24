@@ -6,6 +6,8 @@ import 'package:ktc_logistics_driver/presentation/screens/admin/category/add_cat
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class CategoriesAdminScreen extends StatelessWidget {
+  const CategoriesAdminScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {

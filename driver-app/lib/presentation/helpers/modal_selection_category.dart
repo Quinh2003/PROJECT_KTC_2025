@@ -48,7 +48,7 @@ void modalSelectionCategory(BuildContext ctx){
                     ? Center(
                         child: const CircularProgressIndicator(),
                       )
-                    : Container(
+                    : SizedBox(
                       height: 350,
                       child: ListView.builder(
                         itemCount: snapshot.data!.length,

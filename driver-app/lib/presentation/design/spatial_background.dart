@@ -6,11 +6,11 @@ class SpatialBackground extends StatelessWidget {
   final double opacity;
 
   const SpatialBackground({
-    Key? key, 
+    super.key, 
     required this.child, 
     required this.color,
     this.opacity = 0.05,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

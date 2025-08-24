@@ -6,6 +6,8 @@ import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/components/manual_market_map.dart';
 
 class MapLocationAddressScreen extends StatefulWidget {
+  const MapLocationAddressScreen({super.key});
+
 
   @override
   _MapLocationAddressScreenState createState() => _MapLocationAddressScreenState();

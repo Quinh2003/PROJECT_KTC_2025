@@ -16,12 +16,12 @@ class OrderDetailsScreen extends StatelessWidget {
 
   final OrdersResponse order;
 
-  const OrderDetailsScreen({ required this.order });
+  const OrderDetailsScreen({super.key,  required this.order });
 
 
   @override
   Widget build(BuildContext context) {
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
 
     return BlocListener<OrdersBloc, OrdersState>(
       listener: (context, state) {
@@ -94,7 +94,7 @@ class OrderDetailsScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const TextCustom(text: 'Cliente:', color: ColorsFrave.secundaryColor, fontSize: 16),
-                        TextCustom(text: '${order.cliente}'),
+                        TextCustom(text: order.cliente),
                       ],
                     ),
                     const SizedBox(height: 10.0),
@@ -122,7 +122,7 @@ class OrderDetailsScreen extends StatelessWidget {
                               width: 40,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage('${_env.endpointBase}${order.deliveryImage}')
+                                  image: NetworkImage('${env.endpointBase}${order.deliveryImage}')
                                 )
                               ),
                             ),
@@ -166,7 +166,7 @@ class _ListProductsDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
     
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -182,7 +182,7 @@ class _ListProductsDetails extends StatelessWidget {
                 width: 45,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage('${_env.endpointBase}${listProductDetails[i].picture}')
+                    image: NetworkImage('${env.endpointBase}${listProductDetails[i].picture}')
                   )
                 ),
               ),

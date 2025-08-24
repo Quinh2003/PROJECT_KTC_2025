@@ -9,6 +9,8 @@ import 'package:ktc_logistics_driver/presentation/screens/client/select_addreess
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class CheckOutScreen extends StatelessWidget {
+  const CheckOutScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -212,7 +214,7 @@ class _CheckoutPaymentMethods extends StatelessWidget {
           ),
           const Divider(),
           const SizedBox(height: 5.0),
-          Container(
+          SizedBox(
             height: 80,
             child: ListView.builder(
               physics: const BouncingScrollPhysics(),

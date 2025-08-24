@@ -28,7 +28,7 @@ class MapclientBloc extends Bloc<MapclientEvent, MapclientState> {
 
     if( !state.isReadyMapClient ){
 
-      this._mapController = controller;
+      _mapController = controller;
       
       _mapController.setMapStyle( jsonEncode( themeMapsFrave ));
 
@@ -39,16 +39,16 @@ class MapclientBloc extends Bloc<MapclientEvent, MapclientState> {
 
 
   void initSocketDelivery(String idOrder) {
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
 
-    this._socket = IO.io('${_env.endpointBase}orders-delivery-socket' , {
+    _socket = IO.io('${env.endpointBase}orders-delivery-socket' , {
       'transports': ['websocket'], 
       'autoConnect': true,
     });
 
-    this._socket.connect();
+    _socket.connect();
 
-    this._socket.on('position/$idOrder', (data){
+    _socket.on('position/$idOrder', (data){
 
       add( OnPositionDeliveryEvent(LatLng(data['latitude'], data['longitude'])) );
 
@@ -59,7 +59,7 @@ class MapclientBloc extends Bloc<MapclientEvent, MapclientState> {
 
   void disconectSocket(){
 
-    this._socket.disconnect();
+    _socket.disconnect();
 
   }
 

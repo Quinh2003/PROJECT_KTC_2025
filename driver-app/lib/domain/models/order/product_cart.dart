@@ -17,9 +17,9 @@ class ProductCart {
 
   Map<String, dynamic> toJson() {
     return {
-      "uidProduct" : this.uidProduct,
-      "price" : this.price,
-      "quantity" : this.quantity
+      "uidProduct" : uidProduct,
+      "price" : price,
+      "quantity" : quantity
     };
   }
 

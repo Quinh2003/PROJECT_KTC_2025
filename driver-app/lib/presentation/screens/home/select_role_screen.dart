@@ -7,6 +7,8 @@ import 'package:ktc_logistics_driver/presentation/screens/delivery/delivery_home
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class SelectRoleScreen extends StatelessWidget {
+  const SelectRoleScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {

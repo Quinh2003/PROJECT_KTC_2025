@@ -9,10 +9,12 @@ import 'package:ktc_logistics_driver/presentation/screens/client/client_home_scr
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class CartClientScreen extends StatelessWidget {
+  const CartClientScreen({super.key});
+
 
   @override
   Widget build(BuildContext context){
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
     final cartBloc = BlocProvider.of<CartBloc>(context);
 
     return Scaffold(
@@ -84,7 +86,7 @@ class CartClientScreen extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
                                           scale: 8,
-                                          image: NetworkImage('${_env.endpointBase}${state.products![i].imageProduct}')
+                                          image: NetworkImage('${env.endpointBase}${state.products![i].imageProduct}')
                                         )
                                       ),
                                     ),

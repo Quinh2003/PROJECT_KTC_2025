@@ -7,7 +7,7 @@ import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 
 void modalActiveOrInactiveProduct(BuildContext context, int status, String nameProduct, int idProduct, String picture){
-  final _env = Environment.getInstance();
+  final env = Environment.getInstance();
   final productBloc = BlocProvider.of<ProductsBloc>(context);
 
   showDialog(
@@ -46,7 +46,7 @@ void modalActiveOrInactiveProduct(BuildContext context, int status, String nameP
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         scale: 7,
-                        image: NetworkImage('${_env.endpointBase}$picture')
+                        image: NetworkImage('${env.endpointBase}$picture')
                       )
                     ),
                   ),

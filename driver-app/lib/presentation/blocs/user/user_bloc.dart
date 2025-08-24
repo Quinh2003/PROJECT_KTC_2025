@@ -146,8 +146,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         event.image
       );
 
-      if( data.resp ) emit( SuccessUserState() );
-      else emit( FailureUserState(data.msg) );
+      if( data.resp ) {
+        emit( SuccessUserState() );
+      } else {
+        emit( FailureUserState(data.msg) );
+      }
       
     } catch (e) {
       emit( FailureUserState(e.toString()));
@@ -179,7 +182,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         // Fix: Cast User to User? for copyWith compatibility
         emit( state.copyWith( user: user as User? ));
 
-      } else emit( FailureUserState(data.msg));
+      } else {
+        emit( FailureUserState(data.msg));
+      }
       
     } catch (e) {
       emit( FailureUserState(e.toString()) );

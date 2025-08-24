@@ -7,7 +7,7 @@ class PaymentsState {
   final IconData iconPayment;
   final Color colorPayment;
 
-  PaymentsState({
+  const PaymentsState({
     this.typePaymentMethod = 'CREDIT CARD',
     this.iconPayment = FontAwesomeIcons.creditCard,
     this.colorPayment = const Color(0xff002C8B)

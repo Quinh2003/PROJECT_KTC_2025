@@ -9,7 +9,7 @@ class MylocationmapState {
   final LatLng? locationCentral;
   final String addressName;
 
-  MylocationmapState({
+  const MylocationmapState({
     this.existsLocation = false, 
     this.location,
     this.mapReady = false,

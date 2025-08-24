@@ -8,6 +8,8 @@ import 'package:ktc_logistics_driver/presentation/screens/client/client_details_
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class ClientOrdersScreen extends StatelessWidget {
+  const ClientOrdersScreen({super.key});
+
 
   @override
   Widget build(BuildContext context){
@@ -59,7 +61,7 @@ class _ListOrdersClient extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ( listOrders.length != 0 )
+    return ( listOrders.isNotEmpty )
       ? ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
           itemCount: listOrders.length,

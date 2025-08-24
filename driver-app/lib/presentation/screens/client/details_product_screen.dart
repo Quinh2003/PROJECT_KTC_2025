@@ -15,7 +15,7 @@ class DetailsProductScreen extends StatefulWidget {
   
   final Productsdb product;
 
-  const DetailsProductScreen({required this.product}); 
+  const DetailsProductScreen({super.key, required this.product}); 
 
   @override
   _DetailsProductScreenState createState() => _DetailsProductScreenState();
@@ -26,7 +26,7 @@ class _DetailsProductScreenState extends State<DetailsProductScreen> {
   bool isLoading = false;
   List<ImageProductdb> imagesProducts = [];
 
-  _getImageProducts() async {
+  Future<void> _getImageProducts() async {
 
     imagesProducts = await productServices.getImagesProducts(widget.product.id.toString());
     setState(() { isLoading = true; });
@@ -64,7 +64,7 @@ class _DetailsProductScreenState extends State<DetailsProductScreen> {
                       ),
                       child: Hero(
                         tag: widget.product.id,
-                        child: Container(
+                        child: SizedBox(
                           height: 180,
                           child: CarouselSlider.builder(
                             itemCount: imagesProducts.length, 
@@ -73,9 +73,9 @@ class _DetailsProductScreenState extends State<DetailsProductScreen> {
                               autoPlay: true
                             ),
                             itemBuilder: (context, i, realIndex) 
-                              => Container(
+                              => SizedBox(
                                 width: size.width,
-                                child: Image.network('http://192.168.1.35:7070/'+ imagesProducts[i].picture),
+                                child: Image.network('http://192.168.1.35:7070/${imagesProducts[i].picture}'),
                               ), 
                           ),
                         ),

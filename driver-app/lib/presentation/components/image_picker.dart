@@ -10,6 +10,8 @@ class ImagePickerFrave extends StatelessWidget {
   final ImagePicker _picker = ImagePicker();
   final _env = Environment.getInstance();
 
+  ImagePickerFrave({super.key});
+
   @override
   Widget build(BuildContext context) {
 

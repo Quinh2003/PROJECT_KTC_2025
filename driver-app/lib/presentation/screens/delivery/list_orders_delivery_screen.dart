@@ -10,6 +10,8 @@ import 'package:ktc_logistics_driver/presentation/screens/delivery/order_details
 
 
 class ListOrdersDeliveryScreen extends StatelessWidget {
+  const ListOrdersDeliveryScreen({super.key});
+
 
   @override
   Widget build(BuildContext context){
@@ -70,7 +72,7 @@ class _ListOrdersForDelivery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ( listOrdersDelivery.length != 0 ) 
+    return ( listOrdersDelivery.isNotEmpty ) 
       ? ListView.builder(
           itemCount: listOrdersDelivery.length,
           itemBuilder: (_, i) 

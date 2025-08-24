@@ -41,7 +41,7 @@ class CategoryServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.delete(Uri.parse('${_env.endpointApi}/delete-category/'+ uidCategory ),
+    final resp = await http.delete(Uri.parse('${_env.endpointApi}/delete-category/$uidCategory' ),
       headers: { 'Content-type' : 'application/json', 'xx-token' : token! }
     );
 

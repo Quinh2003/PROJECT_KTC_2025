@@ -34,8 +34,11 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 
       final data = await categoryServices.addNewCategory(event.nameCategory, event.descriptionCategory);
 
-      if( data.resp ) emit( SuccessProductsState() );
-      else emit( FailureProductsState(data.msg) );
+      if( data.resp ) {
+        emit( SuccessProductsState() );
+      } else {
+        emit( FailureProductsState(data.msg) );
+      }
       
     } catch (e) {
       emit( FailureProductsState(e.toString()) );
@@ -81,8 +84,11 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       
       Future.delayed(Duration(seconds: 2));
 
-      if( data.resp ) emit( SuccessProductsState() );
-      else emit( FailureProductsState(data.msg) );
+      if( data.resp ) {
+        emit( SuccessProductsState() );
+      } else {
+        emit( FailureProductsState(data.msg) );
+      }
 
       
     } catch (e) {
@@ -101,8 +107,11 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 
       await Future.delayed(Duration(milliseconds: 1000));
 
-      if( resp.resp ) emit( SuccessProductsState() );
-      else emit( FailureProductsState( resp.msg ) );
+      if( resp.resp ) {
+        emit( SuccessProductsState() );
+      } else {
+        emit( FailureProductsState( resp.msg ) );
+      }
       
     } catch (e) {
       emit( FailureProductsState(e.toString()) );
@@ -120,8 +129,11 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 
       await Future.delayed(Duration(seconds: 1));
 
-      if( resp.resp ) emit( SuccessProductsState() );
-      else emit( FailureProductsState(resp.msg) );
+      if( resp.resp ) {
+        emit( SuccessProductsState() );
+      } else {
+        emit( FailureProductsState(resp.msg) );
+      }
       
     } catch (e) {
       emit( FailureProductsState(e.toString()) );

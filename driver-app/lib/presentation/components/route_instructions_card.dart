@@ -11,14 +11,14 @@ class RouteInstructionsCard extends StatelessWidget {
   final Function(int)? onStepSelected;
 
   const RouteInstructionsCard({
-    Key? key,
+    super.key,
     required this.routeSteps,
     this.currentStepIndex = 0,
     required this.totalDistance,
     required this.totalDuration,
     this.estimatedArrival,
     this.onStepSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,115 +30,40 @@ class RouteInstructionsCard extends StatelessWidget {
 
     final currentStep = routeSteps[currentStepIndex];
     
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Card(
-        elevation: 4,
+        elevation: 6,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
         color: isDark ? SpatialDesignSystem.darkSurfaceColor : Colors.white,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Summary row
+              // Compact summary row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Duration
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Duration",
-                        style: TextStyle(
-                          color: isDark
-                              ? SpatialDesignSystem.textDarkSecondaryColor
-                              : SpatialDesignSystem.textSecondaryColor,
-                        ),
-                      ),
-                      Text(
-                        _formatDuration(totalDuration),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? SpatialDesignSystem.textDarkPrimaryColor
-                              : SpatialDesignSystem.textPrimaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  
-                  // Distance
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Distance",
-                        style: TextStyle(
-                          color: isDark
-                              ? SpatialDesignSystem.textDarkSecondaryColor
-                              : SpatialDesignSystem.textSecondaryColor,
-                        ),
-                      ),
-                      Text(
-                        _formatDistance(totalDistance),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? SpatialDesignSystem.textDarkPrimaryColor
-                              : SpatialDesignSystem.textPrimaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  
+                  _buildCompactInfo("Duration", _formatDuration(totalDuration), isDark),
+                  // Distance  
+                  _buildCompactInfo("Distance", _formatDistance(totalDistance), isDark),
                   // Arrival time
                   if (estimatedArrival != null)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          "Arrival",
-                          style: TextStyle(
-                            color: isDark
-                                ? SpatialDesignSystem.textDarkSecondaryColor
-                                : SpatialDesignSystem.textSecondaryColor,
-                          ),
-                        ),
-                        Text(
-                          _formatTime(estimatedArrival!),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: isDark
-                                ? SpatialDesignSystem.textDarkPrimaryColor
-                                : SpatialDesignSystem.textPrimaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
+                    _buildCompactInfo("Arrival", _formatTime(estimatedArrival!), isDark),
                 ],
               ),
               
-              Divider(height: 24),
+              Divider(height: 16, thickness: 0.5),
               
-              // Current instruction
-              Text(
-                "Next Step",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: isDark
-                      ? SpatialDesignSystem.textDarkSecondaryColor
-                      : SpatialDesignSystem.textSecondaryColor,
-                ),
-              ),
-              SizedBox(height: 8),
+              // Current instruction - more compact
               Row(
                 children: [
-                  _getManeuverIcon(currentStep.maneuverType),
+                  _getCompactManeuverIcon(currentStep.maneuverType),
                   SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -147,18 +72,20 @@ class RouteInstructionsCard extends StatelessWidget {
                         Text(
                           currentStep.instruction,
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                             color: isDark
                                 ? SpatialDesignSystem.textDarkPrimaryColor
                                 : SpatialDesignSystem.textPrimaryColor,
                           ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: 2),
                         Text(
                           "${_formatDistance(currentStep.distance)} • ${_formatDuration(currentStep.duration)}",
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: isDark
                                 ? SpatialDesignSystem.textDarkSecondaryColor
                                 : SpatialDesignSystem.textSecondaryColor,
@@ -170,36 +97,33 @@ class RouteInstructionsCard extends StatelessWidget {
                 ],
               ),
               
-              // Progress indicator
-              SizedBox(height: 16),
-              Text(
-                "Progress",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: isDark
-                      ? SpatialDesignSystem.textDarkSecondaryColor
-                      : SpatialDesignSystem.textSecondaryColor,
-                ),
-              ),
+              // Compact progress indicator
               SizedBox(height: 8),
-              LinearProgressIndicator(
-                value: (currentStepIndex + 1) / routeSteps.length,
-                backgroundColor: isDark
-                    ? SpatialDesignSystem.darkSurfaceColorSecondary
-                    : SpatialDesignSystem.lightGrey,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  SpatialDesignSystem.primaryColor,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                "Step ${currentStepIndex + 1} of ${routeSteps.length}",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: isDark
-                      ? SpatialDesignSystem.textDarkSecondaryColor
-                      : SpatialDesignSystem.textSecondaryColor,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: LinearProgressIndicator(
+                      value: (currentStepIndex + 1) / routeSteps.length,
+                      backgroundColor: isDark
+                          ? SpatialDesignSystem.darkSurfaceColorSecondary
+                          : SpatialDesignSystem.lightGrey,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        SpatialDesignSystem.primaryColor,
+                      ),
+                      minHeight: 3,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    "${currentStepIndex + 1}/${routeSteps.length}",
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: isDark
+                          ? SpatialDesignSystem.textDarkSecondaryColor
+                          : SpatialDesignSystem.textSecondaryColor,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -208,7 +132,36 @@ class RouteInstructionsCard extends StatelessWidget {
     );
   }
 
-  Widget _getManeuverIcon(String maneuver) {
+  // Helper method for compact info display
+  Widget _buildCompactInfo(String label, String value, bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: isDark
+                ? SpatialDesignSystem.textDarkSecondaryColor
+                : SpatialDesignSystem.textSecondaryColor,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: isDark
+                ? SpatialDesignSystem.textDarkPrimaryColor
+                : SpatialDesignSystem.textPrimaryColor,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _getCompactManeuverIcon(String maneuver) {
     IconData iconData;
     
     switch (maneuver) {
@@ -235,15 +188,15 @@ class RouteInstructionsCard extends StatelessWidget {
     }
     
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: SpatialDesignSystem.primaryColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Icon(
         iconData,
         color: SpatialDesignSystem.primaryColor,
-        size: 24,
+        size: 18,
       ),
     );
   }

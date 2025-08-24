@@ -100,8 +100,11 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
 
       await Future.delayed(Duration(seconds: 1));
 
-      if( resp.resp ) emit( SuccessOrdersState() );
-      else emit( FailureOrdersState(resp.msg) );
+      if( resp.resp ) {
+        emit( SuccessOrdersState() );
+      } else {
+        emit( FailureOrdersState(resp.msg) );
+      }
       
     } catch (e) {
       emit( FailureOrdersState(e.toString()) );
@@ -120,8 +123,11 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
 
       await Future.delayed(Duration(milliseconds: 450));
 
-      if( resp.resp ) emit( SuccessOrdersState() );
-      else emit( FailureOrdersState(resp.msg) );
+      if( resp.resp ) {
+        emit( SuccessOrdersState() );
+      } else {
+        emit( FailureOrdersState(resp.msg) );
+      }
       
     } catch (e) {
       emit( FailureOrdersState(e.toString()) );

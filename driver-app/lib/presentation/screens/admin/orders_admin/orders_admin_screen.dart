@@ -9,6 +9,8 @@ import 'package:ktc_logistics_driver/presentation/screens/admin/orders_admin/ord
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class OrdersAdminScreen extends StatelessWidget {
+  const OrdersAdminScreen({super.key});
+
 
   @override
   Widget build(BuildContext context){

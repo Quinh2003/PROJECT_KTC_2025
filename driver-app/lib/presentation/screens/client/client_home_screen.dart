@@ -15,10 +15,12 @@ import 'package:ktc_logistics_driver/presentation/screens/profile/list_addresses
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class ClientHomeScreen extends StatelessWidget {
+  const ClientHomeScreen({super.key});
+
 
   @override
   Widget build(BuildContext context){
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
     final authBloc = BlocProvider.of<AuthBloc>(context);
 
     return Scaffold(
@@ -42,7 +44,7 @@ class ClientHomeScreen extends StatelessWidget {
                         image: DecorationImage(
                           fit: BoxFit.cover,
                           image: authBloc.state is AuthenticatedState 
-                              ? NetworkImage('${_env.endpointBase}${(authBloc.state as AuthenticatedState).user.avatar ?? "without-image.png"}')
+                              ? NetworkImage('${env.endpointBase}${(authBloc.state as AuthenticatedState).user.avatar ?? "without-image.png"}')
                               : const AssetImage('assets/svg/profile.jpg') as ImageProvider
                         )
                       ),
@@ -132,7 +134,7 @@ class ClientHomeScreen extends StatelessWidget {
                 
                 return !snapshot.hasData
                   ? const ShimmerFrave()
-                  : Container(
+                  : SizedBox(
                     height: 45,
                     child: ListView.builder(
                       physics: const BouncingScrollPhysics(),
@@ -223,7 +225,7 @@ class _ListProducts extends StatelessWidget {
                         Container(
                           child: Hero(
                             tag: listProduct![i].id, 
-                            child: Image.network('http://192.168.1.35:7070/' + listProduct[i].picture , height: 150)
+                            child: Image.network('http://192.168.1.35:7070/${listProduct[i].picture}' , height: 150)
                           ),
                         ),
                         TextCustom(text: listProduct[i].nameProduct , textOverflow: TextOverflow.ellipsis, fontWeight: FontWeight.w500, color: ColorsFrave.primaryColor, fontSize: 19 ),

@@ -10,7 +10,7 @@ import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_login_scr
 import 'package:flutter_animate/flutter_animate.dart';
 
 class SpatialRegisterScreen extends StatefulWidget {
-  const SpatialRegisterScreen({Key? key}) : super(key: key);
+  const SpatialRegisterScreen({super.key});
 
   @override
   State<SpatialRegisterScreen> createState() => _SpatialRegisterScreenState();
@@ -51,8 +51,8 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
     final PermissionStatus status = await Permission.storage.request();
     
     if (status == PermissionStatus.granted) {
-      final ImagePicker _picker = ImagePicker();
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
       
       if (image != null) {
         setState(() {

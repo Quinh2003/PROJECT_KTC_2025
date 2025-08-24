@@ -8,7 +8,7 @@ import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_check_ema
 import 'package:flutter_animate/flutter_animate.dart';
 
 class SpatialForgotPasswordScreen extends StatefulWidget {
-  const SpatialForgotPasswordScreen({Key? key}) : super(key: key);
+  const SpatialForgotPasswordScreen({super.key});
 
   @override
   State<SpatialForgotPasswordScreen> createState() => _SpatialForgotPasswordScreenState();

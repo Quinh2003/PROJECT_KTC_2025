@@ -9,7 +9,7 @@ class CardOrdersDelivery extends StatelessWidget {
   final OrdersResponse orderResponse;
   final VoidCallback? onPressed;
 
-  const CardOrdersDelivery({required this.orderResponse, this.onPressed});
+  const CardOrdersDelivery({super.key, required this.orderResponse, this.onPressed});
 
   @override
   Widget build(BuildContext context) {

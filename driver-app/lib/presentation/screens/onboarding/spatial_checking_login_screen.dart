@@ -5,7 +5,7 @@ import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_login_scr
 import 'package:flutter_animate/flutter_animate.dart';
 
 class SpatialCheckingLoginScreen extends StatefulWidget {
-  const SpatialCheckingLoginScreen({Key? key}) : super(key: key);
+  const SpatialCheckingLoginScreen({super.key});
 
   @override
   State<SpatialCheckingLoginScreen> createState() => _SpatialCheckingLoginScreenState();

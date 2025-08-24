@@ -5,6 +5,8 @@ import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class ManualMarketMap extends StatelessWidget {
+  const ManualMarketMap({super.key});
+
 
   @override
   Widget build(BuildContext context){
@@ -28,7 +30,7 @@ class ManualMarketMap extends StatelessWidget {
         Positioned(
           top: 50,
           left: 20,
-          child: Container(
+          child: SizedBox(
             width: MediaQuery.of(context).size.width,
             child: Row(
               children: [

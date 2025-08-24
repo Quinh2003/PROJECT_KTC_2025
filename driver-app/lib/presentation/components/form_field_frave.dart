@@ -11,7 +11,7 @@ class FormFieldFrave extends StatelessWidget {
   final bool readOnly;
   final FormFieldValidator<String>? validator;
 
-  const FormFieldFrave({ 
+  const FormFieldFrave({super.key,  
     this.controller, 
     this.hintText, 
     this.isPassword = false,

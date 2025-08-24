@@ -52,12 +52,12 @@ class Notification {
   // Tạo một bản sao của đối tượng với thuộc tính isRead được cập nhật
   Notification markAsRead() {
     return Notification(
-      id: this.id,
-      title: this.title,
-      body: this.body,
-      type: this.type,
-      data: this.data,
-      createdAt: this.createdAt,
+      id: id,
+      title: title,
+      body: body,
+      type: type,
+      data: data,
+      createdAt: createdAt,
       isRead: true,
     );
   }

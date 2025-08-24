@@ -9,7 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 class SpatialLoginScreen extends StatefulWidget {
-  const SpatialLoginScreen({Key? key}) : super(key: key);
+  const SpatialLoginScreen({super.key});
 
   @override
   State<SpatialLoginScreen> createState() => _SpatialLoginScreenState();
@@ -289,9 +289,9 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                           data: ThemeData(
                             checkboxTheme: CheckboxThemeData(
                               fillColor:
-                                  MaterialStateProperty.resolveWith<Color>(
-                                (Set<MaterialState> states) {
-                                  if (states.contains(MaterialState.disabled)) {
+                                  WidgetStateProperty.resolveWith<Color>(
+                                (Set<WidgetState> states) {
+                                  if (states.contains(WidgetState.disabled)) {
                                     return Colors.grey.withValues(alpha: .5);
                                   }
                                   return Colors.white;
@@ -333,15 +333,15 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                                 ),
                               );
                             },
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white,
+                      ),
                       child: Text(
                         'Forgot Password?',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
                         ),
-                      ),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
                       ),
                     ),
                   ],

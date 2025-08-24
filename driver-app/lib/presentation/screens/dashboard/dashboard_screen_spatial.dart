@@ -6,7 +6,7 @@ import '../../design/spatial_ui.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 
 class DashboardScreenSpatial extends StatefulWidget {
-  const DashboardScreenSpatial({Key? key}) : super(key: key);
+  const DashboardScreenSpatial({super.key});
 
   @override
   State<DashboardScreenSpatial> createState() => _DashboardScreenSpatialState();

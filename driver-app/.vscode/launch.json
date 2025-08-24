@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flutter Development",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define",
+                "ACCESS_TOKEN=sk.eyJ1IjoiZmFuZ2xlZSIsImEiOiJjbWVwZGhyd2wwMWMwMmpzYm9yMmY2b2Y2In0.Z3uN0URqPxOD71hyFKP9_w"
+            ]
+        },
+        {
+            "name": "Flutter Release",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "flutterMode": "release",
+            "args": [
+                "--dart-define",
+                "ACCESS_TOKEN=pk.eyJ1IjoiaHVuZ3BxMyIsImEiOiJjbHR3M3JzdXQwYzE5MnFteDFjYXRlcDEzIn0.GDrXTFKq1wn-FZSiTGrfew"
+            ]
+        }
+    ]
+}

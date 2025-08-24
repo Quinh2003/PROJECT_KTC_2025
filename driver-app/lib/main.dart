@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 // App
 import 'app.dart';
@@ -22,6 +23,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Mapbox with access token from environment
+  const String accessToken = String.fromEnvironment('ACCESS_TOKEN', 
+    defaultValue: 'pk.eyJ1IjoiaHVuZ3BxMyIsImEiOiJjbHR3M3JzdXQwYzE5MnFteDFjYXRlcDEzIn0.GDrXTFKq1wn-FZSiTGrfew');
+  
+  if (accessToken.isEmpty || accessToken == 'YOUR_MAPBOX_ACCESS_TOKEN') {
+    print('❌ Mapbox access token not found! Please run with --dart-define ACCESS_TOKEN=your_token');
+  } else {
+    MapboxOptions.setAccessToken(accessToken);
+    print('🗺️ Mapbox initialized with token');
+  }
   
   try {
     // Initialize Firebase

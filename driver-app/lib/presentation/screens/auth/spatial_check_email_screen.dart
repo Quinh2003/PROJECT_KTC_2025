@@ -10,9 +10,9 @@ class SpatialCheckEmailScreen extends StatelessWidget {
   final String email;
   
   const SpatialCheckEmailScreen({
-    Key? key, 
+    super.key, 
     required this.email,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

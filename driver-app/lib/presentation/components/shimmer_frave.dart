@@ -3,7 +3,7 @@ import 'package:shimmer/shimmer.dart';
 
 class ShimmerFrave extends StatelessWidget {
 
-  const ShimmerFrave({Key? key}):super(key: key);
+  const ShimmerFrave({super.key});
 
   @override
   Widget build(BuildContext context) {

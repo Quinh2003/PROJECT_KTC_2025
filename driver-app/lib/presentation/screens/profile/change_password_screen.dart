@@ -6,6 +6,8 @@ import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
+  const ChangePasswordScreen({super.key});
+
 
   @override
   _ChangePasswordScreenState createState() => _ChangePasswordScreenState();
@@ -117,7 +119,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     
                           }
                         ),
-                        validator: passwordValidator,
+                        validator: passwordValidator.call,
                     ),
                     const SizedBox(height: 20.0),
                     const TextCustom(text: 'New Password'),
@@ -135,7 +137,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     
                           }
                         ),
-                        validator: passwordValidator,
+                        validator: passwordValidator.call,
                     ),
                     const SizedBox(height: 20.0),
                     const TextCustom(text: 'Repeat Password'),
@@ -183,7 +185,7 @@ class FormFieldFravePassword extends StatelessWidget {
   final Widget? suffixIcon;
   final FormFieldValidator<String>? validator;
 
-  const FormFieldFravePassword({ 
+  const FormFieldFravePassword({super.key,  
     this.controller, 
     this.hintText, 
     this.isPassword = false,

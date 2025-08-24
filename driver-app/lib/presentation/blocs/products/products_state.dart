@@ -8,7 +8,7 @@ class ProductsState {
   final List<XFile>? images;
   final String searchProduct;
 
-  ProductsState({
+  const ProductsState({
     this.idCategory = 0, 
     this.category,
     this.images,

@@ -9,6 +9,8 @@ import 'package:ktc_logistics_driver/presentation/screens/client/client_home_scr
 import 'package:ktc_logistics_driver/presentation/screens/client/details_product_screen.dart';
 
 class SearchClientScreen extends StatefulWidget {
+  const SearchClientScreen({super.key});
+
   
   @override
   _SearchClientScreenState createState() => _SearchClientScreenState();
@@ -50,7 +52,7 @@ class _SearchClientScreenState extends State<SearchClientScreen> {
                 children: [
                   InkWell(
                     onTap: () => Navigator.pushReplacement(context, routeFrave(page: ClientHomeScreen())),
-                    child: Container(
+                    child: SizedBox(
                       height: 44,
                       child: Icon(Icons.arrow_back_ios_new_rounded),
                     ),
@@ -68,7 +70,7 @@ class _SearchClientScreenState extends State<SearchClientScreen> {
                         controller: _searchController,
                         onChanged:(value){
                           productBloc.add( OnSearchProductEvent(value));
-                          if( value.length != 0 ) productServices.searchProductsForName(value);
+                          if( value.isNotEmpty ) productServices.searchProductsForName(value);
                         },
                         decoration: InputDecoration(
                           border: InputBorder.none,
@@ -85,7 +87,7 @@ class _SearchClientScreenState extends State<SearchClientScreen> {
               BlocBuilder<ProductsBloc, ProductsState>(
                 builder: (_, state) 
                   => Expanded(
-                  child: ( state.searchProduct.length != 0 ) 
+                  child: ( state.searchProduct.isNotEmpty ) 
                     ? listProducts()
                     : _HistorySearch()
                   
@@ -109,7 +111,7 @@ class _SearchClientScreenState extends State<SearchClientScreen> {
         
         if( !snapshot.hasData ) return Center(child: CircularProgressIndicator());
 
-        if( snapshot.data!.length == 0 ) {
+        if( snapshot.data!.isEmpty ) {
           return ListTile(
             title: TextCustom(text: 'Without results for ${_searchController.text}'),
           );
@@ -134,7 +136,7 @@ class _ListProductSearch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
     
     return ListView.builder(
       itemCount: listProduct.length,
@@ -157,7 +159,7 @@ class _ListProductSearch extends StatelessWidget {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         scale: 8,
-                        image: NetworkImage('${_env.endpointBase}${listProduct[i].picture}')
+                        image: NetworkImage('${env.endpointBase}${listProduct[i].picture}')
                       )
                     ),
                   ),

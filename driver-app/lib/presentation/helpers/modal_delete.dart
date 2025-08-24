@@ -3,7 +3,7 @@ import 'package:ktc_logistics_driver/data/env/environment.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 
 void modalDelete(BuildContext context, String name, String image, VoidCallback onPressed){
-  final _env = Environment.getInstance();
+  final env = Environment.getInstance();
 
   showDialog(
     context: context,
@@ -43,7 +43,7 @@ void modalDelete(BuildContext context, String name, String image, VoidCallback o
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         scale: 7,
-                        image: NetworkImage('${_env.endpointBase}$image')
+                        image: NetworkImage('${env.endpointBase}$image')
                       )
                     ),
                   ),

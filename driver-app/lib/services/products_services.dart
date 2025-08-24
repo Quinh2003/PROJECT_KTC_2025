@@ -82,7 +82,7 @@ class ProductsServices {
 
       final listProduct =  ProductsTopHomeResponse.fromJson( jsonDecode( response.body) ).productsdb;
 
-      this._streamController.add(listProduct);
+      _streamController.add(listProduct);
 
     };
     final timer = Timer(Duration(milliseconds: 200), () => debouncer.value = productName);

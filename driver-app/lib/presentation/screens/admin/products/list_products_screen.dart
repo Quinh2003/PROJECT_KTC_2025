@@ -10,6 +10,8 @@ import 'package:ktc_logistics_driver/presentation/screens/admin/products/add_new
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class ListProductsScreen extends StatefulWidget {
+  const ListProductsScreen({super.key});
+
 
   @override
   State<ListProductsScreen> createState() => _ListProductsScreenState();
@@ -82,7 +84,7 @@ class _GridViewListProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
 
     return GridView.builder(
       physics: const BouncingScrollPhysics(),
@@ -106,7 +108,7 @@ class _GridViewListProduct extends StatelessWidget {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     scale: 7,
-                    image: NetworkImage('${_env.endpointBase}${listProducts[i].picture}')
+                    image: NetworkImage('${env.endpointBase}${listProducts[i].picture}')
                   )
                 ),
               ),

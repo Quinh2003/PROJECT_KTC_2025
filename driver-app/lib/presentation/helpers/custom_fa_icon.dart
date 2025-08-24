@@ -19,12 +19,12 @@ class CustomFaIcon extends StatelessWidget {
 
   const CustomFaIcon(
     this.icon, {
-    Key? key,
+    super.key,
     this.size,
     this.color,
     this.semanticLabel,
     this.textDirection,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

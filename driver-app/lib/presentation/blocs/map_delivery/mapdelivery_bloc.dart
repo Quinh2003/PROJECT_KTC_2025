@@ -38,7 +38,7 @@ class MapdeliveryBloc extends Bloc<MapdeliveryEvent, MapdeliveryState> {
 
     if( !state.isReadyMapDelivery ){
 
-      this._mapController = controller;
+      _mapController = controller;
       
       _mapController.setMapStyle( jsonEncode( themeMapsFrave ));
 
@@ -55,21 +55,21 @@ class MapdeliveryBloc extends Bloc<MapdeliveryEvent, MapdeliveryState> {
 
 
   void initSocketDelivery() {
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
 
-    this._socket = IO.io('${_env.endpointBase}orders-delivery-socket' , {
+    _socket = IO.io('${env.endpointBase}orders-delivery-socket' , {
       'transports': ['websocket'], 
       'autoConnect': true,
     });
 
-    this._socket.connect();
+    _socket.connect();
 
   }
   
 
   void disconectSocket(){
 
-    this._socket.disconnect();
+    _socket.disconnect();
 
   }
 
@@ -92,10 +92,10 @@ class MapdeliveryBloc extends Bloc<MapdeliveryEvent, MapdeliveryState> {
     final points = PolylinePoints.decodePolyline(geometry.toString());
     final List<LatLng> routeCoords = points.map((point) => LatLng(point.latitude, point.longitude)).toList();
 
-    _myRouteDestinationDelivery = this._myRouteDestinationDelivery.copyWith( pointsParam: routeCoords );
+    _myRouteDestinationDelivery = _myRouteDestinationDelivery.copyWith( pointsParam: routeCoords );
 
     final currentPoylines = state.polyline;
-    currentPoylines!['myRouteDestinationDelivery'] = this._myRouteDestinationDelivery;
+    currentPoylines!['myRouteDestinationDelivery'] = _myRouteDestinationDelivery;
 
     // ------------------------ Markets
 
@@ -126,7 +126,7 @@ class MapdeliveryBloc extends Bloc<MapdeliveryEvent, MapdeliveryState> {
 
   Future<void> _onEmitLocationDelivery( OnEmitLocationDeliveryEvent event, Emitter<MapdeliveryState> emit ) async {
 
-    this._socket.emit('position', { 
+    _socket.emit('position', { 
           'idOrder': event.idOrder, 
           'latitude': event.location.latitude, 
           'longitude' : event.location.longitude 

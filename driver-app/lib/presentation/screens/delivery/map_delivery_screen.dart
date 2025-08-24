@@ -15,7 +15,7 @@ class MapDeliveryScreen extends StatefulWidget {
 
   final OrdersResponse order;
 
-  const MapDeliveryScreen({required this.order});
+  const MapDeliveryScreen({super.key, required this.order});
   
   @override
   _MapDeliveryScreenState createState() => _MapDeliveryScreenState();
@@ -160,7 +160,7 @@ class _InformationBottom extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
-                    image: NetworkImage('${order.clientImage}')
+                    image: NetworkImage(order.clientImage)
                   )
                 ), 
               ),

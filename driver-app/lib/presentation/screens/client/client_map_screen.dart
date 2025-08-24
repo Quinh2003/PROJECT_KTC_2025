@@ -12,7 +12,7 @@ class ClientMapScreen extends StatefulWidget {
 
   final OrdersClient orderClient;
 
-  const ClientMapScreen({required this.orderClient});
+  const ClientMapScreen({super.key, required this.orderClient});
 
   @override
   _ClientMapScreenState createState() => _ClientMapScreenState();
@@ -97,7 +97,7 @@ class _InfoCardClient extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
     
     return Container(
       padding: const EdgeInsets.all(10.0),
@@ -119,7 +119,7 @@ class _InfoCardClient extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
-                    image: NetworkImage('${_env.endpointBase}${orderClient.imageDelivery}')
+                    image: NetworkImage('${env.endpointBase}${orderClient.imageDelivery}')
                   )
                 ), 
               ),

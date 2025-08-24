@@ -7,6 +7,8 @@ import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
+
 
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
@@ -119,7 +121,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 5.0),
                 FormFieldFrave(
                   controller: _nameController,
-                  validator: RequiredValidator(errorText: 'Name is required')
+                  validator: RequiredValidator(errorText: 'Name is required').call
                 ),
                 const SizedBox(height: 20.0),
                 const TextCustom(text: 'Lastname', color: ColorsFrave.secundaryColor),
@@ -127,7 +129,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 FormFieldFrave(
                   controller: _lastNameController,
                   hintText: 'lastname',
-                  validator: RequiredValidator(errorText: 'Lastname is required'),
+                  validator: RequiredValidator(errorText: 'Lastname is required').call,
                 ),
                 const SizedBox(height: 20.0),
                 const TextCustom(text: 'Phone', color: ColorsFrave.secundaryColor),
@@ -136,7 +138,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   controller: _phoneController,
                   keyboardType: TextInputType.number,
                   hintText: '000-000-000',
-                  validator: validatedPhoneForm,
+                  validator: validatedPhoneForm.call,
                 ),
                 const SizedBox(height: 20.0),
                 const TextCustom(text: 'Email Address', color: ColorsFrave.secundaryColor),

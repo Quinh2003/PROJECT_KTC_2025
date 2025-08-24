@@ -9,13 +9,13 @@ class MapboxMapView extends StatefulWidget {
   final VoidCallback? onRetry;
 
   const MapboxMapView({
-    Key? key,
+    super.key,
     required this.onMapCreated,
     this.initialCameraOptions,
     this.isLoading = false,
     this.errorMessage,
     this.onRetry,
-  }) : super(key: key);
+  });
 
   @override
   State<MapboxMapView> createState() => _MapboxMapViewState();

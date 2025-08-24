@@ -12,7 +12,7 @@ class SearchForCategoryScreen extends StatelessWidget {
   final int idCategory;
   final String category;
 
-  const SearchForCategoryScreen({Key? key, required this.idCategory, required this.category }) : super(key: key);
+  const SearchForCategoryScreen({super.key, required this.idCategory, required this.category });
 
   @override
   Widget build(BuildContext context){
@@ -48,11 +48,11 @@ class ListProducts extends StatelessWidget {
   
   final List<Productsdb> listProduct;
 
-  const ListProducts({Key? key, required this.listProduct}) : super(key: key);
+  const ListProducts({super.key, required this.listProduct});
 
   @override
   Widget build(BuildContext context) {
-    return (listProduct.length != 0) 
+    return (listProduct.isNotEmpty) 
       ? StaggeredDualView(
           spacing: 15,
           alturaElement: 0.14,
@@ -73,7 +73,7 @@ class ListProducts extends StatelessWidget {
                     Container(
                       child: Hero(
                         tag: listProduct[i].id, 
-                        child: Image.network('http://192.168.1.35:7070/' + listProduct[i].picture , height: 150)
+                        child: Image.network('http://192.168.1.35:7070/${listProduct[i].picture}' , height: 150)
                       ),
                     ),
                     TextCustom(text: listProduct[i].nameProduct , textOverflow: TextOverflow.ellipsis, fontWeight: FontWeight.w500, color: ColorsFrave.primaryColor, fontSize: 19 ),

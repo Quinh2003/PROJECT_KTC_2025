@@ -7,7 +7,7 @@ import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_login_scr
 import 'package:ktc_logistics_driver/presentation/design/spatial_background.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({super.key});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
