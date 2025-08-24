@@ -6,10 +6,14 @@ export interface OrderStatus {
 export interface Store {
   storeName: string;
   address: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface Address {
   address: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface Driver {
@@ -17,6 +21,7 @@ export interface Driver {
 }
 
 export interface Vehicle {
+  id: number;
   licensePlate?: string;
   currentDriver?: Driver;
 }

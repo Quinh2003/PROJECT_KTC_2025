@@ -1,6 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
 import type { User } from "../../types/User";
-import { fetchUsers, fetchActivityLogs, type User as APIUser } from "../../services/adminAPI";
+import { fetchUsers, fetchActivityLogs } from "../../services/adminAPI";
+
+// Simple user interface for dashboard display
+interface DashboardUser {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  lastLogin: string;
+  phone: string;
+  password: string;
+}
 import UserTable from "./UserTable";
 import RoleTable from "./RoleTable";
 import SystemConfigForm from "./SystemConfigForm";
@@ -20,21 +32,8 @@ interface AdminDashboardProps {
 
 export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
   const [active, setActive] = useState<AdminTab>("users");
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<DashboardUser[]>([]);
   const [auditCount, setAuditCount] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Helper function to format numbers (e.g., 1200 -> "1.2K")
-  const formatNumber = (num: number): string => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-    }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-    }
-    return num.toString();
-  };
 
   // Callback function for AuditLogTable to update audit count
   const handleAuditCountUpdate = useCallback((newCount: number) => {
@@ -42,15 +41,39 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
     setAuditCount(newCount);
   }, [auditCount]);
 
+  // Callback function for UserTable to update user count in real-time
+  const handleUserCountUpdate = useCallback(async () => {
+    try {
+      const userData = await fetchUsers();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mappedUsers: DashboardUser[] = userData.map((u: any) => {
+        return {
+          id: typeof u.id === 'string' ? parseInt(u.id) : u.id,
+          name: u.fullName || u.username || "",
+          email: u.email,
+          role: u.role?.roleName || "",
+          status: u.status?.name?.toLowerCase() === "active" ? "active" : "inactive",
+          lastLogin: "-",
+          phone: u.phone || "",
+          password: u.password || "",
+        };
+      });
+      setUsers(mappedUsers);
+      console.log("User count updated to:", mappedUsers.length);
+    } catch (err) {
+      console.error("Failed to update user count:", err);
+    }
+  }, []);
+
   // Chỉ fetchUsers khi lần đầu vào trang, còn lại cập nhật trực tiếp qua UserTable
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       
       try {
         // Fetch users
         const userData = await fetchUsers();
-        const mappedUsers = userData.map((u: APIUser) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mappedUsers: DashboardUser[] = userData.map((u: any) => {
           return {
             id: typeof u.id === 'string' ? parseInt(u.id) : u.id,
             name: u.fullName || u.username || "",
@@ -60,7 +83,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
             lastLogin: "-", // Will be updated from backend later
             phone: u.phone || "",
             password: u.password || "",
-          } as User;
+          };
         });
         setUsers(mappedUsers);
 
@@ -68,13 +91,8 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
         const logs = await fetchActivityLogs();
         console.log("Initial fetch - audit logs:", logs.length, "logs");
         setAuditCount(logs.length);
-        
-        setError(null);
       } catch (err: unknown) {
         console.error("Failed to fetch initial data:", err);
-        setError("Failed to fetch data");
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -101,7 +119,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
     },
     {
       label: "Audit Events",
-      value: formatNumber(auditCount),
+      value: auditCount.toLocaleString(),
       icon: <HiOutlineDocumentReport className="text-3xl text-purple-600" />,
     },
   ];
@@ -120,18 +138,15 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
         <Navbar
           user={user}
           onLogout={onLogout}
-          title={
-            active === "users"
-              ? "User Management Dashboard"
-              : active === "roles"
+          title={active === "users"
+            ? "User Management Dashboard"
+            : active === "roles"
               ? "Role Permissions Dashboard"
               : active === "settings"
-              ? "System Configuration Dashboard"
-              : active === "logs"
-              ? "System Logs Dashboard"
-              : "Admin Dashboard"
-          }
-         
+                ? "System Configuration Dashboard"
+                : active === "logs"
+                  ? "System Logs Dashboard"
+                  : "Admin Dashboard"} subtitle={""}         
         />
         {/* Stats cards - Fixed */}
         <div className="flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-3 md:mt-4 px-4 md:px-10">
@@ -155,7 +170,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
         {/* Content - Scrollable */}
         <div className="flex-1 overflow-y-auto">
           <div className="p-4 md:p-10 pt-3 md:pt-4">
-            {active === "users" && <UserTable users={users} setUsers={setUsers} />}
+            {active === "users" && <UserTable onUserCountUpdate={handleUserCountUpdate} />}
             {active === "roles" && <RoleTable />}
             {active === "settings" && <SystemConfigForm />}
             {active === "logs" && <AuditLogTable onAuditCountUpdate={handleAuditCountUpdate} />}

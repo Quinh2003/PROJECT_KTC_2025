@@ -6,57 +6,15 @@ export interface Vehicle {
   id: number;
   licensePlate: string;
   type: string;
-  brand: string;
-  model: string;
+  capacityWeightKg?: number;
+  capacityVolumeM3?: number;
   year: number;
   status: "Hoạt động" | "Bảo trì" | "Cần bảo trì";
   lastMaintenance: string;
   nextMaintenance: string;
   driver: string;
-  mileage: number;
 }
 
-export const initialVehicles: Vehicle[] = [
-  {
-    id: 1,
-    licensePlate: "51A-12345",
-    type: "Xe tải nhỏ",
-    brand: "Hyundai",
-    model: "Porter",
-    year: 2020,
-    status: "Hoạt động",
-    lastMaintenance: "2024-12-15",
-    nextMaintenance: "2025-03-15",
-    driver: "Nguyễn Văn A",
-    mileage: 45000,
-  },
-  {
-    id: 2,
-    licensePlate: "51B-67890",
-    type: "Xe tải lớn",
-    brand: "Isuzu",
-    model: "FVM34W",
-    year: 2019,
-    status: "Cần bảo trì",
-    lastMaintenance: "2024-10-10",
-    nextMaintenance: "2025-01-10",
-    driver: "Nguyễn Văn B",
-    mileage: 80000,
-  },
-  {
-    id: 3,
-    licensePlate: "51C-24680",
-    type: "Xe tải trung",
-    brand: "Fuso",
-    model: "Canter",
-    year: 2021,
-    status: "Bảo trì",
-    lastMaintenance: "2024-11-20",
-    nextMaintenance: "2025-02-20",
-    driver: "Trần Văn C",
-    mileage: 35000,
-  },
-];
 
 interface VehicleTableProps {
   vehicles: Vehicle[];
@@ -246,8 +204,12 @@ const VehicleTable: React.FC<VehicleTableProps> = ({
                     <div className="text-gray-900">{vehicle.type}</div>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-gray-500 font-medium">Hãng/Model:</span>
-                    <div className="text-gray-900">{vehicle.brand} {vehicle.model}</div>
+                    <span className="text-gray-500 font-medium">Trọng tải (kg):</span>
+                    <div className="text-gray-900 font-semibold">{vehicle.capacityWeightKg?.toLocaleString() ?? "-"} kg</div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-gray-500 font-medium">Thể tích (m³):</span>
+                    <div className="text-gray-900 font-semibold">{vehicle.capacityVolumeM3?.toLocaleString() ?? "-"} m³</div>
                   </div>
                   <div className="space-y-1">
                     <span className="text-gray-500 font-medium">Năm sản xuất:</span>
@@ -261,12 +223,12 @@ const VehicleTable: React.FC<VehicleTableProps> = ({
                       )}
                     </div>
                   </div>
-                  <div className="space-y-1">
+                  {/* <div className="space-y-1">
                     <span className="text-gray-500 font-medium">Km đã chạy:</span>
                     <div className="text-gray-900 font-semibold">
-                      {vehicle.mileage.toLocaleString()} km
+                      {vehicle.mileage?.toLocaleString()} km
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Maintenance Info */}
