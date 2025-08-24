@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hóa đơn điện tử KTC Logistics</title>
+    <style>
+        /* CSS inline để đảm bảo hiển thị đúng trên mọi email client */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 300;
+        }
+        
+        .header .subtitle {
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+        
+        .invoice-card {
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .invoice-card::before {
+            content: "📧";
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 20px;
+        }
+        
+        .invoice-card h3 {
+            color: #495057;
+            margin: 0 0 20px 0;
+            font-size: 20px;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 10px;
+        }
+        
+        .invoice-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .invoice-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 16px;
+            color: #28a745;
+        }
+        
+        .invoice-item .label {
+            font-weight: 600;
+            color: #6c757d;
+        }
+        
+        .invoice-item .value {
+            font-weight: 500;
+            color: #212529;
+        }
+        
+        .highlight-amount {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .highlight-amount .amount {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .attachment-notice {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .attachment-notice .icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .company-info {
+            margin-bottom: 20px;
+        }
+        
+        .company-info h4 {
+            margin: 0 0 15px 0;
+            font-size: 20px;
+            color: #ecf0f1;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .contact-item {
+            background-color: rgba(255,255,255,0.1);
+            padding: 10px 15px;
+            border-radius: 6px;
+        }
+        
+        .contact-item .icon {
+            margin-right: 8px;
+        }
+        
+        .copyright {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .email-container {
+                margin: 10px;
+                border-radius: 0;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .invoice-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1 th:text="${companyName}">KTC Logistics</h1>
+            <p class="subtitle">Hóa đơn điện tử - Electronic Invoice</p>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <!-- Greeting -->
+            <div class="greeting">
+                <p>Kính chào <strong th:text="${customerName}">Quý khách</strong>,</p>
+                <p>Chúng tôi gửi đến Quý khách hóa đơn điện tử cho đơn hàng logistics vừa hoàn thành.</p>
+            </div>
+
+            <!-- Invoice Information Card -->
+            <div class="invoice-card">
+                <h3>🧾 Thông tin hóa đơn</h3>
+                
+                <div class="invoice-details">
+                    <div class="invoice-item">
+                        <span class="label">📋 Số hóa đơn:</span>
+                        <span class="value" th:text="${invoiceNumber}">INV-20250108-001</span>
+                    </div>
+                    
+                    <div class="invoice-item">
+                        <span class="label">📅 Ngày xuất:</span>
+                        <span class="value" th:text="${issuedDate}">08/01/2025 lúc 14:30</span>
+                    </div>
+                    
+                    <div class="invoice-item">
+                        <span class="label">📦 Mã đơn hàng:</span>
+                        <span class="value" th:text="${orderId}">123</span>
+                    </div>
+                    
+                    <div class="invoice-item">
+                        <span class="label">📝 Mô tả:</span>
+                        <span class="value" th:text="${orderDescription}">Dịch vụ logistics</span>
+                    </div>
+                    
+                    <div class="invoice-item">
+                        <span class="label">💰 Tiền chưa thuế:</span>
+                        <span class="value" th:text="${netAmount}">1,350,000 VND</span>
+                    </div>
+                    
+                    <div class="invoice-item">
+                        <span class="label">🏛️ Thuế VAT (10%):</span>
+                        <span class="value" th:text="${taxAmount}">150,000 VND</span>
+                    </div>
+                    
+                    <div class="invoice-item">
+                        <span class="label">💳 TỔNG CỘNG:</span>
+                        <span class="value" th:text="${totalAmount}">1,500,000 VND</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Highlight Total Amount -->
+            <div class="highlight-amount">
+                <div>Tổng số tiền thanh toán</div>
+                <div class="amount" th:text="${totalAmount}">1,500,000 VND</div>
+                <div style="font-size: 14px; opacity: 0.9;">(Đã bao gồm 10% thuế VAT)</div>
+            </div>
+
+            <!-- PDF Attachment Notice -->
+            <div class="attachment-notice" th:if="${hasPdfAttachment}">
+                <span class="icon">📎</span>
+                <strong>File đính kèm:</strong> Hóa đơn điện tử dạng PDF đã được đính kèm trong email này. 
+                Quý khách có thể tải xuống và lưu trữ để làm chứng từ kế toán.
+            </div>
+
+            <div class="attachment-notice" th:unless="${hasPdfAttachment}" style="background-color: #fff3cd; border-color: #ffc107;">
+                <span class="icon">⚠️</span>
+                <strong>Thông báo:</strong> File PDF hóa đơn đang được xử lý. 
+                Chúng tôi sẽ gửi bổ sung trong email tiếp theo.
+            </div>
+
+            <!-- Additional Information -->
+            <div style="margin: 30px 0; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
+                <h4 style="margin: 0 0 15px 0; color: #495057;">📞 Cần hỗ trợ?</h4>
+                <p style="margin: 0;">
+                    Nếu Quý khách có bất kỳ câu hỏi nào về hóa đơn này, vui lòng liên hệ với chúng tôi:
+                </p>
+                <div style="margin-top: 10px;">
+                    <span style="margin-right: 20px;">📧 <a th:href="'mailto:' + ${companyEmail}" th:text="${companyEmail}">support@ktc-logistics.com</a></span>
+                    <span>📱 <a th:href="'tel:' + ${companyPhone}" th:text="${companyPhone}">+84-123-456-789</a></span>
+                </div>
+            </div>
+
+            <!-- Thank you note -->
+            <div style="text-align: center; margin: 30px 0;">
+                <p style="font-size: 16px; color: #28a745; font-weight: 600;">
+                    🙏 Cảm ơn Quý khách đã tin tưởng sử dụng dịch vụ của chúng tôi!
+                </p>
+                <p style="margin: 0; color: #6c757d;">
+                    Chúng tôi cam kết mang đến dịch vụ logistics tốt nhất cho Quý khách.
+                </p>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <div class="company-info">
+                <h4 th:text="${companyName}">KTC Logistics</h4>
+                
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <span class="icon">🏢</span>
+                        <span th:text="${companyAddress}">Phi Binh, Ngu Hanh Son, Da Nang</span>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span class="icon">📞</span>
+                        <span th:text="${companyPhone}">+84-123-456-789</span>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span class="icon">📧</span>
+                        <span th:text="${companyEmail}">support@ktc-logistics.com</span>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span class="icon">🌐</span>
+                        <a th:href="${companyWebsite}" th:text="${companyWebsite}" style="color: #ecf0f1;">https://ktc-logistics.com</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© <span th:text="${currentYear}">2025</span> <span th:text="${companyName}">KTC Logistics</span>. All rights reserved.</p>
+                <p style="font-size: 12px; margin: 5px 0 0 0;">
+                    Đây là email tự động, vui lòng không trả lời email này.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
