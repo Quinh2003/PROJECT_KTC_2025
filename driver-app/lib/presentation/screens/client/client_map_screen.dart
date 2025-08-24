@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ktc_logistics_driver/data/env/environment.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import 'package:ktc_logistics_driver/domain/models/response/orders_client_response.dart';
+import 'package:ktc_logistics_driver/domain/models/order/orders_client_response.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';

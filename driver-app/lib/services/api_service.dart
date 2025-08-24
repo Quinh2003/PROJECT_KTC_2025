@@ -5,10 +5,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../data/env/environment.dart';
-import '../domain/models/response/auth_response.dart';
-import '../domain/models/response/order_response.dart' as order_models;
-import '../domain/models/response/delivery_response.dart';
-import '../domain/models/response/orders_by_status_response.dart' as status_models;
+import '../domain/models/auth/auth_response.dart';
+import '../domain/models/order/order_response.dart' as order_models;
+import '../domain/models/delivery/delivery_response.dart';
+import '../domain/models/order/orders_by_status_response.dart' as status_models;
 
 class ApiService {
   // Instance của FlutterSecureStorage để lưu JWT token

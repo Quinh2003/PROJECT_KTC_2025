@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ktc_logistics_driver/data/env/environment.dart';
-import 'package:ktc_logistics_driver/domain/models/response/order_details_response.dart';
-import 'package:ktc_logistics_driver/domain/models/response/orders_client_response.dart';
+import 'package:ktc_logistics_driver/domain/models/order/order_details_response.dart';
+import 'package:ktc_logistics_driver/domain/models/order/orders_client_response.dart';
 import 'package:ktc_logistics_driver/services/orders_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/date_custom.dart';
-import 'package:ktc_logistics_driver/presentation/screens/client/client_map_scrren.dart';
+import 'package:ktc_logistics_driver/presentation/screens/client/client_map_screen.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 

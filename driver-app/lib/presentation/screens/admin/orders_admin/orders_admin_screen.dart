@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ktc_logistics_driver/domain/models/order/order_status.dart';
-import 'package:ktc_logistics_driver/domain/models/response/orders_by_status_response.dart';
+import 'package:ktc_logistics_driver/domain/models/order/orders_by_status_response.dart';
 import 'package:ktc_logistics_driver/services/orders_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/date_custom.dart';

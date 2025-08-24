@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../domain/models/response/products_top_home_response.dart';
+import '../../../domain/models/product/products_top_home_response.dart';
 import '../../../services/products_services.dart';
 import '../../components/staggered_dual_view.dart';
 import '../../components/components.dart';
