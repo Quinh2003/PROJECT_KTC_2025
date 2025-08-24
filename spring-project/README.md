@@ -154,6 +154,21 @@ docker run -d -p 8080:8080 fanglee2003/ktc-logistics-backend
 | `/api/warehouses/{id}/transactions`        | GET    | Get warehouse transactions   | ✅ Đã làm |
 | `/api/warehouses/{id}/inventory`           | GET    | Get warehouse inventory      | ✅ Đã làm |
 
+### 🧾 Electronic Invoice Management
+
+| Endpoint                                   | Method | Description                  | Status      |
+|---------------------------------------------|--------|------------------------------|-------------|
+| `/api/invoices/check-eligibility/{orderId}` | GET    | Check order invoice eligibility | ✅ Đã làm   |
+| `/api/invoices`                            | POST   | Create new electronic invoice  | ✅ Đã làm   |
+| `/api/invoices`                            | GET    | Get all invoices with filters  | ✅ Đã làm   |
+| `/api/invoices/{id}`                       | GET    | Get invoice by ID             | ✅ Đã làm   |
+| `/api/invoices/by-order/{orderId}`         | GET    | Get invoice by order ID       | ✅ Đã làm   |
+| `/api/invoices/{id}/send-email`            | POST   | Send invoice via email        | ✅ Đã làm   |
+| `/api/invoices/{id}/cancel`                | POST   | Cancel invoice (Admin only)   | ✅ Đã làm   |
+| `/api/invoices/{id}/generate-pdf`          | POST   | Generate invoice PDF          | ✅ Đã làm   |
+| `/api/invoices/{id}/download-pdf`          | GET    | Download invoice PDF          | ✅ Đã làm   |
+| `/api/invoices/orders-needing-invoice`     | GET    | Get orders needing invoice    | ✅ Đã làm   |
+
 ### 📊 Dashboard & Analytics
 
 | Endpoint                                   | Method | Description                  | Status      |
@@ -171,9 +186,9 @@ docker run -d -p 8080:8080 fanglee2003/ktc-logistics-backend
 
 | Status         | Count | Description                        |
 |----------------|-------|------------------------------------|
-| ✅ Đã làm       | 66    | Đã có controller & test Postman    |
+| ✅ Đã làm       | 76    | Đã có controller & test Postman    |
 | ❌ Chưa làm     | 19    | Chưa có hoặc chưa hoàn thiện       |
-| **Total**      | **85**| **Tổng số endpoint kiểm tra được** |
+| **Total**      | **95**| **Tổng số endpoint kiểm tra được** |
 
 ## 🔧 Configuration
 
@@ -182,6 +197,17 @@ docker run -d -p 8080:8080 fanglee2003/ktc-logistics-backend
 - **Server:** server.aptech.io:3307
 - **Database:** fastroute_test
 - **Username:** fastroute_user
+
+### 🧾 Electronic Invoice Configuration
+
+Hệ thống hóa đơn điện tử được cấu hình với:
+
+- **Thời gian xuất hóa đơn:** 365 ngày (có thể config qua `invoice.expiry.days`)
+- **Tự động tạo PDF:** Có
+- **Tự động gửi email:** Có (config qua `invoice.email.auto.send`)
+- **Email SMTP:** Gmail (config qua `spring.mail.*`)
+- **Lưu trữ PDF:** `./invoices/pdfs/` (config qua `invoice.pdf.storage.path`)
+- **Phân quyền:** ADMIN, OPERATIONS, DISPATCHER
 
 ## 🏗️ Tech Stack
 

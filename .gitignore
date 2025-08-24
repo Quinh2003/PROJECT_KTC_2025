@@ -1,3 +1,16 @@
 requirements/PROJECT_KTC_2025.code-workspace
 .idea
 .DS_Store
+# Node
+node_modules/
+package-lock.json
+~/.cursor/mcp.json
+spring-project/document/ELECTRONIC_INVOICE_SYSTEM_GUIDE.md
+spring-project/document/migration_electronic_invoices.sql
+spring-project/document/TROUBLESHOOTING_IDE_ERRORS.md
+spring-project/document/INVOICE_SYSTEM_GUIDE.md
+spring-project/document/EMAIL_SETUP_GUIDE.md
+spring-project/document/DEMO_EMAIL_FLOW.md
+spring-project/document/database-8-4.sql
+spring-project/document/tailieu.md
+spring-project/document/todo.md

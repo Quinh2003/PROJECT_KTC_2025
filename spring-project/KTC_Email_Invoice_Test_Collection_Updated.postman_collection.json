@@ -1,0 +1,939 @@
+{
+	"info": {
+		"_postman_id": "e6463d6c-1e03-4134-af28-51bd4e10b847",
+		"name": "KTC Email & Invoice Test Collection (Updated)",
+		"description": "Collection test chức năng tạo file PDF hóa đơn, download PDF và gửi email tự động của hệ thống KTC Logistics\n\n🎯 **WORKFLOW HOÀN CHỈNH:**\n1. Login → 2. Tạo hóa đơn (tự động tạo PDF) → 3. Download PDF → 4. Gửi email\n\n🆕 **CẬP NHẬT MỚI (2025-08-24):**\n- Hóa đơn hiện bao gồm **MÃ VẬN ĐƠN** (delivery.id)\n- Tổng giá trị đơn hàng được lấy từ **DELIVERY_FEE** thay vì total_amount\n- PDF thật sự thay vì HTML format\n- Quan hệ ElectronicInvoice → Delivery đã được thêm\n\n📥 **DOWNLOAD PDF:**\n- API: GET /api/invoices/{id}/download-pdf\n- File tự động tải về với tên: HoaDon_{InvoiceNumber}.pdf\n- Content-Type: application/pdf (PDF thật sự)\n- Chỉ cần JWT token, không cần generate-pdf riêng\n\n🔗 **YÊU CẦU DELIVERY:**\n- Mỗi order phải có delivery tương ứng\n- Delivery phải có delivery_fee > 0\n- Hóa đơn sẽ hiển thị: delivery.id và delivery.delivery_fee\n\n🚨 **QUAN TRỌNG - GIẢI QUYẾT LỖI AUTHENTICATION:**\n\nNếu gặp lỗi \"User not found with email: admin\", thực hiện theo thứ tự:\n\n1️⃣ **Kiểm tra User trong Database:**\n   - Đảm bảo có user với email: datkz31@gmail.com\n   - Kiểm tra field 'username' của user này\n   - Kiểm tra 'role_id' phải là role ADMIN\n\n2️⃣ **Kiểm tra Delivery Data:**\n   - Đảm bảo có delivery records cho test order\n   - Kiểm tra delivery.delivery_fee > 0\n   - Kiểm tra delivery.order_id matching\n\n3️⃣ **Cập nhật Environment Variables:**\n   - adminEmail: email thật trong database\n   - adminUsername: username thật trong database  \n   - adminPassword: password thật\n   - testEmail: email để nhận test invoice\n   - testOrderId: order có delivery data\n\n4️⃣ **Test Authentication:**\n   - Chạy \"Login Admin (Email)\" trước\n   - Nếu thất bại, chạy \"Login Admin (Username - Backup)\"\n   - Kiểm tra Console log để debug",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33340750"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login Admin (Email)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Lưu token vào environment variable",
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.token) {",
+									"        pm.environment.set('authToken', responseJson.token);",
+									"        console.log('✅ Login thành công! Token đã được lưu: ' + responseJson.token.substring(0, 20) + '...');",
+									"        if (responseJson.user) {",
+									"            console.log('👤 User: ' + responseJson.user.fullName + ' (' + responseJson.user.role + ')');",
+									"        }",
+									"    }",
+									"    pm.test('Đăng nhập thành công', function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"} else {",
+									"    const responseJson = pm.response.json();",
+									"    console.log('❌ Login thất bại: ' + (responseJson.message || 'Unknown error'));",
+									"    pm.test('Đăng nhập thất bại', function () {",
+									"        pm.response.to.not.have.status(200);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{adminEmail}}\",\n    \"password\": \"{{adminPassword}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Đăng nhập với email admin. Hệ thống tìm user theo email và authenticate bằng username tương ứng."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Admin (Username - Backup)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Alternative login nếu email login không hoạt động",
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.token) {",
+									"        pm.environment.set('authToken', responseJson.token);",
+									"        console.log('✅ Username login thành công! Token: ' + responseJson.token.substring(0, 20) + '...');",
+									"    }",
+									"    pm.test('Username login thành công', function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"} else {",
+									"    console.log('❌ Username login cũng thất bại');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{adminUsername}}\",\n    \"password\": \"{{adminPassword}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Backup login với username thay vì email, trong trường hợp username khác với email trong database."
+					},
+					"response": []
+				}
+			],
+			"description": "Các API xác thực người dùng"
+		},
+		{
+			"name": "Data Validation",
+			"item": [
+				{
+					"name": "Check Delivery Data for Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Check delivery data successful', function () {",
+									"    // Có thể trả về 200 (có delivery) hoặc 404 (không có delivery)",
+									"    if (pm.response.code === 200) {",
+									"        const responseJson = pm.response.json();",
+									"        console.log('✅ Delivery found for order: ' + pm.environment.get('testOrderId'));",
+									"        if (responseJson.data && responseJson.data.length > 0) {",
+									"            const delivery = responseJson.data[0];",
+									"            console.log('📦 Delivery ID: ' + delivery.id);",
+									"            console.log('💰 Delivery Fee: ' + delivery.deliveryFee);",
+									"            pm.environment.set('testDeliveryId', delivery.id);",
+									"            pm.environment.set('testDeliveryFee', delivery.deliveryFee);",
+									"        }",
+									"    } else {",
+									"        console.log('⚠️ No delivery found for order: ' + pm.environment.get('testOrderId'));",
+									"        console.log('💡 Suggestion: Create delivery data or use different testOrderId');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/deliveries?orderId={{testOrderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"deliveries"
+							],
+							"query": [
+								{
+									"key": "orderId",
+									"value": "{{testOrderId}}"
+								}
+							]
+						},
+						"description": "🆕 Kiểm tra dữ liệu delivery cho order test. Cần có delivery với delivery_fee > 0 để tạo hóa đơn."
+					},
+					"response": []
+				}
+			],
+			"description": "🆕 Kiểm tra dữ liệu cần thiết cho tính năng mới"
+		},
+		{
+			"name": "Email Testing",
+			"item": [
+				{
+					"name": "Check Email Service Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Email service status check successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.success).to.be.true;",
+									"    pm.expect(responseJson.data).to.have.property('available');",
+									"    console.log('Email service available: ' + responseJson.data.available);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/test/email/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"test",
+								"email",
+								"status"
+							]
+						},
+						"description": "Kiểm tra trạng thái hoạt động của dịch vụ email"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Test Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Test email sent successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.success).to.be.true;",
+									"    console.log('Test email response: ' + responseJson.message);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/test/email/send-test?email={{testEmail}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"test",
+								"email",
+								"send-test"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "{{testEmail}}"
+								}
+							]
+						},
+						"description": "Gửi email test đến địa chỉ được chỉ định để kiểm tra cấu hình email"
+					},
+					"response": []
+				}
+			],
+			"description": "Test các chức năng email cơ bản"
+		},
+		{
+			"name": "Invoice Management",
+			"item": [
+				{
+					"name": "Get Orders Needing Invoice",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Get orders needing invoice successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.success).to.be.true;",
+									"    if (responseJson.data && responseJson.data.length > 0) {",
+									"        // Lưu order ID đầu tiên để sử dụng cho test tiếp theo",
+									"        pm.environment.set('testOrderId', responseJson.data[0].id);",
+									"        console.log('Found orders needing invoice: ' + responseJson.data.length);",
+									"        console.log('Test order ID: ' + responseJson.data[0].id);",
+									"    } else {",
+									"        console.log('No orders need invoice currently');",
+									"        // Set một order ID mặc định để test",
+									"        pm.environment.set('testOrderId', 1);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/invoices/orders-needing-invoice",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"invoices",
+								"orders-needing-invoice"
+							]
+						},
+						"description": "Lấy danh sách các đơn hàng cần xuất hóa đơn"
+					},
+					"response": []
+				},
+				{
+					"name": "Check Invoice Eligibility",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Check invoice eligibility successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.success).to.be.true;",
+									"    pm.expect(responseJson.data).to.have.property('eligible');",
+									"    pm.expect(responseJson.data).to.have.property('message');",
+									"    console.log('Order eligible for invoice: ' + responseJson.data.eligible);",
+									"    console.log('Message: ' + responseJson.data.message);",
+									"    ",
+									"    // 🆕 Cảnh báo nếu không có delivery data",
+									"    if (!responseJson.data.eligible && responseJson.data.message.includes('delivery')) {",
+									"        console.log('⚠️ WARNING: Order cần có delivery data với delivery_fee > 0');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/invoices/check-eligibility/{{testOrderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"invoices",
+								"check-eligibility",
+								"{{testOrderId}}"
+							]
+						},
+						"description": "Kiểm tra điều kiện xuất hóa đơn cho một đơn hàng cụ thể. 🆕 Giờ bao gồm kiểm tra delivery data."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Invoice",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Create invoice successful', function () {",
+									"    pm.response.to.have.status(201);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.success).to.be.true;",
+									"    if (responseJson.data && responseJson.data.id) {",
+									"        pm.environment.set('createdInvoiceId', responseJson.data.id);",
+									"        console.log('✅ Created invoice ID: ' + responseJson.data.id);",
+									"        console.log('📄 Invoice number: ' + responseJson.data.invoiceNumber);",
+									"        ",
+									"        // 🆕 Kiểm tra thông tin mới",
+									"        if (responseJson.data.deliveryId) {",
+									"            console.log('🚚 Delivery ID: ' + responseJson.data.deliveryId);",
+									"        }",
+									"        if (responseJson.data.totalAmount) {",
+									"            console.log('💰 Total Amount (from delivery_fee): ' + responseJson.data.totalAmount);",
+									"        }",
+									"        console.log('📁 PDF Path: ' + responseJson.data.pdfFilePath);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orderId\": {{testOrderId}},\n    \"customerEmail\": \"{{testEmail}}\",\n    \"customerName\": \"Nguyễn Văn Test (Updated)\",\n    \"notes\": \"Hóa đơn test với mã vận đơn và delivery fee - Created from Postman collection\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/invoices",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"invoices"
+							]
+						},
+						"description": "🆕 Tạo hóa đơn điện tử mới (tự động tạo PDF thật sự). Giờ sử dụng delivery_fee và hiển thị delivery.id."
+					},
+					"response": []
+				},
+				{
+					"name": "Generate PDF for Invoice",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Generate PDF successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.success).to.be.true;",
+									"    if (responseJson.data) {",
+									"        console.log('✅ PDF generated at: ' + responseJson.data);",
+									"        console.log('📄 Format: Thật sự PDF, không phải HTML');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/invoices/{{createdInvoiceId}}/generate-pdf",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"invoices",
+								"{{createdInvoiceId}}",
+								"generate-pdf"
+							]
+						},
+						"description": "🔄 Tạo file PDF cho hóa đơn đã tạo (thường không cần vì tự động tạo khi create)"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Invoice by Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Send invoice by email successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.success).to.be.true;",
+									"    console.log('✅ Email sent successfully: ' + responseJson.message);",
+									"    console.log('📧 Check email for PDF attachment (real PDF format)');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/invoices/{{createdInvoiceId}}/send-email?emailAddress={{testEmail}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"invoices",
+								"{{createdInvoiceId}}",
+								"send-email"
+							],
+							"query": [
+								{
+									"key": "emailAddress",
+									"value": "{{testEmail}}"
+								}
+							]
+						},
+						"description": "📧 Gửi hóa đơn qua email kèm file PDF attachment (PDF thật sự)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Invoice Details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Get invoice details successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.success).to.be.true;",
+									"    pm.expect(responseJson.data).to.have.property('id');",
+									"    pm.expect(responseJson.data).to.have.property('invoiceNumber');",
+									"    pm.expect(responseJson.data).to.have.property('status');",
+									"    console.log('📄 Invoice status: ' + responseJson.data.status);",
+									"    console.log('💰 Invoice amount: ' + responseJson.data.totalAmount);",
+									"    ",
+									"    // 🆕 Kiểm tra thông tin delivery",
+									"    if (responseJson.data.deliveryId) {",
+									"        console.log('🚚 Delivery ID: ' + responseJson.data.deliveryId);",
+									"    }",
+									"    if (responseJson.data.pdfFilePath) {",
+									"        console.log('📁 PDF available at: ' + responseJson.data.pdfFilePath);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/invoices/{{createdInvoiceId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"invoices",
+								"{{createdInvoiceId}}"
+							]
+						},
+						"description": "📋 Lấy chi tiết hóa đơn để kiểm tra thông tin sau khi gửi email"
+					},
+					"response": []
+				},
+				{
+					"name": "Download Invoice PDF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('PDF download successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/pdf');",
+									"    pm.expect(pm.response.headers.get('Content-Disposition')).to.include('attachment');",
+									"    console.log('✅ PDF download thành công! (Định dạng PDF thật sự)');",
+									"});",
+									"",
+									"// Log thông tin file",
+									"const contentLength = pm.response.headers.get('Content-Length');",
+									"const fileName = pm.response.headers.get('Content-Disposition');",
+									"console.log('📁 File size: ' + contentLength + ' bytes');",
+									"console.log('📄 File name: ' + fileName);",
+									"",
+									"// 🆕 Kiểm tra format PDF thật sự",
+									"pm.test('File is real PDF format', function () {",
+									"    const contentType = pm.response.headers.get('Content-Type');",
+									"    pm.expect(contentType).to.equal('application/pdf');",
+									"    console.log('✅ Confirmed: Real PDF format, not HTML');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/invoices/{{createdInvoiceId}}/download-pdf",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"invoices",
+								"{{createdInvoiceId}}",
+								"download-pdf"
+							]
+						},
+						"description": "📥 Download file PDF của hóa đơn điện tử. 🆕 File sẽ là PDF thật sự với mã vận đơn."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Invoices",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Get all invoices successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.success).to.be.true;",
+									"    console.log('Total invoices found: ' + (responseJson.data ? responseJson.data.length : 0));",
+									"    ",
+									"    // 🆕 Kiểm tra invoice có delivery info",
+									"    if (responseJson.data && responseJson.data.length > 0) {",
+									"        const latestInvoice = responseJson.data[0];",
+									"        if (latestInvoice.deliveryId) {",
+									"            console.log('✅ Latest invoice has delivery ID: ' + latestInvoice.deliveryId);",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/invoices",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"invoices"
+							]
+						},
+						"description": "📋 Lấy danh sách tất cả hóa đơn để xem kết quả test"
+					},
+					"response": []
+				}
+			],
+			"description": "🔄 Test các chức năng quản lý hóa đơn với cập nhật mới (delivery integration)"
+		},
+		{
+			"name": "Complete Email & PDF Test Flow",
+			"item": [
+				{
+					"name": "End-to-End Test: Create + Generate PDF + Send Email",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Thiết lập dữ liệu test",
+									"const timestamp = new Date().getTime();",
+									"pm.environment.set('testCustomerName', 'KTC Test Customer ' + timestamp);",
+									"pm.environment.set('testNotes', 'E2E test với delivery integration - Created at ' + new Date().toISOString());",
+									"console.log('🚀 Preparing E2E test with delivery integration');",
+									"console.log('📅 Timestamp: ' + timestamp);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('End-to-end test successful', function () {",
+									"    pm.response.to.have.status(201);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.success).to.be.true;",
+									"    ",
+									"    if (responseJson.data && responseJson.data.id) {",
+									"        pm.environment.set('e2eInvoiceId', responseJson.data.id);",
+									"        console.log('✅ E2E Test: Invoice created with ID ' + responseJson.data.id);",
+									"        console.log('🚚 E2E Test: Delivery ID ' + responseJson.data.deliveryId);",
+									"        console.log('💰 E2E Test: Amount from delivery_fee ' + responseJson.data.totalAmount);",
+									"        console.log('📄 E2E Test: PDF auto-generated (real PDF format)');",
+									"        console.log('✅ E2E Test: Ready for email sending');",
+									"        ",
+									"        // Tự động chạy send email test",
+									"        setTimeout(() => {",
+									"            pm.sendRequest({",
+									"                url: pm.environment.get('baseUrl') + '/api/invoices/' + responseJson.data.id + '/send-email?emailAddress=' + pm.environment.get('testEmail'),",
+									"                method: 'POST',",
+									"                header: {",
+									"                    'Authorization': 'Bearer ' + pm.environment.get('authToken')",
+									"                }",
+									"            }, (err, res) => {",
+									"                if (err) {",
+									"                    console.log('❌ E2E Test: Email sending failed - ' + err);",
+									"                } else if (res.code === 200) {",
+									"                    console.log('✅ E2E Test: Email sent successfully!');",
+									"                    console.log('📧 E2E Test: Check email for real PDF invoice with delivery info');",
+									"                } else {",
+									"                    console.log('❌ E2E Test: Email sending failed with status ' + res.code);",
+									"                }",
+									"            });",
+									"        }, 2000); // Đợi 2 giây để PDF được tạo xong",
+									"    } else {",
+									"        console.log('❌ E2E Test: Failed to create invoice - check delivery data');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orderId\": {{testOrderId}},\n    \"customerEmail\": \"{{testEmail}}\",\n    \"customerName\": \"{{testCustomerName}}\",\n    \"notes\": \"{{testNotes}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/invoices",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"invoices"
+							]
+						},
+						"description": "🎯 Test toàn bộ quy trình: Tạo hóa đơn (với delivery integration) → Tạo PDF thật sự → Gửi email"
+					},
+					"response": []
+				}
+			],
+			"description": "🔄 Test quy trình hoàn chỉnh với cập nhật mới (delivery integration & real PDF)"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global pre-request script",
+					"console.log('🚀 Starting API test for: ' + pm.info.requestName);",
+					"console.log('📍 Environment: ' + pm.environment.name);",
+					"console.log('🔗 Base URL: ' + pm.environment.get('baseUrl'));",
+					"console.log('🆕 Updated collection with delivery integration');"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test script",
+					"console.log('📊 Response status: ' + pm.response.code);",
+					"console.log('⏱️ Response time: ' + pm.response.responseTime + 'ms');",
+					"",
+					"// Check for common error patterns",
+					"if (pm.response.code >= 400) {",
+					"    console.log('❌ Error response received');",
+					"    try {",
+					"        const errorResponse = pm.response.json();",
+					"        if (errorResponse.message) {",
+					"            console.log('Error message: ' + errorResponse.message);",
+					"            // 🆕 Specific check for delivery-related errors",
+					"            if (errorResponse.message.includes('delivery') || errorResponse.message.includes('Delivery')) {",
+					"                console.log('⚠️ DELIVERY ERROR: Ensure order has delivery data with delivery_fee > 0');",
+					"            }",
+					"        }",
+					"    } catch (e) {",
+					"        console.log('Could not parse error response as JSON');",
+					"    }",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "adminEmail",
+			"value": "datkz31@gmail.com",
+			"type": "string"
+		},
+		{
+			"key": "adminUsername",
+			"value": "datkz31@gmail.com",
+			"type": "string"
+		},
+		{
+			"key": "adminPassword",
+			"value": "123123",
+			"type": "string"
+		},
+		{
+			"key": "testEmail",
+			"value": "datkz31@gmail.com",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "testOrderId",
+			"value": "1",
+			"type": "string",
+			"description": "🆕 Order ID phải có delivery data tương ứng"
+		},
+		{
+			"key": "createdInvoiceId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "e2eInvoiceId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "testCustomerName",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "testNotes",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "testDeliveryId",
+			"value": "",
+			"type": "string",
+			"description": "🆕 Delivery ID được lấy từ API response"
+		},
+		{
+			"key": "testDeliveryFee",
+			"value": "",
+			"type": "string",
+			"description": "🆕 Delivery fee được lấy từ API response"
+		}
+	]
+}

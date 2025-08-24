@@ -5,7 +5,8 @@ public enum StatusType {
     ORDER("Order"),
     PAYMENT("Payment"),
     USER("User"),
-    DELIVERY("Delivery"); // Thêm dòng này
+    DELIVERY("Delivery"),
+    INVOICE("Invoice"); // Thêm hỗ trợ cho hóa đơn điện tử
 
     private final String displayName;
 
