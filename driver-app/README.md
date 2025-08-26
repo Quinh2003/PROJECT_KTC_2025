@@ -17,25 +17,116 @@
 - Tối ưu tuyến đường thời gian thực
 - Hiển thị vị trí pickup và delivery
 - Tuỳ chỉnh style bản đồ và đường đi
+- Định vị chính xác vị trí tài xế với CustomPosition
+- Tính toán quãng đường và thời gian di chuyển
+- Hiển thị hướng dẫn chỉ đường chi tiết (turn-by-turn)
 
-### 📸 Xác nhận giao hàng
+### 📊 Data Visualization & Analytics
 
-- Chụp ảnh xác nhận giao hàng thành công
-- Lấy signature khách hàng
-- Upload ảnh lên server
+- **Dashboard Analytics**: Hiển thị tổng quan hiệu suất giao hàng
+- **Biểu đồ khu vực (Area Chart)**: Theo dõi xu hướng giao hàng theo thời gian
+- **Biểu đồ cột (Bar Chart)**: Phân tích số lượng giao hàng theo ngày trong tuần
+- **Biểu đồ tròn (Pie Chart)**: Trực quan hóa phân phối loại hình giao hàng
+- **Biểu đồ phân tán (Scatter Chart)**: Phân tích mối quan hệ giữa quãng đường và thời gian giao hàng
+- **Biểu đồ bong bóng (Bubble Chart)**: So sánh hiệu suất giao hàng giữa các khu vực
+- **Biểu đồ radar (Radar Chart)**: Đánh giá hiệu suất đa chiều của các loại hình giao hàng
+- **Chế độ sáng/tối**: Tất cả biểu đồ đều tương thích với chế độ giao diện sáng và tối
 
-### 🔔 Push Notifications
+## Các màn hình chính
 
-- Firebase Cloud Messaging (FCM)
-- Thông báo đơn hàng mới
-- Cập nhật trạng thái từ dispatcher
+### 🏠 Dashboard Screen
 
-### 🔐 Authentication & Security
+- **Overview**: Hiển thị tổng quan hiệu suất tài xế
+- **Key Metrics**: Số đơn hoàn thành, tỷ lệ đúng giờ, quãng đường trung bình, đánh giá
+- **Upcoming Deliveries**: Danh sách đơn hàng sắp tới
+- **Charts**: Biểu đồ khu vực và cột cho phân tích xu hướng giao hàng
 
-- Đăng nhập secure cho tài xế
-- Flutter Secure Storage
-- JWT token authentication
-- Role-based access control
+### 🗺️ Route Map Screen
+
+- **MapBox Integration**: Bản đồ tương tác với nhiều lớp dữ liệu
+- **Route Optimization**: Tính toán và hiển thị tuyến đường tối ưu
+- **Turn-by-turn Navigation**: Hướng dẫn chi tiết từng đoạn đường
+- **Custom Position Handling**: Xử lý và hiển thị vị trí chính xác với kiểu dữ liệu tùy chỉnh
+- **Multiple Stops**: Hỗ trợ đa điểm giao hàng trên cùng tuyến đường
+
+### � Analytics Screen
+
+- **Weekly Performance**: Biểu đồ area chart cho xu hướng theo thời gian
+- **Daily Analysis**: Biểu đồ cột phân tích theo ngày trong tuần
+- **Delivery Distribution**: Biểu đồ tròn phân loại các chuyến giao hàng
+- **Efficiency Analysis**: Biểu đồ scatter chart so sánh quãng đường và thời gian
+- **Regional Performance**: Biểu đồ bubble chart phân tích theo khu vực
+- **Service Comparison**: Biểu đồ radar đánh giá các loại hình dịch vụ giao hàng
+- **Dark/Light Mode**: Tự động điều chỉnh hiển thị theo chế độ của hệ thống
+
+### � Delivery Detail Screen
+
+- **Package Information**: Chi tiết đơn hàng
+- **Status Management**: Cập nhật trạng thái giao hàng
+- **Customer Interaction**: Gọi điện, nhắn tin với khách hàng
+- **Proof of Delivery**: Chụp ảnh, lấy chữ ký xác nhận
+- **Special Instructions**: Hiển thị yêu cầu đặc biệt của đơn hàng
+
+### 👤 Profile & Settings
+
+- **Driver Information**: Thông tin cá nhân tài xế
+- **Vehicle Details**: Thông tin phương tiện
+- **Performance Stats**: Thống kê hiệu suất làm việc
+- **App Settings**: Cài đặt ngôn ngữ, thông báo, theme
+
+## 📊 Data Visualization Components
+
+Ứng dụng tích hợp nhiều loại biểu đồ để trực quan hóa dữ liệu giao hàng, giúp tài xế theo dõi hiệu suất và tối ưu hóa công việc:
+
+### 🌊 Area Chart
+
+- **DeliveryAreaChart**: Hiển thị xu hướng giao hàng theo thời gian
+- **Tính năng**: Đường cong mượt mà, vùng gradient, tương thích dark/light mode
+- **Thông số hiển thị**: Số lượng giao hàng theo ngày trong tuần
+- **Use case**: Phân tích xu hướng, phát hiện mẫu hình theo thời gian
+
+### 📊 Bar Chart
+
+- **DeliveryBarChart**: So sánh số lượng giao hàng theo ngày trong tuần
+- **Tính năng**: Thanh gradient, tương tác tooltip, hiển thị giá trị
+- **Thông số hiển thị**: Số lượng giao hàng mỗi ngày
+- **Use case**: So sánh hiệu suất giữa các ngày, xác định ngày cao điểm/thấp điểm
+
+### 🍩 Pie Chart
+
+- **DeliveryTypePieChart**: Phân phối các loại giao hàng
+- **Tính năng**: Sections động, tương tác tooltip, hiển thị phần trăm
+- **Thông số hiển thị**: Tỷ lệ phần trăm của từng loại giao hàng
+- **Use case**: Phân tích cơ cấu giao hàng, so sánh loại hình dịch vụ
+
+### 🔵 Scatter Chart
+
+- **DeliveryScatterChart**: Phân tích mối quan hệ giữa khoảng cách và thời gian
+- **Tính năng**: Kích thước điểm động (thể hiện kích thước gói hàng), tooltip chi tiết
+- **Thông số hiển thị**: Khoảng cách (km), thời gian (phút), kích thước gói hàng
+- **Use case**: Phân tích hiệu quả giao hàng, xác định outliers
+
+### 🫧 Bubble Chart (Custom Scatter)
+
+- **DeliveryBubbleChart**: So sánh hiệu suất giao hàng giữa các khu vực
+- **Tính năng**: Bong bóng kích thước động, tooltip thông tin, tương tác hover
+- **Thông số hiển thị**: Khoảng cách trung bình, tỷ lệ đúng giờ, số lượng giao hàng
+- **Use case**: So sánh hiệu suất giữa các khu vực địa lý
+
+### 🔮 Radar Chart
+
+- **DeliveryRadarChart**: Đánh giá đa chiều các loại hình dịch vụ giao hàng
+- **Tính năng**: Hiển thị đa metric, tương tác chọn loại dịch vụ, legend
+- **Thông số hiển thị**: Tốc độ, độ chính xác, chi phí, phạm vi, sự hài lòng của khách hàng
+- **Use case**: So sánh toàn diện hiệu suất của các loại dịch vụ giao hàng
+
+### 🎨 Thiết kế và tích hợp
+
+- **Responsive**: Tự động điều chỉnh kích thước theo thiết bị
+- **Theme Support**: Tương thích đầy đủ với chế độ sáng/tối
+- **Interaction**: Tooltips, hover effects, và animations
+- **Performance**: Tối ưu hóa hiệu suất với Flutter
+- **Integration**: Tích hợp liền mạch với hệ thống analytics
 
 ---
 
@@ -47,6 +138,8 @@
 - **Dart**: 3.8.1
 - **State Management**: BLoC Pattern
 - **UI Components**: Material Design 3
+- **Charts**: fl_chart library (3.0.0+)
+- **Spatial UI**: Custom implementation của Material 3 với hiệu ứng depth và layering
 
 ### Backend Integration
 
@@ -97,6 +190,8 @@ Tầng giao diện người dùng:
 - **Screens & Pages**: UI của ứng dụng
 - **Widgets**: Reusable UI components
 - **State Management**: BLoC providers và consumers
+- **Chart Components**: Các biểu đồ dữ liệu được phát triển với fl_chart
+- **Spatial UI**: Design system theo nguyên tắc đa lớp, tương thích dark/light mode
 
 ### � Data Flow & Dependency Injection
 
@@ -111,6 +206,135 @@ Tầng giao diện người dùng:
 - **Independence**: Business logic không phụ thuộc framework
 
 ---
+
+## � Data Visualization Components
+
+Ứng dụng tích hợp nhiều loại biểu đồ để trực quan hóa dữ liệu giao hàng, giúp tài xế theo dõi hiệu suất và tối ưu hóa công việc:
+
+### � Area Chart
+
+- **DeliveryAreaChart**: Hiển thị xu hướng giao hàng theo thời gian
+- **Tính năng**: Đường cong mượt mà, vùng gradient, tương thích dark/light mode
+- **Thông số hiển thị**: Số lượng giao hàng theo ngày trong tuần
+- **Use case**: Phân tích xu hướng, phát hiện mẫu hình theo thời gian
+
+### � Bar Chart
+
+- **DeliveryBarChart**: So sánh số lượng giao hàng theo ngày trong tuần
+- **Tính năng**: Thanh gradient, tương tác tooltip, hiển thị giá trị
+- **Thông số hiển thị**: Số lượng giao hàng mỗi ngày
+- **Use case**: So sánh hiệu suất giữa các ngày, xác định ngày cao điểm/thấp điểm
+
+### 🍩 Pie Chart
+
+- **DeliveryTypePieChart**: Phân phối các loại giao hàng
+- **Tính năng**: Sections động, tương tác tooltip, hiển thị phần trăm
+- **Thông số hiển thị**: Tỷ lệ phần trăm của từng loại giao hàng
+- **Use case**: Phân tích cơ cấu giao hàng, so sánh loại hình dịch vụ
+
+### � Scatter Chart
+
+- **DeliveryScatterChart**: Phân tích mối quan hệ giữa khoảng cách và thời gian
+- **Tính năng**: Kích thước điểm động (thể hiện kích thước gói hàng), tooltip chi tiết
+- **Thông số hiển thị**: Khoảng cách (km), thời gian (phút), kích thước gói hàng
+- **Use case**: Phân tích hiệu quả giao hàng, xác định outliers
+
+### 🫧 Bubble Chart (Custom Scatter)
+
+- **DeliveryBubbleChart**: So sánh hiệu suất giao hàng giữa các khu vực
+- **Tính năng**: Bong bóng kích thước động, tooltip thông tin, tương tác hover
+- **Thông số hiển thị**: Khoảng cách trung bình, tỷ lệ đúng giờ, số lượng giao hàng
+- **Use case**: So sánh hiệu suất giữa các khu vực địa lý
+
+### � Radar Chart
+
+- **DeliveryRadarChart**: Đánh giá đa chiều các loại hình dịch vụ giao hàng
+- **Tính năng**: Hiển thị đa metric, tương tác chọn loại dịch vụ, legend
+- **Thông số hiển thị**: Tốc độ, độ chính xác, chi phí, phạm vi, sự hài lòng của khách hàng
+- **Use case**: So sánh toàn diện hiệu suất của các loại dịch vụ giao hàng
+
+### 🎨 Thiết kế và tích hợp
+
+- **Responsive**: Tự động điều chỉnh kích thước theo thiết bị
+- **Theme Support**: Tương thích đầy đủ với chế độ sáng/tối
+- **Interaction**: Tooltips, hover effects, và animations
+- **Performance**: Tối ưu hóa hiệu suất với Flutter
+- **Integration**: Tích hợp liền mạch với hệ thống analytics
+
+---
+
+## 🗺️ Cải tiến Map và Custom Position
+
+Để giải quyết vấn đề xung đột giữa các kiểu dữ liệu vị trí, ứng dụng đã triển khai `CustomPosition` class:
+
+### CustomPosition Class
+
+```dart
+class CustomPosition {
+  final double latitude;
+  final double longitude;
+  final double altitude;
+  final double accuracy;
+  final double heading;
+  final double speed;
+  final double speedAccuracy;
+  final DateTime timestamp;
+
+  CustomPosition({
+    required this.latitude,
+    required this.longitude,
+    this.altitude = 0.0,
+    this.accuracy = 0.0,
+    this.heading = 0.0,
+    this.speed = 0.0,
+    this.speedAccuracy = 0.0,
+    DateTime? timestamp,
+  }) : timestamp = timestamp ?? DateTime.now();
+
+  // Conversion from geolocator Position
+  factory CustomPosition.fromPosition(position) {
+    return CustomPosition(
+      latitude: position.latitude,
+      longitude: position.longitude,
+      altitude: position.altitude,
+      accuracy: position.accuracy,
+      heading: position.heading,
+      speed: position.speed,
+      speedAccuracy: position.speedAccuracy,
+      timestamp: position.timestamp,
+    );
+  }
+
+  // Conversion to Mapbox's Position
+  dynamic toMapboxPosition() {
+    // Implementation depends on the exact Mapbox Position format
+    return [longitude, latitude]; // Typically [lng, lat] for Mapbox
+  }
+}
+```
+
+### Tính năng của CustomPosition
+
+- **Loại bỏ xung đột**: Giải quyết vấn đề xung đột giữa geolocator Position và Mapbox Position
+- **Khả năng chuyển đổi**: Hỗ trợ chuyển đổi qua lại giữa các định dạng vị trí khác nhau
+- **Chuẩn hóa dữ liệu**: Đảm bảo nhất quán trong cách sử dụng dữ liệu vị trí trong ứng dụng
+- **Mở rộng**: Dễ dàng mở rộng với các thuộc tính bổ sung khi cần
+
+### Tối ưu hóa Route Map
+
+- **Xử lý marker động**: Tự động cập nhật vị trí marker theo GPS
+- **Custom marker icons**: Sử dụng icon tùy chỉnh cho các loại điểm trên bản đồ
+- **Polyline animation**: Hiệu ứng đường đi với gradient và animation
+- **Turn-by-turn instructions**: Hướng dẫn chi tiết cho từng đoạn đường
+- **Multiple route options**: Hiển thị nhiều tùy chọn tuyến đường và cho phép người dùng chọn
+- **Route optimization**: Tính toán tuyến đường tối ưu với nhiều điểm dừng
+
+### Các cải tiến khác
+
+- **Low battery optimization**: Giảm tần suất cập nhật GPS khi pin yếu
+- **Offline map data**: Hỗ trợ tải xuống dữ liệu bản đồ để sử dụng offline
+- **Background tracking**: Theo dõi vị trí ngay cả khi ứng dụng ở chế độ nền
+- **Geofencing**: Thông báo khi tài xế đến gần điểm giao hàng
 
 ## Cấu hình dự án
 

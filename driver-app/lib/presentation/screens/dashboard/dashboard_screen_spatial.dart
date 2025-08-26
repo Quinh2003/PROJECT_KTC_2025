@@ -4,7 +4,7 @@ import 'dart:ui';
 
 import '../../design/spatial_ui.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import '../../widgets/charts/simple_charts.dart';
+import '../../components/delivery_charts.dart';
 
 class DashboardScreenSpatial extends StatefulWidget {
   const DashboardScreenSpatial({super.key});
@@ -17,7 +17,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
   int _selectedIndex = 0;
   bool _isSidebarExpanded = true;
   // Thêm biến để hiển thị onboarding
-  bool _showOnboarding = true; 
+  bool _showOnboarding = true;
 
   @override
   Widget build(BuildContext context) {
@@ -38,14 +38,14 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
               width: _isSidebarExpanded ? 250 : 80,
               child: _buildSidebar(context, isTablet),
             ),
-          
+
           // Main Content
           Expanded(
             child: Column(
               children: [
                 // Top App Bar
                 _buildAppBar(context, isTablet),
-                
+
                 // Content Area
                 Expanded(
                   child: SingleChildScrollView(
@@ -53,24 +53,23 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Hiển thị onboarding nếu cần
-                        if (_showOnboarding)
-                          _buildOnboarding(context),
-                          
+                        // // Hiển thị onboarding nếu cần
+                        // if (_showOnboarding) _buildOnboarding(context),
+
                         // Welcome Section
                         _buildWelcomeSection(context),
                         const SizedBox(height: 24),
-                        
+
+                        // Current Activity & Route
+                        _buildCurrentActivitySection(context, isTablet),
+
                         // Stats Grid
                         _buildStatsGrid(context, isTablet),
                         const SizedBox(height: 24),
-                        
+
                         // Analytics Charts
                         _buildAnalyticsCharts(context, isTablet),
                         const SizedBox(height: 24),
-                        
-                        // Current Activity & Route
-                        _buildCurrentActivitySection(context, isTablet),
                       ],
                     ),
                   ),
@@ -81,9 +80,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
         ],
       ),
       // Bottom Navigation for Mobile
-      bottomNavigationBar: !isTablet
-          ? _buildBottomNav()
-          : null,
+      bottomNavigationBar: !isTablet ? _buildBottomNav() : null,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _startTracking(context);
@@ -96,7 +93,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
 
   Widget _buildSidebar(BuildContext context, bool isTablet) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return GlassCard(
       padding: EdgeInsets.zero,
       borderRadius: const BorderRadius.only(
@@ -165,15 +162,15 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                   ),
                 ),
           const SizedBox(height: 24),
-          
+
           // Navigation Items
           _buildNavItem(context, 0, Icons.dashboard, "Dashboard"),
           _buildNavItem(context, 1, Icons.local_shipping, "My Deliveries"),
           _buildNavItem(context, 2, Icons.history, "History"),
           _buildNavItem(context, 3, Icons.account_circle, "Profile"),
-          
+
           const Spacer(),
-          
+
           // Toggle Sidebar Size
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -217,18 +214,19 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
     );
   }
 
-  Widget _buildNavItem(BuildContext context, int index, IconData icon, String label) {
+  Widget _buildNavItem(
+      BuildContext context, int index, IconData icon, String label) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isSelected = index == _selectedIndex;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
           _selectedIndex = index;
         });
-        
+
         // Thêm điều hướng đến trang tương ứng
-        switch(index) {
+        switch (index) {
           case 0: // Dashboard - đã ở trang hiện tại
             break;
           case 1: // My Deliveries
@@ -286,7 +284,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
 
   Widget _buildAppBar(BuildContext context, bool isTablet) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       borderRadius: const BorderRadius.only(
@@ -306,7 +304,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                 // Open drawer or show modal bottom sheet with menu
               },
             ),
-          
+
           // Page Title
           Text(
             "Dashboard",
@@ -316,19 +314,17 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                   : SpatialDesignSystem.textPrimaryColor,
             ),
           ),
-          
+
           const Spacer(),
-          
+
           // Notification Badge
           GestureDetector(
             onTap: () {
               // Mở trang thông báo
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Tính năng thông báo đang được phát triển'),
-                  duration: Duration(seconds: 2),
-                )
-              );
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Tính năng thông báo đang được phát triển'),
+                duration: Duration(seconds: 2),
+              ));
             },
             child: Container(
               padding: const EdgeInsets.all(8),
@@ -368,10 +364,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
               ),
             ),
           ),
-          
+
           // Add space
           const SizedBox(width: 16),
-          
+
           // Avatar
           GestureDetector(
             onTap: () {
@@ -411,7 +407,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
 
   Widget _buildWelcomeSection(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -585,7 +581,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
 
   Widget _buildCurrentActivitySection(BuildContext context, bool isTablet) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -602,10 +598,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
       ],
     );
   }
-  
+
   Widget _buildAnalyticsCharts(BuildContext context, bool isTablet) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -632,7 +628,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                 ),
               ),
               const SizedBox(height: 16),
-              SimpleDeliveryLineChart(isDark: isDark),
+              DeliveryAreaChart(isDark: isDark),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -641,10 +637,12 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: SpatialDesignSystem.primaryColor.withValues(alpha: 0.1),
+                        color: SpatialDesignSystem.primaryColor
+                            .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: SpatialDesignSystem.primaryColor.withValues(alpha: 0.3),
+                          color: SpatialDesignSystem.primaryColor
+                              .withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -676,10 +674,12 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: SpatialDesignSystem.successColor.withValues(alpha: 0.1),
+                        color: SpatialDesignSystem.successColor
+                            .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: SpatialDesignSystem.successColor.withValues(alpha: 0.3),
+                          color: SpatialDesignSystem.successColor
+                              .withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -733,10 +733,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
       ],
     );
   }
-  
+
   Widget _buildPieChartCard(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return GlassCard(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -751,30 +751,30 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
             ),
           ),
           const SizedBox(height: 16),
-          SimpleDeliveryPieChart(isDark: isDark),
+          DeliveryTypePieChart(isDark: isDark),
           const SizedBox(height: 16),
           Row(
             children: [
               _buildPieChartLegend(
-                context, 
+                context,
                 SpatialDesignSystem.primaryColor,
                 "Regular",
               ),
               const SizedBox(width: 8),
               _buildPieChartLegend(
-                context, 
+                context,
                 SpatialDesignSystem.accentColor,
                 "Express",
               ),
               const SizedBox(width: 8),
               _buildPieChartLegend(
-                context, 
+                context,
                 SpatialDesignSystem.warningColor,
                 "Overnight",
               ),
               const SizedBox(width: 8),
               _buildPieChartLegend(
-                context, 
+                context,
                 SpatialDesignSystem.successColor,
                 "Premium",
               ),
@@ -784,10 +784,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
       ),
     );
   }
-  
+
   Widget _buildPieChartLegend(BuildContext context, Color color, String label) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Expanded(
       child: Row(
         children: [
@@ -815,10 +815,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
       ),
     );
   }
-  
+
   Widget _buildScatterChartCard(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return GlassCard(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -842,7 +842,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
             ),
           ),
           const SizedBox(height: 16),
-          SimpleDeliveryScatterChart(isDark: isDark),
+          DeliveryScatterChart(isDark: isDark),
         ],
       ),
     );
@@ -850,7 +850,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
 
   Widget _buildCurrentRouteCard(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return GlassCard(
       padding: const EdgeInsets.all(20),
       gradient: LinearGradient(
@@ -876,12 +876,15 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: SpatialDesignSystem.successColor.withValues(alpha: 0.1),
+                  color:
+                      SpatialDesignSystem.successColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: SpatialDesignSystem.successColor.withValues(alpha: 0.3),
+                    color:
+                        SpatialDesignSystem.successColor.withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),
@@ -913,7 +916,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.timer_outlined, color: SpatialDesignSystem.accentColor),
+              const Icon(Icons.timer_outlined,
+                  color: SpatialDesignSystem.accentColor),
               const SizedBox(width: 8),
               Text(
                 "Started at 08:30 AM (2h 45m elapsed)",
@@ -928,7 +932,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.local_shipping_outlined, color: SpatialDesignSystem.warningColor),
+              const Icon(Icons.local_shipping_outlined,
+                  color: SpatialDesignSystem.warningColor),
               const SizedBox(width: 8),
               Text(
                 "Vehicle: Delivery Van #KTC-2025",
@@ -995,7 +1000,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           SpatialButton(
             text: "View Route Map",
             onPressed: () {
-              Navigator.pushNamed(context, '/route-map', arguments: 'RT-2025-08-14-01');
+              Navigator.pushNamed(context, '/route-map',
+                  arguments: 'RT-2025-08-14-01');
             },
             iconData: Icons.map,
             isGlass: true,
@@ -1008,13 +1014,13 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
 
   void _startTracking(BuildContext context) {
     final trackingBloc = BlocProvider.of<TrackingBloc>(context);
-    
+
     trackingBloc.add(StartTrackingEvent(
       driverId: "driver_123",
       vehicleId: "vehicle_456",
       routeId: "RT-2025-08-14-01",
     ));
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -1037,9 +1043,9 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
         setState(() {
           _selectedIndex = index;
         });
-        
+
         // Thêm điều hướng đến trang tương ứng
-        switch(index) {
+        switch (index) {
           case 0: // Dashboard - đã ở trang hiện tại
             break;
           case 1: // My Deliveries
@@ -1081,7 +1087,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
   // Thêm phương thức để hiển thị onboarding
   Widget _buildOnboarding(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 24),
