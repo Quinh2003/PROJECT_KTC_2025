@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import '../../design/spatial_ui.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
+import '../../widgets/charts/simple_charts.dart';
 
 class DashboardScreenSpatial extends StatefulWidget {
   const DashboardScreenSpatial({super.key});
@@ -64,12 +65,12 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                         _buildStatsGrid(context, isTablet),
                         const SizedBox(height: 24),
                         
-                        // Current Activity & Route
-                        _buildCurrentActivitySection(context, isTablet),
+                        // Analytics Charts
+                        _buildAnalyticsCharts(context, isTablet),
                         const SizedBox(height: 24),
                         
-                        // Activity Feed
-                        _buildActivityFeed(context),
+                        // Current Activity & Route
+                        _buildCurrentActivitySection(context, isTablet),
                       ],
                     ),
                   ),
@@ -168,9 +169,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           // Navigation Items
           _buildNavItem(context, 0, Icons.dashboard, "Dashboard"),
           _buildNavItem(context, 1, Icons.local_shipping, "My Deliveries"),
-          _buildNavItem(context, 2, Icons.map, "Routes"),
-          _buildNavItem(context, 3, Icons.history, "History"),
-          _buildNavItem(context, 4, Icons.account_circle, "Profile"),
+          _buildNavItem(context, 2, Icons.history, "History"),
+          _buildNavItem(context, 3, Icons.account_circle, "Profile"),
           
           const Spacer(),
           
@@ -234,13 +234,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           case 1: // My Deliveries
             Navigator.pushNamed(context, '/delivery-orders');
             break;
-          case 2: // Routes
-            Navigator.pushNamed(context, '/routes');
-            break;
-          case 3: // History
+          case 2: // History
             Navigator.pushNamed(context, '/order-history');
             break;
-          case 4: // Profile
+          case 3: // Profile
             Navigator.pushNamed(context, '/profile');
             break;
         }
@@ -601,23 +598,253 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           ),
         ),
         const SizedBox(height: 16),
+        _buildCurrentRouteCard(context),
+      ],
+    );
+  }
+  
+  Widget _buildAnalyticsCharts(BuildContext context, bool isTablet) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Delivery Analytics",
+          style: SpatialDesignSystem.subtitleLarge.copyWith(
+            color: isDark
+                ? SpatialDesignSystem.textDarkPrimaryColor
+                : SpatialDesignSystem.textPrimaryColor,
+          ),
+        ),
+        const SizedBox(height: 16),
+        GlassCard(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Weekly Delivery Trend",
+                style: SpatialDesignSystem.subtitleMedium.copyWith(
+                  color: isDark
+                      ? SpatialDesignSystem.textDarkPrimaryColor
+                      : SpatialDesignSystem.textPrimaryColor,
+                ),
+              ),
+              const SizedBox(height: 16),
+              SimpleDeliveryLineChart(isDark: isDark),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: SpatialDesignSystem.primaryColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: SpatialDesignSystem.primaryColor.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            "Average",
+                            style: SpatialDesignSystem.captionText.copyWith(
+                              color: isDark
+                                  ? SpatialDesignSystem.textDarkSecondaryColor
+                                  : SpatialDesignSystem.textSecondaryColor,
+                            ),
+                          ),
+                          Text(
+                            "23 deliveries",
+                            style: SpatialDesignSystem.bodyMedium.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? SpatialDesignSystem.textDarkPrimaryColor
+                                  : SpatialDesignSystem.textPrimaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: SpatialDesignSystem.successColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: SpatialDesignSystem.successColor.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            "Growth",
+                            style: SpatialDesignSystem.captionText.copyWith(
+                              color: isDark
+                                  ? SpatialDesignSystem.textDarkSecondaryColor
+                                  : SpatialDesignSystem.textSecondaryColor,
+                            ),
+                          ),
+                          Text(
+                            "+12.5%",
+                            style: SpatialDesignSystem.bodyMedium.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: SpatialDesignSystem.successColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
         isTablet
             ? Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: _buildCurrentRouteCard(context)),
+                  Expanded(
+                    child: _buildPieChartCard(context),
+                  ),
                   const SizedBox(width: 16),
-                  Expanded(child: _buildNextDeliveriesCard(context)),
+                  Expanded(
+                    child: _buildScatterChartCard(context),
+                  ),
                 ],
               )
             : Column(
                 children: [
-                  _buildCurrentRouteCard(context),
+                  _buildPieChartCard(context),
                   const SizedBox(height: 16),
-                  _buildNextDeliveriesCard(context),
+                  _buildScatterChartCard(context),
                 ],
               ),
       ],
+    );
+  }
+  
+  Widget _buildPieChartCard(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return GlassCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Delivery Types",
+            style: SpatialDesignSystem.subtitleMedium.copyWith(
+              color: isDark
+                  ? SpatialDesignSystem.textDarkPrimaryColor
+                  : SpatialDesignSystem.textPrimaryColor,
+            ),
+          ),
+          const SizedBox(height: 16),
+          SimpleDeliveryPieChart(isDark: isDark),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _buildPieChartLegend(
+                context, 
+                SpatialDesignSystem.primaryColor,
+                "Regular",
+              ),
+              const SizedBox(width: 8),
+              _buildPieChartLegend(
+                context, 
+                SpatialDesignSystem.accentColor,
+                "Express",
+              ),
+              const SizedBox(width: 8),
+              _buildPieChartLegend(
+                context, 
+                SpatialDesignSystem.warningColor,
+                "Overnight",
+              ),
+              const SizedBox(width: 8),
+              _buildPieChartLegend(
+                context, 
+                SpatialDesignSystem.successColor,
+                "Premium",
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildPieChartLegend(BuildContext context, Color color, String label) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Expanded(
+      child: Row(
+        children: [
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              style: SpatialDesignSystem.captionText.copyWith(
+                color: isDark
+                    ? SpatialDesignSystem.textDarkSecondaryColor
+                    : SpatialDesignSystem.textSecondaryColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildScatterChartCard(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return GlassCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Delivery Distribution",
+            style: SpatialDesignSystem.subtitleMedium.copyWith(
+              color: isDark
+                  ? SpatialDesignSystem.textDarkPrimaryColor
+                  : SpatialDesignSystem.textPrimaryColor,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Time vs. Distance correlation",
+            style: SpatialDesignSystem.captionText.copyWith(
+              color: isDark
+                  ? SpatialDesignSystem.textDarkSecondaryColor
+                  : SpatialDesignSystem.textSecondaryColor,
+            ),
+          ),
+          const SizedBox(height: 16),
+          SimpleDeliveryScatterChart(isDark: isDark),
+        ],
+      ),
     );
   }
 
@@ -779,341 +1006,26 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
     );
   }
 
-  Widget _buildNextDeliveriesCard(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  void _startTracking(BuildContext context) {
+    final trackingBloc = BlocProvider.of<TrackingBloc>(context);
     
-    return GlassCard(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Next Deliveries",
-                style: SpatialDesignSystem.subtitleMedium.copyWith(
-                  color: isDark
-                      ? SpatialDesignSystem.textDarkPrimaryColor
-                      : SpatialDesignSystem.textPrimaryColor,
-                ),
-              ),
-              Text(
-                "3 Remaining",
-                style: SpatialDesignSystem.captionText.copyWith(
-                  color: SpatialDesignSystem.warningColor,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildDeliveryItem(
-            context,
-            "ORD-2025-08-14-042",
-            "123 Nguyen Hue St, District 1",
-            "12:30 PM",
-            "Next",
-          ),
-          const Divider(),
-          _buildDeliveryItem(
-            context,
-            "ORD-2025-08-14-055",
-            "456 Le Loi St, District 1",
-            "1:15 PM",
-            "Pending",
-          ),
-          const Divider(),
-          _buildDeliveryItem(
-            context,
-            "ORD-2025-08-14-063",
-            "789 Vo Van Tan St, District 3",
-            "2:00 PM",
-            "Pending",
-          ),
-          const SizedBox(height: 16),
-          SpatialButton(
-            text: "View All Deliveries",
-            onPressed: () {
-              // Navigate to deliveries page
-              Navigator.pushNamed(context, '/delivery-orders');
-            },
-            iconData: Icons.view_list,
-            isOutlined: true,
-            width: double.infinity,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDeliveryItem(
-    BuildContext context,
-    String orderId,
-    String address,
-    String time,
-    String status,
-  ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isNext = status == "Next";
+    trackingBloc.add(StartTrackingEvent(
+      driverId: "driver_123",
+      vehicleId: "vehicle_456",
+      routeId: "RT-2025-08-14-01",
+    ));
     
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, '/order-detail', arguments: orderId);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
           children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: isNext
-                    ? SpatialDesignSystem.primaryColor.withValues(alpha: 0.1)
-                    : (isDark
-                        ? Colors.white.withValues(alpha: 0.05)
-                        : Colors.black.withValues(alpha: 0.05)),
-                borderRadius: BorderRadius.circular(8),
-                border: isNext
-                    ? Border.all(
-                        color: SpatialDesignSystem.primaryColor,
-                        width: 1,
-                      )
-                    : null,
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.shopping_bag_outlined,
-                  color: isNext
-                      ? SpatialDesignSystem.primaryColor
-                      : (isDark
-                          ? SpatialDesignSystem.textDarkSecondaryColor
-                          : SpatialDesignSystem.textSecondaryColor),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    orderId,
-                    style: SpatialDesignSystem.subtitleSmall.copyWith(
-                      color: isDark
-                          ? SpatialDesignSystem.textDarkPrimaryColor
-                          : SpatialDesignSystem.textPrimaryColor,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    address,
-                    style: SpatialDesignSystem.bodySmall.copyWith(
-                      color: isDark
-                          ? SpatialDesignSystem.textDarkSecondaryColor
-                          : SpatialDesignSystem.textSecondaryColor,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 14,
-                        color: isNext
-                            ? SpatialDesignSystem.primaryColor
-                            : (isDark
-                                ? SpatialDesignSystem.textDarkSecondaryColor
-                                : SpatialDesignSystem.textSecondaryColor),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        time,
-                        style: SpatialDesignSystem.captionText.copyWith(
-                          color: isNext
-                              ? SpatialDesignSystem.primaryColor
-                              : (isDark
-                                  ? SpatialDesignSystem.textDarkSecondaryColor
-                                  : SpatialDesignSystem.textSecondaryColor),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: isNext
-                              ? SpatialDesignSystem.primaryColor.withValues(alpha: 0.1)
-                              : SpatialDesignSystem.warningColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          status,
-                          style: SpatialDesignSystem.captionText.copyWith(
-                            color: isNext
-                                ? SpatialDesignSystem.primaryColor
-                                : SpatialDesignSystem.warningColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: isDark
-                  ? SpatialDesignSystem.textDarkSecondaryColor
-                  : SpatialDesignSystem.textSecondaryColor,
-            ),
+            const Icon(Icons.location_on, color: Colors.white),
+            const SizedBox(width: 10),
+            const Text('Location tracking started'),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildActivityFeed(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Activity Feed",
-          style: SpatialDesignSystem.subtitleLarge.copyWith(
-            color: isDark
-                ? SpatialDesignSystem.textDarkPrimaryColor
-                : SpatialDesignSystem.textPrimaryColor,
-          ),
-        ),
-        const SizedBox(height: 16),
-        GlassCard(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              _buildActivityItem(
-                context,
-                "Order Delivered",
-                "You've successfully delivered order #ORD-2025-08-14-034",
-                "30 minutes ago",
-                Icons.check_circle,
-                SpatialDesignSystem.successColor,
-              ),
-              const Divider(),
-              _buildActivityItem(
-                context,
-                "New Order Assigned",
-                "Order #ORD-2025-08-14-055 has been assigned to you",
-                "1 hour ago",
-                Icons.assignment,
-                SpatialDesignSystem.primaryColor,
-              ),
-              const Divider(),
-              _buildActivityItem(
-                context,
-                "Break Time",
-                "You took a 15 minutes break",
-                "2 hours ago",
-                Icons.free_breakfast,
-                SpatialDesignSystem.warningColor,
-              ),
-              const Divider(),
-              _buildActivityItem(
-                context,
-                "Route Started",
-                "You've started Route #RT-2025-08-14-01",
-                "2 hours 45 minutes ago",
-                Icons.play_circle_filled,
-                SpatialDesignSystem.accentColor,
-              ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () {
-                  // Navigate to activity history
-                  setState(() {
-                    _selectedIndex = 3;
-                  });
-                },
-                child: Text(
-                  "View All Activity",
-                  style: SpatialDesignSystem.buttonText.copyWith(
-                    color: SpatialDesignSystem.primaryColor,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActivityItem(
-    BuildContext context,
-    String title,
-    String description,
-    String time,
-    IconData icon,
-    Color color,
-  ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: Icon(icon, color: color, size: 20),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: SpatialDesignSystem.subtitleSmall.copyWith(
-                    color: isDark
-                        ? SpatialDesignSystem.textDarkPrimaryColor
-                        : SpatialDesignSystem.textPrimaryColor,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: SpatialDesignSystem.bodySmall.copyWith(
-                    color: isDark
-                        ? SpatialDesignSystem.textDarkSecondaryColor
-                        : SpatialDesignSystem.textSecondaryColor,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  time,
-                  style: SpatialDesignSystem.captionText.copyWith(
-                    color: isDark
-                        ? SpatialDesignSystem.textDarkSecondaryColor.withValues(alpha: 0.7)
-                        : SpatialDesignSystem.textSecondaryColor.withValues(alpha: 0.7),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        backgroundColor: SpatialDesignSystem.successColor,
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -1133,13 +1045,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           case 1: // My Deliveries
             Navigator.pushNamed(context, '/delivery-orders');
             break;
-          case 2: // Routes
-            Navigator.pushNamed(context, '/routes');
-            break;
-          case 3: // History
+          case 2: // History
             Navigator.pushNamed(context, '/order-history');
             break;
-          case 4: // Profile
+          case 3: // Profile
             Navigator.pushNamed(context, '/profile');
             break;
         }
@@ -1156,10 +1065,6 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
         BottomNavigationBarItem(
           icon: Icon(Icons.local_shipping),
           label: "Deliveries",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.map),
-          label: "Routes",
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.history),
@@ -1282,30 +1187,6 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  void _startTracking(BuildContext context) {
-    final trackingBloc = BlocProvider.of<TrackingBloc>(context);
-    
-    trackingBloc.add(StartTrackingEvent(
-      driverId: "driver_123",
-      vehicleId: "vehicle_456",
-      routeId: "RT-2025-08-14-01",
-    ));
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.location_on, color: Colors.white),
-            const SizedBox(width: 10),
-            const Text('Location tracking started'),
-          ],
-        ),
-        backgroundColor: SpatialDesignSystem.successColor,
-        duration: const Duration(seconds: 2),
       ),
     );
   }

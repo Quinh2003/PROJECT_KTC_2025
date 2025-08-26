@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart' as permission_handler;
 import 'package:ktc_logistics_driver/domain/models/map/mapbox_route_models.dart';
+import 'package:ktc_logistics_driver/data/env/secrets.dart';
 
 /*
  * Tập tin: map_box_services.dart
@@ -418,10 +419,14 @@ class MapboxDirectionsService {
     _accessToken = token;
   }
 
-  // Get access token from environment variable if not set
-  static String get accessToken {
-    return _accessToken ?? const String.fromEnvironment("ACCESS_TOKEN",
-        defaultValue: "pk.eyJ1IjoiaHVuZ3BxMyIsImEiOiJjbHR3M3JzdXQwYzE5MnFteDFjYXRlcDEzIn0.GDrXTFKq1wn-FZSiTGrfew");
+  // Get access token from secrets file if not set directly
+  static Future<String> get accessToken async {
+    if (_accessToken != null) {
+      return _accessToken!;
+    }
+    
+    // Lấy token từ file bí mật
+    return await Secrets.getMapboxAccessToken();
   }
 
   // Get directions from Mapbox API
@@ -452,8 +457,9 @@ class MapboxDirectionsService {
         .join(";");
 
     // Build query parameters
+    final token = await accessToken;
     final queryParams = {
-      "access_token": accessToken,
+      "access_token": token,
       "steps": steps.toString(),
       "geometries": geometries ? "polyline" : "geojson",
       "overview": "full",

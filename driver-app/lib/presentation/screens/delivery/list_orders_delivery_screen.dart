@@ -26,7 +26,7 @@ class ListOrdersDeliveryScreen extends StatelessWidget {
           ? SpatialDesignSystem.darkBackgroundColor 
           : SpatialDesignSystem.backgroundColor,
         title: TextCustom(
-          text: 'List of orders', 
+          text: 'My Deliveries', 
           color: isDark
             ? SpatialDesignSystem.textDarkPrimaryColor
             : SpatialDesignSystem.textPrimaryColor,
@@ -48,17 +48,239 @@ class ListOrdersDeliveryScreen extends StatelessWidget {
                 text: 'Back', 
                 fontSize: 17, 
                 color: SpatialDesignSystem.primaryColor
-              )
+              ),
             ],
           ),
         ),
       ),
-      body: BlocBuilder<DeliveryBloc, DeliveryState>(
-        builder: (context, state) {
-          // TODO: Replace with proper delivery orders loading from DeliveryBloc
-          // For now, return empty list to avoid deliveryServices error
-          return _ListOrdersForDelivery(listOrdersDelivery: []);
-        }
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildNextDeliveriesCard(context),
+            const SizedBox(height: 24),
+            Text(
+              "All Deliveries",
+              style: SpatialDesignSystem.subtitleLarge.copyWith(
+                color: isDark
+                    ? SpatialDesignSystem.textDarkPrimaryColor
+                    : SpatialDesignSystem.textPrimaryColor,
+              ),
+            ),
+            const SizedBox(height: 16),
+            BlocBuilder<DeliveryBloc, DeliveryState>(
+              builder: (context, state) {
+                // TODO: Replace with proper delivery orders loading from DeliveryBloc
+                // For now, return empty list to avoid deliveryServices error
+                return SizedBox(
+                  height: 500,
+                  child: _ListOrdersForDelivery(listOrdersDelivery: [])
+                );
+              }
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNextDeliveriesCard(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Next Deliveries",
+          style: SpatialDesignSystem.subtitleLarge.copyWith(
+            color: isDark
+                ? SpatialDesignSystem.textDarkPrimaryColor
+                : SpatialDesignSystem.textPrimaryColor,
+          ),
+        ),
+        const SizedBox(height: 16),
+        GlassCard(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Upcoming Deliveries",
+                    style: SpatialDesignSystem.subtitleMedium.copyWith(
+                      color: isDark
+                          ? SpatialDesignSystem.textDarkPrimaryColor
+                          : SpatialDesignSystem.textPrimaryColor,
+                    ),
+                  ),
+                  Text(
+                    "3 Remaining",
+                    style: SpatialDesignSystem.captionText.copyWith(
+                      color: SpatialDesignSystem.warningColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildDeliveryItem(
+                context,
+                "ORD-2025-08-14-042",
+                "123 Nguyen Hue St, District 1",
+                "12:30 PM",
+                "Next",
+              ),
+              const Divider(),
+              _buildDeliveryItem(
+                context,
+                "ORD-2025-08-14-055",
+                "456 Le Loi St, District 1",
+                "1:15 PM",
+                "Pending",
+              ),
+              const Divider(),
+              _buildDeliveryItem(
+                context,
+                "ORD-2025-08-14-063",
+                "789 Vo Van Tan St, District 3",
+                "2:00 PM",
+                "Pending",
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDeliveryItem(
+    BuildContext context,
+    String orderId,
+    String address,
+    String time,
+    String status,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isNext = status == "Next";
+    
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/order-detail', arguments: orderId);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: isNext
+                    ? SpatialDesignSystem.primaryColor.withOpacity(0.1)
+                    : (isDark
+                        ? Colors.white.withOpacity(0.05)
+                        : Colors.black.withOpacity(0.05)),
+                borderRadius: BorderRadius.circular(8),
+                border: isNext
+                    ? Border.all(
+                        color: SpatialDesignSystem.primaryColor,
+                        width: 1,
+                      )
+                    : null,
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.shopping_bag_outlined,
+                  color: isNext
+                      ? SpatialDesignSystem.primaryColor
+                      : (isDark
+                          ? SpatialDesignSystem.textDarkSecondaryColor
+                          : SpatialDesignSystem.textSecondaryColor),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    orderId,
+                    style: SpatialDesignSystem.subtitleSmall.copyWith(
+                      color: isDark
+                          ? SpatialDesignSystem.textDarkPrimaryColor
+                          : SpatialDesignSystem.textPrimaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    address,
+                    style: SpatialDesignSystem.bodySmall.copyWith(
+                      color: isDark
+                          ? SpatialDesignSystem.textDarkSecondaryColor
+                          : SpatialDesignSystem.textSecondaryColor,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time,
+                        size: 14,
+                        color: isNext
+                            ? SpatialDesignSystem.primaryColor
+                            : (isDark
+                                ? SpatialDesignSystem.textDarkSecondaryColor
+                                : SpatialDesignSystem.textSecondaryColor),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        time,
+                        style: SpatialDesignSystem.captionText.copyWith(
+                          color: isNext
+                              ? SpatialDesignSystem.primaryColor
+                              : (isDark
+                                  ? SpatialDesignSystem.textDarkSecondaryColor
+                                  : SpatialDesignSystem.textSecondaryColor),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: isNext
+                              ? SpatialDesignSystem.primaryColor.withOpacity(0.1)
+                              : SpatialDesignSystem.warningColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          status,
+                          style: SpatialDesignSystem.captionText.copyWith(
+                            color: isNext
+                                ? SpatialDesignSystem.primaryColor
+                                : SpatialDesignSystem.warningColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: isDark
+                  ? SpatialDesignSystem.textDarkSecondaryColor
+                  : SpatialDesignSystem.textSecondaryColor,
+            ),
+          ],
+        ),
       ),
     );
   }

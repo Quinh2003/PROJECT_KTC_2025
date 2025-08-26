@@ -105,44 +105,43 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
           // Tab Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: GlassCard(
-              padding: const EdgeInsets.all(8),
-              borderRadius: SpatialDesignSystem.borderRadiusMedium,
-              child: TabBar(
-                controller: _tabController,
-                indicator: BoxDecoration(
-                  borderRadius: SpatialDesignSystem.borderRadiusMedium,
+            child: TabBar(
+              controller: _tabController,
+              indicator: UnderlineTabIndicator(
+                borderSide: BorderSide(
+                  width: 3.0,
                   color: SpatialDesignSystem.primaryColor,
                 ),
-                // Cải thiện style cho text
-                labelStyle: SpatialDesignSystem.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-                // Thêm padding bên ngoài để điều chỉnh chiều cao của toàn bộ TabBar
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                labelColor: Colors.white,
-                unselectedLabelColor: isDark
-                    ? SpatialDesignSystem.textDarkSecondaryColor
-                    : SpatialDesignSystem.textSecondaryColor,
-                isScrollable: false,
-                // Sử dụng tab tùy chỉnh với padding bên trong thay vì chỉ dùng text
-                tabs: _tabs
-                    .map((tab) => Tab(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            // Đảm bảo tab có chiều rộng tối thiểu để tránh quá sát với viền
-                            width: MediaQuery.of(context).size.width / 3.5,
-                            alignment: Alignment.center,
-                            child: Text(
-                              tab.text,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
+                insets: const EdgeInsets.symmetric(horizontal: 16.0),
+              ),
+              // Cải thiện style cho text
+              labelStyle: SpatialDesignSystem.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              // Thêm padding bên ngoài để điều chỉnh chiều cao của toàn bộ TabBar
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              labelColor: SpatialDesignSystem.primaryColor,
+              unselectedLabelColor: isDark
+                  ? SpatialDesignSystem.textDarkSecondaryColor
+                  : SpatialDesignSystem.textSecondaryColor,
+              isScrollable: false,
+              // Sử dụng tab tùy chỉnh với padding bên trong thay vì chỉ dùng text
+              tabs: _tabs
+                  .map((tab) => Tab(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          // Đảm bảo tab có chiều rộng tối thiểu để tránh quá sát với viền
+                          width: MediaQuery.of(context).size.width / 3.5,
+                          alignment: Alignment.center,
+                          child: Text(
+                            tab.text,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ))
-                    .toList(),
-              ),
+                        ),
+                      ))
+                  .toList(),
             ),
           ),
 
@@ -362,7 +361,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                   "Order Date",
                   "August 14, 2025 | 09:15 AM",
                 ),
-                const SizedBox(height: 16),
+                const Divider(),
                 _buildInfoRow(
                   Icons.inventory_2_outlined,
                   "Package Type",

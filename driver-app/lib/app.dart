@@ -14,6 +14,7 @@ import 'package:ktc_logistics_driver/services/mock_auth_service.dart';
 import 'package:ktc_logistics_driver/presentation/screens/delivery/list_orders_delivery_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/map/route_map_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/order/order_detail_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/order/order_history_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/profile/edit_profile_screen.dart';
 import 'services/push_notification_service.dart';
 
@@ -38,7 +39,7 @@ class AppRouter {
         // Tạm thời dùng một routeId mặc định
         return MaterialPageRoute(builder: (_) => const RouteMapScreen(routeId: 'RT-2025-08-14-01'));
       case '/order-history':
-        return MaterialPageRoute(builder: (_) => ListOrdersDeliveryScreen()); // Tạm thời dùng màn hình danh sách đơn hàng
+        return MaterialPageRoute(builder: (_) => const OrderHistoryScreen());
       case '/profile':
         return MaterialPageRoute(builder: (_) => EditProfileScreen());
       case '/order-detail':

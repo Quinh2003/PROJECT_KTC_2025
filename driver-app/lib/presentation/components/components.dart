@@ -9,6 +9,6 @@ export 'package:ktc_logistics_driver/presentation/components/form_field_frave.da
 export 'package:ktc_logistics_driver/presentation/components/image_picker.dart';
 export 'package:ktc_logistics_driver/presentation/components/item_account.dart';
 export 'package:ktc_logistics_driver/presentation/components/bottom_navigation_frave.dart';
-export 'package:ktc_logistics_driver/presentation/components/mapbox_map.dart';
+export 'package:ktc_logistics_driver/presentation/components/mapbox_view.dart';
 export 'package:ktc_logistics_driver/presentation/components/route_instructions_card.dart';
 

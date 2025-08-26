@@ -13,6 +13,12 @@ import 'injection/dependency_injection.dart';
 import 'firebase_options.dart';
 import 'services/push_notification_service.dart';
 
+// Services
+import 'services/mapbox_services.dart';
+
+// Environment & Secrets
+import 'data/env/secrets.dart';
+
 PushNotificationService pushNotificationService = PushNotificationService();
 
 /// Background message handler - must be top-level function
@@ -24,15 +30,21 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize Mapbox with access token from environment
-  const String accessToken = String.fromEnvironment('ACCESS_TOKEN', 
-    defaultValue: 'pk.eyJ1IjoiaHVuZ3BxMyIsImEiOiJjbHR3M3JzdXQwYzE5MnFteDFjYXRlcDEzIn0.GDrXTFKq1wn-FZSiTGrfew');
-  
-  if (accessToken.isEmpty || accessToken == 'YOUR_MAPBOX_ACCESS_TOKEN') {
-    print('❌ Mapbox access token not found! Please run with --dart-define ACCESS_TOKEN=your_token');
-  } else {
-    MapboxOptions.setAccessToken(accessToken);
-    print('🗺️ Mapbox initialized with token');
+  // Tải token từ file bí mật
+  try {
+    final accessToken = await Secrets.getMapboxAccessToken();
+    
+    if (accessToken.isEmpty) {
+      print('❌ Mapbox access token not found in secrets file!');
+    } else {
+      MapboxOptions.setAccessToken(accessToken);
+      print('🗺️ Mapbox initialized with private token: ${accessToken.substring(0, 12)}...');
+      
+      // Đảm bảo MapboxDirectionsService cũng sử dụng token này
+      MapboxDirectionsService.setAccessToken(accessToken);
+    }
+  } catch (e) {
+    print('❌ Failed to initialize Mapbox: $e');
   }
   
   try {
