@@ -1,0 +1,78 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+/android/app/build/
+/android/build/
+android/app/build/
+android/build/
+**/android/**/build/
+
+# APK files
+*.apk
+
+# Native libraries - More comprehensive patterns
+**/libflutter.so
+**/arm64-v8a/
+**/armeabi-v7a/
+**/x86_64/
+**/x86/
+**/lib/arm64-v8a/
+**/lib/armeabi-v7a/
+**/lib/x86_64/
+**/lib/x86/
+**/*.so
+
+# Build artifacts that were causing GitHub issues
+**/intermediates/
+**/outputs/
+**/tmp/
+kernel_blob.bin
+**/kernel_blob.bin
+
+# Block problematic build files and folders for GitHub
+driver-app/android/app/build/intermediates/assets/debug/mergeDebugAssets/flutter_assets/
+driver-app/android/app/build/intermediates/assets/debug/mergeDebugAssets/flutter_assets/kernel_blob.bin
+driver-app/android/app/build/intermediates/merged_native_libs/
+driver-app/android/app/build/intermediates/merged_native_libs/debug/mergeDebugNativeLibs/out/lib/arm64-v8a/libVkLayer_khronos_validation.so

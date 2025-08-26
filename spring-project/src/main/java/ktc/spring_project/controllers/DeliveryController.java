@@ -160,7 +160,7 @@ public ResponseEntity<Map<String, Object>> deleteDelivery(@PathVariable Long id)
     ));
 }
     /**
-     * Create a new delivery
+     * Create a new delivery with automatic fee calculation
      */
     @PostMapping
 public ResponseEntity<Map<String, Object>> createDelivery(
@@ -174,9 +174,7 @@ public ResponseEntity<Map<String, Object>> createDelivery(
         // Bạn cần có OrderService để lấy Order theo id
         delivery.setOrder(orderService.getOrderById(Long.valueOf(deliveryData.get("orderId").toString())));
     }
-    if (deliveryData.get("deliveryFee") != null) {
-        delivery.setDeliveryFee(new java.math.BigDecimal(deliveryData.get("deliveryFee").toString()));
-    }
+    // KHÔNG set deliveryFee thủ công nữa - sẽ được tính tự động
     if (deliveryData.get("transportMode") != null) {
         delivery.setTransportMode(ktc.spring_project.enums.TransportMode.valueOf(deliveryData.get("transportMode").toString()));
     }
@@ -214,8 +212,8 @@ public ResponseEntity<Map<String, Object>> createDelivery(
         delivery.setRoute(routeService.getRouteById(Long.valueOf(deliveryData.get("routeId").toString())));
     }
 
-    // Lưu giao hàng
-    Delivery createdDelivery = deliveryService.createDelivery(delivery);
+    // Sử dụng method với auto-calculation thay vì createDelivery thông thường
+    Delivery createdDelivery = deliveryService.createDeliveryWithFeeCalculation(delivery);
 
     // Chuyển đổi kết quả thành Map
     Map<String, Object> result = new ObjectMapper().convertValue(createdDelivery, Map.class);

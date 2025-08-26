@@ -1,11 +1,20 @@
 package ktc.spring_project.services;
 
 import ktc.spring_project.entities.Order;
+import ktc.spring_project.dtos.order.OrderByStoreResponseDTO;
 import ktc.spring_project.entities.Address;
 import ktc.spring_project.entities.Vehicle;
 import ktc.spring_project.repositories.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -41,7 +50,16 @@ public class OrderService {
     }
 
     public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+        return orderRepository.findAll(Sort.by("createdAt").descending());
+    }
+
+    public List<Order> getAllOrdersSorted() {
+        return orderRepository.findAll(Sort.by("createdAt").descending());
+    }
+
+    public Page<Order> getOrdersPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        return orderRepository.findAll(pageable);
     }
 
     public Order updateOrder(Long id, Order orderDetails) {
@@ -98,5 +116,14 @@ public class OrderService {
         tracking.put("updatedAt", order.getUpdatedAt() != null ? order.getUpdatedAt() : LocalDateTime.now());
 
         return tracking;
+    }
+
+    // Get all orders by store id
+
+    public List<OrderByStoreResponseDTO> getAllOrdersByStoreId(Long storeId) {
+        if (storeId == null) {
+            throw new IllegalArgumentException("Store ID cannot be null");
+        }
+        return orderRepository.findAllOrdersByStoreId(storeId);
     }
 }

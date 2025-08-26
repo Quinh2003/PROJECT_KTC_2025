@@ -1,8 +1,12 @@
 package ktc.spring_project.controllers;
+import ktc.spring_project.services.DeliveryService;
 
 import ktc.spring_project.entities.DeliveryTracking;
+
 import ktc.spring_project.services.DeliveryTrackingService;
 import ktc.spring_project.services.UserService;
+import ktc.spring_project.services.VehicleService;
+import ktc.spring_project.services.StatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,11 +33,37 @@ import java.util.Map;
 @RequestMapping("/api/tracking")
 public class DeliveryTrackingController {
 
+    // DTO for returning simple tracking info
+    public static class TrackingPointDTO {
+        public Long id;
+        public Double latitude;
+        public Double longitude;
+        public Long vehicleId;
+        public String timestamp;
+        public TrackingPointDTO() {}
+        public TrackingPointDTO(DeliveryTracking tracking) {
+            this.id = tracking.getId();
+            this.latitude = tracking.getLatitude() != null ? tracking.getLatitude().doubleValue() : null;
+            this.longitude = tracking.getLongitude() != null ? tracking.getLongitude().doubleValue() : null;
+            this.vehicleId = tracking.getVehicle() != null ? tracking.getVehicle().getId() : null;
+            this.timestamp = tracking.getTimestamp() != null ? tracking.getTimestamp().toString() : null;
+        }
+    }
+
     @Autowired
     private DeliveryTrackingService deliveryTrackingService;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private VehicleService vehicleService;
+
+    @Autowired
+    private StatusService statusService;
+
+    @Autowired
+    private DeliveryService deliveryService;
 
     /**
      * Update vehicle location and status
@@ -44,8 +74,6 @@ public class DeliveryTrackingController {
     public ResponseEntity<DeliveryTracking> updateLocation(
             @Valid @RequestBody Map<String, Object> locationData,
             Authentication authentication) {
-
-        // TO-DO: This endpoint needs implementation in the service layer
         DeliveryTracking tracking = new DeliveryTracking();
         tracking.setLatitude(new BigDecimal(locationData.get("latitude").toString()));
         tracking.setLongitude(new BigDecimal(locationData.get("longitude").toString()));
@@ -53,14 +81,28 @@ public class DeliveryTrackingController {
         tracking.setNotes((String) locationData.get("notes"));
         tracking.setTimestamp(Timestamp.from(Instant.now()));
 
-        // TO-DO: Need to implement proper vehicle and status lookup
-        // Vehicle vehicle = vehicleService.findById(Long.valueOf(locationData.get("vehicleId").toString()));
-        // Status status = statusService.findById(Long.valueOf(locationData.get("statusId").toString()));
-        // tracking.setVehicle(vehicle);
-        // tracking.setStatus(status);
-
-        // Temporary solution until proper service method is implemented
-        return new ResponseEntity<>(deliveryTrackingService.save(tracking), HttpStatus.CREATED);
+        // Gán vehicle nếu có vehicleId
+        if (locationData.containsKey("vehicleId")) {
+            Long vehicleId = Long.valueOf(locationData.get("vehicleId").toString());
+            tracking.setVehicle(vehicleService.getVehicleById(vehicleId));
+        }
+        // Gán status nếu có statusId
+        if (locationData.containsKey("statusId")) {
+            Short statusId = Short.valueOf(locationData.get("statusId").toString());
+            statusService.getStatusById(statusId).ifPresent(tracking::setStatus);
+        }
+        // Gán delivery nếu có deliveryId
+        if (locationData.containsKey("deliveryId")) {
+            Long deliveryId = Long.valueOf(locationData.get("deliveryId").toString());
+            try {
+                tracking.setDelivery(deliveryService.getDeliveryById(deliveryId));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(null); // hoặc trả về message lỗi deliveryId không tồn tại
+            }
+        }
+        DeliveryTracking saved = deliveryTrackingService.save(tracking);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     /**
@@ -86,10 +128,18 @@ public class DeliveryTrackingController {
      * TO-DO: Implement getCurrentVehicleLocation method in DeliveryTrackingService
      */
     @GetMapping("/vehicle/{vehicleId}/current")
-    public ResponseEntity<DeliveryTracking> getCurrentVehicleLocation(@PathVariable Long vehicleId) {
-        // TO-DO: This endpoint needs implementation in the service layer
-        // Will be integrated with real-time tracking system
-        return ResponseEntity.ok(new DeliveryTracking());
+    public ResponseEntity<TrackingPointDTO> getCurrentVehicleLocation(@PathVariable Long vehicleId) {
+        DeliveryTracking tracking = deliveryTrackingService.findLatestByVehicleId(vehicleId).orElse(null);
+        if (tracking == null) {
+            return ResponseEntity.notFound().build();
+        }
+        TrackingPointDTO dto = new TrackingPointDTO();
+        dto.id = tracking.getId();
+        dto.latitude = tracking.getLatitude() != null ? tracking.getLatitude().doubleValue() : null;
+        dto.longitude = tracking.getLongitude() != null ? tracking.getLongitude().doubleValue() : null;
+        dto.vehicleId = (tracking.getVehicle() != null) ? tracking.getVehicle().getId() : null;
+        dto.timestamp = (tracking.getTimestamp() != null) ? tracking.getTimestamp().toString() : null;
+        return ResponseEntity.ok(dto);
     }
 
     /**
