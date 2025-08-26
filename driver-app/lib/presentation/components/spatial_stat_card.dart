@@ -31,14 +31,15 @@ class StatCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return GlassCard(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       backgroundColor: backgroundColor ?? (isDark
           ? Colors.white.withValues(alpha: 0.05)
           : Colors.white.withValues(alpha: 0.3)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Title and icon row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -69,9 +70,10 @@ class StatCard extends StatelessWidget {
             ],
           ),
           
-          SizedBox(
-            height: 40,
-            child: Center(
+          // Value - centered and bigger
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
@@ -80,8 +82,9 @@ class StatCard extends StatelessWidget {
                     color: isDark
                         ? SpatialDesignSystem.textDarkPrimaryColor
                         : SpatialDesignSystem.textPrimaryColor,
-                    fontSize: 30,
+                    fontSize: 40,
                     fontWeight: FontWeight.bold,
+                    height: 1.0, // Tighter line height
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -89,28 +92,31 @@ class StatCard extends StatelessWidget {
             ),
           ),
           
+          // Trend indicator
           if (showArrow && changePercentage != null)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  isPositive ? Icons.arrow_upward : Icons.arrow_downward,
-                  color: isPositive ? SpatialDesignSystem.successColor : SpatialDesignSystem.errorColor,
-                  size: 12,
-                ),
-                const SizedBox(width: 2),
-                Text(
-                  '$changePercentage%',
-                  style: SpatialDesignSystem.captionText.copyWith(
+            Container(
+              width: double.infinity,
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    isPositive ? Icons.arrow_upward : Icons.arrow_downward,
                     color: isPositive ? SpatialDesignSystem.successColor : SpatialDesignSystem.errorColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 10,
+                    size: 12,
                   ),
-                ),
-                const SizedBox(width: 2),
-                Flexible(
-                  child: Text(
+                  const SizedBox(width: 2),
+                  Text(
+                    '$changePercentage%',
+                    style: SpatialDesignSystem.captionText.copyWith(
+                      color: isPositive ? SpatialDesignSystem.successColor : SpatialDesignSystem.errorColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 10,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
                     'from last month',
                     style: SpatialDesignSystem.captionText.copyWith(
                       color: isDark
@@ -120,8 +126,8 @@ class StatCard extends StatelessWidget {
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
         ],
       ),

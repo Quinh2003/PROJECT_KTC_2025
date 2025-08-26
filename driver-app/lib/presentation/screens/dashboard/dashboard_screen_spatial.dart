@@ -560,6 +560,9 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           value: "42.5 km",
           icon: Icons.timeline,
           iconColor: SpatialDesignSystem.accentColor,
+          showArrow: true,
+          isPositive: false,
+          changePercentage: "3",
         ),
         StatCard(
           title: "Earnings",
