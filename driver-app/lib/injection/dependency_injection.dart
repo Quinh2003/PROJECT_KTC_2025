@@ -59,11 +59,12 @@ Future<void> setupDependencyInjection() async {
 
   // Domain Services (sử dụng Firebase trực tiếp theo mẫu project tham khảo)
   getIt.registerLazySingleton<AuthServices>(
-    () => authServices,
+    () => AuthServices(secureStorage: getIt<FlutterSecureStorage>()),
   );
 
+  // Thay đổi cách đăng ký UserServices để tránh vòng lặp vô hạn
   getIt.registerLazySingleton<UserServices>(
-    () => userServices,
+    () => UserServices(),
   );
 
   print('✅ Dependency Injection setup completed');

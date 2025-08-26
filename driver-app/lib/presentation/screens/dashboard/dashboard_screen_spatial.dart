@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:ui';
 
 import '../../design/spatial_ui.dart';
+import '../../components/spatial_stat_card.dart';
+import '../../components/spatial_button.dart';
+import '../../components/spatial_glass_card.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import '../../components/delivery_charts.dart';
 
@@ -16,8 +19,6 @@ class DashboardScreenSpatial extends StatefulWidget {
 class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
   int _selectedIndex = 0;
   bool _isSidebarExpanded = true;
-  // Thêm biến để hiển thị onboarding
-  bool _showOnboarding = true;
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +54,6 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // // Hiển thị onboarding nếu cần
-                        // if (_showOnboarding) _buildOnboarding(context),
-
                         // Welcome Section
                         _buildWelcomeSection(context),
                         const SizedBox(height: 24),
@@ -165,9 +163,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
 
           // Navigation Items
           _buildNavItem(context, 0, Icons.dashboard, "Dashboard"),
-          _buildNavItem(context, 1, Icons.local_shipping, "My Deliveries"),
-          _buildNavItem(context, 2, Icons.history, "History"),
-          _buildNavItem(context, 3, Icons.account_circle, "Profile"),
+          _buildNavItem(context, 1, Icons.local_shipping, "Deliveries"),
+          _buildNavItem(context, 2, Icons.account_circle, "Profile"),
 
           const Spacer(),
 
@@ -229,13 +226,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
         switch (index) {
           case 0: // Dashboard - đã ở trang hiện tại
             break;
-          case 1: // My Deliveries
-            Navigator.pushNamed(context, '/delivery-orders');
+          case 1: // Deliveries
+            Navigator.pushNamed(context, '/deliveries');
             break;
-          case 2: // History
-            Navigator.pushNamed(context, '/order-history');
-            break;
-          case 3: // Profile
+          case 2: // Profile
             Navigator.pushNamed(context, '/profile');
             break;
         }
@@ -537,8 +531,9 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
   Widget _buildStatsGrid(BuildContext context, bool isTablet) {
     return GridView.count(
       crossAxisCount: isTablet ? 4 : 2,
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+      childAspectRatio: 1.2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
@@ -1048,13 +1043,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
         switch (index) {
           case 0: // Dashboard - đã ở trang hiện tại
             break;
-          case 1: // My Deliveries
-            Navigator.pushNamed(context, '/delivery-orders');
+          case 1: // Deliveries - chuyển hướng đến màn hình gộp mới
+            Navigator.pushNamed(context, '/deliveries');
             break;
-          case 2: // History
-            Navigator.pushNamed(context, '/order-history');
-            break;
-          case 3: // Profile
+          case 2: // Profile
             Navigator.pushNamed(context, '/profile');
             break;
         }
@@ -1073,127 +1065,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           label: "Deliveries",
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.history),
-          label: "History",
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.account_circle),
           label: "Profile",
         ),
       ],
-    );
-  }
-
-  // Thêm phương thức để hiển thị onboarding
-  Widget _buildOnboarding(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 24),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  Color(0xFF1E1E2C),
-                  Color(0xFF2D2D44),
-                ]
-              : [
-                  Color(0xFF6A11CB),
-                  Color(0xFF2575FC),
-                ],
-        ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  Icons.waving_hand_rounded,
-                  color: Colors.white,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Welcome to KTC Logistics',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Your Delivery Partner',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Get ready for efficient and fast delivery routes',
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.9),
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 32),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _showOnboarding = false;
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: isDark ? Color(0xFF2D2D44) : Color(0xFF6A11CB),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'Get Started',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

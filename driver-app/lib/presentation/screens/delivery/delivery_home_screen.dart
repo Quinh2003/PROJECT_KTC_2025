@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
-import 'package:ktc_logistics_driver/presentation/screens/delivery/list_orders_delivery_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/delivery/deliveries_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/delivery/order_delivered_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/delivery/order_on_way_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/home/select_role_screen.dart';
@@ -100,7 +100,7 @@ class DeliveryHomeScreen extends StatelessWidget {
                 text: 'Orders',
                 icon: Icons.checklist_rounded,
                 colorIcon: 0xff5E65CD,
-                 onPressed: () => Navigator.push(context, routeFrave(page: ListOrdersDeliveryScreen())),
+                 onPressed: () => Navigator.push(context, routeFrave(page: DeliveriesScreen())),
               ),
               ItemAccount(
                 text: 'On Way',

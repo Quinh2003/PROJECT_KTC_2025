@@ -11,10 +11,9 @@ import 'package:ktc_logistics_driver/domain/usecases/usecases.dart';
 import 'package:ktc_logistics_driver/data/repositories/repository_implementations.dart' as mock_repo;
 import 'package:ktc_logistics_driver/services/mock_data_service.dart';
 import 'package:ktc_logistics_driver/services/mock_auth_service.dart';
-import 'package:ktc_logistics_driver/presentation/screens/delivery/list_orders_delivery_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/delivery/deliveries_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/map/route_map_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/order/order_detail_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/order/order_history_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/profile/edit_profile_screen.dart';
 import 'services/push_notification_service.dart';
 
@@ -33,15 +32,13 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SpatialLoginScreen());
       case '/dashboard':
         return MaterialPageRoute(builder: (_) => const DashboardScreenSpatial());
-      case '/delivery-orders':
-        return MaterialPageRoute(builder: (_) => ListOrdersDeliveryScreen());
+      case '/deliveries':
+        return MaterialPageRoute(builder: (_) => const DeliveriesScreen());
       case '/routes':
         // Tạm thời dùng một routeId mặc định
         return MaterialPageRoute(builder: (_) => const RouteMapScreen(routeId: 'RT-2025-08-14-01'));
-      case '/order-history':
-        return MaterialPageRoute(builder: (_) => const OrderHistoryScreen());
       case '/profile':
-        return MaterialPageRoute(builder: (_) => EditProfileScreen());
+        return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       case '/order-detail':
         // Lấy order ID từ arguments
         final orderId = settings.arguments as String;
