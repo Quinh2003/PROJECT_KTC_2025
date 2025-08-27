@@ -18,6 +18,23 @@ export default function MapboxTrackingMap() {
   const [isLoaded, setIsLoaded] = useState(false);
   const waypointMarkers = useRef<mapboxgl.Marker[]>([]);
 
+  // Đoạn đường đã đi qua: từ start đến vị trí xe hiện tại, lấy theo các waypoint
+  // Nếu có vehiclePos và waypoint, lấy các waypoint từ start đến gần vehiclePos nhất
+  const getTraveledPath = () => {
+    if (!start || !vehiclePos || waypoints.length === 0) return [];
+    // Tìm index gần nhất với vehiclePos
+    let minIdx = 0;
+    let minDist = Number.POSITIVE_INFINITY;
+    waypoints.forEach((pt, idx) => {
+      const d = Math.hypot(pt[0] - vehiclePos[0], pt[1] - vehiclePos[1]);
+      if (d < minDist) {
+        minDist = d;
+        minIdx = idx;
+      }
+    });
+    // Lấy các điểm từ đầu đến vị trí gần nhất
+    return waypoints.slice(0, minIdx + 1);
+  };
   const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || "pk.eyJ1IjoieHVhbmh1eTEiLCJhIjoiY21lN3liN21tMDlzaTJtbXF3MjU0Z2JzaSJ9.vmH3qH_f7qf1ewBC_pJoSg";
 
   // Fetch vehicle position every 5s
@@ -101,7 +118,7 @@ export default function MapboxTrackingMap() {
     }
   }, [selectedOrder]);
 
-  // Draw start/end markers and route line
+  // Draw start/end markers, route line, và traveled path (màu xám)
   useEffect(() => {
     if (!map.current || !start || !end || !route) return;
     // Remove old markers
@@ -152,7 +169,33 @@ export default function MapboxTrackingMap() {
         paint: { 'line-color': '#3b82f6', 'line-width': 5 }
       });
     }
-  }, [route, start, end]);
+
+    // Draw traveled path (gray)
+    const traveledPath = getTraveledPath();
+    const traveledFeature: GeoJSON.Feature<GeoJSON.LineString> = {
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates: traveledPath,
+      },
+      properties: {}
+    };
+    if (map.current.getSource('traveled-path')) {
+      (map.current.getSource('traveled-path') as mapboxgl.GeoJSONSource).setData(traveledFeature);
+    } else if (traveledPath.length > 1) {
+      map.current.addSource('traveled-path', {
+        type: 'geojson',
+        data: traveledFeature
+      });
+      map.current.addLayer({
+        id: 'traveled-path-layer',
+        type: 'line',
+        source: 'traveled-path',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: { 'line-color': '#888', 'line-width': 5, 'line-opacity': 0.7 }
+      });
+    }
+  }, [route, start, end, vehiclePos, waypoints]);
 
   // Initialize map
   useEffect(() => {

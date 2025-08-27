@@ -4,7 +4,6 @@ package ktc.spring_project.services;
 
 import ktc.spring_project.entities.DeliveryTracking;
 import ktc.spring_project.repositories.DeliveryTrackingRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
