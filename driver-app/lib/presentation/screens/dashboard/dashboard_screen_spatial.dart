@@ -8,6 +8,8 @@ import '../../components/spatial_button.dart';
 import '../../components/spatial_glass_card.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import '../../components/delivery_charts.dart';
+import '../../../services/googlemaps_service.dart';
+import '../../../services/tracking_service.dart';
 
 class DashboardScreenSpatial extends StatefulWidget {
   const DashboardScreenSpatial({super.key});
@@ -60,6 +62,16 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
 
                         // Current Activity & Route
                         _buildCurrentActivitySection(context, isTablet),
+                        const SizedBox(height: 24),
+
+                        Text(
+                          "Delivery Analytics",
+                          style: SpatialDesignSystem.subtitleLarge.copyWith(
+                            color: isDark
+                                ? SpatialDesignSystem.textDarkPrimaryColor
+                                : SpatialDesignSystem.textPrimaryColor,
+                          ),
+                        ),
 
                         // Stats Grid
                         _buildStatsGrid(context, isTablet),
@@ -603,15 +615,6 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Delivery Analytics",
-          style: SpatialDesignSystem.subtitleLarge.copyWith(
-            color: isDark
-                ? SpatialDesignSystem.textDarkPrimaryColor
-                : SpatialDesignSystem.textPrimaryColor,
-          ),
-        ),
-        const SizedBox(height: 16),
         GlassCard(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -944,66 +947,163 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
             ],
           ),
           const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "8/11",
-                      style: SpatialDesignSystem.headingSmall.copyWith(
-                        color: isDark
-                            ? SpatialDesignSystem.textDarkPrimaryColor
-                            : SpatialDesignSystem.textPrimaryColor,
-                      ),
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       child: Column(
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           Text(
+          //             "8/11",
+          //             style: SpatialDesignSystem.headingSmall.copyWith(
+          //               color: isDark
+          //                   ? SpatialDesignSystem.textDarkPrimaryColor
+          //                   : SpatialDesignSystem.textPrimaryColor,
+          //             ),
+          //           ),
+          //           Text(
+          //             "Deliveries Completed",
+          //             style: SpatialDesignSystem.captionText.copyWith(
+          //               color: isDark
+          //                   ? SpatialDesignSystem.textDarkSecondaryColor
+          //                   : SpatialDesignSystem.textSecondaryColor,
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //     Expanded(
+          //       child: Column(
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           Text(
+          //             "23.4 km",
+          //             style: SpatialDesignSystem.headingSmall.copyWith(
+          //               color: isDark
+          //                   ? SpatialDesignSystem.textDarkPrimaryColor
+          //                   : SpatialDesignSystem.textPrimaryColor,
+          //             ),
+          //           ),
+          //           Text(
+          //             "Traveled Distance",
+          //             style: SpatialDesignSystem.captionText.copyWith(
+          //               color: isDark
+          //                   ? SpatialDesignSystem.textDarkSecondaryColor
+          //                   : SpatialDesignSystem.textSecondaryColor,
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ],
+          // ),
+          // const SizedBox(height: 20),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Row(
+                children: [
+                  SizedBox(
+                    width: (constraints.maxWidth - 16) / 2,
+                    child: SpatialButton(
+                      text: "See Details",
+                      textColor: SpatialDesignSystem.primaryColor,
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/order-detail',
+                            arguments: 'ORD-2025-08-14-042');
+                      },
+                      iconData: Icons.info_outline,
+                      isGlass: false,
+                      backgroundColor: SpatialDesignSystem.primaryColor
+                          .withValues(alpha: 0.5),
+                      isOutlined: true,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 16),
                     ),
-                    Text(
-                      "Deliveries Completed",
-                      style: SpatialDesignSystem.captionText.copyWith(
-                        color: isDark
-                            ? SpatialDesignSystem.textDarkSecondaryColor
-                            : SpatialDesignSystem.textSecondaryColor,
-                      ),
+                  ),
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    width: (constraints.maxWidth - 16) / 2,
+                    child: SpatialButton(
+                      text: "Navigation",
+                      textColor: SpatialDesignSystem.successColor,
+                      iconData: Icons.directions,
+                      isGlass: false,
+                      backgroundColor: SpatialDesignSystem.successColor
+                          .withValues(alpha: 0.8),
+                      isOutlined: true,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 16),
+                      onPressed: () async {
+                        try {
+                          // Show loading indicator
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Row(
+                                children: [
+                                  SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2, color: Colors.white)),
+                                  SizedBox(width: 16),
+                                  Text('Preparing navigation route...'),
+                                ],
+                              ),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+
+                          final mapsService = GoogleMapsService();
+
+                          // Start background location service for tracking
+                          await LocationService()
+                              .startBackgroundLocationService();
+
+                          // Get route data for Google Maps
+                          final routeData =
+                              await mapsService.getDummyRouteData();
+
+                          // Print the data types for debugging
+                          print(
+                              "PickupLocation type: ${routeData['pickupLocation'].runtimeType}");
+                          print(
+                              "DeliveryLocation type: ${routeData['deliveryLocation'].runtimeType}");
+
+                          // Open Google Maps with route
+                          final result =
+                              await mapsService.openGoogleMapsWithRoute(
+                            context: context,
+                            pickupLocation: routeData['pickupLocation'],
+                            transitPoints: routeData['transitPoints'],
+                            deliveryLocation: routeData['deliveryLocation'],
+                          );
+
+                          if (!result && context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Failed to open Google Maps. Please make sure it is installed.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            print("Error opening navigation: $e");
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error opening navigation: $e'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        }
+                      },
                     ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "23.4 km",
-                      style: SpatialDesignSystem.headingSmall.copyWith(
-                        color: isDark
-                            ? SpatialDesignSystem.textDarkPrimaryColor
-                            : SpatialDesignSystem.textPrimaryColor,
-                      ),
-                    ),
-                    Text(
-                      "Traveled Distance",
-                      style: SpatialDesignSystem.captionText.copyWith(
-                        color: isDark
-                            ? SpatialDesignSystem.textDarkSecondaryColor
-                            : SpatialDesignSystem.textSecondaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          SpatialButton(
-            text: "View Route Map",
-            onPressed: () {
-              Navigator.pushNamed(context, '/route-map',
-                  arguments: 'RT-2025-08-14-01');
+                  ),
+                ],
+              );
             },
-            iconData: Icons.map,
-            isGlass: true,
-            width: double.infinity,
           ),
         ],
       ),

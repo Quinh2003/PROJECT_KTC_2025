@@ -6,8 +6,8 @@ import '../../design/spatial_ui.dart';
 import '../../components/spatial_button.dart';
 import '../../components/spatial_glass_card.dart';
 import '../../components/spatial_text_field.dart';
-import '../map/route_map_screen.dart';
 import '../../helpers/url_lancher_frave.dart';
+import '../../../services/googlemaps_service.dart';
 
 // Tab chứa dữ liệu cấu hình
 class OrderTab {
@@ -824,15 +824,59 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
   bool _isOrderAccepted = false;
 
   // Navigate to map screen
-  void _navigateToRouteMap() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RouteMapScreen(
-          routeId: widget.orderId,
+  void _navigateToRouteMap() async {
+    try {
+      // Show loading indicator
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white)),
+              SizedBox(width: 16),
+              Text('Preparing navigation route...'),
+            ],
+          ),
+          duration: Duration(seconds: 2),
         ),
-      ),
-    );
+      );
+
+      final mapsService = GoogleMapsService();
+
+      // Get route data for Google Maps
+      final routeData = await mapsService.getDummyRouteData();
+
+      // Open Google Maps with route
+      final result = await mapsService.openGoogleMapsWithRoute(
+        context: context,
+        pickupLocation: routeData['pickupLocation'],
+        transitPoints: routeData['transitPoints'],
+        deliveryLocation: routeData['deliveryLocation'],
+      );
+
+      if (!result && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Failed to open Google Maps. Please make sure it is installed.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        print("Error opening navigation: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error opening navigation: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildBottomBar() {
@@ -848,18 +892,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                   // Navigation button (shows only when order is accepted)
                   if (_isOrderAccepted)
                     SpatialButton(
-                      text: "Navigation Map",
+                      text: "Navigation",
+                      textColor: SpatialDesignSystem.primaryColor,
                       onPressed: _navigateToRouteMap,
                       iconData: Icons.map,
-                      isGradient: true,
-                      gradient: LinearGradient(
-                        colors: [
-                          SpatialDesignSystem.primaryColor,
-                          SpatialDesignSystem.accentColor,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      isGlass: true,
+                      // isGradient: true,
+                      // gradient: LinearGradient(
+                      //   colors: [
+                      //     SpatialDesignSystem.primaryColor,
+                      //     SpatialDesignSystem.accentColor,
+                      //   ],
+                      //   begin: Alignment.topLeft,
+                      //   end: Alignment.bottomRight,
+                      // ),
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 10),
@@ -869,14 +915,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                   // Accept or Delivered button (based on state)
                   _isOrderAccepted
                       ? SpatialButton(
-                          text: "Mark as Delivered",
+                          text: "Done",
                           onPressed: () {
                             // Mark as delivered logic
                             _showDeliveryConfirmationDialog();
                           },
                           iconData: Icons.check_circle,
-                          isGradient: true,
-                          gradient: SpatialDesignSystem.successGradient,
+                          // isOutlined: true,
+                          backgroundColor: SpatialDesignSystem.primaryColor,
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 10),
@@ -893,21 +939,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                                 content: Text(
                                     "Order accepted! You can now navigate to the delivery location."),
                                 backgroundColor:
-                                    SpatialDesignSystem.successColor,
+                                    SpatialDesignSystem.primaryColor,
                                 duration: Duration(seconds: 3),
                               ),
                             );
                           },
                           iconData: Icons.delivery_dining,
-                          isGradient: true,
-                          gradient: LinearGradient(
-                            colors: [
-                              SpatialDesignSystem.primaryColor,
-                              SpatialDesignSystem.accentColor,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          backgroundColor: SpatialDesignSystem.primaryColor,
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 10),
@@ -915,24 +953,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                 ],
               )
             // For wider screens, use a Row layout with smaller padding
-            : Column(
+            : Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Navigation button (shows only when order is accepted)
                   if (_isOrderAccepted)
                     SpatialButton(
-                      text: "Navigation Map",
+                      text: "Navigation",
                       onPressed: _navigateToRouteMap,
-                      iconData: Icons.map,
-                      isGradient: true,
-                      gradient: LinearGradient(
-                        colors: [
-                          SpatialDesignSystem.primaryColor,
-                          SpatialDesignSystem.accentColor,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      iconData: Icons.directions,
+                      isGlass: true,
+                      backgroundColor: Colors.white,
+                      textColor: SpatialDesignSystem.primaryColor,
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 10),
@@ -944,14 +976,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                       Expanded(
                         child: _isOrderAccepted
                             ? SpatialButton(
-                                text: "Mark Delivered",
+                                text: "Done",
                                 onPressed: () {
                                   // Mark as delivered logic
                                   _showDeliveryConfirmationDialog();
                                 },
                                 iconData: Icons.check_circle,
-                                isGradient: true,
-                                gradient: SpatialDesignSystem.successGradient,
+                                backgroundColor: SpatialDesignSystem.primaryColor,
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 12),
                               )
@@ -967,7 +998,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                                       content: Text(
                                           "Order accepted! You can now navigate to the delivery location."),
                                       backgroundColor:
-                                          SpatialDesignSystem.successColor,
+                                          SpatialDesignSystem.primaryColor,
                                       duration: Duration(seconds: 3),
                                     ),
                                   );

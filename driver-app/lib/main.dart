@@ -14,7 +14,8 @@ import 'firebase_options.dart';
 import 'services/push_notification_service.dart';
 
 // Services
-import 'services/mapbox_services.dart';
+import 'services/mapbox_services.dart' as mapbox;
+import 'services/tracking_service.dart';
 
 // Environment & Secrets
 import 'data/env/secrets.dart';
@@ -41,7 +42,7 @@ void main() async {
       print('🗺️ Mapbox initialized with private token: ${accessToken.substring(0, 12)}...');
       
       // Đảm bảo MapboxDirectionsService cũng sử dụng token này
-      MapboxDirectionsService.setAccessToken(accessToken);
+      mapbox.MapboxDirectionsService.setAccessToken(accessToken);
     }
   } catch (e) {
     print('❌ Failed to initialize Mapbox: $e');
@@ -67,6 +68,15 @@ void main() async {
   
   // Setup dependency injection
   await setupDependencyInjection();
+  
+  // Initialize the LocationService for background location tracking
+  try {
+    print('📍 Initializing Location Service...');
+    await LocationService().initialize();
+    print('✅ Location Service initialized');
+  } catch (e) {
+    print('❌ Location Service initialization failed: $e');
+  }
   
   runApp(const App());
 }

@@ -20,6 +20,8 @@
 - Định vị chính xác vị trí tài xế với CustomPosition
 - Tính toán quãng đường và thời gian di chuyển
 - Hiển thị hướng dẫn chỉ đường chi tiết (turn-by-turn)
+- **Google Maps Integration**: Mở tuyến đường trực tiếp trong Google Maps với đa điểm dừng (pickup, transit, delivery)
+- **Background Location Tracking**: Dịch vụ ghi nhận vị trí GPS ngầm và gửi lên server mỗi giờ
 
 ### 📊 Data Visualization & Analytics
 
@@ -48,6 +50,8 @@
 - **Turn-by-turn Navigation**: Hướng dẫn chi tiết từng đoạn đường
 - **Custom Position Handling**: Xử lý và hiển thị vị trí chính xác với kiểu dữ liệu tùy chỉnh
 - **Multiple Stops**: Hỗ trợ đa điểm giao hàng trên cùng tuyến đường
+- **Google Maps Navigation**: Nút điều hướng mở Google Maps với tuyến đường hoàn chỉnh (pickup, transit, delivery)
+- **Background Location Service**: Tự động gửi vị trí lên server mỗi giờ khi ứng dụng chạy ngầm
 
 ### � Analytics Screen
 
