@@ -582,66 +582,73 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   Future<void> _addLocationMarkers() async {
     if (_pointAnnotationManager == null) return;
 
-    List<PointAnnotationOptions> annotationOptions = [];
+    try {
+      // Remove existing annotations to avoid duplication
+      await _pointAnnotationManager!.deleteAll();
+      
+      List<PointAnnotationOptions> annotationOptions = [];
 
-    // Add current location marker
-    if (_currentLocation != null) {
-      annotationOptions.add(PointAnnotationOptions(
-        geometry: _currentLocation!.toMapboxPoint(),
-        iconImage: 'driver-marker',
-        iconSize: 0.8,
-        textField: 'Your Location',
-        textOffset: [0.0, -2.0],
-        textColor: Colors.black.value,
-      ));
-    }
+      // Add current location marker
+      if (_currentLocation != null) {
+        annotationOptions.add(PointAnnotationOptions(
+          geometry: _currentLocation!.toMapboxPoint(),
+          iconImage: 'driver-marker',
+          iconSize: 0.8,
+          textField: 'Your Location',
+          textOffset: [0.0, -2.0],
+          textColor: Colors.black.value,
+        ));
+      }
 
-    // Add pickup marker
-    if (_pickupLocation != null) {
-      annotationOptions.add(PointAnnotationOptions(
-        geometry: _pickupLocation!.toMapboxPoint(),
-        iconImage: 'start-marker',
-        iconSize: 0.8,
-        textField: 'Pickup Location',
-        textOffset: [0.0, -2.0],
-        textColor: Colors.black.value,
-      ));
-    }
+      // Add pickup marker
+      if (_pickupLocation != null) {
+        annotationOptions.add(PointAnnotationOptions(
+          geometry: _pickupLocation!.toMapboxPoint(),
+          iconImage: 'start-marker',
+          iconSize: 0.8,
+          textField: 'Pickup Location',
+          textOffset: [0.0, -2.0],
+          textColor: Colors.black.value,
+        ));
+      }
 
-    // Add delivery marker
-    if (_deliveryLocation != null) {
-      annotationOptions.add(PointAnnotationOptions(
-        geometry: _deliveryLocation!.toMapboxPoint(),
-        iconImage: 'destination-marker',
-        iconSize: 0.8,
-        textField: 'Delivery Location',
-        textOffset: [0.0, -2.0],
-        textColor: Colors.black.value,
-      ));
-    }
+      // Add delivery marker
+      if (_deliveryLocation != null) {
+        annotationOptions.add(PointAnnotationOptions(
+          geometry: _deliveryLocation!.toMapboxPoint(),
+          iconImage: 'destination-marker',
+          iconSize: 0.8,
+          textField: 'Delivery Location',
+          textOffset: [0.0, -2.0],
+          textColor: Colors.black.value,
+        ));
+      }
 
-    // Add any waypoint markers if available
-    List<String> cityNames = ["Stop 1", "Stop 2", "Stop 3", "Stop 4"];
-    for (int i = 0;
-        i < _waypointLocations.length && i < cityNames.length;
-        i++) {
-      annotationOptions.add(PointAnnotationOptions(
-        geometry: _waypointLocations[i].toMapboxPoint(),
-        iconImage: 'delivery-marker',
-        iconSize: 0.8,
-        textField: cityNames[i],
-        textOffset: [0.0, -2.0],
-        textColor: Colors.black.value,
-      ));
-    }
+      // Add any waypoint markers if available
+      List<String> cityNames = ["Stop 1", "Stop 2", "Stop 3", "Stop 4"];
+      for (int i = 0;
+          i < _waypointLocations.length && i < cityNames.length;
+          i++) {
+        annotationOptions.add(PointAnnotationOptions(
+          geometry: _waypointLocations[i].toMapboxPoint(),
+          iconImage: 'delivery-marker',
+          iconSize: 0.8,
+          textField: cityNames[i],
+          textOffset: [0.0, -2.0],
+          textColor: Colors.black.value,
+        ));
+      }
 
-    // Add all markers to map
-    await _pointAnnotationManager!.createMulti(annotationOptions);
+      // Add all markers to map
+      await _pointAnnotationManager!.createMulti(annotationOptions);
 
-    print("✅ Added ${annotationOptions.length} location markers:");
-    if (_currentLocation != null) {
-      print(
-          "   - 🚗 Driver: (${_currentLocation?.lat}, ${_currentLocation?.lng})");
+      print("✅ Added ${annotationOptions.length} location markers:");
+      if (_currentLocation != null) {
+        print(
+            "   - 🚗 Driver: (${_currentLocation?.lat}, ${_currentLocation?.lng})");
+      }
+    } catch (e) {
+      print("❌ Error adding location markers: $e");
     }
   }
 
@@ -650,9 +657,30 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     if (_polylineAnnotationManager == null || _routeCoordinates.isEmpty) return;
 
     try {
-      // Create a LineString from route coordinates
+      // Simplify route coordinates if too many points to prevent performance issues
+      List<CustomPosition> simplifiedRoute = _routeCoordinates;
+      if (_routeCoordinates.length > 1000) {
+        // Simplify by taking every nth point when the route is very long
+        int skipFactor = (_routeCoordinates.length / 1000).ceil();
+        simplifiedRoute = [];
+        for (int i = 0; i < _routeCoordinates.length; i += skipFactor) {
+          if (i < _routeCoordinates.length) {
+            simplifiedRoute.add(_routeCoordinates[i]);
+          }
+        }
+        // Always include the first and last points
+        if (!simplifiedRoute.contains(_routeCoordinates.first)) {
+          simplifiedRoute.insert(0, _routeCoordinates.first);
+        }
+        if (!simplifiedRoute.contains(_routeCoordinates.last)) {
+          simplifiedRoute.add(_routeCoordinates.last);
+        }
+        print("⚡ Route simplified from ${_routeCoordinates.length} to ${simplifiedRoute.length} points");
+      }
+
+      // Create a LineString from simplified route coordinates
       LineString lineString = LineString(
-          coordinates: CustomPosition.toLineStringCoordinates(_routeCoordinates));
+          coordinates: CustomPosition.toLineStringCoordinates(simplifiedRoute));
 
       // Create polyline options
       PolylineAnnotationOptions options = PolylineAnnotationOptions(
@@ -664,7 +692,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
       // Add polyline to map
       await _polylineAnnotationManager!.create(options);
 
-      print("✅ Added route line with ${_routeCoordinates.length} points");
+      print("✅ Added route line with ${simplifiedRoute.length} points");
     } catch (e) {
       print("❌ Error adding route line: $e");
     }
@@ -720,8 +748,12 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
 
   // Format the distance for display
   String _formatDistance(double meters) {
-    if (meters < 1000) return "${meters.toInt()} m";
-    return "${(meters / 1000).toStringAsFixed(1)} km";
+    if (meters < 1000) {
+      return "${meters.toInt()} m";
+    } else {
+      final km = meters / 1000;
+      return "${km.toStringAsFixed(1)} km";
+    }
   }
 
   @override
@@ -778,19 +810,30 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                         ],
                       ),
                     )
-                  : MapWidget(
-                      key: ValueKey('route_map'),
-                      onMapCreated: (MapboxMap mapboxMap) {
-                        _mapboxMap = mapboxMap;
-                        _setupMapAnnotations();
-                        _fitCameraToRoute();
-                      },
-                      styleUri: MapboxStyles.MAPBOX_STREETS,
-                      cameraOptions: CameraOptions(
-                        center: _currentLocation != null
-                            ? _currentLocation!.toMapboxPoint()
-                            : Point(coordinates: Position(108.2022, 16.0544)),
-                        zoom: 10.0,
+                  : Theme(
+                      // Apply Material theme to ensure compatibility with Mapbox's AppCompat widgets
+                      data: Theme.of(context).copyWith(
+                        // Use the app's primary color but ensure AppCompat compatibility
+                        primaryColor: Theme.of(context).primaryColor,
+                        colorScheme: ColorScheme.fromSwatch().copyWith(
+                          primary: Theme.of(context).primaryColor,
+                          secondary: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                      child: MapWidget(
+                        key: ValueKey('route_map'),
+                        onMapCreated: (MapboxMap mapboxMap) {
+                          _mapboxMap = mapboxMap;
+                          _setupMapAnnotations();
+                          _fitCameraToRoute();
+                        },
+                        styleUri: MapboxStyles.MAPBOX_STREETS,
+                        cameraOptions: CameraOptions(
+                          center: _currentLocation != null
+                              ? _currentLocation!.toMapboxPoint()
+                              : Point(coordinates: Position(108.2022, 16.0544)),
+                          zoom: 10.0,
+                        ),
                       ),
                     ),
 
