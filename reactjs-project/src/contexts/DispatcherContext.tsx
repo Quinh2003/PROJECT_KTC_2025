@@ -5,8 +5,9 @@ import { fetchVehicleStats } from '../services/VehicleListAPI';
 import { fetchDrivers } from '../services/adminAPI';
 import type { Vehicle } from '../types/Operations';
 import type { User } from '../types/User';
+import type { Order } from '../types/Order';
 
-interface Order {
+interface OrderLegacy {
   id: string;
   status: string;
   priority: string;
@@ -20,10 +21,14 @@ interface Order {
 
 interface DispatcherContextType {
   // Orders
-  orders: Order[];
+  orders: OrderLegacy[];
   ordersLoading: boolean;
   ordersError: string;
   refreshOrders: (force?: boolean) => Promise<void>;
+  
+  // Selected Order for routing
+  selectedOrder: Order | null;
+  setSelectedOrder: (order: Order | null) => void;
   
   // Vehicles
   vehicles: Vehicle[];
@@ -55,10 +60,13 @@ interface DispatcherProviderProps {
 
 export const DispatcherProvider = ({ children }: DispatcherProviderProps) => {
   // Orders state
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderLegacy[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [ordersError, setOrdersError] = useState('');
   const [ordersLastFetch, setOrdersLastFetch] = useState<number>(0);
+  
+  // Selected Order state
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   
   // Vehicles state
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -172,6 +180,9 @@ export const DispatcherProvider = ({ children }: DispatcherProviderProps) => {
     ordersLoading,
     ordersError,
     refreshOrders,
+    
+    selectedOrder,
+    setSelectedOrder,
     
     vehicles,
     vehiclesLoading,

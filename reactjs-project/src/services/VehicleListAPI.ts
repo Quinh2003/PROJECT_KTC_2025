@@ -13,7 +13,9 @@ export async function fetchVehicles(): Promise<Vehicle[]> {
   const headers = getAuthHeaders();
   const res = await fetch(API_URL, headers ? { headers } : undefined);
   if (!res.ok) throw new Error("Failed to fetch vehicles");
-  return res.json();
+  const json = await res.json();
+  // API trả về { data: [...] }
+  return Array.isArray(json.data) ? json.data : [];
 }
 
 // Server-side pagination: trả về { data: Vehicle[], total: number }

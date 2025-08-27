@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Edit, Eye, MoreVertical, Calendar, AlertCircle, CheckCircle, Clock } from "lucide-react";
 import type { FleetVehicle } from "../../types/dashboard";
 
+<<<<<<< HEAD
 // eslint-disable-next-line react-refresh/only-export-components
 export const initialVehicles: FleetVehicle[] = [
   {
@@ -44,6 +45,21 @@ export const initialVehicles: FleetVehicle[] = [
     mileage: 35000,
   },
 ];
+=======
+export interface Vehicle {
+  id: number;
+  licensePlate: string;
+  type: string;
+  capacityWeightKg?: number;
+  capacityVolumeM3?: number;
+  year: number;
+  status: "Hoạt động" | "Bảo trì" | "Cần bảo trì";
+  lastMaintenance: string;
+  nextMaintenance: string;
+  driver: string;
+}
+
+>>>>>>> dd820b7dec040ef3e189b718e7431eec3e2d3d00
 
 interface VehicleTableProps {
   vehicles: FleetVehicle[];
@@ -233,8 +249,12 @@ const VehicleTable: React.FC<VehicleTableProps> = ({
                     <div className="text-gray-900">{vehicle.type}</div>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-gray-500 font-medium">Hãng/Model:</span>
-                    <div className="text-gray-900">{vehicle.brand} {vehicle.model}</div>
+                    <span className="text-gray-500 font-medium">Trọng tải (kg):</span>
+                    <div className="text-gray-900 font-semibold">{vehicle.capacityWeightKg?.toLocaleString() ?? "-"} kg</div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-gray-500 font-medium">Thể tích (m³):</span>
+                    <div className="text-gray-900 font-semibold">{vehicle.capacityVolumeM3?.toLocaleString() ?? "-"} m³</div>
                   </div>
                   <div className="space-y-1">
                     <span className="text-gray-500 font-medium">Năm sản xuất:</span>
@@ -248,12 +268,12 @@ const VehicleTable: React.FC<VehicleTableProps> = ({
                       )}
                     </div>
                   </div>
-                  <div className="space-y-1">
+                  {/* <div className="space-y-1">
                     <span className="text-gray-500 font-medium">Km đã chạy:</span>
                     <div className="text-gray-900 font-semibold">
-                      {vehicle.mileage.toLocaleString()} km
+                      {vehicle.mileage?.toLocaleString()} km
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Maintenance Info */}

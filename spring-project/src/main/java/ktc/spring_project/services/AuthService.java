@@ -293,7 +293,7 @@ public class AuthService {
         String refreshToken = generateRefreshToken(userDetails);
 
         // Log activity
-        activityLogService.logUserActivity(user.getId(), "GOOGLE_LOGIN", "User logged in via Google");
+    activityLogService.logUserActivity(user.getId(), "LOGIN", "User logged in via Google");
 
         // Return token response
         Map<String, Object> response = new HashMap<>();

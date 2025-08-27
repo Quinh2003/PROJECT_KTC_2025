@@ -1,4 +1,5 @@
 import { useState } from "react";
+import OrderDetailModal from "./OrderDetailModal";
 import OrderRow from "./OrderRow";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchOrdersRaw, updateOrderVehicle } from "../../services/OrderAPI";
@@ -12,6 +13,8 @@ interface OrdersAssignmentProps {
 
 
 export default function OrdersAssignment({}: OrdersAssignmentProps) {
+  const [detailOrder, setDetailOrder] = useState<any | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const queryClient = useQueryClient();
   const [selectedVehicles, setSelectedVehicles] = useState<{ [orderId: string]: string }>({});
   const [assigningOrders, setAssigningOrders] = useState<{ [orderId: string]: boolean }>({});
@@ -212,7 +215,10 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
 
 
   return (
-    <div className="bg-gradient-to-br from-blue-50/80 via-white/80 to-blue-100/80 backdrop-blur-2xl rounded-3xl p-8 border border-white/40 shadow-2xl max-w-full overflow-x-auto">
+    <>
+      {/* Modal chi tiết đơn hàng */}
+      <OrderDetailModal open={detailOpen} onClose={() => setDetailOpen(false)} orderItem={detailOrder} />
+      <div className="bg-gradient-to-br from-blue-50/80 via-white/80 to-blue-100/80 backdrop-blur-2xl rounded-3xl p-8 border border-white/40 shadow-2xl max-w-full overflow-x-auto">
       <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
         <div className="flex items-center gap-4">
           <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 shadow-lg">
@@ -260,7 +266,7 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
                     <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Sản phẩm</th>
                     <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Khách hàng</th>
                     <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Lộ trình</th>
-                    <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Ưu tiên</th>
+                    <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Chi tiết đơn hàng</th>
                     <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Ngày tạo</th>
                     <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Xe & Tài xế</th>
                     <th className="text-left p-5 font-bold text-gray-900 tracking-wide">Thao tác</th>
@@ -307,15 +313,12 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
                         </div>
                       </td>
                       <td className="p-5 align-top">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold border shadow-sm
-                          ${order.priority === 'High'
-                            ? 'bg-red-100 text-red-700 border-red-300'
-                            : order.priority === 'Medium'
-                            ? 'bg-orange-100 text-orange-700 border-orange-300'
-                            : 'bg-green-100 text-green-700 border-green-300'}
-                        `}>
-                          {order.priority}
-                        </span>
+                        <button
+                          className="px-3 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold text-sm border border-blue-200 shadow transition-all duration-150"
+                          onClick={() => { setDetailOrder(order); setDetailOpen(true); }}
+                        >
+                          Xem chi tiết
+                        </button>
                       </td>
                       <td className="p-5 align-top">
                         <div className="text-blue-900 font-semibold text-base">{order.date}</div>
@@ -586,6 +589,8 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
           )}
         </>
       )}
-    </div>
+      
+      </div>
+    </>
   );
 }

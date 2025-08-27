@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
@@ -37,14 +38,57 @@ public class UserService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public User createUser(User user) {
+        System.out.println("==> Đã vào createUser với email: " + user.getEmail());
+        
+        // Check if email already exists
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("Email đã được sử dụng");
+        }
+        
+        // Gán username nếu chưa có (dùng email)
+        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+            String baseUsername = user.getEmail();
+            String username = baseUsername;
+            int counter = 1;
+            
+            // Ensure username is unique
+            while (userRepository.findByUsername(username).isPresent()) {
+                username = baseUsername + "_" + counter;
+                counter++;
+            }
+            user.setUsername(username);
+            System.out.println("==> Đã gán username: " + username);
+        } else {
+            // Check if provided username already exists
+            if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+                throw new RuntimeException("Username đã được sử dụng");
+            }
+        }
+        
         // Gán role mặc định nếu chưa có
         if (user.getRole() == null) {
-            Role defaultRole = roleRepository.findByRoleName("USER")
-                .orElseThrow(() -> new RuntimeException("Default role USER not found"));
-            user.setRole(defaultRole);
+            // Gán role CUSTOMER cho tất cả user đăng ký từ Next.js
+            Role customerRole = roleRepository.findByRoleName("CUSTOMER")
+                .orElseGet(() -> roleRepository.findByRoleName("USER")
+                    .orElseThrow(() -> new RuntimeException("No default role found")));
+            user.setRole(customerRole);
+            System.out.println("==> Đã gán role: " + customerRole.getRoleName());
         }
-        return userRepository.save(user);
+        
+        // Encode password
+        String rawPassword = user.getPassword();
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+        user.setPassword(encodedPassword);
+        System.out.println("==> Đã encode password");
+        
+        User savedUser = userRepository.save(user);
+        System.out.println("==> Đã lưu user với ID: " + savedUser.getId());
+        
+        return savedUser;
     }
 
     public User getUserById(Long id) {
@@ -136,6 +180,14 @@ User user = getUserById(id);
     }
 
     /**
+     * Tìm user theo email
+     */
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+    }
+
+    /**
      * Google Login với Access Token
      */
     public User googleLogin(GoogleLoginRequestDto request) {
@@ -168,25 +220,30 @@ User user = getUserById(id);
             }
 Optional<User> existingUser = userRepository.findByEmail(email);
 
+            Role customerRole = roleRepository.findByRoleName("CUSTOMER")
+                .orElseThrow(() -> new RuntimeException("Role CUSTOMER not found"));
+
             if (existingUser.isPresent()) {
                 User user = existingUser.get();
                 if (user.getGoogleId() == null) {
                     user.setGoogleId(googleId);
-                    userRepository.save(user);
                 }
+                // Luôn gán role CUSTOMER khi đăng nhập Google
+                user.setRole(customerRole);
+                userRepository.save(user);
                 return user;
             } else {
+                // Tạo mới user với role CUSTOMER
                 User newUser = new User();
                 newUser.setEmail(email);
                 newUser.setFullName(name);
                 newUser.setGoogleId(googleId);
                 newUser.setUsername(email);
-
-                // Gán role mặc định USER
-                Role defaultRole = roleRepository.findByRoleName("USER")
-                    .orElseThrow(() -> new RuntimeException("Default role USER not found"));
-                newUser.setRole(defaultRole);
-
+                newUser.setRole(customerRole);
+                // Gán password mặc định cho user Google
+                String defaultPassword = passwordEncoder.encode("GOOGLE_LOGIN");
+                newUser.setPassword(defaultPassword);
+                System.out.println("[GoogleLogin] Password before save: " + newUser.getPassword());
                 return userRepository.save(newUser);
             }
 
@@ -228,19 +285,25 @@ Optional<User> existingUser = userRepository.findByEmail(email);
 
             Optional<User> existingUser = userRepository.findByEmail(email);
 
+            Role customerRole = roleRepository.findByRoleName("CUSTOMER")
+                .orElseThrow(() -> new RuntimeException("Role CUSTOMER not found"));
+
             if (existingUser.isPresent()) {
                 User user = existingUser.get();
                 if (user.getGoogleId() == null) {
                     user.setGoogleId(googleId);
-                    userRepository.save(user);
                 }
+                // Luôn gán role CUSTOMER khi đăng nhập Google
+                user.setRole(customerRole);
+                userRepository.save(user);
                 return user;
             } else {
+                // Tạo mới user với role CUSTOMER
                 User newUser = new User();
                 newUser.setEmail(email);
                 newUser.setFullName(name);
                 newUser.setGoogleId(googleId);
-newUser.setUsername(email);
+                newUser.setUsername(email);
 
                 // Gán role mặc định USER
                 Role defaultRole = roleRepository.findByRoleName("USER")

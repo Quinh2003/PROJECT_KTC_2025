@@ -15,6 +15,8 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller responsible for authentication
@@ -63,10 +65,17 @@ public ResponseEntity<Map<String, Object>> login(
 //     return ResponseEntity.ok(createdUser);
 // }
 @PostMapping("/users")
-public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
     System.out.println("==> Đã vào createUser");
-    User createdUser = userService.createUser(user);
-    return ResponseEntity.ok(createdUser);
+    try {
+        User createdUser = userService.createUser(user);
+        return ResponseEntity.ok(createdUser);
+    } catch (RuntimeException e) {
+        // Return error response with proper message
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", e.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
 }
 // Cập nhật toàn bộ thông tin người dùng
 @PutMapping("/users/{id}")
@@ -119,30 +128,33 @@ public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
     /**
      * Forgot password - send reset email
      * US-AUTH-FORGOT-01
+     * Frontend gửi email qua body, backend kiểm tra email, tạo token reset, gửi email hướng dẫn đặt lại mật khẩu
      */
     @PostMapping("/forgot-password")
     public ResponseEntity<Map<String, String>> forgotPassword(
             @RequestBody Map<String, String> requestData) {
-
+        // Lấy email từ request
         String email = requestData.get("email");
+        // Gọi service xử lý gửi email reset password
         authService.sendPasswordResetEmail(email);
-
+        // Trả về thông báo cho frontend
         return ResponseEntity.ok(Map.of("message", "Password reset email sent"));
     }
 
     /**
      * Reset password with token
      * US-AUTH-FORGOT-01
+     * Frontend gửi token và mật khẩu mới, backend xác thực token và cập nhật mật khẩu
      */
     @PostMapping("/reset-password")
     public ResponseEntity<Map<String, String>> resetPassword(
             @Valid @RequestBody Map<String, String> resetData) {
-
+        // Lấy token và mật khẩu mới từ request
         String token = resetData.get("token");
         String newPassword = resetData.get("newPassword");
-
+        // Gọi service xử lý reset password
         authService.resetPassword(token, newPassword);
-
+        // Trả về thông báo cho frontend
         return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
     }
 

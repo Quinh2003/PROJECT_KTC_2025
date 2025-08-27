@@ -1,3 +1,17 @@
+// Tìm đơn hàng theo ID
+export async function fetchOrderById(orderId: string | number, token?: string): Promise<Order | null> {
+  const authToken = token || localStorage.getItem("token") || "";
+  const res = await fetch(`http://localhost:8080/api/orders/${orderId}`, {
+    headers: authToken ? { "Authorization": `Bearer ${authToken}` } : undefined,
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  // Đảm bảo trả về đúng kiểu Order
+  return {
+    ...data,
+    createdAt: data.createdAt || data.created_at || ""
+  };
+}
 
 import type { Order } from '../types/Order';
 // Chuẩn hóa hàm fetchOrders cho OrderList.tsx

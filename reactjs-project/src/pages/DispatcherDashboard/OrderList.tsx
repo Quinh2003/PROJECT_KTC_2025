@@ -1,10 +1,16 @@
 // ...existing code...
+
 import { useState, useEffect, useCallback } from "react";
-import { fetchOrders } from "../../services/OrderAPI";
+import { fetchOrders, fetchOrderById } from "../../services/OrderAPI";
+import { useDispatcherContext } from "../../contexts/DispatcherContext";
 import type { Order } from "../../types/Order";
 
 
 export default function OrderList() {
+  const { selectedOrder, setSelectedOrder } = useDispatcherContext();
+  const [searchId, setSearchId] = useState("");
+  const [searching, setSearching] = useState(false);
+
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 5;
   const [orders, setOrders] = useState<Order[]>([]);
@@ -12,6 +18,38 @@ export default function OrderList() {
   // const [totalRecords, setTotalRecords] = useState(0); // Không dùng
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Hàm chọn đơn hàng để hiển thị route
+  const handleOrderClick = (order: Order) => {
+    setSelectedOrder(order);
+  };
+
+  // Hàm tìm kiếm đơn hàng theo ID
+  const handleSearch = async () => {
+    if (!searchId.trim()) return;
+    setSearching(true);
+    setError("");
+    try {
+      const token = localStorage.getItem("token") || "";
+      const foundOrder = await fetchOrderById(searchId.trim(), token);
+      if (foundOrder) {
+        setOrders([foundOrder]);
+        setTotalPages(1);
+        setPage(1);
+      } else {
+        setOrders([]);
+        setTotalPages(1);
+        setPage(1);
+        setError("Không tìm thấy đơn hàng với ID đã nhập");
+      }
+    } catch (err) {
+      setError("Lỗi khi tìm kiếm đơn hàng");
+    } finally {
+      setSearching(false);
+    }
+  };
+
+
 
   const fetchOrdersCallback = useCallback(async () => {
     setLoading(true);
@@ -34,16 +72,44 @@ export default function OrderList() {
     // eslint-disable-next-line
   }, [fetchOrdersCallback]);
 
+  // Khi xóa nội dung ô tìm kiếm, tự động trả lại danh sách đơn hàng mặc định
+  useEffect(() => {
+    if (searchId.trim() === "") {
+      fetchOrdersCallback();
+    }
+    // eslint-disable-next-line
+  }, [searchId, fetchOrdersCallback]);
+
   // const handleRefresh = () => {
   //   fetchOrdersCallback();
   // };
 
   return (
     <div className="bg-gradient-to-br from-blue-50/80 via-white/90 to-blue-100/80 backdrop-blur-2xl rounded-3xl p-8 border border-white/40 shadow-2xl max-w-full overflow-x-auto">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
         <div>
           <div className="text-3xl font-extrabold mb-2 text-blue-900 tracking-tight">Danh sách đơn hàng</div>
           <div className="text-gray-500 text-base">Theo dõi trạng thái các đơn hàng trong hệ thống</div>
+          <div className="text-sm text-blue-600 mt-1">💡 Nhấn vào đơn hàng để xem đường đi trên bản đồ</div>
+        </div>
+        {/* Tìm kiếm đơn hàng theo ID */}
+        <div className="flex items-center gap-2 bg-white/80 border border-blue-100 rounded-xl px-3 py-2 shadow">
+          <input
+            type="text"
+            placeholder="Nhập ID đơn hàng..."
+            className="px-2 py-1 rounded border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 text-base"
+            value={searchId}
+            onChange={e => setSearchId(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
+            disabled={loading || searching}
+          />
+          <button
+            onClick={handleSearch}
+            disabled={!searchId.trim() || loading || searching}
+            className="px-3 py-1 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white rounded transition-colors duration-200 font-semibold"
+          >
+            {searching ? "Đang tìm..." : "Tìm kiếm"}
+          </button>
         </div>
         {/* <button
           onClick={handleRefresh}
@@ -75,7 +141,12 @@ export default function OrderList() {
             {orders.map((order) => (
               <div
                 key={order.id}
-                className="rounded-2xl bg-white/90 border border-blue-100 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 shadow hover:shadow-xl hover:bg-blue-50/80 transition-all duration-200"
+                onClick={() => handleOrderClick(order)}
+                className={`rounded-2xl border p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 shadow hover:shadow-xl transition-all duration-200 cursor-pointer ${
+                  selectedOrder?.id === order.id 
+                    ? 'bg-blue-100/90 border-blue-400 ring-2 ring-blue-300' 
+                    : 'bg-white/90 border-blue-100 hover:bg-blue-50/80'
+                }`}
               >
                 {/* Left: Order info */}
                 <div className="flex-1 min-w-0 flex flex-col gap-2">

@@ -137,6 +137,8 @@ public class OrderController {
                     storeDTO.put("storeName", order.getStore().getStoreName());
                     storeDTO.put("address", order.getStore().getAddress());
                     storeDTO.put("phone", order.getStore().getPhone());
+                    storeDTO.put("latitude", order.getStore().getLatitude());
+                    storeDTO.put("longitude", order.getStore().getLongitude());
                     orderDTO.put("store", storeDTO);
                 }
                 // Created by user info
