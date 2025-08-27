@@ -15,508 +15,772 @@ START TRANSACTION;
 -- =====================================================================================
 -- BẢNG QUẢN LÝ TRẠNG THÁI HỆ THỐNG (Base table - không phụ thuộc)
 -- =====================================================================================
-CREATE TABLE IF NOT EXISTS `status` (
-    `id` TINYINT UNSIGNED AUTO_INCREMENT COMMENT 'Mã định danh trạng thái duy nhất (1-255)',
-    `type` VARCHAR(50) NOT NULL COMMENT 'Phân loại trạng thái (phương tiện, đơn hàng, thanh toán, người dùng, v.v.)',
-    `name` VARCHAR(100) NOT NULL COMMENT 'Tên trạng thái dễ đọc',
-    `description` TEXT COMMENT 'Mô tả chi tiết ý nghĩa của trạng thái',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo trạng thái',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật trạng thái cuối cùng',
-    PRIMARY KEY (`id`)
+create table addresses
+(
+    id            bigint auto_increment comment 'Mã định danh duy nhất của địa chỉ'
+        primary key,
+    address_type  varchar(50)                            not null comment 'Loại địa chỉ (giao hàng, lấy hàng, trả hàng)',
+    address       varchar(500)                           not null comment 'Địa chỉ đầy đủ (số nhà, đường, phường/xã)',
+    latitude      decimal(10, 8)                         null comment 'Tọa độ vĩ độ (GPS)',
+    longitude     decimal(11, 8)                         null comment 'Tọa độ kinh độ (GPS)',
+    city          varchar(100)                           null comment 'Thành phố/Tỉnh',
+    state         varchar(100)                           null comment 'Bang/Khu vực',
+    country       varchar(100) default 'Vietnam'         null comment 'Quốc gia',
+    region        varchar(100)                           null comment 'Vùng miền/Khu vực',
+    postal_code   varchar(20)                            null comment 'Mã bưu điện',
+    contact_name  varchar(255)                           null comment 'Tên người liên hệ tại địa chỉ',
+    contact_phone varchar(20)                            null comment 'Số điện thoại người liên hệ',
+    contact_email varchar(255)                           null comment 'Email người liên hệ',
+    floor_number  varchar(10)                            null comment 'Số tầng/lầu của tòa nhà',
+    created_at    datetime     default CURRENT_TIMESTAMP null comment 'Thời gian tạo địa chỉ',
+    updated_at    datetime     default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật địa chỉ cuối cùng'
 );
 
--- =====================================================================================
--- BẢNG QUẢN LÝ VAI TRÒ NGƯỜI DÙNG (Base table - không phụ thuộc)
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `roles` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của vai trò',
-    `role_name` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Tên vai trò (admin, điều phối, tài xế, xem)',
-    `permission` JSON COMMENT 'Đối tượng JSON chứa quyền và quyền truy cập của vai trò',
-    `description` TEXT COMMENT 'Mô tả chi tiết trách nhiệm của vai trò',
-    `is_active` tinyint NOT NULL DEFAULT 1 COMMENT 'Trạng thái vai trò: 0=Ngừng hoạt động, 1=Hoạt động',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo vai trò',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật vai trò cuối cùng',
-    PRIMARY KEY (`id`)
+create index idx_addresses_city
+    on addresses (city)
+    comment 'Địa chỉ theo thành phố';
+
+create index idx_addresses_coordinates
+    on addresses (latitude, longitude)
+    comment 'Tìm kiếm theo tọa độ GPS';
+
+create index idx_addresses_type
+    on addresses (address_type)
+    comment 'Địa chỉ theo loại';
+
+create table categories
+(
+    id          bigint auto_increment comment 'Mã định danh duy nhất của danh mục'
+        primary key,
+    external_id bigint                             null,
+    category_id varchar(50)                        not null comment 'Mã danh mục nghiệp vụ (dễ đọc)',
+    name        varchar(255)                       not null comment 'Tên hiển thị của danh mục',
+    description text                               null comment 'Mô tả chi tiết về danh mục',
+    parent_id   bigint                             null comment 'ID danh mục cha (cho cấu trúc cây)',
+    is_active   bit                                null,
+    created_at  datetime default CURRENT_TIMESTAMP null comment 'Thời gian tạo danh mục',
+    updated_at  datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật danh mục cuối cùng',
+    notes       text                               null comment 'Ghi chú bổ sung về danh mục',
+    constraint category_id
+        unique (category_id),
+    constraint external_id
+        unique (external_id),
+    constraint fk_categories_parent_id
+        foreign key (parent_id) references categories (id)
 );
 
--- =====================================================================================
--- BẢNG QUẢN LÝ NGƯỜI DÙNG HỆ THỐNG
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `users` (
-    -- Người dùng hệ thống bao gồm tài xế, điều phối, quản trị, v.v.
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của người dùng',
-    `username` VARCHAR(100) NOT NULL UNIQUE COMMENT 'Tên đăng nhập duy nhất',
-    `email` VARCHAR(255) NOT NULL UNIQUE COMMENT 'Địa chỉ email để đăng nhập và nhận thông báo',
-    `password` VARCHAR(255) NOT NULL COMMENT 'Mật khẩu đã mã hóa để xác thực',
-    `full_name` VARCHAR(255) COMMENT 'Họ tên đầy đủ để hiển thị',
-    `phone` VARCHAR(20) COMMENT 'Số điện thoại liên hệ',
-    `google_id` VARCHAR(255) COMMENT 'ID người dùng trên Google',
-    `role_id` BIGINT NOT NULL COMMENT 'Vai trò người dùng (admin, điều phối, tài xế, xem)',
-    `status_id` TINYINT UNSIGNED COMMENT 'Trạng thái tài khoản (hoạt động, ngừng hoạt động, tạm khóa)',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo tài khoản',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật tài khoản cuối cùng',
-    `notes` TEXT COMMENT 'Ghi chú bổ sung về người dùng',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_users_role_id` FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`) ON DELETE RESTRICT,
-    CONSTRAINT `fk_users_status_id` FOREIGN KEY (`status_id`) REFERENCES `status`(`id`)
+create index idx_categories_active
+    on categories (is_active)
+    comment 'Danh mục đang hoạt động';
+
+create index idx_categories_category_id
+    on categories (category_id)
+    comment 'Tìm theo mã danh mục';
+
+create index idx_categories_parent
+    on categories (parent_id)
+    comment 'Danh mục theo danh mục cha';
+
+create table products_backup_20250811_102144
+(
+    id             bigint         default 0                 not null comment 'Mã định danh duy nhất của sản phẩm',
+    external_id    bigint                                   null,
+    product_code   varchar(50)                              not null comment 'Mã SKU/mã nội bộ sản phẩm',
+    name           varchar(255)                             not null comment 'Tên hiển thị sản phẩm',
+    description    text                                     null comment 'Mô tả chi tiết sản phẩm',
+    category_id    bigint                                   not null comment 'Phân loại danh mục sản phẩm',
+    unit_price     decimal(15, 2)                           not null comment 'Giá bán trên một đơn vị',
+    weight         decimal(10, 3) default 0.000             null comment 'Trọng lượng sản phẩm (kg)',
+    volume         decimal(10, 3) default 0.000             null comment 'Thể tích sản phẩm (m3)',
+    is_fragile     tinyint        default 0                 not null,
+    stock_quantity int            default 0                 not null comment 'Số lượng tồn kho hiện tại',
+    product_image  varchar(500)                             null comment 'URL/đường dẫn ảnh sản phẩm',
+    product_status enum ('ACTIVE', 'INACTIVE')              not null,
+    warehouse_id   bigint                                   null comment 'Kho chính chứa sản phẩm này',
+    created_at     datetime       default CURRENT_TIMESTAMP null comment 'Thời gian tạo sản phẩm',
+    updated_at     datetime       default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật sản phẩm cuối cùng',
+    created_by     bigint                                   null comment 'ID người dùng tạo sản phẩm này',
+    notes          text                                     null comment 'Ghi chú bổ sung về sản phẩm'
 );
 
--- =====================================================================================
--- BẢNG DANH MỤC SẢN PHẨM (Self-reference)
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `categories` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của danh mục',
-    `name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị của danh mục',
-    `description` TEXT COMMENT 'Mô tả chi tiết về danh mục',
-    `parent_id` BIGINT COMMENT 'ID danh mục cha (cho cấu trúc cây)',
-    `is_active` tinyint NOT NULL DEFAULT 1 COMMENT 'Trạng thái sử dụng: 0=Ngừng, 1=Hoạt động',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo danh mục',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật danh mục cuối cùng',
-    `notes` TEXT COMMENT 'Ghi chú bổ sung về danh mục',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_categories_parent_id` FOREIGN KEY (`parent_id`) REFERENCES `categories`(`id`) ON DELETE SET NULL
+create table products_backup_20250811_102215
+(
+    id             bigint         default 0                 not null comment 'Mã định danh duy nhất của sản phẩm',
+    external_id    bigint                                   null,
+    product_code   varchar(50)                              not null comment 'Mã SKU/mã nội bộ sản phẩm',
+    name           varchar(255)                             not null comment 'Tên hiển thị sản phẩm',
+    description    text                                     null comment 'Mô tả chi tiết sản phẩm',
+    category_id    bigint                                   not null comment 'Phân loại danh mục sản phẩm',
+    unit_price     decimal(15, 2)                           not null comment 'Giá bán trên một đơn vị',
+    weight         decimal(10, 3) default 0.000             null comment 'Trọng lượng sản phẩm (kg)',
+    volume         decimal(10, 3) default 0.000             null comment 'Thể tích sản phẩm (m3)',
+    is_fragile     tinyint        default 0                 not null,
+    stock_quantity int            default 0                 not null comment 'Số lượng tồn kho hiện tại',
+    product_image  varchar(500)                             null comment 'URL/đường dẫn ảnh sản phẩm',
+    product_status enum ('ACTIVE', 'INACTIVE')              not null,
+    warehouse_id   bigint                                   null comment 'Kho chính chứa sản phẩm này',
+    created_at     datetime       default CURRENT_TIMESTAMP null comment 'Thời gian tạo sản phẩm',
+    updated_at     datetime       default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật sản phẩm cuối cùng',
+    created_by     bigint                                   null comment 'ID người dùng tạo sản phẩm này',
+    notes          text                                     null comment 'Ghi chú bổ sung về sản phẩm'
 );
 
--- =====================================================================================
--- BẢNG QUẢN LÝ KHO BÃI
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `warehouses` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của kho bãi',
-    `name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị của kho bãi',
-    `address` TEXT NOT NULL COMMENT 'Địa chỉ đầy đủ của kho bãi',
-    `latitude` DECIMAL(10,8) COMMENT 'Tọa độ vĩ độ kho bãi',
-    `longitude` DECIMAL(11,8) COMMENT 'Tọa độ kinh độ kho bãi',
-    `capacity_m3` DECIMAL(10,2) DEFAULT 0.00 COMMENT 'Sức chứa tối đa của kho (m3)',
-    `is_active` tinyint NOT NULL DEFAULT 1 COMMENT 'Trạng thái hoạt động: 0=Đóng cửa, 1=Hoạt động',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo kho bãi',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật kho bãi cuối cùng',
-    `created_by` BIGINT COMMENT 'ID người dùng tạo kho bãi này',
-    `notes` TEXT COMMENT 'Ghi chú bổ sung về kho bãi',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_warehouses_created_by` FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
+create table products_backup_20250811_102245
+(
+    id             bigint         default 0                 not null comment 'Mã định danh duy nhất của sản phẩm',
+    external_id    bigint                                   null,
+    product_code   varchar(50)                              not null comment 'Mã SKU/mã nội bộ sản phẩm',
+    name           varchar(255)                             not null comment 'Tên hiển thị sản phẩm',
+    description    text                                     null comment 'Mô tả chi tiết sản phẩm',
+    category_id    bigint                                   not null comment 'Phân loại danh mục sản phẩm',
+    unit_price     decimal(15, 2)                           not null comment 'Giá bán trên một đơn vị',
+    weight         decimal(10, 3) default 0.000             null comment 'Trọng lượng sản phẩm (kg)',
+    volume         decimal(10, 3) default 0.000             null comment 'Thể tích sản phẩm (m3)',
+    is_fragile     tinyint        default 0                 not null,
+    stock_quantity int            default 0                 not null comment 'Số lượng tồn kho hiện tại',
+    product_image  varchar(500)                             null comment 'URL/đường dẫn ảnh sản phẩm',
+    product_status enum ('ACTIVE', 'INACTIVE')              not null,
+    warehouse_id   bigint                                   null comment 'Kho chính chứa sản phẩm này',
+    created_at     datetime       default CURRENT_TIMESTAMP null comment 'Thời gian tạo sản phẩm',
+    updated_at     datetime       default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật sản phẩm cuối cùng',
+    created_by     bigint                                   null comment 'ID người dùng tạo sản phẩm này',
+    notes          text                                     null comment 'Ghi chú bổ sung về sản phẩm'
 );
 
--- =====================================================================================
--- BẢNG QUẢN LÝ SẢN PHẨM
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `products` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của sản phẩm',
-    `name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị sản phẩm',
-    `description` TEXT COMMENT 'Mô tả chi tiết sản phẩm',
-    `category_id` BIGINT NOT NULL COMMENT 'Phân loại danh mục sản phẩm',
-    `unit_price` DECIMAL(15,2) NOT NULL COMMENT 'Giá bán trên một đơn vị',
-    `weight` DECIMAL(10,3) DEFAULT 0.000 COMMENT 'Trọng lượng sản phẩm (kg)',
-    `volume` DECIMAL(10,3) DEFAULT 0.000 COMMENT 'Thể tích sản phẩm (m3)',
-    `is_fragile` tinyint NOT NULL DEFAULT 0 COMMENT 'Cờ hàng dễ vỡ: 0=Không, 1=Có',
-    `stock_quantity` INT NOT NULL DEFAULT 0 COMMENT 'Số lượng tồn kho hiện tại',
-    `product_image` VARCHAR(500) COMMENT 'URL/đường dẫn ảnh sản phẩm',
-    `product_status` tinyint NOT NULL DEFAULT 1 COMMENT 'Trạng thái sản phẩm: 0=Ngừng bán, 1=Đang bán',
-    `warehouse_id` BIGINT COMMENT 'Kho chính chứa sản phẩm này',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo sản phẩm',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật sản phẩm cuối cùng',
-    `created_by` BIGINT COMMENT 'ID người dùng tạo sản phẩm này',
-    `notes` TEXT COMMENT 'Ghi chú bổ sung về sản phẩm',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_products_category_id` FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON DELETE RESTRICT,
-    CONSTRAINT `fk_products_warehouse_id` FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_products_created_by` FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `chk_product_price_positive` CHECK (`unit_price` > 0),
-    CONSTRAINT `chk_product_weight_volume` CHECK (`weight` >= 0 AND `volume` >= 0),
-    CONSTRAINT `chk_product_stock_quantity` CHECK (`stock_quantity` >= 0),
-    CONSTRAINT `chk_product_status` CHECK (`product_status` IN (0, 1)),
-    CONSTRAINT `chk_product_is_fragile` CHECK (`is_fragile` IN (0, 1))
+create table products_backup_20250811_102313
+(
+    id             bigint         default 0                 not null comment 'Mã định danh duy nhất của sản phẩm',
+    external_id    bigint                                   null,
+    product_code   varchar(50)                              not null comment 'Mã SKU/mã nội bộ sản phẩm',
+    name           varchar(255)                             not null comment 'Tên hiển thị sản phẩm',
+    description    text                                     null comment 'Mô tả chi tiết sản phẩm',
+    category_id    bigint                                   not null comment 'Phân loại danh mục sản phẩm',
+    unit_price     decimal(15, 2)                           not null comment 'Giá bán trên một đơn vị',
+    weight         decimal(10, 3) default 0.000             null comment 'Trọng lượng sản phẩm (kg)',
+    volume         decimal(10, 3) default 0.000             null comment 'Thể tích sản phẩm (m3)',
+    is_fragile     tinyint        default 0                 not null,
+    stock_quantity int            default 0                 not null comment 'Số lượng tồn kho hiện tại',
+    product_image  varchar(500)                             null comment 'URL/đường dẫn ảnh sản phẩm',
+    product_status enum ('ACTIVE', 'INACTIVE')              not null,
+    warehouse_id   bigint                                   null comment 'Kho chính chứa sản phẩm này',
+    created_at     datetime       default CURRENT_TIMESTAMP null comment 'Thời gian tạo sản phẩm',
+    updated_at     datetime       default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật sản phẩm cuối cùng',
+    created_by     bigint                                   null comment 'ID người dùng tạo sản phẩm này',
+    notes          text                                     null comment 'Ghi chú bổ sung về sản phẩm'
 );
 
--- =====================================================================================
--- BẢNG QUẢN LÝ CỬA HÀNG/ĐIỂM BAN HÀNG
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `stores` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của cửa hàng',
-    `store_name` VARCHAR(255) NOT NULL COMMENT 'Tên hiển thị của cửa hàng',
-    `email` VARCHAR(255) COMMENT 'Email liên hệ của cửa hàng',
-    `phone` VARCHAR(20) NOT NULL COMMENT 'Số điện thoại liên hệ cửa hàng',
-    `address` TEXT NOT NULL COMMENT 'Địa chỉ đầy đủ của cửa hàng',
-    `latitude` DECIMAL(10,8) COMMENT 'Tọa độ vĩ độ cửa hàng',
-    `longitude` DECIMAL(11,8) COMMENT 'Tọa độ kinh độ cửa hàng',
-    `is_active` tinyint NOT NULL DEFAULT 1 COMMENT 'Trạng thái hoạt động: 0=Đóng cửa, 1=Hoạt động',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo cửa hàng',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật cửa hàng cuối cùng',
-    `created_by` BIGINT COMMENT 'ID người dùng tạo cửa hàng này',
-    `notes` TEXT COMMENT 'Ghi chú bổ sung về cửa hàng',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_stores_created_by` FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
+create table roles
+(
+    id          bigint auto_increment comment 'Mã định danh duy nhất của vai trò'
+        primary key,
+    role_name   varchar(50)                        not null comment 'Tên vai trò (admin, điều phối, tài xế, xem)',
+    permission  json                               null comment 'Đối tượng JSON chứa quyền và quyền truy cập của vai trò',
+    description text                               null comment 'Mô tả chi tiết trách nhiệm của vai trò',
+    is_active   bit                                not null,
+    created_at  datetime default CURRENT_TIMESTAMP null comment 'Thời gian tạo vai trò',
+    updated_at  datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật vai trò cuối cùng',
+    constraint role_name
+        unique (role_name)
 );
 
--- =====================================================================================
--- BẢNG QUẢN LÝ PHƯƠNG TIỆN VẬN CHUYỂN
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `vehicles` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của phương tiện',
-    `license_plate` VARCHAR(20) NOT NULL UNIQUE COMMENT 'Biển số xe',
-    `vehicle_type` VARCHAR(50) NOT NULL DEFAULT 'TRUCK' COMMENT 'Loại phương tiện (xe tải, xe van, xe máy, ô tô)',
-    `capacity_weight_kg` DECIMAL(10,2) DEFAULT 0.00 COMMENT 'Trọng tải tối đa của phương tiện (kg)',
-    `capacity_volume_m3` DECIMAL(10,2) DEFAULT 0.00 COMMENT 'Thể tích chứa hàng tối đa (m3)',
-    `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái xe (hoạt động, bảo trì, ngừng hoạt động)',
-    `current_driver_id` BIGINT COMMENT 'ID tài xế hiện tại, NULL nếu chưa phân công',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo bản ghi',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật cuối cùng',
-    `notes` TEXT COMMENT 'Ghi chú bổ sung về phương tiện',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_vehicles_status_id` FOREIGN KEY (`status_id`) REFERENCES `status`(`id`),
-    CONSTRAINT `fk_vehicles_current_driver_id` FOREIGN KEY (`current_driver_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `chk_vehicle_capacity` CHECK (`capacity_weight_kg` >= 0 AND `capacity_volume_m3` >= 0),
-    CONSTRAINT `chk_license_plate_format` CHECK (LENGTH(`license_plate`) >= 6)
+create index idx_roles_active
+    on roles (is_active)
+    comment 'Vai trò đang hoạt động';
+
+create index idx_roles_name
+    on roles (role_name)
+    comment 'Tìm vai trò theo tên';
+
+create table status
+(
+    id          tinyint unsigned auto_increment comment 'Mã định danh trạng thái duy nhất (1-255)'
+        primary key,
+    type        varchar(50)                        not null comment 'Phân loại trạng thái (phương tiện, đơn hàng, thanh toán, người dùng, v.v.)',
+    name        varchar(100)                       not null comment 'Tên trạng thái dễ đọc',
+    description text                               null comment 'Mô tả chi tiết ý nghĩa của trạng thái',
+    created_at  datetime default CURRENT_TIMESTAMP null comment 'Thời gian tạo trạng thái',
+    updated_at  datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật trạng thái cuối cùng'
 );
 
--- =====================================================================================
--- BẢNG QUẢN LÝ TUYẾN ĐƯỜNG VẬN CHUYỂN
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `routes` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của tuyến đường',
-    `name` VARCHAR(255) NOT NULL COMMENT 'Tên tuyến đường (mô tả ngắn)',
-    `waypoints` JSON NOT NULL COMMENT 'Danh sách các điểm dừng trên tuyến (JSON)',
-    `estimated_distance_km` DECIMAL(10,2) DEFAULT 0.00 COMMENT 'Khoảng cách dự kiến (km)',
-    `estimated_duration_minutes` INT DEFAULT 0 COMMENT 'Thời gian dự kiến (phút)',
-    `estimated_cost` DECIMAL(15,2) DEFAULT 0.00 COMMENT 'Chi phí dự kiến cho tuyến',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo tuyến đường',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật tuyến cuối cùng',
-    `completed_at` DATETIME COMMENT 'Thời gian hoàn thành tuyến đường',
-    `created_by` BIGINT COMMENT 'ID người dùng tạo tuyến đường',
-    `notes` TEXT COMMENT 'Ghi chú bổ sung về tuyến đường',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_routes_created_by` FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
+create index idx_status_name
+    on status (name)
+    comment 'Tìm trạng thái theo tên';
+
+create index idx_status_type
+    on status (type)
+    comment 'Trạng thái theo loại';
+
+create table users
+(
+    id          bigint auto_increment comment 'Mã định danh duy nhất của người dùng'
+        primary key,
+    external_id bigint                             null,
+    username    varchar(100)                       not null comment 'Tên đăng nhập duy nhất',
+    email       varchar(255)                       not null comment 'Địa chỉ email để đăng nhập và nhận thông báo',
+    password    varchar(255)                       not null comment 'Mật khẩu đã mã hóa để xác thực',
+    full_name   varchar(255)                       null comment 'Họ tên đầy đủ để hiển thị',
+    phone       varchar(20)                        null comment 'Số điện thoại liên hệ',
+    role_id     bigint                             not null comment 'Vai trò người dùng (admin, điều phối, tài xế, xem)',
+    status_id   tinyint unsigned                   null comment 'Trạng thái tài khoản (hoạt động, ngừng hoạt động, tạm khóa)',
+    created_at  datetime default CURRENT_TIMESTAMP null comment 'Thời gian tạo tài khoản',
+    updated_at  datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật tài khoản cuối cùng',
+    notes       text                               null comment 'Ghi chú bổ sung về người dùng',
+    google_id   varchar(100)                       null,
+    constraint email
+        unique (email),
+    constraint external_id
+        unique (external_id),
+    constraint username
+        unique (username),
+    constraint fk_users_role_id
+        foreign key (role_id) references roles (id),
+    constraint fk_users_status_id
+        foreign key (status_id) references status (id)
 );
 
--- =====================================================================================
--- BẢNG QUẢN LÝ ĐƠN HÀNG
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `orders` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của đơn hàng',
-    `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái đơn hàng (chờ xử lý, đang xử lý, hoàn thành, hủy)',
-    `store_id` BIGINT COMMENT 'ID cửa hàng liên kết, NULL cho đơn hàng online',
-    `description` TEXT COMMENT 'Mô tả và chi tiết đơn hàng',
-    `total_amount` DECIMAL(15,2) DEFAULT 0.00 COMMENT 'Tổng số tiền đơn hàng bao gồm phí',
-    `benefit_per_order` DECIMAL(15,2) DEFAULT 0.00 COMMENT 'Lợi nhuận/biên lãi dự kiến từ đơn hàng này',
-    `order_profit_per_order` DECIMAL(15,2) DEFAULT 0.00 COMMENT 'Lợi nhuận được tính toán cho đơn hàng này',
-    `notes` TEXT COMMENT 'Ghi chú bổ sung về đơn hàng',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo đơn hàng',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật đơn hàng cuối cùng',
-    `created_by` BIGINT COMMENT 'ID người dùng tạo đơn hàng này',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_orders_status_id` FOREIGN KEY (`status_id`) REFERENCES `status`(`id`),
-    CONSTRAINT `fk_orders_store_id` FOREIGN KEY (`store_id`) REFERENCES `stores`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_orders_created_by` FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
+create table activity_logs
+(
+    id               bigint auto_increment comment 'Mã định danh duy nhất của nhật ký hoạt động'
+        primary key,
+    actor_id         bigint                             null comment 'ID người dùng thực hiện hành động',
+    role_id          bigint                             not null comment 'Vai trò của người dùng tại thời điểm thực hiện',
+    status_id        tinyint unsigned                   not null comment 'Trạng thái hoàn thành hành động',
+    action_type      varchar(50)                        not null comment 'Loại hành động (TẠO, CẬP NHẬT, XÓA, ĐĂNG NHẬP, v.v.)',
+    table_name       varchar(255)                       null,
+    record_id        bigint                             null comment 'ID của bản ghi bị ảnh hưởng',
+    action_timestamp datetime default CURRENT_TIMESTAMP not null comment 'Thời điểm xảy ra hành động',
+    metadata         json                               null comment 'Metadata bổ sung (giá trị cũ/mới, IP, v.v.)',
+    constraint FK5wnh8r1e5ffup2wu2shpwywak
+        foreign key (actor_id) references users (id)
+            on delete cascade,
+    constraint fk_activity_logs_role_id
+        foreign key (role_id) references roles (id),
+    constraint fk_activity_logs_status_id
+        foreign key (status_id) references status (id)
 );
 
--- =====================================================================================
--- BẢNG CHI TIẾT CÁC MẶT HÀNG TRONG ĐƠN HÀNG
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `order_items` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của mục hàng',
-    `order_id` BIGINT NOT NULL COMMENT 'Mã đơn hàng chứa mục hàng này',
-    `product_id` BIGINT NOT NULL COMMENT 'Mã sản phẩm trong mục hàng',
-    `quantity` INT NOT NULL COMMENT 'Số lượng sản phẩm đặt mua',
-    `unit_price` DECIMAL(15,2) NOT NULL COMMENT 'Giá tại thời điểm đặt hàng',
-    `shipping_fee` DECIMAL(15,2) DEFAULT 0.00 COMMENT 'Phí vận chuyển mà người dùng phải trả',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo mục hàng',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật mục hàng cuối cùng',
-    `notes` TEXT COMMENT 'Ghi chú đặc biệt cho mục hàng này',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_order_items_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_order_items_product_id` FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE RESTRICT,
-    CONSTRAINT `chk_order_item_quantity` CHECK (`quantity` > 0),
-    CONSTRAINT `chk_order_item_unit_price` CHECK (`unit_price` > 0),
-    CONSTRAINT `chk_order_item_shipping_fee` CHECK (`shipping_fee` >= 0),
-    UNIQUE KEY `uk_order_product` (`order_id`, `product_id`)
+create index idx_activity_logs_action_time
+    on activity_logs (action_timestamp desc)
+    comment 'Log theo thời gian hành động';
+
+create index idx_activity_logs_action_type
+    on activity_logs (action_type)
+    comment 'Log theo loại hành động';
+
+create index idx_activity_logs_actor
+    on activity_logs (actor_id)
+    comment 'Log theo người thực hiện';
+
+create index idx_activity_logs_record
+    on activity_logs (table_name, record_id)
+    comment 'Log theo bản ghi cụ thể';
+
+create index idx_activity_logs_table
+    on activity_logs (table_name)
+    comment 'Log theo bảng bị ảnh hưởng';
+
+create table routes
+(
+    id                         bigint auto_increment comment 'Mã định danh duy nhất của tuyến đường'
+        primary key,
+    name                       varchar(255)                             not null comment 'Tên tuyến đường (mô tả ngắn)',
+    waypoints                  json                                     not null comment 'Danh sách các điểm dừng trên tuyến (JSON)',
+    estimated_distance_km      decimal(10, 2) default 0.00              null comment 'Khoảng cách dự kiến (km)',
+    estimated_duration_minutes int            default 0                 null comment 'Thời gian dự kiến (phút)',
+    estimated_cost             decimal(15, 2) default 0.00              null comment 'Chi phí dự kiến cho tuyến',
+    created_at                 datetime       default CURRENT_TIMESTAMP null comment 'Thời gian tạo tuyến đường',
+    updated_at                 datetime       default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật tuyến cuối cùng',
+    completed_at               datetime                                 null comment 'Thời gian hoàn thành tuyến đường',
+    created_by                 bigint                                   null comment 'ID người dùng tạo tuyến đường',
+    notes                      text                                     null comment 'Ghi chú bổ sung về tuyến đường',
+    constraint fk_routes_created_by
+        foreign key (created_by) references users (id)
 );
 
--- =====================================================================================
--- BẢNG ĐỊA CHỈ GIAO HÀNG VÀ LẤY HÀNG
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `addresses` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của địa chỉ',
-    `order_id` BIGINT NOT NULL COMMENT 'Mã đơn hàng liên quan',
-    `address_type` VARCHAR(50) NOT NULL COMMENT 'Loại địa chỉ (giao hàng, lấy hàng, trả hàng)',
-    `address` VARCHAR(500) NOT NULL COMMENT 'Địa chỉ đầy đủ (số nhà, đường, phường/xã)',
-    `latitude` DECIMAL(10,8) COMMENT 'Tọa độ vĩ độ (GPS)',
-    `longitude` DECIMAL(11,8) COMMENT 'Tọa độ kinh độ (GPS)',
-    `city` VARCHAR(100) COMMENT 'Thành phố/Tỉnh',
-    `state` VARCHAR(100) COMMENT 'Bang/Khu vực',
-    `country` VARCHAR(100) DEFAULT 'Vietnam' COMMENT 'Quốc gia',
-    `region` VARCHAR(100) COMMENT 'Vùng miền/Khu vực',
-    `postal_code` VARCHAR(20) COMMENT 'Mã bưu điện',
-    `contact_name` VARCHAR(255) COMMENT 'Tên người liên hệ tại địa chỉ',
-    `contact_phone` VARCHAR(20) COMMENT 'Số điện thoại người liên hệ',
-    `contact_email` VARCHAR(255) COMMENT 'Email người liên hệ',
-    `floor_number` VARCHAR(10) COMMENT 'Số tầng/lầu của tòa nhà',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo địa chỉ',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật địa chỉ cuối cùng',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_addresses_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`) ON DELETE CASCADE
+create index idx_routes_completed
+    on routes (completed_at)
+    comment 'Tuyến đường đã hoàn thành';
+
+create index idx_routes_created_by
+    on routes (created_by)
+    comment 'Tuyến đường theo người tạo';
+
+create index idx_routes_estimated_cost
+    on routes (estimated_cost)
+    comment 'Sắp xếp theo chi phí dự kiến';
+
+create table stores
+(
+    id          bigint auto_increment comment 'Mã định danh duy nhất của cửa hàng'
+        primary key,
+    external_id bigint                             null,
+    store_name  varchar(255)                       not null comment 'Tên hiển thị của cửa hàng',
+    email       varchar(255)                       null comment 'Email liên hệ của cửa hàng',
+    phone       varchar(20)                        not null comment 'Số điện thoại liên hệ cửa hàng',
+    address     text                               not null comment 'Địa chỉ đầy đủ của cửa hàng',
+    latitude    decimal(10, 8)                     null comment 'Tọa độ vĩ độ cửa hàng',
+    longitude   decimal(11, 8)                     null comment 'Tọa độ kinh độ cửa hàng',
+    is_active   bit                                null,
+    created_at  datetime default CURRENT_TIMESTAMP null comment 'Thời gian tạo cửa hàng',
+    updated_at  datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật cửa hàng cuối cùng',
+    created_by  bigint                             null comment 'ID người dùng tạo cửa hàng này',
+    notes       text                               null comment 'Ghi chú bổ sung về cửa hàng',
+    constraint external_id
+        unique (external_id),
+    constraint fk_stores_created_by
+        foreign key (created_by) references users (id)
 );
 
--- =====================================================================================
--- BẢNG QUẢN LÝ THANH TOÁN
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `payments` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của thanh toán',
-    `order_id` BIGINT NOT NULL COMMENT 'Mã đơn hàng được thanh toán',
-    `amount` DECIMAL(15,2) NOT NULL COMMENT 'Tổng số tiền thanh toán',
-    `payment_method` VARCHAR(50) NOT NULL DEFAULT 'CASH' COMMENT 'Phương thức thanh toán (tiền mặt, thẻ, chuyển khoản)',
-    `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái thanh toán (thành công, thất bại, chờ xử lý)',
-    `transaction_id` VARCHAR(255) NOT NULL COMMENT 'Mã giao dịch từ cổng thanh toán',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo bản ghi thanh toán',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật thanh toán cuối cùng',
-    `created_by` BIGINT COMMENT 'ID người dùng tạo bản ghi thanh toán',
-    `notes` TEXT COMMENT 'Ghi chú bổ sung về thanh toán',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_payments_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_payments_status_id` FOREIGN KEY (`status_id`) REFERENCES `status`(`id`),
-    CONSTRAINT `fk_payments_created_by` FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `chk_payment_amount` CHECK (`amount` > 0),
-    UNIQUE KEY `uk_transaction_id` (`transaction_id`)
+create table orders
+(
+    id                     bigint auto_increment comment 'Mã định danh duy nhất của đơn hàng'
+        primary key,
+    external_id            bigint                                   null,
+    status_id              tinyint unsigned                         not null comment 'Trạng thái đơn hàng (chờ xử lý, đang xử lý, hoàn thành, hủy)',
+    store_id               bigint                                   null comment 'ID cửa hàng liên kết, NULL cho đơn hàng online',
+    description            text                                     null comment 'Mô tả và chi tiết đơn hàng',
+    total_amount           decimal(15, 2) default 0.00              null comment 'Tổng số tiền đơn hàng bao gồm phí',
+    benefit_per_order      decimal(15, 2) default 0.00              null comment 'Lợi nhuận/biên lãi dự kiến từ đơn hàng này',
+    order_profit_per_order decimal(15, 2) default 0.00              null comment 'Lợi nhuận được tính toán cho đơn hàng này',
+    notes                  text                                     null comment 'Ghi chú bổ sung về đơn hàng',
+    created_at             datetime       default CURRENT_TIMESTAMP null comment 'Thời gian tạo đơn hàng',
+    updated_at             datetime       default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật đơn hàng cuối cùng',
+    created_by             bigint                                   null comment 'ID người dùng tạo đơn hàng này',
+    address_id             bigint                                   null,
+    constraint external_id
+        unique (external_id),
+    constraint FKhlglkvf5i60dv6dn397ethgpt
+        foreign key (address_id) references addresses (id),
+    constraint fk_orders_created_by
+        foreign key (created_by) references users (id),
+    constraint fk_orders_status_id
+        foreign key (status_id) references status (id),
+    constraint fk_orders_store_id
+        foreign key (store_id) references stores (id)
 );
 
--- =====================================================================================
--- BẢNG QUẢN LÝ GIAO HÀNG
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `deliveries` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của giao hàng',
-    `order_id` BIGINT NOT NULL COMMENT 'Đơn hàng liên kết đang được giao',
-    `delivery_fee` DECIMAL(15,2) DEFAULT 0.00 COMMENT 'Chi phí vận chuyển doanh nghiệp logistic phải trả',
-    `transport_mode` VARCHAR(50) DEFAULT 'ROAD' COMMENT 'Phương thức vận chuyển (đường bộ, hàng không, đường biển, đường sắt)',
-    `service_type` VARCHAR(50) DEFAULT 'STANDARD' COMMENT 'Mức dịch vụ (tiêu chuẩn, nhanh, ưu tiên)',
-    `order_date` DATETIME NOT NULL COMMENT 'Thời điểm đặt hàng',
-    `pickup_date` DATETIME COMMENT 'Thời điểm lấy hàng',
-    `schedule_delivery_time` DATETIME COMMENT 'Thời gian giao hàng dự kiến',
-    `actual_delivery_time` DATETIME COMMENT 'Thời gian hoàn thành giao hàng thực tế',
-    `late_delivery_risk` tinyint NOT NULL DEFAULT 0 COMMENT 'Cờ rủi ro giao hàng trễ: 0=Không, 1=Có',
-    `vehicle_id` BIGINT NOT NULL COMMENT 'Phương tiện được phân công cho giao hàng này',
-    `driver_id` BIGINT COMMENT 'Tài xế được phân công cho giao hàng này',
-    `route_id` BIGINT COMMENT 'Tuyến đường tối ưu cho giao hàng này',
-    `delivery_attempts` INT DEFAULT 0 COMMENT 'Số lần thử giao hàng đã thực hiện',
-    `delivery_notes` TEXT COMMENT 'Hướng dẫn đặc biệt và ghi chú cho giao hàng',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo bản ghi giao hàng',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật bản ghi giao hàng cuối cùng',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_deliveries_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_deliveries_vehicle_id` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`) ON DELETE RESTRICT,
-    CONSTRAINT `fk_deliveries_driver_id` FOREIGN KEY (`driver_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT,
-    CONSTRAINT `fk_deliveries_route_id` FOREIGN KEY (`route_id`) REFERENCES `routes`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `chk_delivery_attempts` CHECK (`delivery_attempts` >= 0),
-    CONSTRAINT `chk_late_delivery_risk` CHECK (`late_delivery_risk` IN (0, 1)),
-    CONSTRAINT `chk_delivery_time_logic` CHECK (`actual_delivery_time` IS NULL OR `actual_delivery_time` >= `pickup_date`)
+create table delivery_proofs
+(
+    id                  bigint auto_increment comment 'Mã định danh duy nhất của bằng chứng giao hàng'
+        primary key,
+    proof_type          varchar(50) default 'PHOTO'           not null comment 'Loại bằng chứng (ảnh, chữ ký, ghi âm)',
+    file_path           varchar(255)                          null,
+    file_name           varchar(255)                          null comment 'Tên file bằng chứng gốc',
+    recipient_name      varchar(255)                          null comment 'Tên người nhận hàng thực tế',
+    recipient_signature varchar(255)                          null,
+    captured_at         datetime                              null comment 'Thời gian chụp/ghi nhận bằng chứng',
+    created_at          datetime    default CURRENT_TIMESTAMP null comment 'Thời gian tạo bản ghi bằng chứng',
+    order_id            bigint                                not null comment 'Mã đơn hàng liên quan đến bằng chứng',
+    uploaded_by         bigint                                null comment 'ID người dùng (tài xế) upload bằng chứng',
+    notes               text                                  null comment 'Ghi chú bổ sung về bằng chứng giao hàng',
+    constraint fk_delivery_proofs_order_id
+        foreign key (order_id) references orders (id),
+    constraint fk_delivery_proofs_uploaded_by
+        foreign key (uploaded_by) references users (id)
 );
 
--- =====================================================================================
--- BẢNG THEO DÕI GPS GIAO HÀNG
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `delivery_tracking` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của điểm theo dõi',
-    `delivery_id` BIGINT NOT NULL COMMENT 'Mã giao hàng được theo dõi',
-    `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái giao hàng tại thời điểm này',
-    `latitude` DECIMAL(10,8) COMMENT 'Tọa độ vĩ độ hiện tại',
-    `longitude` DECIMAL(11,8) COMMENT 'Tọa độ kinh độ hiện tại',
-    `timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian ghi nhận điểm theo dõi',
-    `location` VARCHAR(255) COMMENT 'Tên địa điểm hiện tại (dễ đọc)',
-    `notes` TEXT COMMENT 'Ghi chú bổ sung tại điểm theo dõi',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo bản ghi theo dõi',
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời gian cập nhật bản ghi cuối cùng',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_delivery_tracking_delivery_id` FOREIGN KEY (`delivery_id`) REFERENCES `deliveries`(`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_delivery_tracking_status_id` FOREIGN KEY (`status_id`) REFERENCES `status`(`id`)
+create index idx_delivery_proofs_captured
+    on delivery_proofs (captured_at desc)
+    comment 'Bằng chứng theo thời gian chụp';
+
+create index idx_delivery_proofs_order
+    on delivery_proofs (order_id)
+    comment 'Bằng chứng theo đơn hàng';
+
+create index idx_delivery_proofs_type
+    on delivery_proofs (proof_type)
+    comment 'Bằng chứng theo loại';
+
+create index idx_delivery_proofs_uploader
+    on delivery_proofs (uploaded_by)
+    comment 'Bằng chứng theo người upload';
+
+create index idx_orders_created_by
+    on orders (created_by)
+    comment 'Tìm đơn hàng theo người tạo';
+
+create index idx_orders_status
+    on orders (status_id)
+    comment 'Tìm đơn hàng theo trạng thái';
+
+create index idx_orders_status_created
+    on orders (status_id, created_at)
+    comment 'Sắp xếp đơn hàng theo trạng thái và thời gian';
+
+create index idx_orders_store
+    on orders (store_id)
+    comment 'Tìm đơn hàng theo cửa hàng';
+
+create table payments
+(
+    id             bigint auto_increment comment 'Mã định danh duy nhất của thanh toán'
+        primary key,
+    order_id       bigint                                not null comment 'Mã đơn hàng được thanh toán',
+    amount         decimal(15, 2)                        not null comment 'Tổng số tiền thanh toán',
+    payment_method varchar(50) default 'CASH'            not null comment 'Phương thức thanh toán (tiền mặt, thẻ, chuyển khoản)',
+    status_id      tinyint unsigned                      not null comment 'Trạng thái thanh toán (thành công, thất bại, chờ xử lý)',
+    transaction_id varchar(255)                          null comment 'Mã giao dịch từ cổng thanh toán',
+    created_at     datetime    default CURRENT_TIMESTAMP null comment 'Thời gian tạo bản ghi thanh toán',
+    updated_at     datetime    default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật thanh toán cuối cùng',
+    created_by     bigint                                null comment 'ID người dùng tạo bản ghi thanh toán',
+    notes          text                                  null comment 'Ghi chú bổ sung về thanh toán',
+    constraint fk_payments_created_by
+        foreign key (created_by) references users (id),
+    constraint fk_payments_order_id
+        foreign key (order_id) references orders (id),
+    constraint fk_payments_status_id
+        foreign key (status_id) references status (id),
+    constraint chk_payment_amount
+        check (`amount` > 0)
 );
 
--- =====================================================================================
--- BẢNG CHỨNG CHỈ GIAO HÀNG THÀNH CÔNG
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `delivery_proofs` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của bằng chứng giao hàng',
-    `proof_type` VARCHAR(50) NOT NULL DEFAULT 'PHOTO' COMMENT 'Loại bằng chứng (ảnh, chữ ký, ghi âm)',
-    `file_path` VARCHAR(500) COMMENT 'Đường dẫn lưu trữ file bằng chứng',
-    `file_name` VARCHAR(255) COMMENT 'Tên file bằng chứng gốc',
-    `recipient_name` VARCHAR(255) COMMENT 'Tên người nhận hàng thực tế',
-    `recipient_signature` TEXT COMMENT 'Dữ liệu chữ ký số của người nhận',
-    `captured_at` DATETIME COMMENT 'Thời gian chụp/ghi nhận bằng chứng',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo bản ghi bằng chứng',
-    `order_id` BIGINT NOT NULL COMMENT 'Mã đơn hàng liên quan đến bằng chứng',
-    `uploaded_by` BIGINT COMMENT 'ID người dùng (tài xế) upload bằng chứng',
-    `notes` TEXT COMMENT 'Ghi chú bổ sung về bằng chứng giao hàng',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_delivery_proofs_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_delivery_proofs_uploaded_by` FOREIGN KEY (`uploaded_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
+create index idx_payments_created
+    on payments (created_at desc)
+    comment 'Thanh toán theo thời gian tạo';
+
+create index idx_payments_method
+    on payments (payment_method)
+    comment 'Thanh toán theo phương thức';
+
+create index idx_payments_order
+    on payments (order_id)
+    comment 'Thanh toán theo đơn hàng';
+
+create index idx_payments_status
+    on payments (status_id)
+    comment 'Thanh toán theo trạng thái';
+
+create index idx_payments_transaction
+    on payments (transaction_id)
+    comment 'Thanh toán theo mã giao dịch';
+
+create index idx_stores_active
+    on stores (is_active)
+    comment 'Cửa hàng đang hoạt động';
+
+create index idx_stores_coordinates
+    on stores (latitude, longitude)
+    comment 'Tìm cửa hàng theo tọa độ';
+
+create index idx_users_email
+    on users (email)
+    comment 'Tìm người dùng theo email';
+
+create index idx_users_role
+    on users (role_id)
+    comment 'Người dùng theo vai trò';
+
+create index idx_users_status
+    on users (status_id)
+    comment 'Người dùng theo trạng thái';
+
+create index idx_users_username
+    on users (username)
+    comment 'Tìm người dùng theo username';
+
+create table vehicles
+(
+    id                 bigint auto_increment comment 'Mã định danh duy nhất của phương tiện'
+        primary key,
+    license_plate      varchar(20)                              not null comment 'Biển số xe',
+    vehicle_type       varchar(50)    default 'TRUCK'           not null comment 'Loại phương tiện (xe tải, xe van, xe máy, ô tô)',
+    capacity_weight_kg decimal(10, 2) default 0.00              null comment 'Trọng tải tối đa của phương tiện (kg)',
+    capacity_volume_m3 decimal(10, 2) default 0.00              null comment 'Thể tích chứa hàng tối đa (m3)',
+    status_id          tinyint unsigned                         not null comment 'Trạng thái xe (hoạt động, bảo trì, ngừng hoạt động)',
+    current_driver_id  bigint                                   null comment 'ID tài xế hiện tại, NULL nếu chưa phân công',
+    created_at         datetime       default CURRENT_TIMESTAMP null comment 'Thời gian tạo bản ghi',
+    updated_at         datetime       default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật cuối cùng',
+    notes              text                                     null comment 'Ghi chú bổ sung về phương tiện',
+    constraint license_plate
+        unique (license_plate),
+    constraint fk_vehicles_current_driver_id
+        foreign key (current_driver_id) references users (id),
+    constraint fk_vehicles_status_id
+        foreign key (status_id) references status (id),
+    constraint chk_vehicle_capacity
+        check ((`capacity_weight_kg` >= 0) and (`capacity_volume_m3` >= 0))
 );
 
--- =====================================================================================
--- BẢNG QUẢN LÝ GIAO DỊCH KHO BÃI
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `warehouse_transactions` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của giao dịch kho bãi',
-    `product_id` BIGINT NOT NULL COMMENT 'Mã sản phẩm tham gia giao dịch',
-    `warehouse_id` BIGINT NOT NULL COMMENT 'Mã kho hàng thực hiện giao dịch',
-    `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái giao dịch (thành công, thất bại, chờ xử lý)',
-    `transaction_type` VARCHAR(50) NOT NULL DEFAULT 'IN' COMMENT 'Loại giao dịch (nhập kho=IN, xuất kho=OUT, chuyển kho=TRANSFER)',
-    `quantity` INT NOT NULL COMMENT 'Số lượng sản phẩm trong giao dịch',
-    `unit_cost` DECIMAL(15,2) DEFAULT 0.00 COMMENT 'Giá vốn trên một đơn vị sản phẩm',
-    `transaction_date` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian thực hiện giao dịch kho bãi',
-    `order_id` BIGINT COMMENT 'Mã đơn hàng liên quan (nếu có)',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian tạo bản ghi giao dịch',
-    `created_by` BIGINT COMMENT 'ID người dùng tạo giao dịch',
-    `notes` TEXT COMMENT 'Ghi chú bổ sung về giao dịch kho bãi',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_warehouse_transactions_product_id` FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE RESTRICT,
-    CONSTRAINT `fk_warehouse_transactions_warehouse_id` FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`(`id`) ON DELETE RESTRICT,
-    CONSTRAINT `fk_warehouse_transactions_status_id` FOREIGN KEY (`status_id`) REFERENCES `status`(`id`),
-    CONSTRAINT `fk_warehouse_transactions_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_warehouse_transactions_created_by` FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `chk_warehouse_trans_quantity` CHECK (`quantity` > 0),
-    CONSTRAINT `chk_warehouse_trans_unit_cost` CHECK (`unit_cost` >= 0)
+create table deliveries
+(
+    id                     bigint auto_increment comment 'Mã định danh duy nhất của giao hàng'
+        primary key,
+    order_id               bigint                                not null comment 'Đơn hàng liên kết đang được giao',
+    delivery_fee           decimal(38, 2)                        null,
+    transport_mode         varchar(50) default 'ROAD'            null comment 'Phương thức vận chuyển (đường bộ, hàng không, đường biển, đường sắt)',
+    service_type           varchar(50) default 'STANDARD'        null comment 'Mức dịch vụ (tiêu chuẩn, nhanh, ưu tiên)',
+    order_date             datetime                              not null comment 'Thời điểm đặt hàng',
+    pickup_date            datetime                              null comment 'Thời điểm lấy hàng',
+    schedule_delivery_time datetime                              null comment 'Thời gian giao hàng dự kiến',
+    actual_delivery_time   datetime                              null comment 'Thời gian hoàn thành giao hàng thực tế',
+    late_delivery_risk     int                                   not null,
+    vehicle_id             bigint                                not null comment 'Phương tiện được phân công cho giao hàng này',
+    driver_id              bigint                                null comment 'Tài xế được phân công cho giao hàng này',
+    tracking_id            bigint                                null comment 'Bản ghi theo dõi GPS cho giao hàng này',
+    route_id               bigint                                null comment 'Tuyến đường tối ưu cho giao hàng này',
+    delivery_attempts      int         default 0                 null comment 'Số lần thử giao hàng đã thực hiện',
+    delivery_notes         text                                  null comment 'Hướng dẫn đặc biệt và ghi chú cho giao hàng',
+    created_at             datetime    default CURRENT_TIMESTAMP null comment 'Thời gian tạo bản ghi giao hàng',
+    updated_at             datetime    default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật bản ghi giao hàng cuối cùng',
+    constraint fk_deliveries_driver_id
+        foreign key (driver_id) references users (id),
+    constraint fk_deliveries_order_id
+        foreign key (order_id) references orders (id),
+    constraint fk_deliveries_route_id
+        foreign key (route_id) references routes (id),
+    constraint fk_deliveries_vehicle_id
+        foreign key (vehicle_id) references vehicles (id),
+    constraint chk_delivery_attempts
+        check (`delivery_attempts` >= 0)
 );
 
--- =====================================================================================
--- BẢNG NHẬT KÝ HOẠT ĐỘNG HỆ THỐNG
--- =====================================================================================
-CREATE TABLE IF NOT EXISTS `activity_logs` (
-    `id` BIGINT AUTO_INCREMENT COMMENT 'Mã định danh duy nhất của nhật ký hoạt động',
-    `actor_id` BIGINT COMMENT 'ID người dùng thực hiện hành động',
-    `role_id` BIGINT COMMENT 'Vai trò của người dùng tại thời điểm thực hiện',
-    `status_id` TINYINT UNSIGNED NOT NULL COMMENT 'Trạng thái hoàn thành hành động',
-    `action_type` VARCHAR(50) NOT NULL COMMENT 'Loại hành động (TẠO, CẬP NHẬT, XÓA, ĐĂNG NHẬP, v.v.)',
-    `table_name` VARCHAR(64) COMMENT 'Bảng cơ sở dữ liệu bị ảnh hưởng bởi hành động',
-    `record_id` BIGINT COMMENT 'ID của bản ghi bị ảnh hưởng',
-    `action_timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm xảy ra hành động',
-    `metadata` JSON COMMENT 'Metadata bổ sung (giá trị cũ/mới, IP, v.v.)',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_activity_logs_actor_id` FOREIGN KEY (`actor_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_activity_logs_role_id` FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_activity_logs_status_id` FOREIGN KEY (`status_id`) REFERENCES `status`(`id`)
+create index idx_deliveries_driver
+    on deliveries (driver_id)
+    comment 'Tìm giao hàng theo tài xế';
+
+create index idx_deliveries_order
+    on deliveries (order_id)
+    comment 'Tìm giao hàng theo đơn hàng';
+
+create index idx_deliveries_route
+    on deliveries (route_id)
+    comment 'Tìm giao hàng theo tuyến đường';
+
+create index idx_deliveries_schedule_time
+    on deliveries (schedule_delivery_time)
+    comment 'Sắp xếp theo thời gian giao hàng dự kiến';
+
+create index idx_deliveries_tracking
+    on deliveries (tracking_id)
+    comment 'Tìm giao hàng theo tracking';
+
+create index idx_deliveries_vehicle
+    on deliveries (vehicle_id)
+    comment 'Tìm giao hàng theo phương tiện';
+
+create table delivery_tracking
+(
+    id          bigint auto_increment comment 'Mã định danh duy nhất của điểm theo dõi'
+        primary key,
+    vehicle_id  bigint                             not null comment 'Mã phương tiện đang được theo dõi',
+    status_id   tinyint unsigned                   not null comment 'Trạng thái giao hàng tại thời điểm này',
+    latitude    decimal(10, 8)                     null comment 'Tọa độ vĩ độ hiện tại',
+    longitude   decimal(11, 8)                     null comment 'Tọa độ kinh độ hiện tại',
+    timestamp   datetime default CURRENT_TIMESTAMP not null comment 'Thời gian ghi nhận điểm theo dõi',
+    location    varchar(255)                       null comment 'Tên địa điểm hiện tại (dễ đọc)',
+    notes       text                               null comment 'Ghi chú bổ sung tại điểm theo dõi',
+    created_at  datetime default CURRENT_TIMESTAMP null comment 'Thời gian tạo bản ghi theo dõi',
+    updated_at  datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật bản ghi cuối cùng',
+    delivery_id bigint                             not null,
+    constraint FKa7752nojalt7df2ssnia9er56
+        foreign key (delivery_id) references deliveries (id),
+    constraint fk_delivery_tracking_status_id
+        foreign key (status_id) references status (id),
+    constraint fk_delivery_tracking_vehicle_id
+        foreign key (vehicle_id) references vehicles (id)
 );
 
--- =====================================================================================
--- PERFORMANCE INDEXES - CRITICAL FOR PRODUCTION
--- =====================================================================================
--- Thêm các indexes quan trọng cho hiệu suất truy vấn trong hệ thống logistics
--- Các indexes này được thiết kế dựa trên các truy vấn thường xuyên của hệ thống
--- =====================================================================================
+create index idx_delivery_tracking_status
+    on delivery_tracking (status_id)
+    comment 'Tracking theo trạng thái';
 
--- Indexes cho bảng ORDERS (truy vấn nhiều nhất)
-CREATE INDEX idx_orders_status ON orders(status_id) COMMENT 'Tìm đơn hàng theo trạng thái';
-CREATE INDEX idx_orders_status_created ON orders(status_id, created_at) COMMENT 'Sắp xếp đơn hàng theo trạng thái và thời gian';
-CREATE INDEX idx_orders_store ON orders(store_id) COMMENT 'Tìm đơn hàng theo cửa hàng';
-CREATE INDEX idx_orders_created_by ON orders(created_by) COMMENT 'Tìm đơn hàng theo người tạo';
-CREATE INDEX idx_orders_total_amount ON orders(total_amount DESC) COMMENT 'Sắp xếp theo giá trị đơn hàng';
-CREATE INDEX idx_orders_created_at ON orders(created_at DESC) COMMENT 'Sắp xếp đơn hàng theo thời gian tạo';
+create index idx_delivery_tracking_timestamp
+    on delivery_tracking (timestamp desc)
+    comment 'Sắp xếp tracking theo thời gian';
 
--- Indexes cho bảng DELIVERIES (core logistics operations)
-CREATE INDEX idx_deliveries_vehicle ON deliveries(vehicle_id) COMMENT 'Tìm giao hàng theo phương tiện';
-CREATE INDEX idx_deliveries_driver ON deliveries(driver_id) COMMENT 'Tìm giao hàng theo tài xế';
-CREATE INDEX idx_deliveries_schedule_time ON deliveries(schedule_delivery_time) COMMENT 'Sắp xếp theo thời gian giao hàng dự kiến';
-CREATE INDEX idx_deliveries_route ON deliveries(route_id) COMMENT 'Tìm giao hàng theo tuyến đường';
-CREATE INDEX idx_deliveries_order ON deliveries(order_id) COMMENT 'Tìm giao hàng theo đơn hàng';
+create index idx_delivery_tracking_vehicle
+    on delivery_tracking (vehicle_id)
+    comment 'Tracking theo phương tiện';
 
--- Indexes cho bảng DELIVERY_TRACKING (real-time tracking)
-CREATE INDEX idx_delivery_tracking_delivery ON delivery_tracking(delivery_id) COMMENT 'Tracking theo giao hàng';
-CREATE INDEX idx_delivery_tracking_delivery_time ON delivery_tracking(delivery_id, timestamp DESC) COMMENT 'Lịch sử tracking theo giao hàng';
-CREATE INDEX idx_delivery_tracking_status ON delivery_tracking(status_id) COMMENT 'Tracking theo trạng thái';
-CREATE INDEX idx_delivery_tracking_timestamp ON delivery_tracking(timestamp DESC) COMMENT 'Sắp xếp tracking theo thời gian';
+create index idx_delivery_tracking_vehicle_time
+    on delivery_tracking (vehicle_id asc, timestamp desc)
+    comment 'Tracking theo thời gian mới nhất';
 
--- Indexes cho bảng PRODUCTS (catalog operations)
-CREATE INDEX idx_products_category ON products(category_id) COMMENT 'Tìm sản phẩm theo danh mục';
-CREATE INDEX idx_products_warehouse ON products(warehouse_id) COMMENT 'Tìm sản phẩm theo kho';
-CREATE INDEX idx_products_status ON products(product_status) COMMENT 'Tìm sản phẩm theo trạng thái';
+create index idx_vehicles_driver
+    on vehicles (current_driver_id)
+    comment 'Phương tiện theo tài xế hiện tại';
 
--- Indexes cho bảng ORDER_ITEMS (order details)
-CREATE INDEX idx_order_items_order ON order_items(order_id) COMMENT 'Tìm items theo đơn hàng';
-CREATE INDEX idx_order_items_product ON order_items(product_id) COMMENT 'Tìm items theo sản phẩm';
-CREATE INDEX idx_order_items_order_product ON order_items(order_id, product_id) COMMENT 'Composite index cho order-product';
+create index idx_vehicles_license
+    on vehicles (license_plate)
+    comment 'Phương tiện theo biển số';
 
--- Indexes cho bảng WAREHOUSE_TRANSACTIONS (inventory management)
-CREATE INDEX idx_warehouse_trans_product ON warehouse_transactions(product_id) COMMENT 'Giao dịch theo sản phẩm';
-CREATE INDEX idx_warehouse_trans_warehouse ON warehouse_transactions(warehouse_id) COMMENT 'Giao dịch theo kho';
-CREATE INDEX idx_warehouse_trans_date ON warehouse_transactions(transaction_date DESC) COMMENT 'Giao dịch theo thời gian';
-CREATE INDEX idx_warehouse_trans_type ON warehouse_transactions(transaction_type) COMMENT 'Giao dịch theo loại';
-CREATE INDEX idx_warehouse_trans_order ON warehouse_transactions(order_id) COMMENT 'Giao dịch theo đơn hàng';
-CREATE INDEX idx_warehouse_trans_product_date ON warehouse_transactions(product_id, transaction_date DESC) COMMENT 'Lịch sử giao dịch sản phẩm';
+create index idx_vehicles_status
+    on vehicles (status_id)
+    comment 'Phương tiện theo trạng thái';
 
--- Indexes cho bảng PAYMENTS (financial operations)
-CREATE INDEX idx_payments_order ON payments(order_id) COMMENT 'Thanh toán theo đơn hàng';
-CREATE INDEX idx_payments_status ON payments(status_id) COMMENT 'Thanh toán theo trạng thái';
-CREATE INDEX idx_payments_method ON payments(payment_method) COMMENT 'Thanh toán theo phương thức';
-CREATE INDEX idx_payments_transaction ON payments(transaction_id) COMMENT 'Thanh toán theo mã giao dịch';
-CREATE INDEX idx_payments_created ON payments(created_at DESC) COMMENT 'Thanh toán theo thời gian tạo';
+create index idx_vehicles_type
+    on vehicles (vehicle_type)
+    comment 'Phương tiện theo loại';
 
--- Indexes cho bảng USERS (authentication & authorization)
-CREATE INDEX idx_users_role ON users(role_id) COMMENT 'Người dùng theo vai trò';
-CREATE INDEX idx_users_status ON users(status_id) COMMENT 'Người dùng theo trạng thái';
-CREATE INDEX idx_users_email ON users(email) COMMENT 'Tìm người dùng theo email';
-CREATE INDEX idx_users_username ON users(username) COMMENT 'Tìm người dùng theo username';
+create table warehouses
+(
+    id             bigint auto_increment comment 'Mã định danh duy nhất của kho bãi'
+        primary key,
+    warehouse_code varchar(50)                              not null comment 'Mã kho nghiệp vụ (dễ đọc)',
+    name           varchar(255)                             not null comment 'Tên hiển thị của kho bãi',
+    address        text                                     not null comment 'Địa chỉ đầy đủ của kho bãi',
+    latitude       decimal(10, 8)                           null comment 'Tọa độ vĩ độ kho bãi',
+    longitude      decimal(11, 8)                           null comment 'Tọa độ kinh độ kho bãi',
+    capacity_m3    decimal(10, 2) default 0.00              null comment 'Sức chứa tối đa của kho (m3)',
+    is_active      bit                                      not null,
+    created_at     datetime       default CURRENT_TIMESTAMP null comment 'Thời gian tạo kho bãi',
+    updated_at     datetime       default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật kho bãi cuối cùng',
+    created_by     bigint                                   null comment 'ID người dùng tạo kho bãi này',
+    notes          text                                     null comment 'Ghi chú bổ sung về kho bãi',
+    constraint warehouse_code
+        unique (warehouse_code),
+    constraint fk_warehouses_created_by
+        foreign key (created_by) references users (id)
+);
 
--- Indexes cho bảng VEHICLES (fleet management)
-CREATE INDEX idx_vehicles_status ON vehicles(status_id) COMMENT 'Phương tiện theo trạng thái';
-CREATE INDEX idx_vehicles_driver ON vehicles(current_driver_id) COMMENT 'Phương tiện theo tài xế hiện tại';
-CREATE INDEX idx_vehicles_type ON vehicles(vehicle_type) COMMENT 'Phương tiện theo loại';
-CREATE INDEX idx_vehicles_license ON vehicles(license_plate) COMMENT 'Phương tiện theo biển số';
+create table products
+(
+    id             bigint auto_increment comment 'Mã định danh duy nhất của sản phẩm'
+        primary key,
+    external_id    bigint                                   null,
+    product_code   varchar(50)                              not null comment 'Mã SKU/mã nội bộ sản phẩm',
+    name           varchar(255)                             not null comment 'Tên hiển thị sản phẩm',
+    description    text                                     null comment 'Mô tả chi tiết sản phẩm',
+    category_id    bigint                                   not null comment 'Phân loại danh mục sản phẩm',
+    unit_price     decimal(15, 2)                           not null comment 'Giá bán trên một đơn vị',
+    weight         decimal(10, 3) default 0.000             null comment 'Trọng lượng sản phẩm (kg)',
+    volume         decimal(10, 3) default 0.000             null comment 'Thể tích sản phẩm (m3)',
+    is_fragile     tinyint        default 0                 not null,
+    stock_quantity int            default 0                 not null comment 'Số lượng tồn kho hiện tại',
+    product_image  varchar(500)                             null comment 'URL/đường dẫn ảnh sản phẩm',
+    product_status enum ('ACTIVE', 'INACTIVE')              not null,
+    warehouse_id   bigint                                   null comment 'Kho chính chứa sản phẩm này',
+    created_at     datetime       default CURRENT_TIMESTAMP null comment 'Thời gian tạo sản phẩm',
+    updated_at     datetime       default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật sản phẩm cuối cùng',
+    created_by     bigint                                   null comment 'ID người dùng tạo sản phẩm này',
+    notes          text                                     null comment 'Ghi chú bổ sung về sản phẩm',
+    constraint external_id
+        unique (external_id),
+    constraint product_code
+        unique (product_code),
+    constraint fk_products_category_id
+        foreign key (category_id) references categories (id),
+    constraint fk_products_created_by
+        foreign key (created_by) references users (id),
+    constraint fk_products_warehouse_id
+        foreign key (warehouse_id) references warehouses (id),
+    constraint chk_product_price_positive
+        check (`unit_price` >= 0),
+    constraint chk_product_weight_volume
+        check ((`weight` >= 0) and (`volume` >= 0))
+);
 
--- Indexes cho bảng ADDRESSES (geographical operations)
-CREATE INDEX idx_addresses_order ON addresses(order_id) COMMENT 'Địa chỉ theo đơn hàng';
-CREATE INDEX idx_addresses_type ON addresses(address_type) COMMENT 'Địa chỉ theo loại';
-CREATE INDEX idx_addresses_city ON addresses(city) COMMENT 'Địa chỉ theo thành phố';
-CREATE INDEX idx_addresses_coordinates ON addresses(latitude, longitude) COMMENT 'Tìm kiếm theo tọa độ GPS';
+create table order_items
+(
+    id           bigint auto_increment comment 'Mã định danh duy nhất của mục hàng'
+        primary key,
+    external_id  bigint                             null,
+    order_id     bigint                             not null comment 'Mã đơn hàng chứa mục hàng này',
+    product_id   bigint                             not null comment 'Mã sản phẩm trong mục hàng',
+    quantity     int                                not null comment 'Số lượng sản phẩm đặt mua',
+    unit_price   decimal(38, 2)                     null,
+    shipping_fee decimal(38, 2)                     null,
+    created_at   datetime default CURRENT_TIMESTAMP null comment 'Thời gian tạo mục hàng',
+    updated_at   datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment 'Thời gian cập nhật mục hàng cuối cùng',
+    notes        text                               null comment 'Ghi chú đặc biệt cho mục hàng này',
+    constraint external_id
+        unique (external_id),
+    constraint fk_order_items_order_id
+        foreign key (order_id) references orders (id),
+    constraint fk_order_items_product_id
+        foreign key (product_id) references products (id),
+    constraint chk_order_item_quantity
+        check (`quantity` > 0)
+);
 
--- Indexes cho bảng DELIVERY_PROOFS (proof management)
-CREATE INDEX idx_delivery_proofs_order ON delivery_proofs(order_id) COMMENT 'Bằng chứng theo đơn hàng';
-CREATE INDEX idx_delivery_proofs_type ON delivery_proofs(proof_type) COMMENT 'Bằng chứng theo loại';
-CREATE INDEX idx_delivery_proofs_uploader ON delivery_proofs(uploaded_by) COMMENT 'Bằng chứng theo người upload';
-CREATE INDEX idx_delivery_proofs_captured ON delivery_proofs(captured_at DESC) COMMENT 'Bằng chứng theo thời gian chụp';
+create index idx_order_items_order
+    on order_items (order_id)
+    comment 'Tìm items theo đơn hàng';
 
--- Indexes cho bảng ACTIVITY_LOGS (audit trail)
-CREATE INDEX idx_activity_logs_actor ON activity_logs(actor_id) COMMENT 'Log theo người thực hiện';
-CREATE INDEX idx_activity_logs_action_time ON activity_logs(action_timestamp DESC) COMMENT 'Log theo thời gian hành động';
-CREATE INDEX idx_activity_logs_table ON activity_logs(table_name) COMMENT 'Log theo bảng bị ảnh hưởng';
-CREATE INDEX idx_activity_logs_action_type ON activity_logs(action_type) COMMENT 'Log theo loại hành động';
-CREATE INDEX idx_activity_logs_record ON activity_logs(table_name, record_id) COMMENT 'Log theo bản ghi cụ thể';
+create index idx_order_items_order_product
+    on order_items (order_id, product_id)
+    comment 'Composite index cho order-product';
 
--- Indexes cho bảng CATEGORIES (product categorization)
-CREATE INDEX idx_categories_parent ON categories(parent_id) COMMENT 'Danh mục theo danh mục cha';
-CREATE INDEX idx_categories_active ON categories(is_active) COMMENT 'Danh mục đang hoạt động';
+create index idx_order_items_product
+    on order_items (product_id)
+    comment 'Tìm items theo sản phẩm';
 
--- Indexes cho bảng STORES (store operations)
-CREATE INDEX idx_stores_active ON stores(is_active) COMMENT 'Cửa hàng đang hoạt động';
-CREATE INDEX idx_stores_coordinates ON stores(latitude, longitude) COMMENT 'Tìm cửa hàng theo tọa độ';
+create index idx_products_category
+    on products (category_id)
+    comment 'Tìm sản phẩm theo danh mục';
 
--- Indexes cho bảng WAREHOUSES (warehouse operations)
-CREATE INDEX idx_warehouses_active ON warehouses(is_active) COMMENT 'Kho đang hoạt động';
-CREATE INDEX idx_warehouses_coordinates ON warehouses(latitude, longitude) COMMENT 'Tìm kho theo tọa độ';
+create index idx_products_code
+    on products (product_code)
+    comment 'Tìm sản phẩm theo mã SKU';
 
--- Indexes cho bảng ROUTES (route optimization)
-CREATE INDEX idx_routes_created_by ON routes(created_by) COMMENT 'Tuyến đường theo người tạo';
-CREATE INDEX idx_routes_completed ON routes(completed_at) COMMENT 'Tuyến đường đã hoàn thành';
-CREATE INDEX idx_routes_estimated_cost ON routes(estimated_cost) COMMENT 'Sắp xếp theo chi phí dự kiến';
+create index idx_products_status
+    on products (product_status)
+    comment 'Tìm sản phẩm theo trạng thái';
 
--- Indexes cho bảng STATUS (system status)
-CREATE INDEX idx_status_type ON status(type) COMMENT 'Trạng thái theo loại';
-CREATE INDEX idx_status_name ON status(name) COMMENT 'Tìm trạng thái theo tên';
+create index idx_products_warehouse
+    on products (warehouse_id)
+    comment 'Tìm sản phẩm theo kho';
 
--- Indexes cho bảng ROLES (role management)
-CREATE INDEX idx_roles_active ON roles(is_active) COMMENT 'Vai trò đang hoạt động';
-CREATE INDEX idx_roles_name ON roles(role_name) COMMENT 'Tìm vai trò theo tên';
+create table warehouse_transactions
+(
+    id               bigint auto_increment comment 'Mã định danh duy nhất của giao dịch kho bãi'
+        primary key,
+    product_id       bigint                                   not null comment 'Mã sản phẩm tham gia giao dịch',
+    warehouse_id     bigint                                   not null comment 'Mã kho hàng thực hiện giao dịch',
+    status_id        tinyint unsigned                         not null comment 'Trạng thái giao dịch (thành công, thất bại, chờ xử lý)',
+    transaction_type varchar(50)    default 'IN'              not null comment 'Loại giao dịch (nhập kho=IN, xuất kho=OUT, chuyển kho=TRANSFER)',
+    quantity         int                                      not null comment 'Số lượng sản phẩm trong giao dịch',
+    unit_cost        decimal(15, 2) default 0.00              null comment 'Giá vốn trên một đơn vị sản phẩm',
+    transaction_date datetime       default CURRENT_TIMESTAMP null comment 'Thời gian thực hiện giao dịch kho bãi',
+    order_id         bigint                                   null comment 'Mã đơn hàng liên quan (nếu có)',
+    created_at       datetime       default CURRENT_TIMESTAMP null comment 'Thời gian tạo bản ghi giao dịch',
+    created_by       bigint                                   null comment 'ID người dùng tạo giao dịch',
+    notes            text                                     null comment 'Ghi chú bổ sung về giao dịch kho bãi',
+    constraint fk_warehouse_transactions_created_by
+        foreign key (created_by) references users (id),
+    constraint fk_warehouse_transactions_order_id
+        foreign key (order_id) references orders (id),
+    constraint fk_warehouse_transactions_product_id
+        foreign key (product_id) references products (id),
+    constraint fk_warehouse_transactions_status_id
+        foreign key (status_id) references status (id),
+    constraint fk_warehouse_transactions_warehouse_id
+        foreign key (warehouse_id) references warehouses (id)
+);
 
--- =====================================================================================
--- KẾT THÚC TRANSACTION VÀ COMMIT DỮ LIỆU
--- =====================================================================================
-COMMIT;
+create index idx_warehouse_trans_date
+    on warehouse_transactions (transaction_date desc)
+    comment 'Giao dịch theo thời gian';
 
--- =====================================================================================
--- HẾT FILE DATABASE SCHEMA
--- =====================================================================================
--- Tổng kết:
--- - 18 bảng chính cho hệ thống logistics và giao hàng
--- - Bao gồm: status, roles, users, categories, warehouses, products, stores, vehicles
---           routes, orders, order_items, addresses, payments, deliveries, 
---           delivery_tracking, delivery_proofs, warehouse_transactions, activity_logs
--- - Tất cả foreign key constraints được tích hợp trực tiếp vào CREATE TABLE
--- - Tất cả CHECK constraints được tích hợp trực tiếp vào CREATE TABLE
--- - Hỗ trợ tracking GPS, proof delivery, inventory management
--- - Phân quyền người dùng và audit trail
--- - KHÔNG CÓ câu lệnh ALTER TABLE nào
+create index idx_warehouse_trans_order
+    on warehouse_transactions (order_id)
+    comment 'Giao dịch theo đơn hàng';
+
+create index idx_warehouse_trans_product
+    on warehouse_transactions (product_id)
+    comment 'Giao dịch theo sản phẩm';
+
+create index idx_warehouse_trans_product_date
+    on warehouse_transactions (product_id asc, transaction_date desc)
+    comment 'Lịch sử giao dịch sản phẩm';
+
+create index idx_warehouse_trans_type
+    on warehouse_transactions (transaction_type)
+    comment 'Giao dịch theo loại';
+
+create index idx_warehouse_trans_warehouse
+    on warehouse_transactions (warehouse_id)
+    comment 'Giao dịch theo kho';
+
+create index idx_warehouses_active
+    on warehouses (is_active)
+    comment 'Kho đang hoạt động';
+
+create index idx_warehouses_code
+    on warehouses (warehouse_code)
+    comment 'Tìm kho theo mã';
+
+create index idx_warehouses_coordinates
+    on warehouses (latitude, longitude)
+    comment 'Tìm kho theo tọa độ';
 -- =====================================================================================
