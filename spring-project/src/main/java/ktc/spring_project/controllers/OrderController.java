@@ -12,6 +12,7 @@ import ktc.spring_project.services.UserService;
 import ktc.spring_project.services.VehicleService;
 import ktc.spring_project.services.DeliveryTrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import ktc.spring_project.dtos.order.PaginatedOrderResponseDto;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -68,21 +70,23 @@ public class OrderController {
     }
 
     /**
-     * Lấy tất cả đơn hàng
+     * Lấy tất cả đơn hàng (có phân trang)
      */
     @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> getAllOrders(
+    public ResponseEntity<PaginatedOrderResponseDto> getAllOrders(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Long driverId,
             @RequestParam(required = false) Long vehicleId,
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
-
         try {
-            List<Order> allOrders = orderService.getAllOrders();
+            // Sử dụng phân trang thật từ database với sắp xếp theo createdAt descending
+            Page<Order> orderPage = orderService.getOrdersPaginated(page, size);
             
             // Chuyển đổi Order entities thành DTO để tránh circular reference
-            List<Map<String, Object>> orderDTOs = allOrders.stream().map(order -> {
+            List<Map<String, Object>> orderDTOs = orderPage.getContent().stream().map(order -> {
                 Map<String, Object> orderDTO = new HashMap<>();
                 orderDTO.put("id", order.getId());
                 orderDTO.put("description", order.getDescription());
@@ -92,7 +96,6 @@ public class OrderController {
                 orderDTO.put("orderProfitPerOrder", order.getOrderProfitPerOrder());
                 orderDTO.put("createdAt", order.getCreatedAt());
                 orderDTO.put("updatedAt", order.getUpdatedAt());
-                
                 // Status info
                 if (order.getStatus() != null) {
                     Map<String, Object> statusDTO = new HashMap<>();
@@ -101,14 +104,12 @@ public class OrderController {
                     statusDTO.put("statusType", order.getStatus().getStatusType());
                     orderDTO.put("status", statusDTO);
                 }
-                
                 // Vehicle info
                 if (order.getVehicle() != null) {
                     Map<String, Object> vehicleDTO = new HashMap<>();
                     vehicleDTO.put("id", order.getVehicle().getId());
                     vehicleDTO.put("licensePlate", order.getVehicle().getLicensePlate());
                     vehicleDTO.put("vehicleType", order.getVehicle().getVehicleType());
-                    
                     // Current driver info
                     if (order.getVehicle().getCurrentDriver() != null) {
                         Map<String, Object> driverDTO = new HashMap<>();
@@ -119,7 +120,6 @@ public class OrderController {
                     }
                     orderDTO.put("vehicle", vehicleDTO);
                 }
-                
                 // Address info
                 if (order.getAddress() != null) {
                     Map<String, Object> addressDTO = new HashMap<>();
@@ -130,7 +130,6 @@ public class OrderController {
                     addressDTO.put("longitude", order.getAddress().getLongitude());
                     orderDTO.put("address", addressDTO);
                 }
-                
                 // Store info
                 if (order.getStore() != null) {
                     Map<String, Object> storeDTO = new HashMap<>();
@@ -138,9 +137,10 @@ public class OrderController {
                     storeDTO.put("storeName", order.getStore().getStoreName());
                     storeDTO.put("address", order.getStore().getAddress());
                     storeDTO.put("phone", order.getStore().getPhone());
+                    storeDTO.put("latitude", order.getStore().getLatitude());
+                    storeDTO.put("longitude", order.getStore().getLongitude());
                     orderDTO.put("store", storeDTO);
                 }
-                
                 // Created by user info
                 if (order.getCreatedBy() != null) {
                     Map<String, Object> createdByDTO = new HashMap<>();
@@ -149,15 +149,23 @@ public class OrderController {
                     createdByDTO.put("username", order.getCreatedBy().getUsername());
                     orderDTO.put("createdBy", createdByDTO);
                 }
-                
                 return orderDTO;
             }).collect(Collectors.toList());
-            
-            return ResponseEntity.ok(orderDTOs);
+
+            PaginatedOrderResponseDto response = PaginatedOrderResponseDto.builder()
+                    .data(orderDTOs)
+                    .pageNumber(page)
+                    .pageSize(size)
+                    .totalRecords(orderPage.getTotalElements())
+                    .totalPages(orderPage.getTotalPages())
+                    .hasNext(orderPage.hasNext())
+                    .hasPrevious(orderPage.hasPrevious())
+                    .build();
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.err.println("Error in getAllOrders: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

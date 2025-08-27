@@ -6,6 +6,10 @@ import ktc.spring_project.entities.Vehicle;
 import ktc.spring_project.repositories.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -41,7 +45,16 @@ public class OrderService {
     }
 
     public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+        return orderRepository.findAll(Sort.by("createdAt").descending());
+    }
+
+    public List<Order> getAllOrdersSorted() {
+        return orderRepository.findAll(Sort.by("createdAt").descending());
+    }
+
+    public Page<Order> getOrdersPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        return orderRepository.findAll(pageable);
     }
 
     public Order updateOrder(Long id, Order orderDetails) {

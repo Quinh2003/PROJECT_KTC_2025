@@ -8,6 +8,7 @@ import VehicleTable from "./VehicleTable";
 import AddVehicleForm from "./AddVehicleForm";
 import MaintenanceSchedulePage from "./MaintenanceSchedulePage";
 import SearchAndFilter from "./SearchAndFilter";
+import Pagination from "./Pagination";
 import { useFleetDashboard } from "./useFleetDashboard";
 
 interface FleetDashboardProps {
@@ -47,16 +48,16 @@ export default function FleetDashboard({ user, onLogout }: FleetDashboardProps) 
     isLoading,
     showAddForm,
     setShowAddForm,
-    
+    pagination,
     // Computed values
     fleetStats,
     filteredVehicles,
-    
     // Handlers
     handleAddVehicle,
     handleTabChange,
     handleSearch,
     handleStatusFilter,
+    handlePageChange,
   } = useFleetDashboard();
 
   return (
@@ -150,7 +151,14 @@ export default function FleetDashboard({ user, onLogout }: FleetDashboardProps) 
                     </p>
                   </div>
                 ) : (
-                  <VehicleTable vehicles={filteredVehicles} />
+                  <>
+                    <VehicleTable vehicles={filteredVehicles} />
+                    <Pagination
+                      page={pagination.page}
+                      totalPages={pagination.totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </>
                 )}
               </div>
             </>

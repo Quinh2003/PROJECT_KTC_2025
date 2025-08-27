@@ -1,19 +1,14 @@
-import { useState } from "react";
-import { assignDriverToVehicle, updateVehicleStatus } from "../../services/VehicleListAPI";
+
+import { useEffect, useState } from "react";
+import { fetchVehiclesRaw, assignDriverToVehicle, updateVehicleStatus } from "../../services/VehicleListAPI";
 import type { Vehicle } from "../../types/Operations";
-import type { User } from "../../types/User";
 import { useDispatcherContext } from "../../contexts/DispatcherContext";
 
+
 export default function VehicleList() {
-  const { 
-    vehicles, 
-    vehiclesLoading, 
-    vehiclesError, 
-    refreshVehicles, 
-    updateVehicleInList,
+  const {
     drivers,
     driversLoading,
-    driversError,
     refreshDrivers
   } = useDispatcherContext();
 
@@ -26,7 +21,40 @@ export default function VehicleList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [updatingStatus, setUpdatingStatus] = useState<string | number | null>(null);
+  
 
+  // Server-side pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [totalVehicles, setTotalVehicles] = useState(0);
+  const [vehiclesLoading, setVehiclesLoading] = useState(false);
+  const [vehiclesError, setVehiclesError] = useState("");
+
+  // Fetch vehicles with pagination
+  const fetchVehicles = async (page = 1, size = 5) => {
+    setVehiclesLoading(true);
+    setVehiclesError("");
+    try {
+      const res = await fetchVehiclesRaw(page, size);
+      setVehicles(res.data);
+      setTotalVehicles(res.total);
+    } catch (err: any) {
+      setVehicles([]);
+      setTotalVehicles(0);
+      setVehiclesError(err.message || "Đã xảy ra lỗi khi tải phương tiện");
+    } finally {
+      setVehiclesLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVehicles(currentPage, itemsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, itemsPerPage]);
+
+
+  // Assign driver handler (fixed placement)
   const handleAssignDriver = async () => {
     if (!selectedVehicle) return;
     setAssigning(true);
@@ -43,7 +71,8 @@ export default function VehicleList() {
         await assignDriverToVehicle(selectedVehicle.id, driverObj.id ?? "");
         setAssignSuccess("Gán tài xế thành công!");
       }
-      await refreshVehicles(true); // Force refresh vehicles
+      // Refresh vehicles after assignment
+      fetchVehicles(currentPage, itemsPerPage);
       setTimeout(() => {
         closeAssignModal();
       }, 1000);
@@ -89,15 +118,8 @@ export default function VehicleList() {
       }
       await updateVehicleStatus(vehicleId, newStatus);
       
-      // Update vehicle in context
-      updateVehicleInList(vehicleId, {
-        status: {
-          id: 1, // temporary id
-          name: newStatus,
-          statusType: "VEHICLE_STATUS",
-          description: ""
-        }
-      });
+  // Refresh vehicles after status update
+  fetchVehicles(currentPage, itemsPerPage);
     } catch (err: any) {
       console.error("Failed to update vehicle status:", err);
       alert(`Lỗi cập nhật trạng thái xe: ${err.message}`);
@@ -106,19 +128,34 @@ export default function VehicleList() {
     }
   };
 
+
+  // Local search/filter (client-side, for now)
   const filteredVehicles = vehicles.filter(vehicle => {
-    const matchesSearch = 
+    const matchesSearch =
       vehicle.licensePlate.toLowerCase().includes(searchTerm.toLowerCase()) ||
       vehicle.vehicleType.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (vehicle.currentDriver?.fullName || vehicle.currentDriver?.username || "").toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === "all" || 
+    const matchesStatus = statusFilter === "all" ||
       (statusFilter === "available" && vehicle.status?.name === "AVAILABLE") ||
       (statusFilter === "assigned" && vehicle.currentDriver) ||
       (statusFilter === "unassigned" && !vehicle.currentDriver);
-    
     return matchesSearch && matchesStatus;
   });
+
+  const totalPages = Math.ceil(totalVehicles / itemsPerPage);
+  const currentVehicles = filteredVehicles;
+
+  // Reset to first page when filters change
+  const handleSearchChange = (term: string) => {
+    setSearchTerm(term);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (status: string) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
+  };
+
 
   const getStatusBadge = (vehicle: Vehicle) => {
     const statusName = vehicle.status?.name;
@@ -190,29 +227,9 @@ export default function VehicleList() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold mb-2">Quản lý phương tiện</h2>
-            <button
-              onClick={() => refreshVehicles(true)}
-              disabled={vehiclesLoading}
-              className="px-4 py-2 bg-white/20 hover:bg-white/30 disabled:opacity-50 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
-            >
-              {vehiclesLoading ? (
-                <>
-                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
-                  Đang tải...
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  Làm mới
-                </>
-              )}
-            </button>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
             
           </div>
+          
         </div>
       </div>
 
@@ -229,13 +246,13 @@ export default function VehicleList() {
               type="text"
               placeholder="Tìm kiếm theo biển số, loại xe hoặc tài xế..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90 backdrop-blur-sm"
             />
           </div>
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => handleStatusFilterChange(e.target.value)}
             className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90 backdrop-blur-sm"
           >
             <option value="all">Tất cả trạng thái</option>
@@ -244,19 +261,14 @@ export default function VehicleList() {
             <option value="unassigned">Chưa có tài xế</option>
           </select>
           
+         
+          
         </div>
       </div>
 
       {/* Content Section */}
       <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/50">
-        {vehiclesLoading ? (
-          <div className="flex items-center justify-center p-12">
-            <div className="flex items-center gap-3">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="text-gray-600 font-medium">Đang tải dữ liệu...</span>
-            </div>
-          </div>
-        ) : vehiclesError ? (
+        {vehiclesError ? (
           <div className="flex items-center justify-center p-12">
             <div className="text-center">
               <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -268,7 +280,7 @@ export default function VehicleList() {
               <p className="text-red-600">{vehiclesError}</p>
             </div>
           </div>
-        ) : filteredVehicles.length === 0 ? (
+        ) : currentVehicles.length === 0 ? (
           <div className="flex items-center justify-center p-12">
             <div className="text-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -284,8 +296,10 @@ export default function VehicleList() {
             </div>
           </div>
         ) : (
-          <div className="space-y-4 p-6">
-            {filteredVehicles.map((vehicle) => (
+          <>            
+            {/* Vehicle List */}
+            <div className="space-y-4 p-6">
+              {currentVehicles.map((vehicle) => (
               <div key={vehicle.id} className="bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
                 <div className="flex items-center p-4 gap-4">
                   {/* Vehicle Icon & Info */}
@@ -367,11 +381,95 @@ export default function VehicleList() {
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    
+                    <span className="text-sm text-gray-600 mx-2">
+                      Trang {currentPage} / {totalPages} (Tổng: {totalVehicles})
+                    </span>
+                    
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    {/* Page Number Input */}
+                    {/* <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">Đến trang:</span>
+                      <input
+                        type="number"
+                        min="1"
+                        max={totalPages}
+                        value={currentPage}
+                        onChange={(e) => {
+                          const page = parseInt(e.target.value);
+                          if (page >= 1 && page <= totalPages) {
+                            setCurrentPage(page);
+                          }
+                        }}
+                        className="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div> */}
+                    
+                    {/* Quick Page Buttons */}
+                    {/* <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`px-3 py-2 text-sm rounded-lg transition-colors duration-200 ${
+                              pageNum === currentPage
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div> */}
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {/* Assign Driver Modal */}
+  {/* Assign Driver Modal */}
       {showAssignModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-100">
@@ -399,7 +497,6 @@ export default function VehicleList() {
                 <div className="flex items-center justify-center py-8">
                   <div className="flex items-center gap-3">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                    <span className="text-gray-600">Đang tải danh sách tài xế...</span>
                   </div>
                 </div>
               ) : (
