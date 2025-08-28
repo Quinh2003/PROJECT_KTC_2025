@@ -1,6 +1,5 @@
 package ktc.spring_project.repositories;
 
-import ktc.spring_project.dtos.order.OrderByStoreResponseDTO;
 import ktc.spring_project.entities.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -69,23 +68,4 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         "AND DATE(o.updatedAt) = CURRENT_DATE")
     int countDeliveredOrdersByDriverIdToday(@Param("driverId") Long driverId);
 
-    // Get order by store id
-
-
-    @Query("""
-        SELECT new ktc.spring_project.dtos.order.OrderByStoreResponseDTO(
-            o.id,
-            o.createdBy.username,
-            o.address.fullAddress,
-            COALESCE(d.deliveryFee, 0),
-            o.status.name,
-            (SELECT COALESCE(SUM(oi.quantity), 0) FROM OrderItem oi WHERE oi.order = o)
-        )
-        FROM Order o
-        LEFT JOIN o.deliveries d
-        WHERE o.store.id = :storeId
-        ORDER BY o.createdAt DESC
-    """)
-    List<OrderByStoreResponseDTO> findAllOrdersByStoreId(@Param("storeId") Long storeId);
-    }
-
+}

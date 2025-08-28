@@ -278,16 +278,4 @@ public ResponseEntity<Order> putOrder(
         }
     }
 
-    // // Get all orders by store id
-    // @GetMapping("/store/{storeId}")
-    // public ResponseEntity<List<OrderByStoreResponseDTO>> getOrdersByStoreId(
-    //         @PathVariable Long storeId) {
-    //     try {
-    //         List<OrderByStoreResponseDTO> orders = orderService.getAllOrdersByStoreId(storeId);
-    //         return ResponseEntity.ok(orders);
-    //     } catch (IllegalArgumentException e) {
-    //         return ResponseEntity.badRequest().build();
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    //     }}
     }
