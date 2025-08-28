@@ -51,6 +51,12 @@ public class User {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
+    @Column(name = "totp_secret", length = 64)
+    private String totpSecret;
+
+    @Column(name = "totp_enabled")
+    private boolean totpEnabled = false;
+
     public User() {}
 
     // Getters and setters
@@ -150,6 +156,22 @@ public class User {
 
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getTotpSecret() {
+        return totpSecret;
+    }
+
+    public void setTotpSecret(String totpSecret) {
+        this.totpSecret = totpSecret;
+    }
+
+    public boolean getTotpEnabled() {
+        return totpEnabled;
+    }
+
+    public void setTotpEnabled(boolean totpEnabled) {
+        this.totpEnabled = totpEnabled;
     }
 
 

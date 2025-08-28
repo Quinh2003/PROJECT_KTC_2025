@@ -5,6 +5,17 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { removeTokenCookie, removeRefreshTokenCookie } from "../../lib/auth";
 import { User } from "../../types/User";
+import { Layout, Menu, Button, Typography, Avatar, Spin, Space } from "antd";
+import {
+  LogoutOutlined,
+  HomeOutlined,
+  ShoppingOutlined,
+  WalletOutlined,
+  UserOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+
+const { Header, Sider, Content, Footer } = Layout;
 
 interface AccountLayoutProps {
   children: React.ReactNode;
@@ -31,7 +42,7 @@ export default function AccountLayout({ children }: AccountLayoutProps) {
     }
 
     const userData = JSON.parse(storedUser);
-    
+
     // Verify user is customer
     if (userData.role?.toLowerCase() !== "customer") {
       alert("Truy cập không được phép!");
@@ -56,95 +67,156 @@ export default function AccountLayout({ children }: AccountLayoutProps) {
     router.push("/login");
   };
 
-  const navItems = [
-    { href: "/account", label: "Trang chủ", icon: "🏠" },
-    { href: "/account/orders", label: "Đơn hàng", icon: "📦" },
-    { href: "/account/estimate", label: "Tính phí", icon: "💰" },
-    { href: "/account/profile", label: "Thông tin cá nhân", icon: "👤" },
-  ];
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-500 flex items-center justify-center">
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8">
-          <div className="flex items-center gap-3">
-            <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            <span className="text-white font-medium">Đang tải...</span>
+      <div
+        style={{
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          background: "#f0f2f5",
+        }}
+      >
+        <Spin size="large">
+          <div
+            style={{
+              padding: "50px",
+              background: "rgba(0, 0, 0, 0.05)",
+              borderRadius: "4px",
+            }}
+          >
+            <Typography.Text type="secondary">Đang tải...</Typography.Text>
           </div>
-        </div>
+        </Spin>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-500">
-      {/* Header */}
-      <header className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <Link href="/account" className="text-2xl font-bold text-white drop-shadow-lg hover:text-blue-200 transition-colors">
-                Fast Route Logistics
-              </Link>
-              <span className="ml-4 px-3 py-1 bg-blue-500/30 backdrop-blur-sm rounded-full text-sm text-white border border-blue-400/30">
-                Khách hàng
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-white/90 text-sm hidden sm:block">
-                Xin chào, <span className="font-semibold">{user?.fullName}</span>
-              </span>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-white rounded-xl border border-red-400/30 transition-all duration-200 text-sm font-medium"
-              >
-                Đăng xuất
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+  const menuItems = [
+    { key: "/account", label: "Trang chủ", icon: <HomeOutlined /> },
+    {
+      key: "/account/orders/new",
+      label: "Tạo đơn hàng",
+      icon: <PlusOutlined />,
+    },
+    { key: "/account/orders", label: "Đơn hàng", icon: <ShoppingOutlined /> },
 
-      {/* Navigation */}
-      <nav className="bg-white/5 backdrop-blur-xl border-b border-white/10 sticky top-[73px] z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-1 py-2 overflow-x-auto">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link 
-                  key={item.href}
-                  href={item.href} 
-                  className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium whitespace-nowrap ${
-                    isActive 
-                      ? 'bg-blue-500/30 text-white border border-blue-400/50' 
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  <span className="text-base">{item.icon}</span>
+    { key: "/account/estimate", label: "Tính phí", icon: <WalletOutlined /> },
+    {
+      key: "/account/profile",
+      label: "Thông tin cá nhân",
+      icon: <UserOutlined />,
+    },
+  ];
+
+  return (
+    <Layout style={{ minHeight: "100vh" }}>
+      <Header
+        style={{
+          background: "#001529",
+          padding: "0 24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          position: "fixed",
+          zIndex: 1000,
+          width: "100%",
+          left: 0,
+          top: 0,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <Typography.Title level={4} style={{ margin: 0 }}>
+            <Link href="/account" style={{ color: "#fff" }}>
+              Fast Route Logistics
+            </Link>
+          </Typography.Title>
+          <Button
+            type="text"
+            size="small"
+            style={{ background: "rgba(255,255,255,0.1)", color: "#fff" }}
+          >
+            Khách hàng
+          </Button>
+        </div>
+        <Space>
+          <Typography.Text style={{ color: "#fff" }}>
+            Xin chào,{" "}
+            <Typography.Text strong style={{ color: "#fff" }}>
+              {user?.fullName}
+            </Typography.Text>
+          </Typography.Text>
+          <Button
+            onClick={handleLogout}
+            icon={<LogoutOutlined />}
+            type="default"
+            ghost
+            style={{ borderColor: "#fff", color: "#fff" }}
+          >
+            Đăng xuất
+          </Button>
+        </Space>
+      </Header>
+
+      <Layout>
+        <Sider
+          width={200}
+          style={{
+            background: "#001529",
+            position: "fixed",
+            height: "100vh",
+            left: 0,
+            top: 64, // Header height
+            overflow: "auto",
+          }}
+        >
+          <Menu
+            mode="inline"
+            selectedKeys={[pathname]}
+            style={{ height: "100%" }}
+            theme="dark"
+            items={menuItems.map((item) => ({
+              key: item.key,
+              icon: item.icon,
+              label: (
+                <Link href={item.key} style={{ color: "inherit" }}>
                   {item.label}
                 </Link>
-              );
-            })}
-          </div>
-        </div>
-      </nav>
+              ),
+            }))}
+          />
+        </Sider>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
-      </main>
+        <Layout
+          style={{ marginLeft: 200, marginTop: 64, background: "#ffffff" }}
+        >
+          <Content
+            style={{
+              padding: 34,
+              margin: 0,
+              background: "#ffffff",
+              borderRadius: 8,
+              minHeight: "calc(100vh - 64px - 70px)", // viewport height - header height - footer height
+            }}
+          >
+            {children}
+          </Content>
 
-      {/* Footer */}
-      <footer className="bg-white/5 backdrop-blur-xl border-t border-white/10 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center">
-            <p className="text-white/50 text-sm">
+          <Footer
+            style={{
+              textAlign: "center",
+              background: "transparent",
+              height: "70px",
+              padding: "24px",
+            }}
+          >
+            <Typography.Text style={{ color: "#666" }}>
               © 2025 Fast Route Logistics. Tất cả quyền được bảo lưu.
-            </p>
-          </div>
-        </div>
-      </footer>
-    </div>
+            </Typography.Text>
+          </Footer>
+        </Layout>
+      </Layout>
+    </Layout>
   );
 }

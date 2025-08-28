@@ -317,4 +317,36 @@ Optional<User> existingUser = userRepository.findByEmail(email);
             throw new RuntimeException("Google credential login failed: " + e.getMessage());
         }
     }
+
+    // Lấy hoặc tạo secret TOTP cho user
+    public String getOrCreateTotpSecret(String email) {
+        User user = findByEmail(email);
+        if (user.getTotpSecret() == null || user.getTotpSecret().isEmpty()) {
+            String secret = new ktc.spring_project.services.TotpService().generateSecret();
+            user.setTotpSecret(secret);
+            userRepository.save(user);
+            return secret;
+        }
+        return user.getTotpSecret();
+    }
+
+    // Lấy secret TOTP của user
+    public String getTotpSecret(String email) {
+        User user = findByEmail(email);
+        return user.getTotpSecret();
+    }
+
+    // Kích hoạt trạng thái 2FA cho user
+    public void enableTotp(String email) {
+        User user = findByEmail(email);
+        user.setTotpEnabled(true);
+        userRepository.save(user);
+    }
+
+    // Hủy kích hoạt trạng thái 2FA cho user
+    public void disableTotp(String email) {
+        User user = findByEmail(email);
+        user.setTotpEnabled(false);
+        userRepository.save(user);
+    }
 }

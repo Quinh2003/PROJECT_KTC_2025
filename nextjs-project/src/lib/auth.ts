@@ -2,7 +2,9 @@ import Cookies from 'js-cookie';
 
 // Lưu token vào cookie
 export function setTokenCookie(token: string) {
-	Cookies.set('access_token', token, { expires: 1, secure: true });
+	if (typeof document !== 'undefined') {
+		document.cookie = `access_token=${token}; path=/; max-age=86400; SameSite=Lax; Secure`;
+	}
 }
 
 // Lấy token từ cookie
@@ -69,7 +71,9 @@ export function decodeJWT(token: string): any {
 	if (!token) return null;
 	try {
 		const payload = token.split('.')[1];
-		return JSON.parse(atob(payload));
+		// Dùng Buffer cho môi trường server-side (Node.js)
+		const decoded = Buffer.from(payload, 'base64').toString('utf-8');
+		return JSON.parse(decoded);
 	} catch {
 		return null;
 	}

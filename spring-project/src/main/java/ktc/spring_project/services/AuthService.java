@@ -74,7 +74,9 @@ public class AuthService {
         Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
         response.put("refreshToken", refreshToken);
-        response.put("user", mapUserToDto(user));
+    Map<String, Object> userDto = mapUserToDto(user);
+    userDto.put("totpEnabled", user.getTotpEnabled());
+    response.put("user", userDto);
         return response;
     }
 
@@ -192,12 +194,12 @@ public class AuthService {
 
     // JWT Token generation and validation methods
 
-    private String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername(), jwtExpiration);
     }
 
-    private String generateRefreshToken(UserDetails userDetails) {
+    public String generateRefreshToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername(), refreshExpiration);
     }
@@ -278,6 +280,7 @@ public class AuthService {
         userDto.put("email", user.getEmail());
         userDto.put("fullName", user.getFullName());
         userDto.put("role", user.getRole().getRoleName());
+        userDto.put("totpEnabled", user.getTotpEnabled());
         return userDto;
     }
 

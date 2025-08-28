@@ -2,6 +2,7 @@ package ktc.spring_project.controllers;
 
 import ktc.spring_project.services.AuthService;
 import ktc.spring_project.services.UserService;
+import ktc.spring_project.services.TotpService;
 import ktc.spring_project.dtos.auth.GoogleLoginRequestDto;
 import ktc.spring_project.dtos.auth.GoogleLoginWithCredentialRequestDto;
 import ktc.spring_project.entities.User;
@@ -10,12 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import ktc.spring_project.services.CustomUserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.validation.Valid;
 
-import java.util.List;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,12 +29,17 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     @Autowired
     private AuthService authService;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TotpService totpService;
 
     /**
      * User login
@@ -65,17 +72,23 @@ public ResponseEntity<Map<String, Object>> login(
 //     return ResponseEntity.ok(createdUser);
 // }
 @PostMapping("/users")
-public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
+ public ResponseEntity<Map<String, Object>> createUser(@Valid @RequestBody User user) {
     System.out.println("==> Đã vào createUser");
-    try {
-        User createdUser = userService.createUser(user);
-        return ResponseEntity.ok(createdUser);
-    } catch (RuntimeException e) {
-        // Return error response with proper message
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", e.getMessage());
-        return ResponseEntity.badRequest().body(errorResponse);
+    User createdUser = userService.createUser(user);
+    String secret = userService.getOrCreateTotpSecret(createdUser.getEmail());
+    String otpauthUrl = null;
+    if (secret != null && !secret.isEmpty()) {
+        String issuer = "KTC_2025";
+        String email = createdUser.getEmail();
+        otpauthUrl = String.format(
+            "otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=SHA1&digits=6&period=30",
+            issuer, email, secret, issuer
+        );
     }
+    Map<String, Object> response = new HashMap<>();
+    response.put("user", createdUser);
+    response.put("totpQrUrl", otpauthUrl);
+    return ResponseEntity.ok(response);
 }
 // Cập nhật toàn bộ thông tin người dùng
 @PutMapping("/users/{id}")
@@ -128,33 +141,30 @@ public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
     /**
      * Forgot password - send reset email
      * US-AUTH-FORGOT-01
-     * Frontend gửi email qua body, backend kiểm tra email, tạo token reset, gửi email hướng dẫn đặt lại mật khẩu
      */
     @PostMapping("/forgot-password")
     public ResponseEntity<Map<String, String>> forgotPassword(
             @RequestBody Map<String, String> requestData) {
-        // Lấy email từ request
+
         String email = requestData.get("email");
-        // Gọi service xử lý gửi email reset password
         authService.sendPasswordResetEmail(email);
-        // Trả về thông báo cho frontend
+
         return ResponseEntity.ok(Map.of("message", "Password reset email sent"));
     }
 
     /**
      * Reset password with token
      * US-AUTH-FORGOT-01
-     * Frontend gửi token và mật khẩu mới, backend xác thực token và cập nhật mật khẩu
      */
     @PostMapping("/reset-password")
     public ResponseEntity<Map<String, String>> resetPassword(
             @Valid @RequestBody Map<String, String> resetData) {
-        // Lấy token và mật khẩu mới từ request
+
         String token = resetData.get("token");
         String newPassword = resetData.get("newPassword");
-        // Gọi service xử lý reset password
+
         authService.resetPassword(token, newPassword);
-        // Trả về thông báo cho frontend
+
         return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
     }
 
@@ -240,5 +250,46 @@ public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Google credential login failed", "message", e.getMessage()));
         }
+    }
+
+    /**
+     * Tạo mã QR TOTP cho người dùng
+     */
+    @GetMapping("/totp/qr")
+    public ResponseEntity<String> getTotpQr(@RequestParam String email) {
+        // Lấy secret từ DB, nếu chưa có thì sinh mới và lưu lại
+        String secret = userService.getOrCreateTotpSecret(email);
+        String qrUrl = totpService.getQRBarcode(email, secret);
+        return ResponseEntity.ok(qrUrl);
+    }
+
+    /**
+     * Xác thực mã OTP
+     */
+    @PostMapping("/totp/verify")
+    public ResponseEntity<?> verifyTotp(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        int code = Integer.parseInt(payload.get("code"));
+        String secret = userService.getTotpSecret(email);
+        boolean valid = totpService.verifyCode(secret, code);
+        Map<String, Object> response = new HashMap<>();
+        response.put("valid", valid);
+        if (valid) {
+            userService.enableTotp(email);
+            User user = userService.findByEmail(email);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+            String token = authService.generateToken(userDetails);
+            String refreshToken = authService.generateRefreshToken(userDetails);
+            response.put("token", token);
+            response.put("refreshToken", refreshToken);
+            Map<String, Object> userDto = new HashMap<>();
+            userDto.put("id", user.getId());
+            userDto.put("email", user.getEmail());
+            userDto.put("username", user.getUsername());
+            userDto.put("role", user.getRole() != null ? user.getRole().getRoleName() : null);
+            userDto.put("totpEnabled", user.getTotpEnabled());
+            response.put("user", userDto);
+        }
+        return ResponseEntity.ok(response);
     }
 }

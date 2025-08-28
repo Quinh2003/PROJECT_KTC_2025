@@ -14,12 +14,15 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+
+
+
+
     List<Product> findByCategoryId(Long categoryId);
 
     List<Product> findByWarehouseId(Long warehouseId);
 
     List<Product> findByProductStatus(ProductStatus status);
-
 
     // Sửa lỗi: loại bỏ full path enum, chỉ sử dụng enum value
     @Query("SELECT p FROM Product p WHERE p.productStatus = 'AVAILABLE' ORDER BY p.name")
@@ -42,6 +45,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT SUM(p.stockQuantity) FROM Product p WHERE p.productStatus = 'AVAILABLE'")
     Long getTotalStockQuantity();
-
 
 }
