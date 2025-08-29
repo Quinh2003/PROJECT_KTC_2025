@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 interface RegisterSuccessProps {
   response: any;
@@ -55,7 +55,7 @@ export default function RegisterSuccess({ response, user }: RegisterSuccessProps
         {qrUrl && (
           <div className="flex flex-col items-center gap-4">
             <h3 className="text-lg text-white">Quét mã QR với app Authenticator:</h3>
-            <QRCodeCanvas value={qrUrl} size={200} />
+            <QRCodeCanvas value={qrUrl ? qrUrl.replace(/\n/g, '').trim() : ''} size={180} />
             <p className="text-white/80 text-sm break-all">Hoặc mở link: <a href={qrUrl} target="_blank" className="text-blue-300 underline">{qrUrl}</a></p>
           </div>
         )}

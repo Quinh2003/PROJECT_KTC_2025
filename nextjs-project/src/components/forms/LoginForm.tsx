@@ -39,8 +39,6 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         // Lưu token vào cookie
         setTokenCookie(data.token);
         setRefreshTokenCookie(data.refreshToken);
-        console.log("[Google Login] Token:", data.token);
-        console.log("[Google Login] RefreshToken:", data.refreshToken);
         if (onLogin) onLogin(data);
       } else {
         alert("This application is for customers only. Please use the employee application.");
@@ -102,7 +100,6 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       if (typeof window !== "undefined") {
         setTokenCookie(token);
         localStorage.setItem("user", JSON.stringify(pendingUser));
-        console.log("OTP Token:", token);
       }
       if (onLogin) onLogin({ user: pendingUser, token });
       router.push("/account");
