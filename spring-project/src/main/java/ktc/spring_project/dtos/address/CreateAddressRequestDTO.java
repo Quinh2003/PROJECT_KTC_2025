@@ -1,30 +1,52 @@
+
 package ktc.spring_project.dtos.address;
 
 import ktc.spring_project.enums.AddressType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * DTO for creating a new address
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateAddressRequestDTO {
-    
+
+    @NotNull(message = "Address type is required")
     private AddressType addressType;
+
+    @NotBlank(message = "Address is required")
     private String address;
+
     private BigDecimal latitude;
     private BigDecimal longitude;
+
+    @NotBlank(message = "City is required")
     private String city;
+
     private String state;
+
+    @NotBlank(message = "Country is required")
     private String country;
+
     private String region;
     private String postalCode;
     private String contactName;
     private String contactPhone;
+
+    @Email(message = "Contact email must be valid")
     private String contactEmail;
     private String floorNumber;
     
     // Constructors
-    public CreateAddressRequestDTO() {}
-    
     public CreateAddressRequestDTO(AddressType addressType, String address) {
         this.addressType = addressType;
         this.address = address;

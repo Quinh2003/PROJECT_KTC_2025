@@ -1,0 +1,2625 @@
+{
+	"info": {
+		"_postman_id": "c9999560-a6af-40d9-bbeb-445b1d705002",
+		"name": "FastRoute",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46644368"
+	},
+	"item": [
+		{
+			"name": "Auth/Login/Users",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NjM1NDg1NywiZXhwIjoxNzU2NDQxMjU3fQ.V2l1KhoiKVKD76kSnuSH87BFNpZRd70tlSlrn7b3fj6rftlydNnE2xbAYhX38deLsovpuHJ-9c3sMeAfdzGh-w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"email\": \"admin@fr.com\",\r\n    \"password\": \"123123\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "USERS_ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/auth/users/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"users",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "USERS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDk3MTM4OCwiZXhwIjoxNzU1MDU3Nzg4fQ.I4cE2eda2Uqon86mRkFi6hvb0S06LTJW7ylNfN5C2sloneWWnVhcOWtnZOWElp9DHkVYG-iWBirz8Dk5eRvw-Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/auth/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH_ID",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"password\": \"123123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/users/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"users",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE_ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/users/20673",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"users",
+								"20673"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST_USER",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDk4MDMwOSwiZXhwIjoxNzU1MDY2NzA5fQ._ze-GjG3_V1TR3e-hlWPRBd-gsUJqwl0GtM-Oc5MAtH0VdpguYoQDSmZRzp86kWxGSd7PwDslrzgg2bQmPZITA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"fleet_1\",\r\n  \"fullName\": \"quynh\",\r\n  \"email\": \"xinchao@fr.com\",\r\n  \"password\": \"456\",\r\n  \"phone\": \"0123789\",\r\n  \"role_id\":6\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkaXNwYXRjaGVyIiwiaWF0IjoxNzU1MTAzNDI3LCJleHAiOjE3NTUxODk4Mjd9.5HGzWBNah-YcanHpZ0FTrPtxrki6FcDx2Z7m-_Ze9DrJ2lRw1HdKJ6V1V-l_9CbtBjF0scaH13HbYfLmBLH_GA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"hế lô QUYNH NÈ\",\r\n  \"password\": \"123123\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/users/20686",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"users",
+								"20686"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "PRODUCTS_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg4Mzc3NCwiZXhwIjoxNzU0OTcwMTc0fQ.CnYD8zYJF6GXjcUeQOQYcRPZHacbYHLwdBL8Z2uEJd80GXpx6n6ipFQQRL0F14N7GGX3yFfU3VhCw8Yo7UWVKQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/products/119",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products",
+								"119"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PRODUCTS_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg4Mzc3NCwiZXhwIjoxNzU0OTcwMTc0fQ.CnYD8zYJF6GXjcUeQOQYcRPZHacbYHLwdBL8Z2uEJd80GXpx6n6ipFQQRL0F14N7GGX3yFfU3VhCw8Yo7UWVKQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Smart watch Tôi\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/products/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PRODUCTS_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg4Mzc3NCwiZXhwIjoxNzU0OTcwMTc0fQ.CnYD8zYJF6GXjcUeQOQYcRPZHacbYHLwdBL8Z2uEJd80GXpx6n6ipFQQRL0F14N7GGX3yFfU3VhCw8Yo7UWVKQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/products/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PRODUCTS",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg4Mzc3NCwiZXhwIjoxNzU0OTcwMTc0fQ.CnYD8zYJF6GXjcUeQOQYcRPZHacbYHLwdBL8Z2uEJd80GXpx6n6ipFQQRL0F14N7GGX3yFfU3VhCw8Yo7UWVKQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTc1NzY5NSwiZXhwIjoxNzU1ODQ0MDk1fQ.ZXuAWLbJq8DI_4JWVTjePNlPLhjC2WodX7yHHrBxva2vmQqBR7UgIvLwncDsjX_l9FD-rV70AjdKZlin1lQcBA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Smart watch1111111111\",\r\n  \"description\": \"Smart watch1111111111111\",\r\n  \"unitPrice\": 327.75,\r\n  \"weight\": 0.050,\r\n  \"volume\": 0.001,\r\n  \"isFragile\": false,\r\n  \"stockQuantity\": 10,\r\n  \"productImage\": \"http://images.acmesports.sports/Smart+watch\",\r\n  \"category\": { \"id\": 158 }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "CATEGORIES_ID",
+					"request": {
+						"auth": {
+							"type": "bearer"
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n     \"name\": \"Electronics HUHU\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/categories/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CATEGORIES/{ID}/STATISTICS",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg4Mzc3NCwiZXhwIjoxNzU0OTcwMTc0fQ.CnYD8zYJF6GXjcUeQOQYcRPZHacbYHLwdBL8Z2uEJd80GXpx6n6ipFQQRL0F14N7GGX3yFfU3VhCw8Yo7UWVKQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/categories/3/statistics",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"categories",
+								"3",
+								"statistics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CATEGORIES_ID",
+					"request": {
+						"auth": {
+							"type": "bearer"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/categories/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CATEGORIES",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg4Mzc3NCwiZXhwIjoxNzU0OTcwMTc0fQ.CnYD8zYJF6GXjcUeQOQYcRPZHacbYHLwdBL8Z2uEJd80GXpx6n6ipFQQRL0F14N7GGX3yFfU3VhCw8Yo7UWVKQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CATEGORIES_ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg4Mzc3NCwiZXhwIjoxNzU0OTcwMTc0fQ.CnYD8zYJF6GXjcUeQOQYcRPZHacbYHLwdBL8Z2uEJd80GXpx6n6ipFQQRL0F14N7GGX3yFfU3VhCw8Yo7UWVKQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/categories/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"categories",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Stores",
+			"item": [
+				{
+					"name": "STORES_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg5NDc4NCwiZXhwIjoxNzU0OTgxMTg0fQ.F-2AEJeGQ_Uq73fYwBcQjDnbLshqRRhS3NFVMIA-f95eVswxEMQ_2_k0WBOzxNpKH0wOOQUD2Xahxcn7oNz1AA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"storeName\": \"Store Bánh Canh\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/stores/13",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"stores",
+								"13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "STORES",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"storeName\": \"Store Bánh Canh Cà Mau\",\r\n    \"phone\": \"0901111111\",\r\n    \"address\": \"123 Main St\",\r\n    \"latitude\": 10.77653,\r\n    \"longitude\": 106.700981,\r\n    \"isActive\": false\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/stores",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"stores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "STORES_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg5NDc4NCwiZXhwIjoxNzU0OTgxMTg0fQ.F-2AEJeGQ_Uq73fYwBcQjDnbLshqRRhS3NFVMIA-f95eVswxEMQ_2_k0WBOzxNpKH0wOOQUD2Xahxcn7oNz1AA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"storeName\": \"Store Bánh Canh\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/stores/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"stores",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "STORES_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NjM1NDg1NywiZXhwIjoxNzU2NDQxMjU3fQ.V2l1KhoiKVKD76kSnuSH87BFNpZRd70tlSlrn7b3fj6rftlydNnE2xbAYhX38deLsovpuHJ-9c3sMeAfdzGh-w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/stores/9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"stores",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "STORES",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "    \"token\": \"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg5MDI0OSwiZXhwIjoxNzU0OTc2NjQ5fQ.xwxXALv8VO6A23Y7Hn15NOWCvpD7HJ0kVp-o7dPmr8Ph2-itzziqrmmSDWvfnA3p7t-LpkNQYzJnNhovIXJVbQ\",",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/stores",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"stores"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vehicles",
+			"item": [
+				{
+					"name": "VEHICLES",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDkyNzE4MCwiZXhwIjoxNzU1MDEzNTgwfQ.cFj5437FfaTpwZqPgFWWpIJYaaRmCzehbjLwu_YWaT_S6x_ZeWVFCWioBp3cjc9bKV4oBRguzPTysez18mjF3A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"licensePlate\": \"51A-12345\",\r\n  \"vehicleType\": \"TRUCK\",\r\n  \"capacity\": 2000,\r\n  \"status\": {\"id\": 1}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/vehicles",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"vehicles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "VEHICLE_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg5ODM2NywiZXhwIjoxNzU0OTg0NzY3fQ.aNPPTSd--W-KaOpJVPQmdkxa9f_9yxEoyRp9vszpzJ1YaxBgtlZYN6pbczPyTp_sZO6LSUucmq6PZu_xOO8Xog",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/vehicles/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"vehicles",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "VEHICLE_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg5NDc4NCwiZXhwIjoxNzU0OTgxMTg0fQ.F-2AEJeGQ_Uq73fYwBcQjDnbLshqRRhS3NFVMIA-f95eVswxEMQ_2_k0WBOzxNpKH0wOOQUD2Xahxcn7oNz1AA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"capacityWeightKg\": \"2.3\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/vehicles/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"vehicles",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "VEHICLE_ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg5NDc4NCwiZXhwIjoxNzU0OTgxMTg0fQ.F-2AEJeGQ_Uq73fYwBcQjDnbLshqRRhS3NFVMIA-f95eVswxEMQ_2_k0WBOzxNpKH0wOOQUD2Xahxcn7oNz1AA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"storeName\": \"Store Bánh Canh\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/vehicles/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"vehicles",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "VEHICLE",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDg5NDc4NCwiZXhwIjoxNzU0OTgxMTg0fQ.F-2AEJeGQ_Uq73fYwBcQjDnbLshqRRhS3NFVMIA-f95eVswxEMQ_2_k0WBOzxNpKH0wOOQUD2Xahxcn7oNz1AA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"storeName\": \"Store Bánh Canh\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/vehicles",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"vehicles"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "ORDERS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDkwMTg4OCwiZXhwIjoxNzU0OTg4Mjg4fQ.2WtAQa1l4WDWf2Da4iBUrwsZB89S-c7TINwY14xELR67FQGR7U-uOH5XN8qP3gwzJ0G_ELIVIuWVsj-TBzXKeA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ORDERS_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTIzMTcyNiwiZXhwIjoxNzU1MzE4MTI2fQ.ipdjGxuVyfdUldS_42AauF_Yphw86Igu6yNkW_JQUTAnPqJF3BIcSrSfxDjQGTcLG5BBvFudVqNAKBWtcZeZxw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/orders/26013",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders",
+								"26013"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ORDERS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDkyMzAxNywiZXhwIjoxNzU1MDA5NDE3fQ.YB4x0DUIRCUDuJ5OSccDtTPKtxmB6mWCVEK9UudnZaGgDd8s4xhOhVbn4-A6sy6j1eELIQYu5hlhfFhNXKl98g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"store\": { \"id\": 9 },\r\n  \"address\": { \"id\": 3009 },\r\n  \"totalAmount\": 327.75,\r\n  \"status\": { \"id\": 1 },\r\n  \"createdBy\": { \"id\": 1 }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ORDERS_ID/PATCH/PUT",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDkyMzAxNywiZXhwIjoxNzU1MDA5NDE3fQ.YB4x0DUIRCUDuJ5OSccDtTPKtxmB6mWCVEK9UudnZaGgDd8s4xhOhVbn4-A6sy6j1eELIQYu5hlhfFhNXKl98g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Đơn hàng cập nhật PATCH\",\r\n    \"totalAmount\": 2000.00,\r\n    \"benefitPerOrder\": 200.00,\r\n    \"orderProfitPerOrder\": 100.00,\r\n    \"notes\": \"Đã xác nhận cập nhật\",\r\n    \"status\": { \"id\": 1 },\r\n    \"store\": { \"id\": 1 },\r\n    \"createdBy\": { \"id\": 6 }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/orders/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ORDERS/{ID}/STATUS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDkwMTg4OCwiZXhwIjoxNzU0OTg4Mjg4fQ.2WtAQa1l4WDWf2Da4iBUrwsZB89S-c7TINwY14xELR67FQGR7U-uOH5XN8qP3gwzJ0G_ELIVIuWVsj-TBzXKeA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"statusId\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/orders/1/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders",
+								"1",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ORDERS/{ID}/TRACKING",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/orders/1/tracking",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders",
+								"1",
+								"tracking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Deliveries",
+			"item": [
+				{
+					"name": "DELIVERIES",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDk4MDg3MCwiZXhwIjoxNzU1MDY3MjcwfQ.VkQa-_dzEcaKXAFwLu2tAd2_T8VBAc9kN3tE_e4sviNusPuCfFE-SWkoXwiX6pPBXjdh6RPU3-Rvxf1ejgodcA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\r\n//   \"orderId\": 1,\r\n//   \"deliveryFee\": 50000,\r\n//   \"transportMode\": \"ROAD\",\r\n//   \"serviceType\": \"EXPRESS\",\r\n//   \"pickupDate\": \"2025-08-12 10:00:00\",\r\n//   \"scheduleDeliveryTime\": \"2025-08-12 11:00:00\",\r\n//   \"actualDeliveryTime\": \"2025-08-12 11:30:00\",\r\n//   \"lateDeliveryRisk\": 0,\r\n//   \"deliveryAttempts\": 1,\r\n//   \"deliveryNotes\": \"Giao hàng nhanh\",\r\n//   \"orderDate\": \"2025-08-12 09:30:00\",\r\n//   \"vehicleId\": 1, \r\n//   \"driverId\": 3,\r\n//   \"routeId\": 13\r\n// }\r\n\r\n{\r\n  \"orderId\": 65761,\r\n  \"serviceType\": \"STANDARD\",\r\n  \"notes\": \"Giao trong giờ hành chính\",\r\n  \"lateDeliveryRisk\": 0,\r\n  \"orderDate\": \"2025-08-21 07:30:00\",\r\n  \"vehicleId\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/deliveries",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"deliveries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELIVERIES_ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/deliveries/85794",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"deliveries",
+								"85794"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELIVERIES_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDk4MDg3MCwiZXhwIjoxNzU1MDY3MjcwfQ.VkQa-_dzEcaKXAFwLu2tAd2_T8VBAc9kN3tE_e4sviNusPuCfFE-SWkoXwiX6pPBXjdh6RPU3-Rvxf1ejgodcA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"orderId\": 2,\r\n  \"deliveryFee\": 50,\r\n  \"transportMode\": \"SEA\",\r\n  \"serviceType\": \"EXPRESS\",\r\n  \"pickupDate\": \"2025-08-12 10:00:00\",\r\n  \"scheduleDeliveryTime\": \"2025-08-12 11:00:00\",\r\n  \"actualDeliveryTime\": \"2025-08-12 11:30:00\",\r\n  \"lateDeliveryRisk\": 0,\r\n  \"deliveryAttempts\": 1,\r\n  \"deliveryNotes\": \"Giao hàng nhanh\",\r\n  \"orderDate\": \"2025-08-12 09:30:00\",\r\n  \"vehicleId\": 1,\r\n  \"driverId\": 3,\r\n  \"routeId\": 14\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/deliveries/65786",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"deliveries",
+								"65786"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELIVERIES_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NjM1NDg1NywiZXhwIjoxNzU2NDQxMjU3fQ.V2l1KhoiKVKD76kSnuSH87BFNpZRd70tlSlrn7b3fj6rftlydNnE2xbAYhX38deLsovpuHJ-9c3sMeAfdzGh-w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/deliveries/26009",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"deliveries",
+								"26009"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELIVERIES",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDk3NzIwMCwiZXhwIjoxNzU1MDYzNjAwfQ.AhG7_LrvsDV-ciHmmGvZWFSWBzwLKoFG-LYQPKErHzUhhOluUF87RczEwPjPLM8PUc6QKu1w2Zfas-pZKZ9Fug",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/deliveries",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"deliveries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELIVERIES/{ID}/TRACKING",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NjM1NDg1NywiZXhwIjoxNzU2NDQxMjU3fQ.V2l1KhoiKVKD76kSnuSH87BFNpZRd70tlSlrn7b3fj6rftlydNnE2xbAYhX38deLsovpuHJ-9c3sMeAfdzGh-w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/deliveries/5/tracking",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"deliveries",
+								"5",
+								"tracking"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Routes",
+			"item": [
+				{
+					"name": "ROUTES",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDk4MDg3MCwiZXhwIjoxNzU1MDY3MjcwfQ.VkQa-_dzEcaKXAFwLu2tAd2_T8VBAc9kN3tE_e4sviNusPuCfFE-SWkoXwiX6pPBXjdh6RPU3-Rvxf1ejgodcA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "note",
+									"value": "Giao hàng thành công",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/routes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"routes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ROUTES_ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/routes/13",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"routes",
+								"13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ROUTES/{ID}/TRACKING",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/routes/13/tracking",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"routes",
+								"13",
+								"tracking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ROUTES",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Route 01 cập nhật\",\r\n  \"waypoints\": \"[{\\\"lat\\\":21.0285,\\\"lng\\\":105.8542,\\\"address\\\":\\\"Hà Nội\\\"},{\\\"lat\\\":20.8449,\\\"lng\\\":106.6881,\\\"address\\\":\\\"Hải Phòng\\\"}]\",\r\n  \"estimatedDistanceKm\": 120.5,\r\n  \"estimatedDurationMinutes\": 150,\r\n  \"notes\": \"Tuyến đường cập nhật\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/routes/13",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"routes",
+								"13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ROUTES_ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/routes/13",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"routes",
+								"13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ROUTES",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Tuyến giao hàng số 1\",\r\n  \"waypoints\": \"[{\\\"lat\\\":10.762622, \\\"lng\\\":106.660172}, {\\\"lat\\\":10.776889, \\\"lng\\\":106.700806}]\",\r\n  \"estimatedDistanceKm\": 12.5,\r\n  \"estimatedDurationMinutes\": 45,\r\n  \"estimatedCost\": 150000,\r\n  \"notes\": \"Giao hàng nhanh trong ngày\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/routes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"routes"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Warehouses",
+			"item": [
+				{
+					"name": "WAREHOUSES",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTAwNTk0MCwiZXhwIjoxNzU1MDkyMzQwfQ.c30VMsFzimv_0pIb7LBbidna6Bq6Izck8WVRBapBEZmbEl-hWbFTASp-wY4F2axAGMKapsFBRMStHejX9dk-4w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/warehouses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"warehouses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "WAREHOUSES_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTAwNTk0MCwiZXhwIjoxNzU1MDkyMzQwfQ.c30VMsFzimv_0pIb7LBbidna6Bq6Izck8WVRBapBEZmbEl-hWbFTASp-wY4F2axAGMKapsFBRMStHejX9dk-4w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/warehouses/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"warehouses",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "WAREHOUSES",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTAwNTk0MCwiZXhwIjoxNzU1MDkyMzQwfQ.c30VMsFzimv_0pIb7LBbidna6Bq6Izck8WVRBapBEZmbEl-hWbFTASp-wY4F2axAGMKapsFBRMStHejX9dk-4w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"warehouseCode\": \"WH003\",\r\n  \"name\": \"Kho Hàng\",\r\n  \"address\": \"123 Đường Láng, Nhà Tôi \",\r\n  \"latitude\": 21.028511,\r\n  \"longitude\": 105.804817,\r\n  \"capacityM3\": 5000,\r\n  \"isActive\": true,\r\n  \"notes\": \"Kho cũ\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/warehouses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"warehouses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "WAREHOUSES_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTAwNTk0MCwiZXhwIjoxNzU1MDkyMzQwfQ.c30VMsFzimv_0pIb7LBbidna6Bq6Izck8WVRBapBEZmbEl-hWbFTASp-wY4F2axAGMKapsFBRMStHejX9dk-4w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Kho cập nhật\",\r\n  \"address\": \"789 Đường mới, Hà Nội\",\r\n  \"latitude\": 21.03,\r\n  \"longitude\": 105.81,\r\n  \"isActive\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/warehouses/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"warehouses",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "WAREHOUSES_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTAwNTk0MCwiZXhwIjoxNzU1MDkyMzQwfQ.c30VMsFzimv_0pIb7LBbidna6Bq6Izck8WVRBapBEZmbEl-hWbFTASp-wY4F2axAGMKapsFBRMStHejX9dk-4w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Kho cập nhật\",\r\n  \"address\": \"789 Đường mới, Hà Nội\",\r\n  \"latitude\": 21.03,\r\n  \"longitude\": 105.81,\r\n  \"isActive\": true\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/warehouses/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"warehouses",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "WAREHOUSES/{ID}/INVENTORY",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/warehouses/6/inventory",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"warehouses",
+								"6",
+								"inventory"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "WAREHOUSES/{ID}/TRANSACTIONS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/warehouses/6/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"warehouses",
+								"6",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payments",
+			"item": [
+				{
+					"name": "PAYMENTS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTAwNTk0MCwiZXhwIjoxNzU1MDkyMzQwfQ.c30VMsFzimv_0pIb7LBbidna6Bq6Izck8WVRBapBEZmbEl-hWbFTASp-wY4F2axAGMKapsFBRMStHejX9dk-4w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/payments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PAYMENTS_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTAwNTk0MCwiZXhwIjoxNzU1MDkyMzQwfQ.c30VMsFzimv_0pIb7LBbidna6Bq6Izck8WVRBapBEZmbEl-hWbFTASp-wY4F2axAGMKapsFBRMStHejX9dk-4w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/payments/10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"payments",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PAYMENTS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTAwNTk0MCwiZXhwIjoxNzU1MDkyMzQwfQ.c30VMsFzimv_0pIb7LBbidna6Bq6Izck8WVRBapBEZmbEl-hWbFTASp-wY4F2axAGMKapsFBRMStHejX9dk-4w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"amount\": 150000,\r\n  \"paymentMethod\": \"CASH\",\r\n  \"transactionId\": \"TXN123456\",\r\n  \"notes\": \"Thanh toán tiền mặt\",\r\n  \"order\": { \"id\": 1 },\r\n  \"status\": { \"id\": 1 }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/payments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PAYMENTS_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTAwNTk0MCwiZXhwIjoxNzU1MDkyMzQwfQ.c30VMsFzimv_0pIb7LBbidna6Bq6Izck8WVRBapBEZmbEl-hWbFTASp-wY4F2axAGMKapsFBRMStHejX9dk-4w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"amount\": 150000,\r\n  \"paymentMethod\": \"CASH\",\r\n  \"transactionId\": \"TXN123456\",\r\n  \"notes\": \"Thanh toán tiền mặt\",\r\n  \"order\": { \"id\": 1 },\r\n  \"status\": { \"id\": 1 }\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/payments/65785",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"payments",
+								"65785"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PAYMENTS_ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTAwNTk0MCwiZXhwIjoxNzU1MDkyMzQwfQ.c30VMsFzimv_0pIb7LBbidna6Bq6Izck8WVRBapBEZmbEl-hWbFTASp-wY4F2axAGMKapsFBRMStHejX9dk-4w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"amount\": 500000,\r\n  \"paymentMethod\": \"CASH\",\r\n  \"transactionId\": \"TXN_00000123\",\r\n  \"notes\": \"Cập nhật thanh toán\",\r\n  \"order\": { \"id\": 4 },\r\n  \"status\": { \"id\": 1 }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/payments/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"payments",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"status\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/payments/10/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"payments",
+								"10",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delivery-Proofs",
+			"item": [
+				{
+					"name": "DELIVERY-PROOFS",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTAwNTk0MCwiZXhwIjoxNzU1MDkyMzQwfQ.c30VMsFzimv_0pIb7LBbidna6Bq6Izck8WVRBapBEZmbEl-hWbFTASp-wY4F2axAGMKapsFBRMStHejX9dk-4w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"amount\": 500000,\r\n  \"paymentMethod\": \"CASH\",\r\n  \"transactionId\": \"TXN_00000123\",\r\n  \"notes\": \"Cập nhật thanh toán\",\r\n  \"order\": { \"id\": 4 },\r\n  \"status\": { \"id\": 1 }\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/delivery-proofs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"delivery-proofs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELIVERY-PROOFS_ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/delivery-proofs/10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"delivery-proofs",
+								"10"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Driver",
+			"item": [
+				{
+					"name": "driver-analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/dashboard/driver-analytics",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"dashboard",
+								"driver-analytics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DRIVER/{ID}/ORDERS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NjMwMzM3MywiZXhwIjoxNzU2Mzg5NzczfQ.qpvZEs0IRy1PmD2p5tLbJIYFxI2FO8tLW1PjTkAVo_8Q4vw3KyUP0feW2iR6KNhVjlhTKu9qbwBdj17K7hVc3w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/driver/20696/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"driver",
+								"20696",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NjMwMzM3MywiZXhwIjoxNzU2Mzg5NzczfQ.qpvZEs0IRy1PmD2p5tLbJIYFxI2FO8tLW1PjTkAVo_8Q4vw3KyUP0feW2iR6KNhVjlhTKu9qbwBdj17K7hVc3w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/driver/orders/26013",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"driver",
+								"orders",
+								"26013"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Folder",
+			"item": [
+				{
+					"name": "ORDER_ITEMS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NjM1NDg1NywiZXhwIjoxNzU2NDQxMjU3fQ.V2l1KhoiKVKD76kSnuSH87BFNpZRd70tlSlrn7b3fj6rftlydNnE2xbAYhX38deLsovpuHJ-9c3sMeAfdzGh-w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/order-items/133465",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"order-items",
+								"133465"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/order-items/order/26013",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"order-items",
+								"order",
+								"26013"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/order-items/order/25783/count",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"order-items",
+								"order",
+								"25783",
+								"count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"actualWeight\": 2,\r\n  \"length\": 40,\r\n  \"width\": 30,\r\n  \"height\": 20,\r\n  \"distance\": 10,\r\n  \"fragile\": false,\r\n  \"serviceType\": \"STANDARD\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/shipping-fee/calculate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"shipping-fee",
+								"calculate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SHIPPING FEE",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/shipping/order-item/133465/calculate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"shipping",
+								"order-item",
+								"133465",
+								"calculate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"fromLatitude\": 10.77653, \r\n\"fromLongitude\": 106.70098100, \r\n\"toLatitude\": 10.78000, \r\n\"toLongitude\": 106.71000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/shipping/calculate-distance",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"shipping",
+								"calculate-distance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/delivery/order/26013/calculate-and-save",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"delivery",
+								"order",
+								"26013",
+								"calculate-and-save"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/delivery/order/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"delivery",
+								"order",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "order-items",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTc1NzY5NSwiZXhwIjoxNzU1ODQ0MDk1fQ.ZXuAWLbJq8DI_4JWVTjePNlPLhjC2WodX7yHHrBxva2vmQqBR7UgIvLwncDsjX_l9FD-rV70AjdKZlin1lQcBA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"orderId\": 65761,\r\n  \"productId\": 119,\r\n  \"quantity\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/order-items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"order-items"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Folder",
+			"item": [
+				{
+					"name": "addresses",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTc1NzY5NSwiZXhwIjoxNzU1ODQ0MDk1fQ.ZXuAWLbJq8DI_4JWVTjePNlPLhjC2WodX7yHHrBxva2vmQqBR7UgIvLwncDsjX_l9FD-rV70AjdKZlin1lQcBA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"addressType\": \"HOME\",\r\n  \"address\": \"\",\r\n  \"latitude\": 10.7800,\r\n  \"longitude\": 106.7100,\r\n  \"city\": \"TP.HCM\",\r\n  \"state\": \"Hồ Chí Minh\",\r\n  \"country\": \"Vietnam\",\r\n  \"region\": \"Miền Nam\",\r\n  \"postalCode\": \"700000\",\r\n  \"contactName\": \"Nguyễn Văn A\",\r\n  \"contactPhone\": \"0901234567\",\r\n  \"contactEmail\": \"nguyenvana@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/addresses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"addresses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NjMwMzM3MywiZXhwIjoxNzU2Mzg5NzczfQ.qpvZEs0IRy1PmD2p5tLbJIYFxI2FO8tLW1PjTkAVo_8Q4vw3KyUP0feW2iR6KNhVjlhTKu9qbwBdj17K7hVc3w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/addresses/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"addresses",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Folder",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NTk1NTY2OCwiZXhwIjoxNzU2MDQyMDY4fQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"vehicleId\": 1,\r\n  \"statusId\": 1,\r\n  \"deliveryId\": 26009,\r\n  \"latitude\": 14.83596,\r\n  \"longitude\": 108.946491,\r\n  \"location\": \"Điểm tracking mới\",\r\n  \"notes\": \"Xe vừa di chuyển đến đây\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/tracking/location",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"tracking",
+								"location"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/tracking/vehicle/1/current",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"tracking",
+								"vehicle",
+								"1",
+								"current"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Folder",
+			"item": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbjEiLCJpYXQiOjE3NTQ2MjEyNDgsImV4cCI6MTc1NDcwNzY0OH0.58XLhVgzjN4_24rFfIRSdPryo2d3exdO5IqpT310U55R8aepDmct0h_jnqt94xkyqokCvJn7I58kH9SaDpcC-A",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
