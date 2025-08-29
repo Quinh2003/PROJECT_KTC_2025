@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../data/env/environment.dart';
 import '../data/local_secure/secure_storage.dart';
-import '../domain/models/response/auth_response.dart';
-import '../domain/models/response/response_default.dart';
+import '../domain/models/auth/auth_response.dart';
+import '../domain/models/common/response_default.dart';
 
 class UserServices {
   final Environment _env = Environment.getInstance();

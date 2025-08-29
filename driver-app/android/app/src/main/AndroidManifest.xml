@@ -21,6 +21,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
     <!-- Permissions Phone State -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
@@ -36,6 +38,9 @@
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyAA6NAaCO_wqNsUjjp86q8JcTBoQZRtW20"/>
+        <!-- Mapbox Access Token -->
+        <meta-data android:name="com.mapbox.token" 
+               android:value="sk.eyJ1IjoiZmFuZ2xlZSIsImEiOiJjbWVwZGhyd2wwMWMwMmpzYm9yMmY2b2Y2In0.Z3uN0URqPxOD71hyFKP9_w" />
                
         <activity
             android:name=".MainActivity"

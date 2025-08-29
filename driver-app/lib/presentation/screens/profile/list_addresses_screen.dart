@@ -3,13 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import 'package:ktc_logistics_driver/domain/models/response/addresses_response.dart';
+import 'package:ktc_logistics_driver/domain/models/address/addresses_response.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 import 'package:ktc_logistics_driver/presentation/screens/client/profile_client_screen.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class ListAddressesScreen extends StatefulWidget {
+  const ListAddressesScreen({super.key});
+
   @override
   _ListAddressesScreenState createState() => _ListAddressesScreenState();
 }
@@ -112,14 +114,14 @@ class _ListAddresses extends StatelessWidget {
   
   final List<ListAddress> listAddress;
 
-  const _ListAddresses({Key? key, required this.listAddress}) : super(key: key);
+  const _ListAddresses({super.key, required this.listAddress});
 
   @override
   Widget build(BuildContext context) {
 
     final userBloc = BlocProvider.of<UserBloc>(context);
 
-    return ( listAddress.length  != 0 ) 
+    return ( listAddress.isNotEmpty ) 
     ? ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         itemCount: listAddress.length,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import 'package:ktc_logistics_driver/domain/models/type_payment.dart';
+import 'package:ktc_logistics_driver/domain/models/order/type_payment.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 import 'package:ktc_logistics_driver/presentation/screens/client/client_home_screen.dart';
@@ -9,6 +9,8 @@ import 'package:ktc_logistics_driver/presentation/screens/client/select_addreess
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class CheckOutScreen extends StatelessWidget {
+  const CheckOutScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -212,7 +214,7 @@ class _CheckoutPaymentMethods extends StatelessWidget {
           ),
           const Divider(),
           const SizedBox(height: 5.0),
-          Container(
+          SizedBox(
             height: 80,
             child: ListView.builder(
               physics: const BouncingScrollPhysics(),

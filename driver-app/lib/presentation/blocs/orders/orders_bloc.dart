@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:meta/meta.dart';
-import 'package:ktc_logistics_driver/domain/models/product_cart.dart';
+import 'package:ktc_logistics_driver/domain/models/order/product_cart.dart';
 import 'package:ktc_logistics_driver/services/orders_services.dart';
 import 'package:ktc_logistics_driver/services/user_services.dart';
 import 'package:ktc_logistics_driver/main.dart';
@@ -100,8 +100,11 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
 
       await Future.delayed(Duration(seconds: 1));
 
-      if( resp.resp ) emit( SuccessOrdersState() );
-      else emit( FailureOrdersState(resp.msg) );
+      if( resp.resp ) {
+        emit( SuccessOrdersState() );
+      } else {
+        emit( FailureOrdersState(resp.msg) );
+      }
       
     } catch (e) {
       emit( FailureOrdersState(e.toString()) );
@@ -120,8 +123,11 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
 
       await Future.delayed(Duration(milliseconds: 450));
 
-      if( resp.resp ) emit( SuccessOrdersState() );
-      else emit( FailureOrdersState(resp.msg) );
+      if( resp.resp ) {
+        emit( SuccessOrdersState() );
+      } else {
+        emit( FailureOrdersState(resp.msg) );
+      }
       
     } catch (e) {
       emit( FailureOrdersState(e.toString()) );

@@ -8,6 +8,8 @@ import 'package:ktc_logistics_driver/presentation/screens/admin/category/categor
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class AddCategoryAdminScreen extends StatefulWidget {
+  const AddCategoryAdminScreen({super.key});
+
   
   @override
   _AddCategoryAdminScreenState createState() => _AddCategoryAdminScreenState();
@@ -96,7 +98,7 @@ class _AddCategoryAdminScreenState extends State<AddCategoryAdminScreen> {
                 FormFieldFrave(
                   controller: _nameCategoryController,
                   hintText: 'Drinks',
-                  validator: RequiredValidator(errorText: 'Category name is required'),
+                  validator: RequiredValidator(errorText: 'Category name is required').call,
                 ),
                 const SizedBox(height: 25.0),
                 const TextCustom(text: 'Category Description'),

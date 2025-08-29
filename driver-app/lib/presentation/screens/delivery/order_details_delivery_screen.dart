@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ktc_logistics_driver/data/env/environment.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import 'package:ktc_logistics_driver/domain/models/response/order_details_response.dart';
-import 'package:ktc_logistics_driver/domain/models/response/orders_by_status_response.dart';
+import 'package:ktc_logistics_driver/domain/models/order/order_details_response.dart';
+import 'package:ktc_logistics_driver/domain/models/order/orders_by_status_response.dart';
 import 'package:ktc_logistics_driver/services/orders_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/date_custom.dart';
@@ -17,7 +17,7 @@ class OrdersDetailsDeliveryScreen extends StatefulWidget {
 
   final OrdersResponse order;
 
-  const OrdersDetailsDeliveryScreen({ required this.order });
+  const OrdersDetailsDeliveryScreen({super.key,  required this.order });
 
   @override
   _OrdersDetailsDeliveryScreenState createState() => _OrdersDetailsDeliveryScreenState();
@@ -163,7 +163,7 @@ class _OrdersDetailsDeliveryScreenState extends State<OrdersDetailsDeliveryScree
                               ),
                             ),
                             const SizedBox(width: 10.0),
-                            TextCustom(text: '${widget.order.cliente}'),
+                            TextCustom(text: widget.order.cliente),
                           ],
                         ),
                       ],
@@ -232,7 +232,7 @@ class _ListProductsDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
     return ListView.separated(
       padding: EdgeInsets.symmetric(horizontal: 10.0),
       itemCount: listProductDetails.length,
@@ -247,7 +247,7 @@ class _ListProductsDetails extends StatelessWidget {
                 width: 45,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage('${_env.endpointBase}${listProductDetails[i].picture}')
+                    image: NetworkImage('${env.endpointBase}${listProductDetails[i].picture}')
                   )
                 ),
               ),

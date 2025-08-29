@@ -11,6 +11,10 @@ import 'package:ktc_logistics_driver/domain/usecases/usecases.dart';
 import 'package:ktc_logistics_driver/data/repositories/repository_implementations.dart' as mock_repo;
 import 'package:ktc_logistics_driver/services/mock_data_service.dart';
 import 'package:ktc_logistics_driver/services/mock_auth_service.dart';
+import 'package:ktc_logistics_driver/presentation/screens/delivery/deliveries_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/map/route_map_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/order/order_detail_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/profile/edit_profile_screen.dart';
 import 'services/push_notification_service.dart';
 
 final getIt = GetIt.instance;
@@ -28,6 +32,17 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SpatialLoginScreen());
       case '/dashboard':
         return MaterialPageRoute(builder: (_) => const DashboardScreenSpatial());
+      case '/deliveries':
+        return MaterialPageRoute(builder: (_) => const DeliveriesScreen());
+      case '/routes':
+        // Tạm thời dùng một routeId mặc định
+        return MaterialPageRoute(builder: (_) => const RouteMapScreen(routeId: 'RT-2025-08-14-01'));
+      case '/profile':
+        return MaterialPageRoute(builder: (_) => const EditProfileScreen());
+      case '/order-detail':
+        // Lấy order ID từ arguments
+        final orderId = settings.arguments as String;
+        return MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: orderId));
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
@@ -41,7 +56,7 @@ class AppRouter {
 }
 
 class App extends StatefulWidget {
-  const App({Key? key}) : super(key: key);
+  const App({super.key});
 
   @override
   State<App> createState() => _AppState();
@@ -109,6 +124,10 @@ class _AppState extends State<App> {
             ),
           ),
         ),
+        // Add DeliveryBloc provider to fix "Provider<DeliveryBloc> not found" error
+        BlocProvider<DeliveryBloc>(
+          create: (context) => DeliveryBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'KTC Logistics Driver',
@@ -140,7 +159,7 @@ class _AppState extends State<App> {
 }
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();

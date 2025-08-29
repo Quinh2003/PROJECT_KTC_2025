@@ -1,7 +1,8 @@
 import '../../domain/repositories/repository_interfaces.dart';
 import '../../domain/repositories/tracking_repository_interfaces.dart';
-import '../../domain/models/response/auth_response.dart';
-import '../../domain/models/tracking_model.dart';
+import '../../domain/models/auth/auth_response.dart';
+import '../../domain/models/delivery/tracking_model.dart' hide RoutesResponse, RouteResponse, RouteDetail;
+import '../../domain/models/map/backend_route_models.dart';
 import '../../services/mock_auth_service.dart';
 import '../../services/mock_data_service.dart';
 import '../../services/notification_service.dart';
@@ -245,10 +246,15 @@ class TrackingRepositoryImpl implements TrackingRepository {
   }) async {
     await Future.delayed(const Duration(seconds: 1));
     return RoutesResponse(
+      success: true,
+      message: 'Routes retrieved successfully',
       routes: [],
-      totalRoutes: 0,
-      currentPage: page,
-      totalPages: 0,
+      pagination: Pagination(
+        currentPage: page,
+        totalPages: 0,
+        totalItems: 0,
+        itemsPerPage: limit,
+      ),
     );
   }
 
@@ -256,15 +262,25 @@ class TrackingRepositoryImpl implements TrackingRepository {
   Future<RouteResponse> getRouteDetails({required String routeId}) async {
     await Future.delayed(const Duration(seconds: 1));
     return RouteResponse(
+      success: true,
+      message: 'Route details retrieved successfully',
       route: RouteDetail(
-        routeId: routeId,
+        id: routeId,
         name: 'Sample Route',
+        description: 'A sample delivery route for testing',
         status: 'active',
-        startTime: DateTime.now(),
-        deliveryIds: [],
-        totalDistance: 0.0,
-        estimatedDuration: Duration.zero,
-        waypoints: [],
+        driverId: 'driver-123',
+        vehicleId: 'vehicle-456',
+        createdAt: DateTime.now(),
+        deliveries: [],
+        statistics: RouteStatistics(
+          totalDeliveries: 0,
+          completedDeliveries: 0,
+          pendingDeliveries: 0,
+          totalDistance: 0.0,
+          estimatedDuration: Duration.zero,
+          actualDuration: Duration.zero,
+        ),
       ),
     );
   }

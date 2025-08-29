@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../domain/models/tracking_model.dart';
+import '../../../domain/models/delivery/tracking_model.dart';
 
 // States
 abstract class TrackingState extends Equatable {

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ktc_logistics_driver/data/env/environment.dart';
-import 'package:ktc_logistics_driver/domain/models/response/order_details_response.dart';
-import 'package:ktc_logistics_driver/domain/models/response/orders_client_response.dart';
+import 'package:ktc_logistics_driver/domain/models/order/order_details_response.dart';
+import 'package:ktc_logistics_driver/domain/models/order/orders_client_response.dart';
 import 'package:ktc_logistics_driver/services/orders_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/date_custom.dart';
-import 'package:ktc_logistics_driver/presentation/screens/client/client_map_scrren.dart';
+import 'package:ktc_logistics_driver/presentation/screens/client/client_map_screen.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 
@@ -14,7 +14,7 @@ class ClientDetailsOrderScreen extends StatelessWidget {
 
   final OrdersClient orderClient;
 
-  const ClientDetailsOrderScreen({ required this.orderClient});
+  const ClientDetailsOrderScreen({super.key,  required this.orderClient});
 
 
   void accessGps( PermissionStatus status, BuildContext context ){
@@ -36,7 +36,7 @@ class ClientDetailsOrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -114,7 +114,7 @@ class ClientDetailsOrderScreen extends StatelessWidget {
                           width: 35,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: NetworkImage( (orderClient.imageDelivery != '' ) ? '${_env.endpointBase}${orderClient.imageDelivery}' : '${_env.endpointBase}without-image.png' )
+                              image: NetworkImage( (orderClient.imageDelivery != '' ) ? '${env.endpointBase}${orderClient.imageDelivery}' : '${env.endpointBase}without-image.png' )
                             )
                           ),
                         ),
@@ -168,7 +168,7 @@ class _ListProductsDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       itemCount: listProductDetails.length,
@@ -183,7 +183,7 @@ class _ListProductsDetails extends StatelessWidget {
                 width: 45,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage('${_env.endpointBase}${listProductDetails[i].picture}')
+                    image: NetworkImage('${env.endpointBase}${listProductDetails[i].picture}')
                   )
                 ),
               ),

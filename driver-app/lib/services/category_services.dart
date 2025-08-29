@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:ktc_logistics_driver/data/env/environment.dart';
 import 'package:ktc_logistics_driver/data/local_secure/secure_storage.dart';
-import 'package:ktc_logistics_driver/domain/models/response/category_all_response.dart';
-import 'package:ktc_logistics_driver/domain/models/response/response_default.dart';
+import 'package:ktc_logistics_driver/domain/models/product/category_all_response.dart';
+import 'package:ktc_logistics_driver/domain/models/common/response_default.dart';
 
 class CategoryServices {
 
@@ -41,7 +41,7 @@ class CategoryServices {
 
     final token = await secureStorage.readToken();
 
-    final resp = await http.delete(Uri.parse('${_env.endpointApi}/delete-category/'+ uidCategory ),
+    final resp = await http.delete(Uri.parse('${_env.endpointApi}/delete-category/$uidCategory' ),
       headers: { 'Content-type' : 'application/json', 'xx-token' : token! }
     );
 

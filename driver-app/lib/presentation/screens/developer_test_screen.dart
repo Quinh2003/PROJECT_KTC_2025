@@ -6,7 +6,7 @@ import 'map/route_map_screen.dart';
 /// Focus on Spatial UI demo and debug features
 /// Remove this file in production build
 class DeveloperTestScreen extends StatefulWidget {
-  const DeveloperTestScreen({Key? key}) : super(key: key);
+  const DeveloperTestScreen({super.key});
 
   @override
   State<DeveloperTestScreen> createState() => _DeveloperTestScreenState();

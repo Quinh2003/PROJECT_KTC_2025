@@ -8,7 +8,7 @@ import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_check_ema
 import 'package:flutter_animate/flutter_animate.dart';
 
 class SpatialForgotPasswordScreen extends StatefulWidget {
-  const SpatialForgotPasswordScreen({Key? key}) : super(key: key);
+  const SpatialForgotPasswordScreen({super.key});
 
   @override
   State<SpatialForgotPasswordScreen> createState() => _SpatialForgotPasswordScreenState();
@@ -117,7 +117,7 @@ class _SpatialForgotPasswordScreenState extends State<SpatialForgotPasswordScree
         const SizedBox(height: SpatialTheme.spaceLG),
         
         Text(
-          'Quên mật khẩu?',
+          'Forgot Password?',
           style: SpatialTheme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w600,
             color: Colors.white,
@@ -125,9 +125,9 @@ class _SpatialForgotPasswordScreenState extends State<SpatialForgotPasswordScree
         ),
         const SizedBox(height: SpatialTheme.spaceSM),
         Text(
-          'Đừng lo lắng! Vui lòng nhập email của bạn và chúng tôi sẽ gửi cho bạn hướng dẫn đặt lại mật khẩu.',
+          'Don\'t worry! Enter your email and we will send you instructions to reset your password.',
           style: SpatialTheme.textTheme.bodyMedium?.copyWith(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
           ),
           textAlign: TextAlign.center,
         ),
@@ -136,15 +136,37 @@ class _SpatialForgotPasswordScreenState extends State<SpatialForgotPasswordScree
   }
 
   Widget _buildResetForm() {
-    return SpatialComponents.glassContainer(
-      useDarkMode: true,
+    return Container(
+      padding: const EdgeInsets.all(SpatialTheme.spaceMD),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF2A2D3E).withValues(alpha: 0.75),
+            Color(0xFF1F2133).withValues(alpha: 0.9),
+          ],
+        ),
+        borderRadius: SpatialTheme.borderRadiusMedium,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.15),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Đặt lại mật khẩu',
+              'Reset Password',
               style: SpatialTheme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
@@ -156,17 +178,17 @@ class _SpatialForgotPasswordScreenState extends State<SpatialForgotPasswordScree
             SpatialComponents.spatialTextField(
               useDarkMode: true,
               label: 'Email',
-              hint: 'Nhập email của bạn',
+              hint: 'Enter your email',
               controller: _emailController,
               prefixIcon: FontAwesomeIcons.envelope,
               keyboardType: TextInputType.emailAddress,
               enabled: !_isLoading,
               validator: (value) {
                 if (value?.isEmpty ?? true) {
-                  return 'Vui lòng nhập email';
+                  return 'Please enter your email';
                 }
                 if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
-                  return 'Email không hợp lệ';
+                  return 'Invalid email format';
                 }
                 return null;
               },
@@ -177,11 +199,25 @@ class _SpatialForgotPasswordScreenState extends State<SpatialForgotPasswordScree
             // Reset Button
             SizedBox(
               width: double.infinity,
-              child: SpatialComponents.gradientButton(
-                text: 'Gửi hướng dẫn đặt lại',
-                onPressed: _handleResetPassword,
-                loading: _isLoading,
-                icon: FontAwesomeIcons.paperPlane,
+              child: ElevatedButton.icon(
+                icon: Icon(FontAwesomeIcons.paperPlane, size: 16),
+                label: Text(
+                  _isLoading ? 'Sending...' : 'Send Reset Instructions',
+                  style: SpatialTheme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                onPressed: _isLoading ? null : _handleResetPassword,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black87,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: SpatialTheme.borderRadiusMedium,
+                  ),
+                  elevation: 0,
+                ),
               ),
             ),
           ],
@@ -195,17 +231,25 @@ class _SpatialForgotPasswordScreenState extends State<SpatialForgotPasswordScree
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Nhớ mật khẩu? ',
-          style: SpatialTheme.textTheme.bodyMedium,
+          'Remember your password? ',
+          style: SpatialTheme.textTheme.bodyMedium?.copyWith(
+            color: Colors.white.withValues(alpha: 0.7),
+          ),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (_) => const SpatialLoginScreen()),
           ),
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
           child: Text(
-            'Đăng nhập',
+            'Login',
             style: TextStyle(
-              color: SpatialTheme.primaryBlue,
+              color: Colors.white,
               fontWeight: FontWeight.w600,
             ),
           ),

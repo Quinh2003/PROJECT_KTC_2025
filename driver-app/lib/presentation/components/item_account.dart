@@ -9,7 +9,7 @@ class ItemAccount extends StatelessWidget {
   final int colorIcon;
   final VoidCallback? onPressed;
 
-  const ItemAccount({
+  const ItemAccount({super.key, 
     this.borderRadius = 10.0, 
     required this.text, 
     required this.icon, 

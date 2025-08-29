@@ -12,6 +12,8 @@ import 'package:ktc_logistics_driver/presentation/screens/profile/maps/map_addre
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class AddStreetAddressScreen extends StatefulWidget {
+  const AddStreetAddressScreen({super.key});
+
 
   @override
   _AddStreetAddressScreenState createState() => _AddStreetAddressScreenState();
@@ -104,7 +106,7 @@ class _AddStreetAddressScreenState extends State<AddStreetAddressScreen> {
                   const SizedBox(height: 5.0),
                   FormFieldFrave(
                     controller: _streetAddressController,
-                    validator: RequiredValidator(errorText: 'Street Address is required'),
+                    validator: RequiredValidator(errorText: 'Street Address is required').call,
                   ),
                   const SizedBox(height: 20.0),
                   const TextCustom(text: 'Reference'),

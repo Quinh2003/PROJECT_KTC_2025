@@ -13,8 +13,8 @@ class MapdeliveryState {
 
     Map<String, Marker>? markers,
     Map<String, Polyline>? polyline
-  }) : this.markers = markers ?? new Map(),
-       this.polyline = polyline ?? new Map();
+  }) : markers = markers ?? <String, Marker>{},
+       polyline = polyline ?? <String, Polyline>{};
 
   MapdeliveryState copyWith({ bool? isReadyMapDelivery, Map<String, Marker>? markers, Map<String, Polyline>? polyline })
     => MapdeliveryState(

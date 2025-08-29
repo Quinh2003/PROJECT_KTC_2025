@@ -26,7 +26,7 @@ void modalPictureRegister({ required BuildContext ctx, VoidCallback? onPressedCh
               children: [
                 const TextCustom(text: 'Change profile picture', fontWeight: FontWeight.w500),
                 const SizedBox(height: 8.0),
-                Container(
+                SizedBox(
                   height: 50,
                   width: MediaQuery.of(context).size.width,
                   child: Card(
@@ -41,7 +41,7 @@ void modalPictureRegister({ required BuildContext ctx, VoidCallback? onPressedCh
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   height: 50,
                   width: MediaQuery.of(context).size.width,
                   child: Card(

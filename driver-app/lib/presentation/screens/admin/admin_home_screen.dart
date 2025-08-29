@@ -14,6 +14,8 @@ import 'package:ktc_logistics_driver/presentation/screens/profile/edit_profile_s
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class AdminHomeScreen extends StatelessWidget {
+  const AdminHomeScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {

@@ -8,7 +8,7 @@ class GeneralState {
   final bool isNewPassword;
   final bool isRepeatpassword;
 
-  GeneralState({
+  const GeneralState({
     this.selectedIndex = 0,
     this.isShowPassword = true,
     this.isNewPassword = true,

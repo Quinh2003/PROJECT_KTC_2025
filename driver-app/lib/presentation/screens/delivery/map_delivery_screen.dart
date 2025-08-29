@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import 'package:ktc_logistics_driver/domain/models/response/orders_by_status_response.dart';
+import 'package:ktc_logistics_driver/domain/models/order/orders_by_status_response.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 import 'package:ktc_logistics_driver/presentation/screens/delivery/delivery_home_screen.dart';
@@ -15,7 +15,7 @@ class MapDeliveryScreen extends StatefulWidget {
 
   final OrdersResponse order;
 
-  const MapDeliveryScreen({required this.order});
+  const MapDeliveryScreen({super.key, required this.order});
   
   @override
   _MapDeliveryScreenState createState() => _MapDeliveryScreenState();
@@ -160,7 +160,7 @@ class _InformationBottom extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
-                    image: NetworkImage('${order.clientImage}')
+                    image: NetworkImage(order.clientImage)
                   )
                 ), 
               ),
@@ -305,7 +305,7 @@ class _BtnGoogleMap extends StatelessWidget {
           maxRadius: 25,
           child: InkWell(
             onTap: () async => await urlLauncherFrave.openMapLaunch(order.latitude, order.longitude),
-            child: Image.asset('assets/google-map.png', height: 30)
+            child: Image.asset('assets/map.png', height: 30)
           )
         ),
       );

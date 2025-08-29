@@ -5,9 +5,9 @@ import 'dart:convert';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ktc_logistics_driver/data/env/environment.dart';
-import 'package:ktc_logistics_driver/domain/models/notification_model.dart';
-import 'package:ktc_logistics_driver/domain/models/order_model.dart';
-import 'package:ktc_logistics_driver/domain/models/driver_status_model.dart';
+import 'package:ktc_logistics_driver/domain/models/common/notification_model.dart';
+import 'package:ktc_logistics_driver/domain/models/order/order_model.dart';
+import 'package:ktc_logistics_driver/domain/models/delivery/driver_status_model.dart';
 
 class SocketService {
   // Instance của Socket.IO client

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:ktc_logistics_driver/domain/models/response/orders_by_status_response.dart';
+import 'package:ktc_logistics_driver/domain/models/order/orders_by_status_response.dart';
 import 'package:ktc_logistics_driver/services/delivery_services.dart';
 import 'package:ktc_logistics_driver/presentation/components/card_orders_delivery.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
@@ -10,6 +10,8 @@ import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 
 class OrderDeliveredScreen extends StatelessWidget {
+  const OrderDeliveredScreen({super.key});
+
 
   @override
   Widget build(BuildContext context){
@@ -60,7 +62,7 @@ class _ListOrdersForDelivery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ( listOrdersDelivery.length != 0 ) 
+    return ( listOrdersDelivery.isNotEmpty ) 
       ? ListView.builder(
           itemCount: listOrdersDelivery.length,
           itemBuilder: (_, i) => 

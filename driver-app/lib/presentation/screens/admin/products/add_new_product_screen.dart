@@ -10,6 +10,8 @@ import 'package:ktc_logistics_driver/presentation/screens/admin/admin_home_scree
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class AddNewProductScreen extends StatefulWidget {
+  const AddNewProductScreen({super.key});
+
 
   @override
   _AddNewProductScreenState createState() => _AddNewProductScreenState();
@@ -104,7 +106,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
               FormFieldFrave(
                 controller: _nameController,
                 hintText: 'Product',
-                validator: RequiredValidator(errorText: 'Name is required'),
+                validator: RequiredValidator(errorText: 'Name is required').call,
               ),
               const SizedBox(height: 20.0),
               const TextCustom(text: 'Product description'),
@@ -112,7 +114,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
               FormFieldFrave(
                 controller: _descriptionController,
                 maxLine: 5,
-                validator: RequiredValidator(errorText: 'Description is required'),
+                validator: RequiredValidator(errorText: 'Description is required').call,
               ),
               const SizedBox(height: 20.0),
               const TextCustom(text: 'Price'),
@@ -121,7 +123,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 controller: _priceController,
                 hintText: '\$ 0.00',
                 keyboardType: TextInputType.number,
-                validator: RequiredValidator(errorText: 'Price is required'),
+                validator: RequiredValidator(errorText: 'Price is required').call,
               ),
               const SizedBox(height: 20.0),
               const TextCustom(text: 'Pictures'),
@@ -129,9 +131,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
               InkWell(
                 onTap: () async {
     
-                  final ImagePicker _picker = ImagePicker();
+                  final ImagePicker picker = ImagePicker();
     
-                  final List<XFile>? images = await _picker.pickMultiImage();
+                  final List<XFile> images = await picker.pickMultiImage();
     
                   if(images != null)  productBloc.add(OnSelectMultipleImagesEvent(images));
     

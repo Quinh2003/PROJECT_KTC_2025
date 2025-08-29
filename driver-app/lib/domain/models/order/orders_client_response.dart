@@ -59,8 +59,8 @@ class OrdersClient {
   factory OrdersClient.fromJson(Map<String, dynamic> json) => OrdersClient(
     id: json["id"],
     clientId: json["client_id"],
-    deliveryId: json["delivery_id"] == null ? 0 : json["delivery_id"],
-    delivery: json["delivery"] == null ? '' : json["delivery"],
+    deliveryId: json["delivery_id"] ?? 0,
+    delivery: json["delivery"] ?? '',
     deliveryPhone: json["deliveryPhone"] == '' ? null : json["deliveryPhone"],
     imageDelivery: json["imageDelivery"] == '' ? null : json["imageDelivery"],
     addressId: json["address_id"],

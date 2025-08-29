@@ -10,7 +10,7 @@ class UserState {
   
   final User? user;
 
-  UserState({
+  const UserState({
     this.uidAddress = 0,
     this.addressName = '',
     this.pictureProfilePath = '',

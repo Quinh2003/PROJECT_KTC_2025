@@ -4,9 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:ktc_logistics_driver/data/env/environment.dart';
 import 'package:ktc_logistics_driver/data/local_secure/secure_storage.dart';
-import 'package:ktc_logistics_driver/domain/models/response/images_products_response.dart';
-import 'package:ktc_logistics_driver/domain/models/response/products_top_home_response.dart';
-import 'package:ktc_logistics_driver/domain/models/response/response_default.dart';
+import 'package:ktc_logistics_driver/domain/models/product/images_products_response.dart';
+import 'package:ktc_logistics_driver/domain/models/product/products_top_home_response.dart';
+import 'package:ktc_logistics_driver/domain/models/common/response_default.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/de_bouncer.dart';
 
 
@@ -82,7 +82,7 @@ class ProductsServices {
 
       final listProduct =  ProductsTopHomeResponse.fromJson( jsonDecode( response.body) ).productsdb;
 
-      this._streamController.add(listProduct);
+      _streamController.add(listProduct);
 
     };
     final timer = Timer(Duration(milliseconds: 200), () => debouncer.value = productName);

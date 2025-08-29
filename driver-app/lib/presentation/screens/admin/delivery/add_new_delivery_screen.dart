@@ -10,6 +10,8 @@ import 'package:ktc_logistics_driver/presentation/screens/admin/admin_home_scree
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class AddNewDeliveryScreen extends StatefulWidget {
+  const AddNewDeliveryScreen({super.key});
+
 
   @override
   _AddNewDeliveryScreenState createState() => _AddNewDeliveryScreenState();
@@ -125,7 +127,7 @@ class _AddNewDeliveryScreenState extends State<AddNewDeliveryScreen> {
               FormFieldFrave(
                 hintText: 'name',
                 controller: _nameController,
-                validator: RequiredValidator(errorText: 'Name is required'),
+                validator: RequiredValidator(errorText: 'Name is required').call,
               ),
               const SizedBox(height: 20.0),
               const TextCustom(text: 'Lastname'),
@@ -133,7 +135,7 @@ class _AddNewDeliveryScreenState extends State<AddNewDeliveryScreen> {
               FormFieldFrave(
                 controller: _lastnameController,
                 hintText: 'lastname',
-                validator: RequiredValidator(errorText: 'Lastname is required'),
+                validator: RequiredValidator(errorText: 'Lastname is required').call,
               ),
               const SizedBox(height: 20.0),
               const TextCustom(text: 'Phone'),
@@ -142,7 +144,7 @@ class _AddNewDeliveryScreenState extends State<AddNewDeliveryScreen> {
                 controller: _phoneController,
                 hintText: '---.---.---',
                 keyboardType: TextInputType.number,
-                validator: RequiredValidator(errorText: 'Lastname is required'),
+                validator: RequiredValidator(errorText: 'Lastname is required').call,
               ),
               const SizedBox(height: 15.0),
               const TextCustom(text: 'Email'),
@@ -151,7 +153,7 @@ class _AddNewDeliveryScreenState extends State<AddNewDeliveryScreen> {
                 controller: _emailController,
                 hintText: 'email@frave.com',
                 keyboardType: TextInputType.emailAddress,
-                validator: validatedEmail
+                validator: validatedEmail.call
               ),
               const SizedBox(height: 15.0),
               const TextCustom(text: 'Password'),
@@ -160,7 +162,7 @@ class _AddNewDeliveryScreenState extends State<AddNewDeliveryScreen> {
                 controller: _passwordController,
                 hintText: '********',
                 isPassword: true,
-                validator: passwordValidator,
+                validator: passwordValidator.call,
               ),
             ],
           ),

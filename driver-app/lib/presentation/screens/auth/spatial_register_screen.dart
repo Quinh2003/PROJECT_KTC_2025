@@ -10,7 +10,7 @@ import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_login_scr
 import 'package:flutter_animate/flutter_animate.dart';
 
 class SpatialRegisterScreen extends StatefulWidget {
-  const SpatialRegisterScreen({Key? key}) : super(key: key);
+  const SpatialRegisterScreen({super.key});
 
   @override
   State<SpatialRegisterScreen> createState() => _SpatialRegisterScreenState();
@@ -51,8 +51,8 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
     final PermissionStatus status = await Permission.storage.request();
     
     if (status == PermissionStatus.granted) {
-      final ImagePicker _picker = ImagePicker();
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
       
       if (image != null) {
         setState(() {
@@ -63,8 +63,8 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Cần cấp quyền'),
-          content: const Text('Ứng dụng cần quyền truy cập bộ nhớ để chọn ảnh. Vui lòng cấp quyền trong cài đặt.'),
+          title: const Text('Permission Required'),
+          content: const Text('The app needs storage access permission to select an image. Please grant permission in settings.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -81,7 +81,7 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
       if (_image == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Vui lòng chọn ảnh đại diện'),
+            content: const Text('Please select a profile picture'),
             backgroundColor: SpatialTheme.error,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -169,7 +169,7 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
         const SizedBox(height: SpatialTheme.spaceLG),
         
         Text(
-          'Tạo tài khoản mới',
+          'Create New Account',
           style: SpatialTheme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w600,
             color: Colors.white,
@@ -177,9 +177,9 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
         ),
         const SizedBox(height: SpatialTheme.spaceSM),
         Text(
-          'Đăng ký để trở thành tài xế KTC Logistics',
+          'Register to become a KTC Logistics driver',
           style: SpatialTheme.textTheme.bodyMedium?.copyWith(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
           ),
           textAlign: TextAlign.center,
         ),
@@ -188,8 +188,30 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
   }
 
   Widget _buildRegisterForm() {
-    return SpatialComponents.glassContainer(
-      useDarkMode: true,
+    return Container(
+      padding: const EdgeInsets.all(SpatialTheme.spaceMD),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF2A2D3E).withValues(alpha: 0.75),
+            Color(0xFF1F2133).withValues(alpha: 0.9),
+          ],
+        ),
+        borderRadius: SpatialTheme.borderRadiusMedium,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.15),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
       child: Form(
         key: _formKey,
         child: Column(
@@ -205,9 +227,9 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
                       height: 120,
                       width: 120,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withOpacity(0.2)),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                         boxShadow: SpatialTheme.spatialShadow,
                         image: _image != null
                             ? DecorationImage(
@@ -220,7 +242,7 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
                           ? Icon(
                               FontAwesomeIcons.userAlt,
                               size: 40,
-                              color: Colors.white.withOpacity(0.5),
+                              color: Colors.white.withValues(alpha: 0.5),
                             )
                           : null,
                     ),
@@ -292,8 +314,8 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
                 
             // Phone
             SpatialComponents.spatialTextField(
-              label: 'Số điện thoại',
-              hint: 'Nhập số điện thoại của bạn',
+              label: 'Phone Number',
+              hint: 'Enter your phone number',
               controller: _phoneController,
               prefixIcon: FontAwesomeIcons.phone,
               keyboardType: TextInputType.phone,
@@ -301,10 +323,10 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
               useDarkMode: true,
               validator: (value) {
                 if (value?.isEmpty ?? true) {
-                  return 'Vui lòng nhập số điện thoại';
+                  return 'Please enter your phone number';
                 }
                 if (!RegExp(r'^\d{10,11}$').hasMatch(value!)) {
-                  return 'Số điện thoại không hợp lệ';
+                  return 'Invalid phone number';
                 }
                 return null;
               },
@@ -315,7 +337,7 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
             // Email
             SpatialComponents.spatialTextField(
               label: 'Email',
-              hint: 'Nhập email của bạn',
+              hint: 'Enter your email',
               controller: _emailController,
               prefixIcon: FontAwesomeIcons.envelope,
               keyboardType: TextInputType.emailAddress,
@@ -323,10 +345,10 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
               useDarkMode: true,
               validator: (value) {
                 if (value?.isEmpty ?? true) {
-                  return 'Vui lòng nhập email';
+                  return 'Please enter your email';
                 }
                 if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
-                  return 'Email không hợp lệ';
+                  return 'Invalid email format';
                 }
                 return null;
               },
@@ -336,8 +358,8 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
                 
             // Password
             SpatialComponents.spatialTextField(
-              label: 'Mật khẩu',
-              hint: 'Nhập mật khẩu của bạn',
+              label: 'Password',
+              hint: 'Enter your password',
               controller: _passwordController,
               prefixIcon: FontAwesomeIcons.lock,
               obscureText: _obscurePassword,
@@ -348,7 +370,7 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
                   _obscurePassword 
                     ? FontAwesomeIcons.eyeSlash 
                     : FontAwesomeIcons.eye,
-                  color: Colors.white.withOpacity(0.5),
+                  color: Colors.white.withValues(alpha: 0.5),
                   size: 16,
                 ),
                 onPressed: () {
@@ -373,11 +395,25 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
             // Register Button
             SizedBox(
               width: double.infinity,
-              child: SpatialComponents.gradientButton(
-                text: 'Đăng ký',
-                onPressed: _handleRegister,
-                loading: isLoading,
-                icon: FontAwesomeIcons.userPlus,
+              child: ElevatedButton.icon(
+                icon: Icon(FontAwesomeIcons.userPlus, size: 16),
+                label: Text(
+                  isLoading ? 'Registering...' : 'Register',
+                  style: SpatialTheme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                onPressed: isLoading ? null : _handleRegister,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black87,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: SpatialTheme.borderRadiusMedium,
+                  ),
+                  elevation: 0,
+                ),
               ),
             ),
           ],
@@ -391,19 +427,25 @@ class _SpatialRegisterScreenState extends State<SpatialRegisterScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Đã có tài khoản? ',
+          'Already have an account? ',
           style: SpatialTheme.textTheme.bodyMedium?.copyWith(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
           ),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const SpatialLoginScreen()),
           ),
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
           child: Text(
-            'Đăng nhập',
+            'Login',
             style: TextStyle(
-              color: SpatialTheme.primaryCyan,
+              color: Colors.white,
               fontWeight: FontWeight.w600,
             ),
           ),

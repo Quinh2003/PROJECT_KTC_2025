@@ -9,7 +9,7 @@ class CartState {
   final int quantity;
   final int quantityCart;
 
-  CartState({
+  const CartState({
     this.products,
     this.total = 0.00, 
     this.amount = 0,

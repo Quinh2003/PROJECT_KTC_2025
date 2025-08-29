@@ -6,9 +6,9 @@ class BounceInDownFrave extends StatefulWidget {
   final Widget child;
 
   const BounceInDownFrave({
-    Key? key, 
+    super.key, 
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   _BounceInDownFraveState createState() => _BounceInDownFraveState();

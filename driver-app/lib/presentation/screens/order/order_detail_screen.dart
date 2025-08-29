@@ -3,31 +3,54 @@ import 'package:timeline_tile/timeline_tile.dart';
 import 'dart:ui';
 
 import '../../design/spatial_ui.dart';
+import '../../components/spatial_button.dart';
+import '../../components/spatial_glass_card.dart';
+import '../../components/spatial_text_field.dart';
+import '../../helpers/url_lancher_frave.dart';
+import '../../../services/googlemaps_service.dart';
+
+// Tab chứa dữ liệu cấu hình
+class OrderTab {
+  final String text;
+  final Widget Function() contentBuilder;
+
+  OrderTab({required this.text, required this.contentBuilder});
+}
 
 class OrderDetailScreen extends StatefulWidget {
   final String orderId;
-  
+
   const OrderDetailScreen({
-    Key? key,
+    super.key,
     required this.orderId,
-  }) : super(key: key);
+  });
 
   @override
   State<OrderDetailScreen> createState() => _OrderDetailScreenState();
 }
 
-class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTickerProviderStateMixin {
+class _OrderDetailScreenState extends State<OrderDetailScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+  late List<OrderTab> _tabs;
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+
+    // Khởi tạo danh sách tab một lần duy nhất
+    _tabs = [
+      OrderTab(text: "Overview", contentBuilder: _buildOverviewTab),
+      OrderTab(text: "Items", contentBuilder: _buildItemsTab),
+      OrderTab(text: "Timeline", contentBuilder: _buildTimelineTab),
+    ];
+
+    _tabController = TabController(length: _tabs.length, vsync: this);
     _tabController.addListener(() {
       setState(() {});
     });
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -37,7 +60,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       backgroundColor: isDark
           ? SpatialDesignSystem.darkBackgroundColor
@@ -64,12 +87,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.help_outline),
+            icon: const Icon(Icons.phone),
             color: isDark
                 ? SpatialDesignSystem.textDarkPrimaryColor
                 : SpatialDesignSystem.textPrimaryColor,
             onPressed: () {
-              // Show help
+              _callCustomer();
             },
           ),
         ],
@@ -81,41 +104,55 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
             padding: const EdgeInsets.all(16.0),
             child: _buildStatusCard(),
           ),
-          
+
           // Tab Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: GlassCard(
-              padding: const EdgeInsets.all(8),
-              borderRadius: SpatialDesignSystem.borderRadiusMedium,
-              child: TabBar(
-                controller: _tabController,
-                indicator: BoxDecoration(
-                  borderRadius: SpatialDesignSystem.borderRadiusMedium,
+            child: TabBar(
+              controller: _tabController,
+              indicator: UnderlineTabIndicator(
+                borderSide: BorderSide(
+                  width: 3.0,
                   color: SpatialDesignSystem.primaryColor,
                 ),
-                labelColor: Colors.white,
-                unselectedLabelColor: isDark
-                    ? SpatialDesignSystem.textDarkSecondaryColor
-                    : SpatialDesignSystem.textSecondaryColor,
-                tabs: const [
-                  Tab(text: "Details"),
-                  Tab(text: "Route"),
-                  Tab(text: "Timeline"),
-                ],
+                insets: const EdgeInsets.symmetric(horizontal: 16.0),
               ),
+              // Cải thiện style cho text
+              labelStyle: SpatialDesignSystem.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              // Thêm padding bên ngoài để điều chỉnh chiều cao của toàn bộ TabBar
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              labelColor: SpatialDesignSystem.primaryColor,
+              unselectedLabelColor: isDark
+                  ? SpatialDesignSystem.textDarkSecondaryColor
+                  : SpatialDesignSystem.textSecondaryColor,
+              isScrollable: false,
+              // Sử dụng tab tùy chỉnh với padding bên trong thay vì chỉ dùng text
+              tabs: _tabs
+                  .map((tab) => Tab(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          // Đảm bảo tab có chiều rộng tối thiểu để tránh quá sát với viền
+                          width: MediaQuery.of(context).size.width / 3.5,
+                          alignment: Alignment.center,
+                          child: Text(
+                            tab.text,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ))
+                  .toList(),
             ),
           ),
-          
+
           // Tab Content
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildDetailsTab(),
-                _buildRouteTab(),
-                _buildTimelineTab(),
-              ],
+              children: _tabs.map((tab) => tab.contentBuilder()).toList(),
             ),
           ),
         ],
@@ -123,10 +160,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       bottomNavigationBar: _buildBottomBar(),
     );
   }
-  
+
   Widget _buildStatusCard() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return GlassCard(
       padding: const EdgeInsets.all(20),
       gradient: LinearGradient(
@@ -165,12 +202,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: SpatialDesignSystem.warningColor.withValues(alpha: 0.1),
+                  color:
+                      SpatialDesignSystem.warningColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: SpatialDesignSystem.warningColor.withValues(alpha: 0.3),
+                    color:
+                        SpatialDesignSystem.warningColor.withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),
@@ -190,7 +230,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
             backgroundColor: isDark
                 ? Colors.white.withValues(alpha: 0.1)
                 : Colors.black.withValues(alpha: 0.05),
-            valueColor: AlwaysStoppedAnimation<Color>(SpatialDesignSystem.primaryColor),
+            valueColor:
+                AlwaysStoppedAnimation<Color>(SpatialDesignSystem.primaryColor),
             borderRadius: BorderRadius.circular(10),
           ),
           const SizedBox(height: 10),
@@ -218,10 +259,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ),
     );
   }
-  
-  Widget _buildDetailsTab() {
+
+  Widget _buildOverviewTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -262,9 +303,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Delivery Info
           GlassCard(
             padding: const EdgeInsets.all(16),
@@ -300,24 +341,30 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
-          // Order Details
+
+          // Order Information
           GlassCard(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Order Details",
+                  "Order Information",
                   style: SpatialDesignSystem.subtitleMedium.copyWith(
                     color: isDark
                         ? SpatialDesignSystem.textDarkPrimaryColor
                         : SpatialDesignSystem.textPrimaryColor,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const Divider(),
+                _buildInfoRow(
+                  Icons.receipt_long_outlined,
+                  "Order Date",
+                  "August 14, 2025 | 09:15 AM",
+                ),
+                const Divider(),
                 _buildInfoRow(
                   Icons.inventory_2_outlined,
                   "Package Type",
@@ -335,12 +382,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                   "Payment Method",
                   "Credit Card (Paid)",
                 ),
-                const Divider(),
-                _buildInfoRow(
-                  Icons.receipt_long_outlined,
-                  "Order Date",
-                  "August 14, 2025 | 09:15 AM",
-                ),
               ],
             ),
           ),
@@ -348,10 +389,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ),
     );
   }
-  
+
   Widget _buildInfoRow(IconData icon, String label, String value) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -391,61 +432,23 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ),
     );
   }
-  
-  Widget _buildRouteTab() {
+
+  Widget _buildItemsTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Map Preview
-          GlassCard(
-            padding: const EdgeInsets.all(0),
-            child: ClipRRect(
-              borderRadius: SpatialDesignSystem.borderRadiusLarge,
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Stack(
-                  children: [
-                    Image.asset(
-                      "assets/google-map.png",
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
-                    Positioned(
-                      bottom: 16,
-                      right: 16,
-                      child: SpatialButton(
-                        text: "Navigate",
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/route-map',
-                            arguments: 'RT-2025-08-14-01',
-                          );
-                        },
-                        iconData: Icons.navigation,
-                        isGlass: true,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Route Details
+          // Order Items
           GlassCard(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Route Details",
+                  "Order Items",
                   style: SpatialDesignSystem.subtitleMedium.copyWith(
                     color: isDark
                         ? SpatialDesignSystem.textDarkPrimaryColor
@@ -453,43 +456,46 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildInfoRow(
-                  Icons.route,
-                  "Route ID",
-                  "RT-2025-08-14-01",
+
+                // Item 1
+                _buildOrderItem(
+                  "Product A",
+                  "2 items",
+                  "120,000 VND",
+                  "https://via.placeholder.com/60",
                 ),
                 const Divider(),
-                _buildInfoRow(
-                  Icons.timelapse,
-                  "Estimated Travel Time",
-                  "25 minutes",
+
+                // Item 2
+                _buildOrderItem(
+                  "Product B",
+                  "1 item",
+                  "85,000 VND",
+                  "https://via.placeholder.com/60",
                 ),
                 const Divider(),
-                _buildInfoRow(
-                  Icons.straighten,
-                  "Distance",
-                  "5.7 km",
-                ),
-                const Divider(),
-                _buildInfoRow(
-                  Icons.trending_up,
-                  "Traffic Condition",
-                  "Moderate",
+
+                // Item 3
+                _buildOrderItem(
+                  "Product C",
+                  "3 items",
+                  "150,000 VND",
+                  "https://via.placeholder.com/60",
                 ),
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
-          // Delivery Instructions
+
+          // Order Summary
           GlassCard(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Delivery Instructions",
+                  "Order Summary",
                   style: SpatialDesignSystem.subtitleMedium.copyWith(
                     color: isDark
                         ? SpatialDesignSystem.textDarkPrimaryColor
@@ -497,35 +503,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                   ),
                 ),
                 const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.05)
-                        : Colors.black.withValues(alpha: 0.02),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.1)
-                          : Colors.black.withValues(alpha: 0.05),
-                    ),
-                  ),
-                  child: Text(
-                    "1. Navigate to the address\n"
-                    "2. Call the customer upon arrival\n"
-                    "3. Ring doorbell twice\n"
-                    "4. Verify customer ID\n"
-                    "5. Take photo of delivery\n"
-                    "6. Get customer signature\n"
-                    "7. Mark as delivered",
-                    style: SpatialDesignSystem.bodyMedium.copyWith(
-                      color: isDark
-                          ? SpatialDesignSystem.textDarkPrimaryColor
-                          : SpatialDesignSystem.textPrimaryColor,
-                      height: 1.5,
-                    ),
-                  ),
-                ),
+                _buildSummaryRow("Subtotal", "355,000 VND"),
+                const Divider(),
+                _buildSummaryRow("Delivery Fee", "20,000 VND"),
+                const Divider(),
+                _buildSummaryRow("Discount", "-10,000 VND"),
+                const Divider(thickness: 1.5),
+                _buildSummaryRow("Total", "365,000 VND", isTotal: true),
               ],
             ),
           ),
@@ -533,10 +517,115 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ),
     );
   }
-  
+
+  Widget _buildOrderItem(
+      String name, String quantity, String price, String imageUrl) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.3)
+                  : Colors.grey.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.inventory_2_outlined,
+                color: SpatialDesignSystem.primaryColor,
+                size: 30,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: SpatialDesignSystem.bodyMedium.copyWith(
+                    color: isDark
+                        ? SpatialDesignSystem.textDarkPrimaryColor
+                        : SpatialDesignSystem.textPrimaryColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  quantity,
+                  style: SpatialDesignSystem.captionText.copyWith(
+                    color: isDark
+                        ? SpatialDesignSystem.textDarkSecondaryColor
+                        : SpatialDesignSystem.textSecondaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            price,
+            style: SpatialDesignSystem.bodyMedium.copyWith(
+              color: isDark
+                  ? SpatialDesignSystem.textDarkPrimaryColor
+                  : SpatialDesignSystem.textPrimaryColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow(String label, String value, {bool isTotal = false}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: isTotal
+                ? SpatialDesignSystem.subtitleSmall.copyWith(
+                    color: isDark
+                        ? SpatialDesignSystem.textDarkPrimaryColor
+                        : SpatialDesignSystem.textPrimaryColor,
+                  )
+                : SpatialDesignSystem.bodyMedium.copyWith(
+                    color: isDark
+                        ? SpatialDesignSystem.textDarkSecondaryColor
+                        : SpatialDesignSystem.textSecondaryColor,
+                  ),
+          ),
+          Text(
+            value,
+            style: isTotal
+                ? SpatialDesignSystem.subtitleSmall.copyWith(
+                    color: SpatialDesignSystem.primaryColor,
+                    fontWeight: FontWeight.w600,
+                  )
+                : SpatialDesignSystem.bodyMedium.copyWith(
+                    color: isDark
+                        ? SpatialDesignSystem.textDarkPrimaryColor
+                        : SpatialDesignSystem.textPrimaryColor,
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTimelineTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -590,9 +679,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
             ],
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Delivery Notes
         GlassCard(
           padding: const EdgeInsets.all(16),
@@ -633,7 +722,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ],
     );
   }
-  
+
   Widget _buildTimelineTile(
     String title,
     String time,
@@ -643,7 +732,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
     bool isLast = false,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return TimelineTile(
       alignment: TimelineAlign.start,
       isFirst: isFirst,
@@ -719,8 +808,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
               description,
               style: SpatialDesignSystem.bodySmall.copyWith(
                 color: isDark
-                    ? SpatialDesignSystem.textDarkSecondaryColor.withValues(alpha: 0.8)
-                    : SpatialDesignSystem.textSecondaryColor.withValues(alpha: 0.8),
+                    ? SpatialDesignSystem.textDarkSecondaryColor
+                        .withValues(alpha: 0.8)
+                    : SpatialDesignSystem.textSecondaryColor
+                        .withValues(alpha: 0.8),
               ),
             ),
           ],
@@ -728,42 +819,212 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ),
     );
   }
-  
+
+  // Flag to track if order is accepted
+  bool _isOrderAccepted = false;
+
+  // Navigate to map screen
+  void _navigateToRouteMap() async {
+    try {
+      // Show loading indicator
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white)),
+              SizedBox(width: 16),
+              Text('Preparing navigation route...'),
+            ],
+          ),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      final mapsService = GoogleMapsService();
+
+      // Get route data for Google Maps
+      final routeData = await mapsService.getDummyRouteData();
+
+      // Open Google Maps with route
+      final result = await mapsService.openGoogleMapsWithRoute(
+        context: context,
+        pickupLocation: routeData['pickupLocation'],
+        transitPoints: routeData['transitPoints'],
+        deliveryLocation: routeData['deliveryLocation'],
+      );
+
+      if (!result && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Failed to open Google Maps. Please make sure it is installed.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        print("Error opening navigation: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error opening navigation: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   Widget _buildBottomBar() {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(
-              child: SpatialButton(
-                text: "Call Customer",
-                onPressed: () {
-                  // Call customer logic
-                },
-                iconData: Icons.phone,
-                isOutlined: true,
+        child: screenWidth < 400
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Navigation button (shows only when order is accepted)
+                  if (_isOrderAccepted)
+                    SpatialButton(
+                      text: "Navigation",
+                      textColor: SpatialDesignSystem.primaryColor,
+                      onPressed: _navigateToRouteMap,
+                      iconData: Icons.map,
+                      isGlass: true,
+                      // isGradient: true,
+                      // gradient: LinearGradient(
+                      //   colors: [
+                      //     SpatialDesignSystem.primaryColor,
+                      //     SpatialDesignSystem.accentColor,
+                      //   ],
+                      //   begin: Alignment.topLeft,
+                      //   end: Alignment.bottomRight,
+                      // ),
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                    ),
+                  if (_isOrderAccepted) const SizedBox(height: 10),
+
+                  // Accept or Delivered button (based on state)
+                  _isOrderAccepted
+                      ? SpatialButton(
+                          text: "Done",
+                          onPressed: () {
+                            // Mark as delivered logic
+                            _showDeliveryConfirmationDialog();
+                          },
+                          iconData: Icons.check_circle,
+                          // isOutlined: true,
+                          backgroundColor: SpatialDesignSystem.primaryColor,
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                        )
+                      : SpatialButton(
+                          text: "Accept Order",
+                          onPressed: () {
+                            // Accept order and show navigation option
+                            setState(() {
+                              _isOrderAccepted = true;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    "Order accepted! You can now navigate to the delivery location."),
+                                backgroundColor:
+                                    SpatialDesignSystem.primaryColor,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          },
+                          iconData: Icons.delivery_dining,
+                          backgroundColor: SpatialDesignSystem.primaryColor,
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                        ),
+                ],
+              )
+            // For wider screens, use a Row layout with smaller padding
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Navigation button (shows only when order is accepted)
+                  if (_isOrderAccepted)
+                    SpatialButton(
+                      text: "Navigation",
+                      onPressed: _navigateToRouteMap,
+                      iconData: Icons.directions,
+                      isGlass: true,
+                      backgroundColor: Colors.white,
+                      textColor: SpatialDesignSystem.primaryColor,
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                    ),
+                  if (_isOrderAccepted) const SizedBox(height: 10),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _isOrderAccepted
+                            ? SpatialButton(
+                                text: "Done",
+                                onPressed: () {
+                                  // Mark as delivered logic
+                                  _showDeliveryConfirmationDialog();
+                                },
+                                iconData: Icons.check_circle,
+                                backgroundColor: SpatialDesignSystem.primaryColor,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 12),
+                              )
+                            : SpatialButton(
+                                text: "Accept Order",
+                                onPressed: () {
+                                  // Accept order and show navigation option
+                                  setState(() {
+                                    _isOrderAccepted = true;
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          "Order accepted! You can now navigate to the delivery location."),
+                                      backgroundColor:
+                                          SpatialDesignSystem.primaryColor,
+                                      duration: Duration(seconds: 3),
+                                    ),
+                                  );
+                                },
+                                iconData: Icons.delivery_dining,
+                                isGradient: true,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    SpatialDesignSystem.primaryColor,
+                                    SpatialDesignSystem.accentColor,
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 12),
+                              ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: SpatialButton(
-                text: "Mark as Delivered",
-                onPressed: () {
-                  // Mark as delivered logic
-                  _showDeliveryConfirmationDialog();
-                },
-                iconData: Icons.check_circle,
-                isGradient: true,
-                gradient: SpatialDesignSystem.successGradient,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
-  
+
   void _showDeliveryConfirmationDialog() {
     showDialog(
       context: context,
@@ -817,5 +1078,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
         ),
       ),
     );
+  }
+
+  void _callCustomer() {
+    // Extract the phone number from the order details
+    // In a real app, this would come from the order data model
+    // For now, we're using the hardcoded value from the UI
+    String phoneNumber = "+84 123 456 789";
+
+    // Remove spaces from the phone number
+    phoneNumber = phoneNumber.replaceAll(' ', '');
+
+    // Launch the phone dialer with the number
+    urlLauncherFrave.makePhoneCall('tel:$phoneNumber');
   }
 }

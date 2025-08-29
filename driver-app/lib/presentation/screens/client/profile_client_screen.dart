@@ -11,6 +11,8 @@ import 'package:ktc_logistics_driver/presentation/screens/profile/list_addresses
 
 
 class ProfileClientScreen extends StatelessWidget {
+  const ProfileClientScreen({super.key});
+
 
   @override
   Widget build(BuildContext context){

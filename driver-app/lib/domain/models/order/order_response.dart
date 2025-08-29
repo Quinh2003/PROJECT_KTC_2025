@@ -1,7 +1,7 @@
 // order_response.dart
 // Model response cho API danh sách đơn hàng
 
-import '../order_model.dart';
+import 'order_model.dart';
 
 class OrdersResponse {
   final bool success;      // Trạng thái thành công

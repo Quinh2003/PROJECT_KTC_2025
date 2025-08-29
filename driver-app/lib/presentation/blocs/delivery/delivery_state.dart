@@ -5,7 +5,7 @@ class DeliveryState {
   final String idDelivery;
   final String notificationTokenDelivery;
 
-  DeliveryState({
+  const DeliveryState({
     this.idDelivery = '0',
     this.notificationTokenDelivery = ''
   });

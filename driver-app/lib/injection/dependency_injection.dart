@@ -11,7 +11,7 @@ import '../data/env/environment.dart';
 // Services (theo mẫu project tham khảo)
 import '../services/api_service.dart';
 import '../services/socket_service.dart';
-import '../services/map_box_services.dart';
+import '../services/mapbox_services.dart';
 import '../services/push_notification_service.dart';
 import '../services/auth_services.dart';
 import '../services/user_services.dart';
@@ -59,11 +59,12 @@ Future<void> setupDependencyInjection() async {
 
   // Domain Services (sử dụng Firebase trực tiếp theo mẫu project tham khảo)
   getIt.registerLazySingleton<AuthServices>(
-    () => authServices,
+    () => AuthServices(secureStorage: getIt<FlutterSecureStorage>()),
   );
 
+  // Thay đổi cách đăng ký UserServices để tránh vòng lặp vô hạn
   getIt.registerLazySingleton<UserServices>(
-    () => userServices,
+    () => UserServices(),
   );
 
   print('✅ Dependency Injection setup completed');

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ktc_logistics_driver/data/env/environment.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import 'package:ktc_logistics_driver/domain/models/response/orders_client_response.dart';
+import 'package:ktc_logistics_driver/domain/models/order/orders_client_response.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
@@ -12,7 +12,7 @@ class ClientMapScreen extends StatefulWidget {
 
   final OrdersClient orderClient;
 
-  const ClientMapScreen({required this.orderClient});
+  const ClientMapScreen({super.key, required this.orderClient});
 
   @override
   _ClientMapScreenState createState() => _ClientMapScreenState();
@@ -97,7 +97,7 @@ class _InfoCardClient extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _env = Environment.getInstance();
+    final env = Environment.getInstance();
     
     return Container(
       padding: const EdgeInsets.all(10.0),
@@ -119,7 +119,7 @@ class _InfoCardClient extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
-                    image: NetworkImage('${_env.endpointBase}${orderClient.imageDelivery}')
+                    image: NetworkImage('${env.endpointBase}${orderClient.imageDelivery}')
                   )
                 ), 
               ),

@@ -4,9 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:ui';
 import 'package:ktc_logistics_driver/presentation/design/spatial_ui.dart';
 import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_login_screen.dart';
+import 'package:ktc_logistics_driver/presentation/design/spatial_background.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({super.key});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -83,20 +84,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF000000) : const Color(0xFFF2F2F7),
-      body: AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.black : const Color(0xFFF2F2F7),
-          image: DecorationImage(
-            image: AssetImage('assets/background-grid-spatial.png'),
-            fit: BoxFit.cover,
-            opacity: 0.05,
-            colorFilter: ColorFilter.mode(
-              currentColor.withOpacity(0.3), 
-              BlendMode.softLight
-            ),
-          ),
-        ),
+      body: SpatialBackground(
+        color: currentColor,
+        opacity: 0.05,
         child: SafeArea(
           child: Column(
             children: [
