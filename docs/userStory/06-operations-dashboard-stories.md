@@ -2,7 +2,7 @@
 
 ## ✅ US-OPS-KPI-01
 
-**As an operations manager**,  
+**As an Operations Manager**,  
 I want to see real-time KPIs,  
 So that tôi có thể đánh giá hiệu suất vận hành.  
 **Priority**: ⭐⭐⭐⭐⭐  
@@ -11,12 +11,14 @@ So that tôi có thể đánh giá hiệu suất vận hành.
 ### 📋 Acceptance Criteria
 
 - Tỷ lệ giao đúng, trễ, thời gian trung bình
+- Thống kê theo thời gian thực
+- Cảnh báo khi chỉ số vượt ngưỡng
 
 ---
 
 ## ✅ US-OPS-ANALYTICS-01
 
-**As an operations manager**,  
+**As an Operations Manager**,  
 I want to analyze route and driver performance,  
 So that tôi có thể tối ưu hoạt động vận chuyển.  
 **Priority**: ⭐⭐⭐⭐  
@@ -25,8 +27,40 @@ So that tôi có thể tối ưu hoạt động vận chuyển.
 ### 📋 Acceptance Criteria
 
 - Báo cáo theo tuyến, tài xế, thời gian, biểu đồ
+- So sánh hiệu suất giữa các tài xế
+- Phân tích hiệu quả từng tuyến đường
 
 ---
+
+## ✅ US-OPS-RESOURCE-01
+
+**As an Operations Manager**,  
+I want to manage resource allocation,  
+So that tôi có thể cân đối nguồn lực và tối ưu chi phí.  
+**Priority**: ⭐⭐⭐  
+**Story Points**: 5
+
+### 📋 Acceptance Criteria
+
+- Phân bổ lại tài xế dựa trên nhu cầu
+- Điều chỉnh kế hoạch theo mức độ ưu tiên
+- Cân đối tải cho các tài xế và phương tiện
+
+---
+
+## ✅ US-OPS-IMPROVEMENT-01
+
+**As an Operations Manager**,  
+I want to identify improvement opportunities,  
+So that tôi có thể nâng cao hiệu suất toàn hệ thống.  
+**Priority**: ⭐⭐  
+**Story Points**: 3
+
+### 📋 Acceptance Criteria
+
+- Phân tích điểm nghẽn trong quy trình
+- Đề xuất cải tiến dựa trên dữ liệu
+- So sánh trước và sau khi thực hiện thay đổi
 
 ## ✅ US-OPS-EXPORT-01
 
