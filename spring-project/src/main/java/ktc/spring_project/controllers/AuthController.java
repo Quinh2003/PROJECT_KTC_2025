@@ -41,6 +41,8 @@ public class AuthController {
     @Autowired
     private TotpService totpService;
 
+    
+
     /**
      * User login
      * US-AUTH-LOGIN-01
@@ -84,6 +86,8 @@ public ResponseEntity<Map<String, Object>> login(
             "otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=SHA1&digits=6&period=30",
             issuer, email, secret, issuer
         );
+        // Gửi secret TOTP về email cho user
+        userService.sendOtpEmail(email, secret);
     }
     Map<String, Object> response = new HashMap<>();
     response.put("user", createdUser);
@@ -269,13 +273,36 @@ public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
     @PostMapping("/totp/verify")
     public ResponseEntity<?> verifyTotp(@RequestBody Map<String, String> payload) {
         String email = payload.get("email");
-        int code = Integer.parseInt(payload.get("code"));
-        String secret = userService.getTotpSecret(email);
-        boolean valid = totpService.verifyCode(secret, code);
+        String codeStr = payload.get("code");
         Map<String, Object> response = new HashMap<>();
+        boolean valid = false;
+        boolean isClassicOtp = false;
+        // Kiểm tra classic OTP trong cache
+        ktc.spring_project.services.UserService.OtpEntry otpEntry = ktc.spring_project.services.UserService.otpCache.get(email);
+        if (otpEntry != null && otpEntry.otp.equals(codeStr)) {
+            if (System.currentTimeMillis() <= otpEntry.expireTime) {
+                valid = true;
+                isClassicOtp = true;
+                // Xóa OTP sau khi xác thực thành công
+                ktc.spring_project.services.UserService.otpCache.remove(email);
+            }
+        }
+        // Nếu không phải classic OTP, kiểm tra TOTP (app Authenticator)
+        if (!valid) {
+            try {
+                int code = Integer.parseInt(codeStr);
+                String secret = userService.getTotpSecret(email);
+                valid = totpService.verifyCode(secret, code);
+            } catch (Exception e) {
+                valid = false;
+            }
+        }
         response.put("valid", valid);
         if (valid) {
-            userService.enableTotp(email);
+            // Nếu là classic OTP thì không cần enableTotp
+            if (!isClassicOtp) {
+                userService.enableTotp(email);
+            }
             User user = userService.findByEmail(email);
             UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
             String token = authService.generateToken(userDetails);

@@ -274,14 +274,15 @@ public class AuthService {
 
     // Helper method to map User entity to DTO
     private Map<String, Object> mapUserToDto(User user) {
-        Map<String, Object> userDto = new HashMap<>();
-        userDto.put("id", user.getId());
-        userDto.put("username", user.getUsername());
-        userDto.put("email", user.getEmail());
-        userDto.put("fullName", user.getFullName());
-        userDto.put("role", user.getRole().getRoleName());
-        userDto.put("totpEnabled", user.getTotpEnabled());
-        return userDto;
+    Map<String, Object> userDto = new HashMap<>();
+    userDto.put("id", user.getId());
+    userDto.put("username", user.getUsername());
+    userDto.put("email", user.getEmail());
+    userDto.put("fullName", user.getFullName());
+    userDto.put("role", user.getRole() != null ? user.getRole().getRoleName() : null);
+    // Trả về đúng giá trị boolean của totpEnabled
+    userDto.put("totpEnabled", user.getTotpEnabled());
+    return userDto;
     }
 
     /**

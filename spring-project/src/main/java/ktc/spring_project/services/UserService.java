@@ -17,6 +17,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,17 @@ import org.springframework.util.ReflectionUtils;
 
 @Service
 public class UserService {
+    // Simple OTP cache: email -> OTP, expire in 5 minutes (demo, nên dùng Redis hoặc DB cho thực tế)
+    public static final java.util.concurrent.ConcurrentHashMap<String, OtpEntry> otpCache = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public static class OtpEntry {
+    public String otp;
+    public long expireTime;
+        OtpEntry(String otp, long expireTime) {
+            this.otp = otp;
+            this.expireTime = expireTime;
+        }
+    }
 
     @Autowired
     private UserJpaRepository userRepository;
@@ -40,6 +52,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     public User createUser(User user) {
         System.out.println("==> Đã vào createUser với email: " + user.getEmail());
@@ -90,6 +105,15 @@ public class UserService {
         
         return savedUser;
     }
+
+        // Hàm gửi email OTP/TOTP
+        public void sendOtpEmail(String toEmail, String otpOrSecret) {
+            org.springframework.mail.SimpleMailMessage message = new org.springframework.mail.SimpleMailMessage();
+            message.setTo(toEmail);
+            message.setSubject("Mã OTP xác thực đăng ký");
+            message.setText("Mã OTP/TOTP của bạn là: " + otpOrSecret + "\nBạn có thể nhập mã này vào ứng dụng Authenticator hoặc dùng để xác thực đăng nhập.");
+            mailSender.send(message);
+        }
 
     public User getUserById(Long id) {
         return userRepository.findById(id)
@@ -218,7 +242,15 @@ User user = getUserById(id);
             if (email == null || name == null || googleId == null) {
                 throw new RuntimeException("Missing required fields from Google API response");
             }
-Optional<User> existingUser = userRepository.findByEmail(email);
+        // Sinh mã OTP 6 số cho xác thực qua email
+        String otp = String.valueOf(100000 + (int)(Math.random() * 900000));
+        // Lưu OTP vào cache với email và thời hạn 5 phút
+        otpCache.put(email, new OtpEntry(otp, System.currentTimeMillis() + 5 * 60 * 1000));
+        String otpEmailContent = "Chào mừng bạn đăng nhập FastRoute!\n\n"
+            + "Mã OTP xác thực của bạn là: " + otp + "\n\n"
+            + "Vui lòng nhập mã này vào hệ thống để hoàn tất xác thực đăng nhập.";
+        sendOtpEmail(email, otpEmailContent);
+        Optional<User> existingUser = userRepository.findByEmail(email);
 
             Role customerRole = roleRepository.findByRoleName("CUSTOMER")
                 .orElseThrow(() -> new RuntimeException("Role CUSTOMER not found"));
@@ -243,8 +275,22 @@ Optional<User> existingUser = userRepository.findByEmail(email);
                 // Gán password mặc định cho user Google
                 String defaultPassword = passwordEncoder.encode("GOOGLE_LOGIN");
                 newUser.setPassword(defaultPassword);
+                // Đánh dấu chưa xác thực OTP
+                newUser.setTotpEnabled(false);
                 System.out.println("[GoogleLogin] Password before save: " + newUser.getPassword());
-                return userRepository.save(newUser);
+                User savedUser = userRepository.save(newUser);
+                // Sinh secret TOTP và gửi email mã OTP/TOTP cho user
+                String secret = getOrCreateTotpSecret(email);
+                // Tạo link QR cho app Authenticator
+                String qrUrl = new ktc.spring_project.services.TotpService().getQRBarcode(email, secret);
+                // Gửi email hướng dẫn cấu hình app Authenticator
+                String emailContent = "Chào mừng bạn đăng ký FastRoute!\n\n" +
+                    "Để kích hoạt bảo mật 2 lớp, hãy cấu hình ứng dụng Google Authenticator hoặc Microsoft Authenticator với thông tin sau:\n" +
+                    "- Secret: " + secret + "\n" +
+                    "- Hoặc quét mã QR: " + qrUrl + "\n\n" +
+                    "Sau khi cấu hình, hãy nhập mã OTP 6 số từ app vào hệ thống để hoàn tất xác thực.";
+                sendOtpEmail(email, emailContent);
+                return savedUser;
             }
 
         } catch (Exception e) {

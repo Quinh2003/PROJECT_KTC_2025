@@ -21,28 +21,36 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
     try {
+      // Đăng nhập Google bằng Firebase Auth
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      // Lấy access token Google đúng chuẩn từ credential
+      // Lấy accessToken Google để gửi lên backend
       const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential?.accessToken;
-      if (!token) {
+      const accessToken = credential?.accessToken;
+      console.log("Google accessToken:", accessToken);
+      if (!accessToken) {
         alert("Không lấy được access token từ Google!");
         return;
       }
-      // Gọi API backend để kiểm tra role
-      const res = await googleLoginApi(token);
+      // Gửi accessToken này lên backend để xác thực Google login và nhận OTP
+      const res = await googleLoginApi(accessToken);
       const data = await res.json();
-      console.log("Google login response:", data);
+  console.log("Google login response:", data);
+  console.log("totpEnabled type:", typeof data.user?.totpEnabled, "value:", data.user?.totpEnabled);
       if (data.user?.role?.toLowerCase() === "customer") {
-        alert("Đăng nhập Google thành công!\n" + user.email);
-        // Lưu token vào cookie
+        if (!data.user?.totpEnabled) {
+          // Nếu chưa xác thực OTP, hiển thị form nhập OTP
+          setPending2FA(true);
+          setPendingUser(data.user);
+          return;
+        }
+        // Nếu đã xác thực OTP, đăng nhập luôn
         setTokenCookie(data.token);
         setRefreshTokenCookie(data.refreshToken);
         if (onLogin) onLogin(data);
       } else {
         alert("This application is for customers only. Please use the employee application.");
-        }
+      }
     } catch (error) {
       alert("Đăng nhập Google thất bại!");
     }
