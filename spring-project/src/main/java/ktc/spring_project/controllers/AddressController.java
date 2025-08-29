@@ -2,25 +2,42 @@ package ktc.spring_project.controllers;
 
 import ktc.spring_project.entities.Address;
 import ktc.spring_project.services.AddressService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import ktc.spring_project.dtos.address.CreateAddressRequestDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/addresses")
 public class AddressController {
 
-    @Autowired
-    private AddressService addressService;
+    private final AddressService addressService;
 
     /**
      * Tạo mới address
      */
     @PostMapping
-    public ResponseEntity<Address> createAddress(@RequestBody Address address) {
+    public ResponseEntity<Address> createAddress(@Valid @RequestBody CreateAddressRequestDTO dto) {
+        // Mapping thủ công từ DTO sang entity Address
+        Address address = new Address();
+        address.setAddressType(dto.getAddressType());
+        address.setAddress(dto.getAddress());
+        address.setLatitude(dto.getLatitude());
+        address.setLongitude(dto.getLongitude());
+        address.setCity(dto.getCity());
+        address.setState(dto.getState());
+        address.setCountry(dto.getCountry());
+        address.setRegion(dto.getRegion());
+        address.setPostalCode(dto.getPostalCode());
+        address.setContactName(dto.getContactName());
+        address.setContactPhone(dto.getContactPhone());
+        address.setContactEmail(dto.getContactEmail());
+        address.setFloorNumber(dto.getFloorNumber());
         Address created = addressService.createAddress(address);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
@@ -47,7 +64,7 @@ public class AddressController {
      * Sửa address
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Address> updateAddress(@PathVariable Long id, @RequestBody Address address) {
+    public ResponseEntity<Address> updateAddress(@PathVariable Long id, @Valid @RequestBody Address address) {
         Address updated = addressService.updateAddress(id, address);
         return ResponseEntity.ok(updated);
     }
