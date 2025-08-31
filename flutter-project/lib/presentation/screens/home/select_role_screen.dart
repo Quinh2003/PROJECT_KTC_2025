@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/screens/admin/admin_home_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/client/client_home_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/delivery/delivery_home_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/dashboard/dashboard_screen_spatial.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class SelectRoleScreen extends StatelessWidget {
@@ -51,7 +51,7 @@ class SelectRoleScreen extends StatelessWidget {
                 text: 'Delivery',
                 color1: Color(0xff8956FF).withValues(alpha: .2),
                 color2: Colors.purpleAccent.withValues(alpha: .1),
-                onPressed: () => Navigator.pushAndRemoveUntil(context, routeFrave(page: DeliveryHomeScreen()), (route) => false),
+                onPressed: () => Navigator.pushAndRemoveUntil(context, routeFrave(page: DashboardScreenSpatial()), (route) => false),
               )
             ],
           ),

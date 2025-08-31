@@ -12,12 +12,14 @@ class Environment {
   Environment._internal();
   
   // Base URL settings
-  final String apiBaseUrl = 'http://10.0.2.2:8080/api';
-  final String socketUrl = 'http://10.0.2.2:8080';
+  // Emulator: 10.0.2.2, Physical device with adb reverse: localhost
+  // Chạy lệnh: adb reverse tcp:8080 tcp:8080 để kết nối thiết bị thật đến máy local
+  final String apiBaseUrl = 'http://localhost:8080/api';
+  final String socketUrl = 'http://localhost:8080';
   
   // Compat for older code
   String get endpointApi => apiBaseUrl;
-  String get endpointBase => 'http://10.0.2.2:8080/';
+  String get endpointBase => 'http://localhost:8080/';
   
   // Map services
   final String mapboxAccessToken = 'pk.your_mapbox_access_token_here';

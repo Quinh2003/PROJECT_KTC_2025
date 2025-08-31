@@ -7,8 +7,7 @@ import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/domain/models/order/orders_by_status_response.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
-import 'package:ktc_logistics_driver/presentation/screens/delivery/delivery_home_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/delivery/order_delivered_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/dashboard/dashboard_screen_spatial.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class MapDeliveryScreen extends StatefulWidget {
@@ -53,7 +52,7 @@ class _MapDeliveryScreenState extends State<MapDeliveryScreen> with WidgetsBindi
 
       if( !await Geolocator.isLocationServiceEnabled() || !await Permission.location.isGranted ){
 
-        Navigator.pushReplacement(context, routeFrave(page: DeliveryHomeScreen()));
+        Navigator.pushReplacement(context, routeFrave(page: DashboardScreenSpatial()));
 
       }
     }
@@ -73,7 +72,7 @@ class _MapDeliveryScreenState extends State<MapDeliveryScreen> with WidgetsBindi
         } else if ( state is SuccessOrdersState ){
 
           Navigator.pop(context);
-          modalSuccess(context, 'DELIVERED', () => Navigator.pushAndRemoveUntil(context, routeFrave(page: OrderDeliveredScreen()), (route) => false));
+          modalSuccess(context, 'DELIVERED', () => Navigator.pushAndRemoveUntil(context, routeFrave(page: DashboardScreenSpatial()), (route) => false));
 
         } else if ( state is FailureOrdersState ){
 

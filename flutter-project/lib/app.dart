@@ -6,14 +6,14 @@ import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_login_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/dashboard/dashboard_screen_spatial.dart';
-import 'package:ktc_logistics_driver/presentation/screens/developer_test_screen.dart';
 import 'package:ktc_logistics_driver/domain/usecases/usecases.dart';
-import 'package:ktc_logistics_driver/data/repositories/repository_implementations.dart' as mock_repo;
+import 'package:ktc_logistics_driver/data/repositories/repository_implementations.dart'
+    as mock_repo;
 import 'package:ktc_logistics_driver/services/mock_data_service.dart';
 import 'package:ktc_logistics_driver/services/mock_auth_service.dart';
 import 'package:ktc_logistics_driver/presentation/screens/delivery/deliveries_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/map/route_map_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/order/order_detail_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/delivery/order_detail_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/profile/edit_profile_screen.dart';
 import 'services/push_notification_service.dart';
 
@@ -23,26 +23,27 @@ class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => const DeveloperTestScreen()); // Debug menu first
-      case '/debug':
-        return MaterialPageRoute(builder: (_) => const DeveloperTestScreen());
+        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case '/onboarding':
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case '/login':
         return MaterialPageRoute(builder: (_) => const SpatialLoginScreen());
       case '/dashboard':
-        return MaterialPageRoute(builder: (_) => const DashboardScreenSpatial());
+        return MaterialPageRoute(
+            builder: (_) => const DashboardScreenSpatial());
       case '/deliveries':
         return MaterialPageRoute(builder: (_) => const DeliveriesScreen());
       case '/routes':
         // Tạm thời dùng một routeId mặc định
-        return MaterialPageRoute(builder: (_) => const RouteMapScreen(routeId: 'RT-2025-08-14-01'));
+        return MaterialPageRoute(
+            builder: (_) => const RouteMapScreen(routeId: 'RT-2025-08-14-01'));
       case '/profile':
         return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       case '/order-detail':
         // Lấy order ID từ arguments
         final orderId = settings.arguments as String;
-        return MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: orderId));
+        return MaterialPageRoute(
+            builder: (_) => OrderDetailScreen(orderId: orderId));
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
@@ -111,16 +112,20 @@ class _AppState extends State<App> {
         BlocProvider<TrackingBloc>(
           create: (context) => TrackingBloc(
             startRouteTrackingUseCase: StartRouteTrackingUseCase(
-              repository: mock_repo.TrackingRepositoryImpl(mockDataService: MockDataService()),
+              repository: mock_repo.TrackingRepositoryImpl(
+                  mockDataService: MockDataService()),
             ),
             endRouteTrackingUseCase: EndRouteTrackingUseCase(
-              repository: mock_repo.TrackingRepositoryImpl(mockDataService: MockDataService()),
+              repository: mock_repo.TrackingRepositoryImpl(
+                  mockDataService: MockDataService()),
             ),
             updateLocationUseCase: UpdateLocationUseCase(
-              repository: mock_repo.TrackingRepositoryImpl(mockDataService: MockDataService()),
+              repository: mock_repo.TrackingRepositoryImpl(
+                  mockDataService: MockDataService()),
             ),
             getTrackingHistoryUseCase: GetTrackingHistoryUseCase(
-              repository: mock_repo.TrackingRepositoryImpl(mockDataService: MockDataService()),
+              repository: mock_repo.TrackingRepositoryImpl(
+                  mockDataService: MockDataService()),
             ),
           ),
         ),
@@ -165,40 +170,42 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     );
-    
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeIn,
       ),
     );
-    
+
     _animationController.forward();
-    
+
     // Check if the user has completed onboarding
     _checkOnboarding();
   }
-  
+
   Future<void> _checkOnboarding() async {
     // Simulating a delay for splash screen
     await Future.delayed(const Duration(seconds: 3));
-    
+
     // Check if the user has completed onboarding using secure storage
     const storage = FlutterSecureStorage();
-    final hasCompletedOnboarding = await storage.read(key: 'onboarding_completed') == 'true';
-    
+    final hasCompletedOnboarding =
+        await storage.read(key: 'onboarding_completed') == 'true';
+
     if (context.mounted) {
       if (!hasCompletedOnboarding) {
         // Navigate to onboarding screen
@@ -210,13 +217,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       }
     }
   }
-  
+
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -124,7 +124,7 @@ class ApiService {
   }
 
   // Lấy tất cả đơn hàng của tài xế
-  Future<order_models.OrdersResponse> getAllOrders({int page = 1, int perPage = 10}) async {
+  Future<order_models.OrdersListResponse> getAllOrders({int page = 1, int perPage = 10}) async {
     try {
       final response = await _client.get(
         Uri.parse('${_env.ordersUrl}?page=$page&perPage=$perPage'),
@@ -133,7 +133,7 @@ class ApiService {
       
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        return order_models.OrdersResponse.fromJson(decodedData);
+        return order_models.OrdersListResponse.fromJson(decodedData);
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to load orders');

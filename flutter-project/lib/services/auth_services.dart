@@ -9,17 +9,20 @@ class AuthServices {
 
   AuthServices({required this.secureStorage});
 
-  /// Login với HTTP request thay vì Firebase Auth
+  /// Login với HTTP request tới Spring Boot backend
   Future<ResponseLogin> loginController(String email, String password) async {
     try {
       final env = Environment.getInstance();
       final response = await http.post(
-        Uri.parse('${env.endpointApi}/login-email-id'),
-        headers: {'Accept': 'application/json'},
-        body: {
+        Uri.parse('${env.endpointApi}/auth/login'),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: jsonEncode({
           'email': email,
           'password': password,
-        },
+        }),
       );
 
       return ResponseLogin.fromJson(jsonDecode(response.body));

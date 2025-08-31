@@ -10,6 +10,8 @@ import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import '../../components/delivery_charts.dart';
 import '../../../services/googlemaps_service.dart';
 import '../../../services/tracking_service.dart';
+import '../../../services/orders_services.dart';
+import '../../../domain/models/order/order_model.dart';
 
 class DashboardScreenSpatial extends StatefulWidget {
   const DashboardScreenSpatial({super.key});
@@ -176,7 +178,8 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           // Navigation Items
           _buildNavItem(context, 0, Icons.dashboard, "Dashboard"),
           _buildNavItem(context, 1, Icons.local_shipping, "Deliveries"),
-          _buildNavItem(context, 2, Icons.account_circle, "Profile"),
+          _buildNavItem(context, 2, Icons.shopping_bag, "Orders"),
+          _buildNavItem(context, 3, Icons.account_circle, "Profile"),
 
           const Spacer(),
 
@@ -1166,6 +1169,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
         BottomNavigationBarItem(
           icon: Icon(Icons.local_shipping),
           label: "Deliveries",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.shopping_bag),
+          label: "Orders",
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_circle),

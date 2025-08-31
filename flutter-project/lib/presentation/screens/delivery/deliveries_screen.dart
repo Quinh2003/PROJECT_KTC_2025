@@ -7,7 +7,7 @@ import 'package:ktc_logistics_driver/presentation/components/card_orders_deliver
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/components/spatial_glass_card.dart';
 import 'package:ktc_logistics_driver/presentation/design/spatial_ui.dart';
-import 'package:ktc_logistics_driver/presentation/screens/delivery/order_details_delivery_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/delivery/order_detail_screen.dart';
 
 class DeliveriesScreen extends StatefulWidget {
   const DeliveriesScreen({super.key});
@@ -508,7 +508,7 @@ class _ListOrdersForDelivery extends StatelessWidget {
           itemBuilder: (_, i) 
             => CardOrdersDelivery(
                 orderResponse: listOrdersDelivery[i],
-                onPressed: () => Navigator.push(context, routeFrave(page: OrdersDetailsDeliveryScreen(order: listOrdersDelivery[i]))),
+                onPressed: () => Navigator.push(context, routeFrave(page: OrderDetailScreen(orderId: listOrdersDelivery[i].orderId.toString()))),
                )
         )
       : Column(

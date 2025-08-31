@@ -3,14 +3,14 @@
 
 import 'order_model.dart';
 
-class OrdersResponse {
+class OrdersListResponse {
   final bool success;      // Trạng thái thành công
   final String message;    // Thông báo
   final List<Order> orders; // Danh sách đơn hàng
   final Pagination pagination; // Thông tin phân trang
 
   // Constructor với các tham số bắt buộc
-  OrdersResponse({
+  OrdersListResponse({
     required this.success,
     required this.message,
     required this.orders,
@@ -18,7 +18,7 @@ class OrdersResponse {
   });
 
   // Factory constructor để parse JSON thành object
-  factory OrdersResponse.fromJson(Map<String, dynamic> json) {
+  factory OrdersListResponse.fromJson(Map<String, dynamic> json) {
     // Parse danh sách đơn hàng
     List<Order> ordersList = [];
     if (json['orders'] != null) {
@@ -27,7 +27,7 @@ class OrdersResponse {
       );
     }
 
-    return OrdersResponse(
+    return OrdersListResponse(
       success: json['success'] ?? false,
       message: json['message'] ?? '',
       orders: ordersList,

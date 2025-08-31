@@ -68,4 +68,20 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         "AND DATE(o.updatedAt) = CURRENT_DATE")
     int countDeliveredOrdersByDriverIdToday(@Param("driverId") Long driverId);
 
+    // Find active orders for a driver
+    @Query("SELECT o FROM Order o " +
+        "JOIN Delivery d ON d.order = o " +
+        "WHERE d.driver.id = :driverId " +
+        "AND o.status.name IN ('ASSIGNED', 'IN_TRANSIT', 'IN_PROGRESS')")
+    List<Order> findActiveOrdersByDriverId(@Param("driverId") Long driverId);
+
+    // Find available orders for a vehicle based on capacity
+    @Query("SELECT o FROM Order o " +
+        "WHERE o.status.name = 'AVAILABLE' " +
+        "AND o.vehicle IS NULL " + 
+        "ORDER BY o.createdAt ASC")
+    List<Order> findAvailableOrdersForVehicle(
+        @Param("maxWeight") BigDecimal maxWeight,
+        @Param("maxVolume") BigDecimal maxVolume,
+        @Param("driverId") Long driverId);
 }

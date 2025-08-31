@@ -4,14 +4,14 @@ class MockAuthService {
   factory MockAuthService() => _instance;
   MockAuthService._internal();
 
-  // Fake user accounts for testing
+  // Fake user accounts for testing - 1 tài khoản kiểm tra và 1 tài khoản từ backend thực
   final Map<String, Map<String, dynamic>> _mockUsers = {
-    'driver@ktc.com': {
+    'driver_01@fr.com': {
       'id': 'DRV001',
-      'email': 'driver@ktc.com',
+      'email': 'driver_01@fr.com',
       'password': '123456',
-      'name': 'Nguyễn Văn An',
-      'phone': '+84 901 234 567',
+      'name': 'Nguyễn Văn Tài',
+      'phone': '0912345678',
       'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
       'license': 'B2',
       'vehicle': {
@@ -26,11 +26,11 @@ class MockAuthService {
       'totalDeliveries': 1247,
       'joinDate': '2023-01-15',
     },
-    'driver2@ktc.com': {
-      'id': 'DRV002',
-      'email': 'driver2@ktc.com',
+    'driver_offline@ktc.com': {
+      'id': 'DRV999',
+      'email': 'driver_offline@ktc.com',
       'password': '123456',
-      'name': 'Trần Thị Lan',
+      'name': 'Driver Offline Mode',
       'phone': '+84 902 345 678',
       'avatar': 'https://images.unsplash.com/photo-1494790108755-2616b332c108?w=150&h=150&fit=crop&crop=face',
       'license': 'B2',

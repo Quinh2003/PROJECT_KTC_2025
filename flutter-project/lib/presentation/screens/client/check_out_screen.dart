@@ -5,7 +5,7 @@ import 'package:ktc_logistics_driver/domain/models/order/type_payment.dart';
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/helpers/helpers.dart';
 import 'package:ktc_logistics_driver/presentation/screens/client/client_home_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/client/select_addreess_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/client/select_address_screen.dart';
 import 'package:ktc_logistics_driver/presentation/themes/colors_frave.dart';
 
 class CheckOutScreen extends StatelessWidget {

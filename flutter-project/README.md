@@ -105,8 +105,13 @@
 cd PROJECT_KTC_2025/driver-app
 flutter pub get
 
-# Run app
+# Run app trên máy ảo với baseUrl = "http://10.0.2.2:8000"
 flutter run
+
+# Run app trên thiết bị thật với baseUrl = "http://localhost:8000"
+adb reverse tcp:8080 tcp:8080  # Chuyển tiếp cổng localhost
+cd ../spring-project && ./gradlew bootRun  # Chạy backend (terminal khác)
+cd ../flutter-project && flutter run  # Chạy app
 
 # Build release APK
 flutter build apk --release
@@ -115,12 +120,12 @@ flutter install
 
 ### Tài khoản test
 
-#### 🚛 **Tài xế 1 - Xe tải**
-- **Email**: `driver@ktc.com`
+#### 🔒 **Tài khoản backend thật**
+- **Email**: `driver_01@fr.com`
 - **Mật khẩu**: `123456`
 
-#### 🏍️ **Tài xế 2 - Xe máy**
-- **Email**: `driver2@ktc.com`
+#### 🔌 **Tài khoản offline mode**
+- **Email**: `offline_driver@ktc.com`
 - **Mật khẩu**: `123456`
 
 > **Lưu ý**: App đang sử dụng mock data để demo tính năng.
@@ -142,6 +147,27 @@ q    # Quit
 ```
 
 ## 🔧 Troubleshooting
+
+### Kết nối thiết bị thật
+
+Nếu gặp lỗi `adb: command not found`:
+
+1. **Cài đặt Android SDK Platform-tools**:
+   - Cài qua Android Studio > SDK Manager > SDK Tools
+   - Hoặc tải trực tiếp từ: https://developer.android.com/tools/releases/platform-tools
+
+2. **Thêm vào PATH**:
+   ```
+   setx PATH "%PATH%;C:\Users\<username>\AppData\Local\Android\Sdk\platform-tools" /M
+   ```
+
+3. **Kiểm tra kết nối thiết bị**:
+   ```
+   adb devices
+   ```
+
+4. **Kiểm tra kết nối backend**:
+   Mở trình duyệt trên thiết bị và truy cập: `http://localhost:8080/actuator/health`
 
 ### Common Issues
 

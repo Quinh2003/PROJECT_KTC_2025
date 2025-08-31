@@ -42,7 +42,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
     _tabs = [
       OrderTab(text: "Overview", contentBuilder: _buildOverviewTab),
       OrderTab(text: "Items", contentBuilder: _buildItemsTab),
-      OrderTab(text: "Timeline", contentBuilder: _buildTimelineTab),
     ];
 
     _tabController = TabController(length: _tabs.length, vsync: this);
@@ -138,7 +137,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                           alignment: Alignment.center,
                           child: Text(
                             tab.text,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -233,6 +232,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
             valueColor:
                 AlwaysStoppedAnimation<Color>(SpatialDesignSystem.primaryColor),
             borderRadius: BorderRadius.circular(10),
+            minHeight: 8,
           ),
           const SizedBox(height: 10),
           Row(
@@ -284,20 +284,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                 ),
                 const SizedBox(height: 16),
                 _buildInfoRow(
-                  Icons.person_outline,
-                  "Customer Name",
+                  Icons.person,
+                  "Name",
                   "Nguyen Van A",
                 ),
                 const Divider(),
                 _buildInfoRow(
-                  Icons.phone_outlined,
-                  "Phone Number",
+                  Icons.phone,
+                  "Phone",
                   "+84 123 456 789",
                 ),
                 const Divider(),
                 _buildInfoRow(
-                  Icons.email_outlined,
-                  "Email Address",
+                  Icons.email,
+                  "Email",
                   "customer@example.com",
                 ),
               ],
@@ -322,20 +322,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                 ),
                 const SizedBox(height: 16),
                 _buildInfoRow(
-                  Icons.location_on_outlined,
-                  "Delivery Address",
+                  Icons.location_on,
+                  "Address",
                   "123 Nguyen Hue St, District 1, Ho Chi Minh City",
                 ),
                 const Divider(),
                 _buildInfoRow(
                   Icons.access_time,
-                  "Estimated Delivery Time",
+                  "Delivery Time",
                   "Today, 12:30 PM",
                 ),
                 const Divider(),
                 _buildInfoRow(
-                  Icons.notes_outlined,
-                  "Delivery Instructions",
+                  Icons.note,
+                  "Special Instructions",
                   "Please call when you arrive. Ring doorbell twice.",
                 ),
               ],
@@ -358,27 +358,27 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                         : SpatialDesignSystem.textPrimaryColor,
                   ),
                 ),
-                const Divider(),
+                const SizedBox(height: 16),
                 _buildInfoRow(
-                  Icons.receipt_long_outlined,
+                  Icons.calendar_today,
                   "Order Date",
-                  "August 14, 2025 | 09:15 AM",
+                  "August 31, 2025 | 09:15 AM",
                 ),
                 const Divider(),
                 _buildInfoRow(
-                  Icons.inventory_2_outlined,
+                  Icons.category,
                   "Package Type",
                   "Standard Package",
                 ),
                 const Divider(),
                 _buildInfoRow(
-                  Icons.scale_outlined,
-                  "Package Weight",
+                  Icons.scale,
+                  "Weight",
                   "2.5 kg",
                 ),
                 const Divider(),
                 _buildInfoRow(
-                  Icons.payments_outlined,
+                  Icons.payment,
                   "Payment Method",
                   "Credit Card (Paid)",
                 ),
@@ -398,10 +398,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 20,
-            color: SpatialDesignSystem.primaryColor,
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: SpatialDesignSystem.primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              size: 18,
+              color: SpatialDesignSystem.primaryColor,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -460,8 +467,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                 // Item 1
                 _buildOrderItem(
                   "Product A",
-                  "2 items",
-                  "120,000 VND",
+                  "2x",
+                  "150,000 VND",
                   "https://via.placeholder.com/60",
                 ),
                 const Divider(),
@@ -469,8 +476,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                 // Item 2
                 _buildOrderItem(
                   "Product B",
-                  "1 item",
-                  "85,000 VND",
+                  "1x",
+                  "120,000 VND",
                   "https://via.placeholder.com/60",
                 ),
                 const Divider(),
@@ -478,8 +485,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                 // Item 3
                 _buildOrderItem(
                   "Product C",
-                  "3 items",
-                  "150,000 VND",
+                  "3x",
+                  "85,000 VND",
                   "https://via.placeholder.com/60",
                 ),
               ],
@@ -550,17 +557,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
               children: [
                 Text(
                   name,
-                  style: SpatialDesignSystem.bodyMedium.copyWith(
+                  style: SpatialDesignSystem.subtitleSmall.copyWith(
                     color: isDark
                         ? SpatialDesignSystem.textDarkPrimaryColor
                         : SpatialDesignSystem.textPrimaryColor,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   quantity,
-                  style: SpatialDesignSystem.captionText.copyWith(
+                  style: SpatialDesignSystem.bodySmall.copyWith(
                     color: isDark
                         ? SpatialDesignSystem.textDarkSecondaryColor
                         : SpatialDesignSystem.textSecondaryColor,
@@ -598,6 +604,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                     color: isDark
                         ? SpatialDesignSystem.textDarkPrimaryColor
                         : SpatialDesignSystem.textPrimaryColor,
+                    fontWeight: FontWeight.w600,
                   )
                 : SpatialDesignSystem.bodyMedium.copyWith(
                     color: isDark
@@ -609,7 +616,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
             value,
             style: isTotal
                 ? SpatialDesignSystem.subtitleSmall.copyWith(
-                    color: SpatialDesignSystem.primaryColor,
+                    color: isDark
+                        ? SpatialDesignSystem.textDarkPrimaryColor
+                        : SpatialDesignSystem.textPrimaryColor,
                     fontWeight: FontWeight.w600,
                   )
                 : SpatialDesignSystem.bodyMedium.copyWith(
@@ -623,205 +632,153 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
     );
   }
 
-  Widget _buildTimelineTab() {
+  // Flag to track if order is accepted
+  bool _isOrderAccepted = false;
+
+  Widget _buildBottomBar() {
+    final screenWidth = MediaQuery.of(context).size.width;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        // Timeline
-        GlassCard(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Delivery Timeline",
-                style: SpatialDesignSystem.subtitleMedium.copyWith(
-                  color: isDark
-                      ? SpatialDesignSystem.textDarkPrimaryColor
-                      : SpatialDesignSystem.textPrimaryColor,
-                ),
-              ),
-              const SizedBox(height: 16),
-              _buildTimelineTile(
-                "Order Placed",
-                "August 14, 2025 | 09:15 AM",
-                "Order has been received and confirmed",
-                true,
-                isFirst: true,
-              ),
-              _buildTimelineTile(
-                "Order Processed",
-                "August 14, 2025 | 09:30 AM",
-                "Order has been processed and prepared for shipping",
-                true,
-              ),
-              _buildTimelineTile(
-                "Out for Delivery",
-                "August 14, 2025 | 11:45 AM",
-                "Package is on the delivery vehicle and en route",
-                true,
-              ),
-              _buildTimelineTile(
-                "Arriving Soon",
-                "Estimated: 12:30 PM",
-                "Package is in your area and will be delivered soon",
-                false,
-              ),
-              _buildTimelineTile(
-                "Delivered",
-                "Pending",
-                "Package has been delivered successfully",
-                false,
-                isLast: true,
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 16),
-
-        // Delivery Notes
-        GlassCard(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Delivery Notes",
-                style: SpatialDesignSystem.subtitleMedium.copyWith(
-                  color: isDark
-                      ? SpatialDesignSystem.textDarkPrimaryColor
-                      : SpatialDesignSystem.textPrimaryColor,
-                ),
-              ),
-              const SizedBox(height: 16),
-              SpatialTextField(
-                label: "Add a note",
-                hint: "Enter a note for this delivery",
-                maxLines: 3,
-                isGlass: true,
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: screenWidth < 400
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  SpatialButton(
-                    text: "Save Note",
-                    onPressed: () {
-                      // Save note logic
-                    },
-                    iconData: Icons.save,
+                  // Navigation button (shows only when order is accepted)
+                  if (_isOrderAccepted)
+                    SpatialButton(
+                      text: "Navigation",
+                      textColor: SpatialDesignSystem.primaryColor,
+                      onPressed: _navigateToRouteMap,
+                      iconData: Icons.map,
+                      isGlass: true,
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                    ),
+                  if (_isOrderAccepted) const SizedBox(height: 10),
+
+                  // Accept or Delivered button (based on state)
+                  _isOrderAccepted
+                      ? SpatialButton(
+                          text: "Mark as Delivered",
+                          onPressed: () {
+                            // Mark as delivered logic
+                            _showDeliveryConfirmationDialog();
+                          },
+                          iconData: Icons.check_circle,
+                          backgroundColor: Colors.green,
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                        )
+                      : SpatialButton(
+                          text: "Accept Order",
+                          onPressed: () {
+                            // Accept order and show navigation option
+                            setState(() {
+                              _isOrderAccepted = true;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    "Order accepted! You can now navigate to the delivery location."),
+                                backgroundColor:
+                                    SpatialDesignSystem.primaryColor,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          },
+                          iconData: Icons.delivery_dining,
+                          isGradient: true,
+                          gradient: LinearGradient(
+                            colors: [
+                              SpatialDesignSystem.primaryColor,
+                              SpatialDesignSystem.accentColor,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                        ),
+                ],
+              )
+            // For wider screens, use a Row layout with smaller padding
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Navigation button (shows only when order is accepted)
+                  if (_isOrderAccepted)
+                    Expanded(
+                      flex: 1,
+                      child: SpatialButton(
+                        text: "Navigation",
+                        onPressed: _navigateToRouteMap,
+                        iconData: Icons.directions,
+                        isGlass: true,
+                        backgroundColor: Colors.white,
+                        textColor: SpatialDesignSystem.primaryColor,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                      ),
+                    ),
+                  if (_isOrderAccepted) const SizedBox(width: 10),
+
+                  // Accept or Delivered button
+                  Expanded(
+                    flex: _isOrderAccepted ? 1 : 2,
+                    child: _isOrderAccepted
+                        ? SpatialButton(
+                            text: "Mark as Delivered",
+                            onPressed: () {
+                              // Mark as delivered logic
+                              _showDeliveryConfirmationDialog();
+                            },
+                            iconData: Icons.check_circle,
+                            backgroundColor: Colors.green,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 12),
+                          )
+                        : SpatialButton(
+                            text: "Accept Order",
+                            onPressed: () {
+                              // Accept order and show navigation option
+                              setState(() {
+                                _isOrderAccepted = true;
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      "Order accepted! You can now navigate to the delivery location."),
+                                  backgroundColor:
+                                      SpatialDesignSystem.primaryColor,
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
+                            },
+                            iconData: Icons.delivery_dining,
+                            isGradient: true,
+                            gradient: LinearGradient(
+                              colors: [
+                                SpatialDesignSystem.primaryColor,
+                                SpatialDesignSystem.accentColor,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 12),
+                          ),
                   ),
                 ],
               ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTimelineTile(
-    String title,
-    String time,
-    String description,
-    bool isCompleted, {
-    bool isFirst = false,
-    bool isLast = false,
-  }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return TimelineTile(
-      alignment: TimelineAlign.start,
-      isFirst: isFirst,
-      isLast: isLast,
-      indicatorStyle: IndicatorStyle(
-        width: 24,
-        height: 24,
-        indicator: Container(
-          decoration: BoxDecoration(
-            color: isCompleted
-                ? SpatialDesignSystem.primaryColor
-                : isDark
-                    ? Colors.white.withValues(alpha: 0.1)
-                    : Colors.black.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: isCompleted
-                  ? SpatialDesignSystem.primaryColor
-                  : Colors.transparent,
-              width: 2,
-            ),
-          ),
-          child: isCompleted
-              ? const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 16,
-                )
-              : null,
-        ),
-      ),
-      beforeLineStyle: LineStyle(
-        color: isCompleted
-            ? SpatialDesignSystem.primaryColor
-            : isDark
-                ? Colors.white.withValues(alpha: 0.1)
-                : Colors.black.withValues(alpha: 0.1),
-        thickness: 2,
-      ),
-      afterLineStyle: LineStyle(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.1)
-            : Colors.black.withValues(alpha: 0.1),
-        thickness: 2,
-      ),
-      endChild: Padding(
-        padding: const EdgeInsets.only(left: 16, bottom: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: SpatialDesignSystem.subtitleSmall.copyWith(
-                color: isCompleted
-                    ? SpatialDesignSystem.primaryColor
-                    : (isDark
-                        ? SpatialDesignSystem.textDarkPrimaryColor
-                        : SpatialDesignSystem.textPrimaryColor),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              time,
-              style: SpatialDesignSystem.captionText.copyWith(
-                color: isDark
-                    ? SpatialDesignSystem.textDarkSecondaryColor
-                    : SpatialDesignSystem.textSecondaryColor,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              description,
-              style: SpatialDesignSystem.bodySmall.copyWith(
-                color: isDark
-                    ? SpatialDesignSystem.textDarkSecondaryColor
-                        .withValues(alpha: 0.8)
-                    : SpatialDesignSystem.textSecondaryColor
-                        .withValues(alpha: 0.8),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
-
-  // Flag to track if order is accepted
-  bool _isOrderAccepted = false;
 
   // Navigate to map screen
   void _navigateToRouteMap() async {
@@ -832,10 +789,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
           content: Row(
             children: [
               SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                      strokeWidth: 2, color: Colors.white)),
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
               SizedBox(width: 16),
               Text('Preparing navigation route...'),
             ],
@@ -879,152 +836,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
     }
   }
 
-  Widget _buildBottomBar() {
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: screenWidth < 400
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Navigation button (shows only when order is accepted)
-                  if (_isOrderAccepted)
-                    SpatialButton(
-                      text: "Navigation",
-                      textColor: SpatialDesignSystem.primaryColor,
-                      onPressed: _navigateToRouteMap,
-                      iconData: Icons.map,
-                      isGlass: true,
-                      // isGradient: true,
-                      // gradient: LinearGradient(
-                      //   colors: [
-                      //     SpatialDesignSystem.primaryColor,
-                      //     SpatialDesignSystem.accentColor,
-                      //   ],
-                      //   begin: Alignment.topLeft,
-                      //   end: Alignment.bottomRight,
-                      // ),
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                    ),
-                  if (_isOrderAccepted) const SizedBox(height: 10),
-
-                  // Accept or Delivered button (based on state)
-                  _isOrderAccepted
-                      ? SpatialButton(
-                          text: "Done",
-                          onPressed: () {
-                            // Mark as delivered logic
-                            _showDeliveryConfirmationDialog();
-                          },
-                          iconData: Icons.check_circle,
-                          // isOutlined: true,
-                          backgroundColor: SpatialDesignSystem.primaryColor,
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
-                        )
-                      : SpatialButton(
-                          text: "Accept Order",
-                          onPressed: () {
-                            // Accept order and show navigation option
-                            setState(() {
-                              _isOrderAccepted = true;
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    "Order accepted! You can now navigate to the delivery location."),
-                                backgroundColor:
-                                    SpatialDesignSystem.primaryColor,
-                                duration: Duration(seconds: 3),
-                              ),
-                            );
-                          },
-                          iconData: Icons.delivery_dining,
-                          backgroundColor: SpatialDesignSystem.primaryColor,
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
-                        ),
-                ],
-              )
-            // For wider screens, use a Row layout with smaller padding
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Navigation button (shows only when order is accepted)
-                  if (_isOrderAccepted)
-                    SpatialButton(
-                      text: "Navigation",
-                      onPressed: _navigateToRouteMap,
-                      iconData: Icons.directions,
-                      isGlass: true,
-                      backgroundColor: Colors.white,
-                      textColor: SpatialDesignSystem.primaryColor,
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                    ),
-                  if (_isOrderAccepted) const SizedBox(height: 10),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _isOrderAccepted
-                            ? SpatialButton(
-                                text: "Done",
-                                onPressed: () {
-                                  // Mark as delivered logic
-                                  _showDeliveryConfirmationDialog();
-                                },
-                                iconData: Icons.check_circle,
-                                backgroundColor: SpatialDesignSystem.primaryColor,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 12),
-                              )
-                            : SpatialButton(
-                                text: "Accept Order",
-                                onPressed: () {
-                                  // Accept order and show navigation option
-                                  setState(() {
-                                    _isOrderAccepted = true;
-                                  });
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          "Order accepted! You can now navigate to the delivery location."),
-                                      backgroundColor:
-                                          SpatialDesignSystem.primaryColor,
-                                      duration: Duration(seconds: 3),
-                                    ),
-                                  );
-                                },
-                                iconData: Icons.delivery_dining,
-                                isGradient: true,
-                                gradient: LinearGradient(
-                                  colors: [
-                                    SpatialDesignSystem.primaryColor,
-                                    SpatialDesignSystem.accentColor,
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 12),
-                              ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-      ),
-    );
-  }
-
   void _showDeliveryConfirmationDialog() {
     showDialog(
       context: context,
@@ -1032,6 +843,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
         backgroundColor: Colors.transparent,
         child: GlassCard(
           padding: const EdgeInsets.all(24),
+          gradient: LinearGradient(
+            colors: [
+              SpatialDesignSystem.successColor.withValues(alpha: 0.1),
+              SpatialDesignSystem.successColor.withValues(alpha: 0.05),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1065,11 +884,34 @@ class _OrderDetailScreenState extends State<OrderDetailScreen>
                   SpatialButton(
                     text: "Confirm",
                     onPressed: () {
+                      // Handle delivery confirmation
                       Navigator.pop(context);
-                      Navigator.pop(context);
+                      // Show success message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Order #${widget.orderId} marked as delivered'),
+                          backgroundColor: SpatialDesignSystem.successColor,
+                        ),
+                      );
+                      // Navigate back to delivery list
+                      Future.delayed(const Duration(seconds: 1), () {
+                        Navigator.pop(context);
+                      });
                     },
                     isGradient: true,
-                    gradient: SpatialDesignSystem.successGradient,
+                    gradient: LinearGradient(
+                      colors: [
+                        SpatialDesignSystem.successColor,
+                        Color.fromARGB(
+                          SpatialDesignSystem.successColor.alpha,
+                          SpatialDesignSystem.successColor.red + 40,
+                          SpatialDesignSystem.successColor.green + 40,
+                          SpatialDesignSystem.successColor.blue,
+                        ),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                   ),
                 ],
               ),
