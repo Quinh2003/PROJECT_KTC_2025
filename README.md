@@ -58,12 +58,12 @@ KTC Logistics 2025 is an internal logistics management platform (1PL) designed t
 
 | Role | Key Responsibilities | Core Activities |
 |------|---------------------|-----------------|
-| **👤 Customer** | 📦 Order placement & tracking | 📝 Registration, 🛒 order creation, ✅ delivery confirmation |
-| **📋 Dispatcher** | 📱 Order allocation & monitoring | 👨‍💼 Driver assignment, ⚠️ exception handling, 📊 reporting |
-| **🚚 Fleet Manager** | 🔄 Resource management | 🚗 Vehicle assignment, 📡 telemetry monitoring, 🛣️ route optimization |
-| **📊 Operations Manager** | 👓 Process oversight | 📈 Performance monitoring, ⚖️ resource allocation, 📊 analytics |
-| **🧑‍✈️ Driver** | 🚛 Delivery execution | ✅ Order acceptance, 🧭 navigation, 📸 delivery verification |
-| **⚙️ Administrator** | 🛠️ System maintenance | 👥 User management, ⚙️ configuration, 🔒 security auditing |
+| **Customer** | Order placement & tracking | Registration, order creation, delivery confirmation |
+| **Dispatcher** | Order allocation & monitoring | Driver assignment, exception handling, reporting |
+| **Fleet Manager** | Resource management | Vehicle assignment, telemetry monitoring, route optimization |
+| **Operations Manager** | Process oversight | Performance monitoring, resource allocation, analytics |
+| **Driver** | Delivery execution | Order acceptance, navigation, delivery verification |
+| **Administrator** | System maintenance | User management, configuration, security auditing |
 
 ## 🧪 Testing & Deployment
 - ✅ Comprehensive unit, integration, and E2E testing
