@@ -37,6 +37,13 @@ class OrdersResponse {
   final String payType;
   final double amount;
   final DateTime currentDate;
+  // Các trường bổ sung từ API response
+  final String? orderCode;
+  final String? pickupAddress;
+  final DateTime? scheduledTime;
+  final double? deliveryFee;
+  final String? paymentMethod;
+  final String? priority;
 
   OrdersResponse({
     required this.orderId,
@@ -56,26 +63,45 @@ class OrdersResponse {
     required this.payType,
     required this.amount,
     required this.currentDate,
+    this.orderCode,
+    this.pickupAddress,
+    this.scheduledTime,
+    this.deliveryFee,
+    this.paymentMethod,
+    this.priority,
   });
 
   factory OrdersResponse.fromJson(Map<String, dynamic> json) => OrdersResponse(
-    orderId: json["order_id"],
+    orderId: json["order_id"] ?? json["id"] ?? 0,
     deliveryId: json["delivery_id"] ?? 0,
     delivery: json["delivery"] ?? '',
     deliveryImage: json["deliveryImage"] ?? '',
-    clientId: json["client_id"],
-    cliente: json["cliente"],
-    clientImage: json["clientImage"],
-    clientPhone: json["clientPhone"] ?? '',
-    addressId: json["address_id"],
-    street: json["street"],
-    reference: json["reference"],
-    latitude: json["Latitude"],
-    longitude: json["Longitude"],
-    status: json["status"],
-    payType: json["pay_type"],
-    amount: json["amount"].toDouble(),
-    currentDate: DateTime.parse(json["currentDate"]),
+    clientId: json["client_id"] ?? 0,
+    cliente: json["cliente"] ?? json["customerName"] ?? 'Unknown',
+    clientImage: json["clientImage"] ?? '',
+    clientPhone: json["clientPhone"] ?? json["customerPhone"] ?? '',
+    addressId: json["address_id"] ?? 0,
+    street: json["street"] ?? json["deliveryAddress"] ?? '',
+    reference: json["reference"] ?? '',
+    latitude: json["Latitude"] ?? '0',
+    longitude: json["Longitude"] ?? '0',
+    status: json["status"] ?? 'Pending',
+    payType: json["pay_type"] ?? json["paymentMethod"] ?? 'Unknown',
+    amount: json["amount"] != null ? json["amount"].toDouble() : 0.0,
+    currentDate: json["currentDate"] != null 
+      ? DateTime.parse(json["currentDate"]) 
+      : DateTime.now(),
+    // Các trường bổ sung
+    orderCode: json["orderCode"],
+    pickupAddress: json["pickupAddress"],
+    scheduledTime: json["scheduledTime"] != null 
+      ? DateTime.parse(json["scheduledTime"]) 
+      : null,
+    deliveryFee: json["deliveryFee"] != null 
+      ? double.tryParse(json["deliveryFee"].toString()) 
+      : null,
+    paymentMethod: json["paymentMethod"],
+    priority: json["priority"],
   );
 }
 

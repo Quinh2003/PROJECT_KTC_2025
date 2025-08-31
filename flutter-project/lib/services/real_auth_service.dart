@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import '../data/env/environment.dart';
-import '../domain/models/auth/response_login.dart';
+import '../domain/models/auth/auth_response.dart';
 
 /// Service xử lý xác thực thông qua Spring Boot backend thay vì sử dụng mock
 class RealAuthService {

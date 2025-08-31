@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:ktc_logistics_driver/data/env/environment.dart';
 import 'package:ktc_logistics_driver/data/local_secure/secure_storage.dart';
@@ -14,7 +15,7 @@ class OrdersServices {
   final _env = Environment.getInstance();
 
   // Driver API Methods
-  Future<List<OrdersResponse>> getDriverOrdersList(String driverId) async {
+  Future<List<OrdersResponse>> getDriverOrdersList(int driverId) async {
     try {
       final token = await secureStorage.readToken();
       
@@ -24,17 +25,20 @@ class OrdersServices {
       );
 
       if (resp.statusCode == 200) {
-        final listOrdersResponse = OrdersByStatusResponse.fromJson(json.decode(resp.body));
-        return listOrdersResponse.ordersResponse;
+        final List<dynamic> data = json.decode(resp.body);
+        return data.map((item) => OrdersResponse.fromJson(item)).toList();
       }
       
-      return [];
+      // Fallback to old API format
+      final listOrdersResponse = await getOrdersByStatus("all");
+      return listOrdersResponse;
     } catch (e) {
+      debugPrint('Error getting driver orders: $e');
       return [];
     }
   }
 
-  Future<OrderDetailsResponse?> getDriverOrderDetail(String orderId) async {
+  Future<OrderDetailsResponse?> getDriverOrderDetail(int orderId) async {
     try {
       final token = await secureStorage.readToken();
       
@@ -50,11 +54,12 @@ class OrdersServices {
       
       return null;
     } catch (e) {
+      debugPrint('Error getting order detail: $e');
       return null;
     }
   }
 
-  Future<ResponseDefault> updateDriverOrderStatus(String orderId, String status, String notes) async {
+  Future<ResponseDefault> updateDriverOrderStatus(int orderId, String status, String notes) async {
     try {
       final token = await secureStorage.readToken();
       
@@ -176,6 +181,8 @@ class OrdersServices {
   }
 
   // Lấy danh sách đơn hàng của tài xế theo ID
+  // Không khuyến khích sử dụng - thay vào đó sử dụng getDriverOrdersList
+  @Deprecated('Use getDriverOrdersList instead')
   Future<List<dynamic>> getDriverOrders(int driverId) async {
     final token = await secureStorage.readToken();
 
@@ -189,16 +196,18 @@ class OrdersServices {
         final List<dynamic> data = json.decode(resp.body);
         return data;
       } else {
-        print('Error: ${resp.statusCode} - ${resp.body}');
+        debugPrint('Error: ${resp.statusCode} - ${resp.body}');
         return [];
       }
     } catch (e) {
-      print('Exception: $e');
+      debugPrint('Exception: $e');
       return [];
     }
   }
 
   // Lấy chi tiết đơn hàng theo ID
+  // Không khuyến khích sử dụng - thay vào đó sử dụng getDriverOrderDetail
+  @Deprecated('Use getDriverOrderDetail instead')
   Future<Map<String, dynamic>?> getOrderDetail(int orderId) async {
     final token = await secureStorage.readToken();
 
@@ -212,16 +221,18 @@ class OrdersServices {
         final Map<String, dynamic> data = json.decode(resp.body);
         return data;
       } else {
-        print('Error: ${resp.statusCode} - ${resp.body}');
+        debugPrint('Error: ${resp.statusCode} - ${resp.body}');
         return null;
       }
     } catch (e) {
-      print('Exception: $e');
+      debugPrint('Exception: $e');
       return null;
     }
   }
 
   // Cập nhật trạng thái đơn hàng
+  // Không khuyến khích sử dụng - thay vào đó sử dụng updateDriverOrderStatus
+  @Deprecated('Use updateDriverOrderStatus instead')
   Future<bool> updateOrderStatus(int orderId, String status) async {
     final token = await secureStorage.readToken();
 
@@ -237,7 +248,7 @@ class OrdersServices {
 
       return resp.statusCode == 200;
     } catch (e) {
-      print('Exception: $e');
+      debugPrint('Exception: $e');
       return false;
     }
   }

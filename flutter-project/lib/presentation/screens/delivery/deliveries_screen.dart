@@ -7,7 +7,7 @@ import 'package:ktc_logistics_driver/presentation/components/card_orders_deliver
 import 'package:ktc_logistics_driver/presentation/components/components.dart';
 import 'package:ktc_logistics_driver/presentation/components/spatial_glass_card.dart';
 import 'package:ktc_logistics_driver/presentation/design/spatial_ui.dart';
-import 'package:ktc_logistics_driver/presentation/screens/delivery/order_detail_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/order/order_detail_screen.dart';
 
 class DeliveriesScreen extends StatefulWidget {
   const DeliveriesScreen({super.key});
@@ -16,7 +16,8 @@ class DeliveriesScreen extends StatefulWidget {
   State<DeliveriesScreen> createState() => _DeliveriesScreenState();
 }
 
-class _DeliveriesScreenState extends State<DeliveriesScreen> with SingleTickerProviderStateMixin {
+class _DeliveriesScreenState extends State<DeliveriesScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -36,21 +37,24 @@ class _DeliveriesScreenState extends State<DeliveriesScreen> with SingleTickerPr
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark 
-          ? SpatialDesignSystem.darkBackgroundColor 
+      backgroundColor: isDark
+          ? SpatialDesignSystem.darkBackgroundColor
           : SpatialDesignSystem.backgroundColor,
       appBar: AppBar(
-        backgroundColor: isDark 
-          ? SpatialDesignSystem.darkBackgroundColor 
-          : SpatialDesignSystem.backgroundColor,
-        title: TextCustom(
-          text: 'Deliveries', 
-          color: isDark
-            ? SpatialDesignSystem.textDarkPrimaryColor
-            : SpatialDesignSystem.textPrimaryColor,
+        backgroundColor: isDark
+            ? SpatialDesignSystem.darkBackgroundColor
+            : SpatialDesignSystem.backgroundColor,
+        title: Text(
+          'Deliveries',
+          style: SpatialDesignSystem.subtitleLarge.copyWith(
+            color: isDark
+                ? SpatialDesignSystem.textDarkPrimaryColor
+                : SpatialDesignSystem.textPrimaryColor,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
+        automaticallyImplyLeading: false, // Remove back button
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: SpatialDesignSystem.primaryColor,
@@ -115,7 +119,7 @@ class UpcomingDeliveriesTab extends StatelessWidget {
 
   Widget _buildNextDeliveriesCard(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -184,7 +188,7 @@ class UpcomingDeliveriesTab extends StatelessWidget {
   ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isNext = status == "Next";
-    
+
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, '/order-detail', arguments: orderId);
@@ -270,11 +274,14 @@ class UpcomingDeliveriesTab extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: isNext
-                              ? SpatialDesignSystem.primaryColor.withOpacity(0.1)
-                              : SpatialDesignSystem.warningColor.withOpacity(0.1),
+                              ? SpatialDesignSystem.primaryColor
+                                  .withOpacity(0.1)
+                              : SpatialDesignSystem.warningColor
+                                  .withOpacity(0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
@@ -323,7 +330,7 @@ class DeliveryHistoryTab extends StatelessWidget {
 
   Widget _buildDoneOrdersSection(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -391,7 +398,7 @@ class DeliveryHistoryTab extends StatelessWidget {
     Color statusColor,
   ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, '/order-detail', arguments: orderId);
@@ -413,7 +420,9 @@ class DeliveryHistoryTab extends StatelessWidget {
               ),
               child: Center(
                 child: Icon(
-                  status == "Done" ? Icons.check_circle_outline : Icons.error_outline,
+                  status == "Done"
+                      ? Icons.check_circle_outline
+                      : Icons.error_outline,
                   color: statusColor,
                 ),
               ),
@@ -463,7 +472,8 @@ class DeliveryHistoryTab extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: statusColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(4),
@@ -495,35 +505,38 @@ class DeliveryHistoryTab extends StatelessWidget {
 }
 
 class _ListOrdersForDelivery extends StatelessWidget {
-  
   final List<OrdersResponse> listOrdersDelivery;
 
-  const _ListOrdersForDelivery({ required this.listOrdersDelivery});
+  const _ListOrdersForDelivery({required this.listOrdersDelivery});
 
   @override
   Widget build(BuildContext context) {
-    return ( listOrdersDelivery.isNotEmpty ) 
-      ? ListView.builder(
-          itemCount: listOrdersDelivery.length,
-          itemBuilder: (_, i) 
-            => CardOrdersDelivery(
-                orderResponse: listOrdersDelivery[i],
-                onPressed: () => Navigator.push(context, routeFrave(page: OrderDetailScreen(orderId: listOrdersDelivery[i].orderId.toString()))),
-               )
-        )
-      : Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(child: SvgPicture.asset('assets/svg/no-data.svg', height: 300)),
-          const SizedBox(height: 15.0),
-          TextCustom(
-            text: 'No Orders Available', 
-            color: SpatialDesignSystem.primaryColor, 
-            fontWeight: FontWeight.w500, 
-            fontSize: 21
-          )
-        ],
-      );
+    return (listOrdersDelivery.isNotEmpty)
+        ? ListView.builder(
+            itemCount: listOrdersDelivery.length,
+            itemBuilder: (_, i) => CardOrdersDelivery(
+                  orderResponse: listOrdersDelivery[i],
+                  onPressed: () => Navigator.push(
+                      context,
+                      routeFrave(
+                          page: OrderDetailScreen(
+                              orderId:
+                                  listOrdersDelivery[i].orderId.toString()))),
+                ))
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                  child:
+                      SvgPicture.asset('assets/svg/no-data.svg', height: 300)),
+              const SizedBox(height: 15.0),
+              TextCustom(
+                  text: 'No Orders Available',
+                  color: SpatialDesignSystem.primaryColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 21)
+            ],
+          );
   }
 }

@@ -3,7 +3,7 @@ import 'package:ktc_logistics_driver/presentation/components/spatial_button.dart
 import 'package:ktc_logistics_driver/presentation/components/spatial_glass_card.dart';
 import 'package:ktc_logistics_driver/presentation/components/spatial_text_field.dart';
 import 'package:ktc_logistics_driver/presentation/design/spatial_ui.dart';
-import 'package:ktc_logistics_driver/presentation/screens/delivery/order_detail_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/order/order_detail_screen.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'dart:ui';
 

@@ -14,7 +14,12 @@ import '../../../services/orders_services.dart';
 import '../../../domain/models/order/order_model.dart';
 
 class DashboardScreenSpatial extends StatefulWidget {
-  const DashboardScreenSpatial({super.key});
+  final bool showBottomNav;
+
+  const DashboardScreenSpatial({
+    super.key,
+    this.showBottomNav = true,
+  });
 
   @override
   State<DashboardScreenSpatial> createState() => _DashboardScreenSpatialState();
@@ -178,7 +183,6 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           // Navigation Items
           _buildNavItem(context, 0, Icons.dashboard, "Dashboard"),
           _buildNavItem(context, 1, Icons.local_shipping, "Deliveries"),
-          _buildNavItem(context, 2, Icons.shopping_bag, "Orders"),
           _buildNavItem(context, 3, Icons.account_circle, "Profile"),
 
           const Spacer(),
@@ -294,124 +298,141 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
   Widget _buildAppBar(BuildContext context, bool isTablet) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return GlassCard(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      borderRadius: const BorderRadius.only(
-        bottomLeft: Radius.circular(16),
-        bottomRight: Radius.circular(16),
-      ),
+    return AppBar(
       backgroundColor: isDark
-          ? Colors.black.withValues(alpha: 0.3)
-          : Colors.white.withValues(alpha: 0.6),
-      child: Row(
-        children: [
-          // Menu Icon for Mobile
-          if (!isTablet)
-            IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                // Open drawer or show modal bottom sheet with menu
-              },
-            ),
-
-          // Page Title
-          Text(
-            "Dashboard",
-            style: SpatialDesignSystem.headingSmall.copyWith(
-              color: isDark
-                  ? SpatialDesignSystem.textDarkPrimaryColor
-                  : SpatialDesignSystem.textPrimaryColor,
-            ),
-          ),
-
-          const Spacer(),
-
-          // Notification Badge
-          GestureDetector(
-            onTap: () {
-              // Mở trang thông báo
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Tính năng thông báo đang được phát triển'),
-                duration: Duration(seconds: 2),
-              ));
-            },
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.05)
-                    : Colors.white.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Stack(
-                children: [
-                  Icon(
-                    Icons.notifications_outlined,
-                    color: isDark
-                        ? SpatialDesignSystem.textDarkPrimaryColor
-                        : SpatialDesignSystem.textPrimaryColor,
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        color: SpatialDesignSystem.errorColor,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isDark
-                              ? SpatialDesignSystem.darkBackgroundColor
-                              : SpatialDesignSystem.backgroundColor,
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Add space
-          const SizedBox(width: 16),
-
-          // Avatar
-          GestureDetector(
-            onTap: () {
-              // Navigate to profile
-              Navigator.pushNamed(context, '/profile');
-            },
-            child: Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: SpatialDesignSystem.primaryColor,
-                  width: 2,
-                ),
-                shape: BoxShape.circle,
-              ),
-              child: CircleAvatar(
-                radius: 18,
-                backgroundColor: isDark
-                    ? Colors.white.withValues(alpha: 0.1)
-                    : Colors.white.withValues(alpha: 0.8),
-                child: Text(
-                  "TN",
-                  style: TextStyle(
-                    color: isDark
-                        ? SpatialDesignSystem.textDarkPrimaryColor
-                        : SpatialDesignSystem.primaryColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+          ? SpatialDesignSystem.darkBackgroundColor
+          : SpatialDesignSystem.backgroundColor,
+      elevation: 0,
+      centerTitle: true,
+      title: Text(
+        'Dashboard',
+        style: SpatialDesignSystem.headingMedium.copyWith(
+          color: isDark
+              ? SpatialDesignSystem.textDarkPrimaryColor
+              : SpatialDesignSystem.textPrimaryColor,
+        ),
       ),
+      automaticallyImplyLeading: false, // Remove back button
     );
+
+    // return GlassCard(
+    //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    //   borderRadius: const BorderRadius.only(
+    //     bottomLeft: Radius.circular(16),
+    //     bottomRight: Radius.circular(16),
+    //   ),
+    //   backgroundColor: isDark
+    //       ? Colors.black.withValues(alpha: 0.3)
+    //       : Colors.white.withValues(alpha: 0.6),
+    //   child: Row(
+    //     children: [
+    //       // Menu Icon for Mobile
+    //       if (!isTablet)
+    //         IconButton(
+    //           icon: const Icon(Icons.menu),
+    //           onPressed: () {
+    //             // Open drawer or show modal bottom sheet with menu
+    //           },
+    //         ),
+
+    //       // Page Title
+    //       Text(
+    //         "Dashboard",
+    //         style: SpatialDesignSystem.headingSmall.copyWith(
+    //           color: isDark
+    //               ? SpatialDesignSystem.textDarkPrimaryColor
+    //               : SpatialDesignSystem.textPrimaryColor,
+    //         ),
+    //       ),
+
+    //       const Spacer(),
+
+    //       // Notification Badge
+    //       GestureDetector(
+    //         onTap: () {
+    //           // Mở trang thông báo
+    //           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //             content: Text('Tính năng thông báo đang được phát triển'),
+    //             duration: Duration(seconds: 2),
+    //           ));
+    //         },
+    //         child: Container(
+    //           padding: const EdgeInsets.all(8),
+    //           decoration: BoxDecoration(
+    //             color: isDark
+    //                 ? Colors.white.withValues(alpha: 0.05)
+    //                 : Colors.white.withValues(alpha: 0.3),
+    //             borderRadius: BorderRadius.circular(12),
+    //           ),
+    //           child: Stack(
+    //             children: [
+    //               Icon(
+    //                 Icons.notifications_outlined,
+    //                 color: isDark
+    //                     ? SpatialDesignSystem.textDarkPrimaryColor
+    //                     : SpatialDesignSystem.textPrimaryColor,
+    //               ),
+    //               Positioned(
+    //                 right: 0,
+    //                 top: 0,
+    //                 child: Container(
+    //                   width: 10,
+    //                   height: 10,
+    //                   decoration: BoxDecoration(
+    //                     color: SpatialDesignSystem.errorColor,
+    //                     shape: BoxShape.circle,
+    //                     border: Border.all(
+    //                       color: isDark
+    //                           ? SpatialDesignSystem.darkBackgroundColor
+    //                           : SpatialDesignSystem.backgroundColor,
+    //                       width: 1.5,
+    //                     ),
+    //                   ),
+    //                 ),
+    //               ),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+
+    //       // Add space
+    //       const SizedBox(width: 16),
+
+    //       // Avatar
+    //       GestureDetector(
+    //         onTap: () {
+    //           // Navigate to profile
+    //           Navigator.pushNamed(context, '/profile');
+    //         },
+    //         child: Container(
+    //           padding: const EdgeInsets.all(2),
+    //           decoration: BoxDecoration(
+    //             border: Border.all(
+    //               color: SpatialDesignSystem.primaryColor,
+    //               width: 2,
+    //             ),
+    //             shape: BoxShape.circle,
+    //           ),
+    //           child: CircleAvatar(
+    //             radius: 18,
+    //             backgroundColor: isDark
+    //                 ? Colors.white.withValues(alpha: 0.1)
+    //                 : Colors.white.withValues(alpha: 0.8),
+    //             child: Text(
+    //               "TN",
+    //               style: TextStyle(
+    //                 color: isDark
+    //                     ? SpatialDesignSystem.textDarkPrimaryColor
+    //                     : SpatialDesignSystem.primaryColor,
+    //                 fontWeight: FontWeight.bold,
+    //               ),
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget _buildWelcomeSection(BuildContext context) {
@@ -448,7 +469,7 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
               ),
               const SizedBox(height: 8),
               Text(
-                "Your performance score is excellent! Keep up the good work.",
+                "Your performance is excellent! Keep up the good work.",
                 style: SpatialDesignSystem.bodyMedium.copyWith(
                   color: isDark
                       ? SpatialDesignSystem.textDarkSecondaryColor
@@ -1138,6 +1159,11 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
   }
 
   Widget _buildBottomNav() {
+    // Only show bottom nav if showBottomNav is true
+    if (!widget.showBottomNav) {
+      return const SizedBox.shrink();
+    }
+
     return BottomNavigationBar(
       currentIndex: _selectedIndex,
       onTap: (index) {
@@ -1170,10 +1196,10 @@ class _DashboardScreenSpatialState extends State<DashboardScreenSpatial> {
           icon: Icon(Icons.local_shipping),
           label: "Deliveries",
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_bag),
-          label: "Orders",
-        ),
+        // BottomNavigationBarItem(
+        //   icon: Icon(Icons.shopping_bag),
+        //   label: "Orders",
+        // ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_circle),
           label: "Profile",

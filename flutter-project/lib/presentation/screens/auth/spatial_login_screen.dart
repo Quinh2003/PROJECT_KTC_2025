@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ktc_logistics_driver/presentation/design/spatial_design_system.dart';
 import 'package:ktc_logistics_driver/presentation/design/spatial_components.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
-import 'package:ktc_logistics_driver/presentation/screens/dashboard/dashboard_screen_spatial.dart';
-import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_forgot_password_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -45,11 +43,7 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthenticatedState || state is AuthSuccessState) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const DashboardScreenSpatial(),
-            ),
-          );
+          Navigator.of(context).pushReplacementNamed('/dashboard');
         } else if (state is AuthErrorState) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -327,11 +321,7 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                       onPressed: isLoading
                           ? null
                           : () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const SpatialForgotPasswordScreen(),
-                                ),
-                              );
+                              Navigator.of(context).pushNamed('/forgot-password');
                             },
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.white,
@@ -435,12 +425,12 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                     2.2,
                 child: _buildQuickLoginCard(
                   name: 'John Smith',
-                  email: 'driver@ktc.com',
+                  email: 'driver_01@fr.com',
                   vehicleType: 'Small Truck',
                   avatar:
                       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
                   onTap: () {
-                    _emailController.text = 'driver@ktc.com';
+                    _emailController.text = 'driver_01@fr.com';
                     _passwordController.text = '123456';
                   },
                 ),
@@ -451,12 +441,12 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                     2.2,
                 child: _buildQuickLoginCard(
                   name: 'Sarah Johnson',
-                  email: 'driver2@ktc.com',
+                  email: 'offline_driver@ktc.com',
                   vehicleType: 'Motorcycle',
                   avatar:
                       'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face',
                   onTap: () {
-                    _emailController.text = 'driver2@ktc.com';
+                    _emailController.text = 'offline_driver@ktc.com';
                     _passwordController.text = '123456';
                   },
                 ),

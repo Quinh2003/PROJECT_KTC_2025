@@ -4,17 +4,17 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ktc_logistics_driver/presentation/blocs/blocs.dart';
 import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_login_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_forgot_password_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/auth/spatial_check_email_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/onboarding/onboarding_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/dashboard/dashboard_screen_spatial.dart';
 import 'package:ktc_logistics_driver/domain/usecases/usecases.dart';
 import 'package:ktc_logistics_driver/data/repositories/repository_implementations.dart'
     as mock_repo;
 import 'package:ktc_logistics_driver/services/mock_data_service.dart';
 import 'package:ktc_logistics_driver/services/mock_auth_service.dart';
-import 'package:ktc_logistics_driver/presentation/screens/delivery/deliveries_screen.dart';
 import 'package:ktc_logistics_driver/presentation/screens/map/route_map_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/delivery/order_detail_screen.dart';
-import 'package:ktc_logistics_driver/presentation/screens/profile/edit_profile_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/order/order_detail_screen.dart';
+import 'package:ktc_logistics_driver/presentation/screens/main_screen.dart';
 import 'services/push_notification_service.dart';
 
 final getIt = GetIt.instance;
@@ -28,17 +28,21 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case '/login':
         return MaterialPageRoute(builder: (_) => const SpatialLoginScreen());
+      case '/forgot-password':
+        return MaterialPageRoute(builder: (_) => const SpatialForgotPasswordScreen());
+      case '/check-email':
+        final email = settings.arguments as String?;
+        return MaterialPageRoute(builder: (_) => SpatialCheckEmailScreen(email: email ?? ''));
       case '/dashboard':
-        return MaterialPageRoute(
-            builder: (_) => const DashboardScreenSpatial());
+        return MaterialPageRoute(builder: (_) => const MainScreen(initialIndex: 0));
       case '/deliveries':
-        return MaterialPageRoute(builder: (_) => const DeliveriesScreen());
+        return MaterialPageRoute(builder: (_) => const MainScreen(initialIndex: 1));
       case '/routes':
         // Tạm thời dùng một routeId mặc định
         return MaterialPageRoute(
             builder: (_) => const RouteMapScreen(routeId: 'RT-2025-08-14-01'));
       case '/profile':
-        return MaterialPageRoute(builder: (_) => const EditProfileScreen());
+        return MaterialPageRoute(builder: (_) => const MainScreen(initialIndex: 2));
       case '/order-detail':
         // Lấy order ID từ arguments
         final orderId = settings.arguments as String;

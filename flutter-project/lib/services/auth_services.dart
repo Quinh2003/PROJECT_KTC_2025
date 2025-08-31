@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import '../data/env/environment.dart';
-import '../domain/models/auth/response_login.dart';
+import '../domain/models/auth/auth_response.dart';
 
 class AuthServices {
   final FlutterSecureStorage secureStorage;
@@ -10,7 +10,7 @@ class AuthServices {
   AuthServices({required this.secureStorage});
 
   /// Login với HTTP request tới Spring Boot backend
-  Future<ResponseLogin> loginController(String email, String password) async {
+  Future<AuthResponse> loginController(String email, String password) async {
     try {
       final env = Environment.getInstance();
       final response = await http.post(
@@ -25,28 +25,45 @@ class AuthServices {
         }),
       );
 
-      return ResponseLogin.fromJson(jsonDecode(response.body));
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      
+      // Chuyển đổi từ format cũ sang format mới
+      final Map<String, dynamic> convertedData = {
+        'success': responseData['resp'] ?? false,
+        'token': responseData['token'] ?? '',
+        'user': {
+          'uid': responseData['user']?['uid']?.toString() ?? '',
+          'name': '${responseData['user']?['firstName'] ?? ''} ${responseData['user']?['lastName'] ?? ''}'.trim(),
+          'email': responseData['user']?['email'] ?? '',
+          'phone': responseData['user']?['phone'] ?? '',
+          'image': responseData['user']?['image'] ?? '',
+          'role': responseData['user']?['rolId'] == 2 ? 'DRIVER' : 'USER',
+          'isActive': true,
+          'permissions': ['DRIVE', 'TRACK']
+        }
+      };
+
+      return AuthResponse.fromJson(convertedData);
     } catch (e) {
-      return ResponseLogin(
-        resp: false,
-        msg: e.toString(),
+      return AuthResponse(
+        success: false,
         token: '',
         user: User(
-          uid: 0,
-          firstName: '',
-          lastName: '',
+          uid: '',
+          name: '',
           email: '',
           phone: '',
           image: '',
-          rolId: 0,
-          notificationToken: '',
+          role: '',
+          isActive: false,
+          permissions: [],
         ),
       );
     }
   }
 
   /// Renew token
-  Future<ResponseLogin> renewLoginController() async {
+  Future<AuthResponse> renewLoginController() async {
     try {
       final token = await secureStorage.read(key: 'token');
       final env = Environment.getInstance();
@@ -59,21 +76,38 @@ class AuthServices {
         },
       );
 
-      return ResponseLogin.fromJson(jsonDecode(response.body));
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      
+      // Chuyển đổi từ format cũ sang format mới
+      final Map<String, dynamic> convertedData = {
+        'success': responseData['resp'] ?? false,
+        'token': responseData['token'] ?? '',
+        'user': {
+          'uid': responseData['user']?['uid']?.toString() ?? '',
+          'name': '${responseData['user']?['firstName'] ?? ''} ${responseData['user']?['lastName'] ?? ''}'.trim(),
+          'email': responseData['user']?['email'] ?? '',
+          'phone': responseData['user']?['phone'] ?? '',
+          'image': responseData['user']?['image'] ?? '',
+          'role': responseData['user']?['rolId'] == 2 ? 'DRIVER' : 'USER',
+          'isActive': true,
+          'permissions': ['DRIVE', 'TRACK']
+        }
+      };
+
+      return AuthResponse.fromJson(convertedData);
     } catch (e) {
-      return ResponseLogin(
-        resp: false,
-        msg: e.toString(),
+      return AuthResponse(
+        success: false,
         token: '',
         user: User(
-          uid: 0,
-          firstName: '',
-          lastName: '',
+          uid: '',
+          name: '',
           email: '',
           phone: '',
           image: '',
-          rolId: 0,
-          notificationToken: '',
+          role: '',
+          isActive: false,
+          permissions: [],
         ),
       );
     }

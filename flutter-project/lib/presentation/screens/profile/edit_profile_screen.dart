@@ -64,30 +64,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           : SpatialDesignSystem.backgroundColor,
         appBar: AppBar(
           backgroundColor: isDark
-              ? SpatialDesignSystem.darkSurfaceColor
-              : Colors.white,
+              ? SpatialDesignSystem.darkBackgroundColor
+              : SpatialDesignSystem.backgroundColor,
           elevation: 0,
           centerTitle: true,
           title: Text(
-            'Edit Profile', 
+            'Profile', 
             style: SpatialDesignSystem.subtitleLarge.copyWith(
               color: isDark
                 ? SpatialDesignSystem.textDarkPrimaryColor
                 : SpatialDesignSystem.textPrimaryColor,
             ),
           ),
-          leadingWidth: 60,
-          leading: InkWell(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Icon(
-                Icons.arrow_back_ios_new_rounded, 
-                color: SpatialDesignSystem.primaryColor, 
-                size: 20
-              ),
-            ),
-          ),
+          automaticallyImplyLeading: false, // Remove back button
         ),
         body: SafeArea(
           child: BlocBuilder<UserBloc, UserState>(
