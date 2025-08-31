@@ -125,7 +125,7 @@ flutter install
 - **Mật khẩu**: `123456`
 
 #### 🔌 **Tài khoản offline mode**
-- **Email**: `offline_driver@ktc.com`
+- **Email**: `driver_offline@ktc.com`
 - **Mật khẩu**: `123456`
 
 > **Lưu ý**: App đang sử dụng mock data để demo tính năng.

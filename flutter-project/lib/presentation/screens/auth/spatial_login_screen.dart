@@ -441,12 +441,12 @@ class _SpatialLoginScreenState extends State<SpatialLoginScreen> {
                     2.2,
                 child: _buildQuickLoginCard(
                   name: 'Sarah Johnson',
-                  email: 'offline_driver@ktc.com',
+                  email: 'driver_offline@ktc.com',
                   vehicleType: 'Motorcycle',
                   avatar:
                       'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face',
                   onTap: () {
-                    _emailController.text = 'offline_driver@ktc.com';
+                    _emailController.text = 'driver_offline@ktc.com';
                     _passwordController.text = '123456';
                   },
                 ),

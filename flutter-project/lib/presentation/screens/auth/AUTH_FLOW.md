@@ -44,7 +44,7 @@ Dự án sử dụng Clean Architecture với BLoC pattern để quản lý tr�
   - Password: `123456`
 
 - **Offline mode:**
-  - Email: `offline_driver@ktc.com` 
+  - Email: `driver_offline@ktc.com` 
   - Password: `123456`
 
 ## Các file liên quan

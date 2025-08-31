@@ -173,28 +173,15 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen>
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "KTC Logistics",
-                    style: SpatialDesignSystem.headingSmall.copyWith(
-                      color: isDark
-                          ? SpatialDesignSystem.textDarkPrimaryColor
-                          : SpatialDesignSystem.textPrimaryColor,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Route #RT-${widget.deliveryId}",
-                    style: SpatialDesignSystem.bodyMedium.copyWith(
-                      color: isDark
-                          ? SpatialDesignSystem.textDarkSecondaryColor
-                          : SpatialDesignSystem.textSecondaryColor,
-                    ),
-                  ),
-                ],
+              Text(
+                "KTC Logistics",
+                style: SpatialDesignSystem.headingSmall.copyWith(
+                  color: isDark
+                      ? SpatialDesignSystem.textDarkPrimaryColor
+                      : SpatialDesignSystem.textPrimaryColor,
+                ),
               ),
               Container(
                 padding:
@@ -212,6 +199,15 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen>
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Route #RT-${widget.deliveryId}",
+            style: SpatialDesignSystem.bodyMedium.copyWith(
+              color: isDark
+                  ? SpatialDesignSystem.textDarkSecondaryColor
+                  : SpatialDesignSystem.textSecondaryColor,
+            ),
           ),
           const SizedBox(height: 20),
           LinearProgressIndicator(
@@ -460,8 +456,8 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen>
                 const SizedBox(height: 16),
                 SpatialButton(
                   text: "Update Status",
-                  onPressed: _isUpdatingStatus 
-                      ? () {} 
+                  onPressed: _isUpdatingStatus
+                      ? () {}
                       : () {
                           setState(() {
                             _isUpdatingStatus = true;
@@ -472,11 +468,13 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen>
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Status updated to $_selectedStatus'),
-                                  backgroundColor: SpatialDesignSystem.successColor,
+                                  content: Text(
+                                      'Status updated to $_selectedStatus'),
+                                  backgroundColor:
+                                      SpatialDesignSystem.successColor,
                                 ),
                               );
-                              
+
                               setState(() {
                                 _isUpdatingStatus = false;
                               });
@@ -489,7 +487,7 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen>
                                   backgroundColor: Colors.red,
                                 ),
                               );
-                              
+
                               setState(() {
                                 _isUpdatingStatus = false;
                               });
@@ -647,11 +645,36 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen>
     // TODO: Implement orders list from API
     // Mock data for now
     final mockOrders = [
-      {'id': '1001', 'customer': 'Nguyen Van A', 'status': 'Pending', 'amount': '150,000 VND'},
-      {'id': '1002', 'customer': 'Tran Thi B', 'status': 'Delivered', 'amount': '275,000 VND'},
-      {'id': '1003', 'customer': 'Le Van C', 'status': 'In Transit', 'amount': '320,000 VND'},
-      {'id': '1004', 'customer': 'Pham Thi D', 'status': 'Pending', 'amount': '180,000 VND'},
-      {'id': '1005', 'customer': 'Hoang Van E', 'status': 'Pending', 'amount': '430,000 VND'},
+      {
+        'id': '1001',
+        'customer': 'Nguyen Van A',
+        'status': 'Pending',
+        'amount': '150,000 VND'
+      },
+      {
+        'id': '1002',
+        'customer': 'Tran Thi B',
+        'status': 'Delivered',
+        'amount': '275,000 VND'
+      },
+      {
+        'id': '1003',
+        'customer': 'Le Van C',
+        'status': 'In Transit',
+        'amount': '320,000 VND'
+      },
+      {
+        'id': '1004',
+        'customer': 'Pham Thi D',
+        'status': 'Pending',
+        'amount': '180,000 VND'
+      },
+      {
+        'id': '1005',
+        'customer': 'Hoang Van E',
+        'status': 'Pending',
+        'amount': '430,000 VND'
+      },
     ];
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -688,9 +711,11 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen>
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: _getOrderStatusColor(order['status']!).withOpacity(0.2),
+                          color: _getOrderStatusColor(order['status']!)
+                              .withOpacity(0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -827,7 +852,7 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen>
         // Giả lập dữ liệu đơn hàng để truyền vào map screen
         // Trong thực tế, dữ liệu này sẽ được lấy từ API
         Navigator.push(
-          context, 
+          context,
           MaterialPageRoute(
             builder: (context) => const Scaffold(
               body: Center(
