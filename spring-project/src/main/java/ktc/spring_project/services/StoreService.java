@@ -10,6 +10,19 @@ import java.util.List;
 
 @Service
 public class StoreService {
+    public Store createStoreFromDto(ktc.spring_project.dtos.store.CreateStoreRequestDTO dto) {
+        Store store = new Store();
+        store.setStoreName(dto.getStoreName());
+        store.setEmail(dto.getEmail());
+        store.setPhone(dto.getPhone());
+        store.setAddress(dto.getAddress());
+    store.setLatitude(dto.getLatitude() != null ? java.math.BigDecimal.valueOf(dto.getLatitude()) : null);
+    store.setLongitude(dto.getLongitude() != null ? java.math.BigDecimal.valueOf(dto.getLongitude()) : null);
+        store.setIsActive(dto.getIsActive());
+        store.setNotes(dto.getNotes());
+        // Nếu có các trường khác (createdBy...), hãy gán thêm ở đây
+        return storeRepository.save(store);
+    }
 
     @Autowired
     private StoreRepository storeRepository;

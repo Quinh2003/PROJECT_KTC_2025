@@ -7,9 +7,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
+    Optional<OrderItem> findByProductCode(String productCode);
     
     List<OrderItem> findByOrderId(Long orderId);
     

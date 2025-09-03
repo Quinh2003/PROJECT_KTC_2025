@@ -1,4 +1,5 @@
 package ktc.spring_project.services;
+import ktc.spring_project.exceptions.HttpException;
 
 import ktc.spring_project.dtos.DeliveryFeeBreakdown;
 import ktc.spring_project.entities.*;
@@ -106,11 +107,11 @@ public class DeliveryFeeCalculationService {
         Address deliveryAddress = order.getAddress();
         
         if (store.getLatitude() == null || store.getLongitude() == null) {
-            throw new IllegalArgumentException("Store không có tọa độ: " + store.getStoreName());
+            throw new HttpException("Store không có tọa độ: " + store.getStoreName(), org.springframework.http.HttpStatus.BAD_REQUEST);
         }
         
         if (deliveryAddress.getLatitude() == null || deliveryAddress.getLongitude() == null) {
-            throw new IllegalArgumentException("Địa chỉ giao hàng không có tọa độ: " + deliveryAddress.getAddress());
+            throw new HttpException("Địa chỉ giao hàng không có tọa độ: " + deliveryAddress.getAddress(), org.springframework.http.HttpStatus.BAD_REQUEST);
         }
         
         return distanceCalculationService.calculateDistance(

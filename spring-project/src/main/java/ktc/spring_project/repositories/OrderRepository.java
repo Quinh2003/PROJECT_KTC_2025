@@ -13,6 +13,10 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
+    Optional<Order> findByOrderCode(String orderCode);
+    
+    // Kiểm tra trùng lặp orderCode
+    boolean existsByOrderCode(String orderCode);
 
     List<Order> findByStatus_Id(Short statusId);
     List<Order> findByStore_Id(Long storeId);

@@ -47,21 +47,10 @@ public class OrderController {
      * Tạo đơn hàng mới
      */
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody CreateDeliveryOrderRequestDTO dto) {
         try {
-            // Đặt giá trị mặc định nếu không được cung cấp
-            if (order.getBenefitPerOrder() == null) {
-                order.setBenefitPerOrder(BigDecimal.ZERO);
-            }
-            if (order.getOrderProfitPerOrder() == null) {
-                order.setOrderProfitPerOrder(BigDecimal.ZERO);
-            }
-            if (order.getTotalAmount() == null) {
-                order.setTotalAmount(BigDecimal.valueOf(500.00)); // Giá trị mặc định từ JSON của bạn
-            }
-            
-            Order createdOrder = orderService.createOrder(order);
-            return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
+            Order order = orderService.createOrderFromDTO(dto);
+            return new ResponseEntity<>(order, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -188,7 +177,7 @@ public class OrderController {
     @PatchMapping("/{id}")
     public ResponseEntity<Order> patchOrder(
             @PathVariable Long id,
-            @RequestBody Order orderDetails) {
+            @Valid @RequestBody Order orderDetails) {
         try {
             Order updatedOrder = orderService.updateOrder(id, orderDetails);
             return ResponseEntity.ok(updatedOrder);
@@ -200,7 +189,7 @@ public class OrderController {
     @PutMapping("/{id}")
 public ResponseEntity<Order> putOrder(
         @PathVariable Long id,
-        @RequestBody Order orderDetails) {
+    @Valid @RequestBody Order orderDetails) {
     try {
         Order updatedOrder = orderService.updateOrder(id, orderDetails);
         return ResponseEntity.ok(updatedOrder);
@@ -224,7 +213,7 @@ public ResponseEntity<Order> putOrder(
     @PatchMapping("/{id}/status")
     public ResponseEntity<Order> updateOrderStatus(
             @PathVariable Long id,
-            @RequestBody UpdateOrderStatusDTO dto) {
+            @Valid @RequestBody UpdateOrderStatusDTO dto) {
         try {
             Order order = orderService.getOrderById(id);
             if (dto.statusId != null) {
@@ -243,7 +232,7 @@ public ResponseEntity<Order> putOrder(
     @PatchMapping("/{id}/vehicle")
     public ResponseEntity<Order> updateOrderVehicle(
             @PathVariable Long id,
-            @RequestBody UpdateOrderVehicleDTO dto) {
+            @Valid @RequestBody UpdateOrderVehicleDTO dto) {
         try {
             Order order = orderService.getOrderById(id);
             if (dto.vehicleId != null && dto.vehicleId > 0) {

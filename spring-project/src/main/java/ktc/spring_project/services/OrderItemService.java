@@ -26,6 +26,10 @@
         }
 
         public OrderItem save(OrderItem orderItem) {
+            // Kiểm tra trùng lặp productCode
+            if (orderItem.getProductCode() != null && orderItemRepository.findByProductCode(orderItem.getProductCode()).isPresent()) {
+                throw new ktc.spring_project.exceptions.EntityDuplicateException("OrderItem productCode");
+            }
             return orderItemRepository.save(orderItem);
         }
 

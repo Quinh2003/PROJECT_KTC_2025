@@ -3,14 +3,12 @@ package ktc.spring_project.controllers;
 import ktc.spring_project.entities.Store;
 import ktc.spring_project.services.StoreService;
 import ktc.spring_project.services.UserService;
+import ktc.spring_project.dtos.store.CreateStoreRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,19 +86,17 @@ public class StoreController {
     @GetMapping("/{id}")
     public ResponseEntity<Store> getStoreById(@PathVariable Long id) {
         Store store = storeService.getStoreById(id);
-        return ResponseEntity.ok(store);
+        return ResponseEntity.ok(store); 
     }
 
     /**
-     * Create a new store
+     * Create a new store (DTO, validation)
      */
     @PostMapping
     public ResponseEntity<Store> createStore(
-            @Valid @RequestBody Store store,
+            @Valid @RequestBody CreateStoreRequestDTO dto,
             Authentication authentication) {
-
-        // TO-DO: Add authentication handling once implemented in service
-        Store createdStore = storeService.createStore(store);
+        Store createdStore = storeService.createStoreFromDto(dto);
         return new ResponseEntity<>(createdStore, HttpStatus.CREATED);
     }
 

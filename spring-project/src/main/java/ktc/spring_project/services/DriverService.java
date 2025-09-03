@@ -1,4 +1,5 @@
 package ktc.spring_project.services;
+import ktc.spring_project.exceptions.HttpException;
 
 import ktc.spring_project.entities.User;
 import ktc.spring_project.entities.Vehicle;
@@ -118,7 +119,7 @@ public class DriverService {
 
         // Check if vehicle is already assigned
         if (vehicle.getCurrentDriver() != null && !vehicle.getCurrentDriver().equals(driverId)) {
-            throw new RuntimeException("Vehicle already assigned to another driver");
+            throw new HttpException("Vehicle already assigned to another driver", org.springframework.http.HttpStatus.CONFLICT);
         }
 
         // Unassign from previous vehicle if any

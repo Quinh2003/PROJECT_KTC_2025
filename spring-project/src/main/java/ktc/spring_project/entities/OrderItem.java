@@ -13,6 +13,11 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "order_items")
 public class OrderItem {
+    @Column(name = "product_code", length = 50, nullable = false)
+    private String productCode;
+
+    public String getProductCode() { return productCode; }
+    public void setProductCode(String productCode) { this.productCode = productCode; }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

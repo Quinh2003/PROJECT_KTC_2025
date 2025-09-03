@@ -12,6 +12,11 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "orders")
 public class Order {
+    @Column(name = "order_code", length = 50, unique = true, nullable = false)
+    private String orderCode;
+
+    public String getOrderCode() { return orderCode; }
+    public void setOrderCode(String orderCode) { this.orderCode = orderCode; }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

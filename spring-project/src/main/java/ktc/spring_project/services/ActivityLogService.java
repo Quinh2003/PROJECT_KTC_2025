@@ -1,4 +1,5 @@
 package ktc.spring_project.services;
+import ktc.spring_project.exceptions.HttpException;
 
 import ktc.spring_project.entities.ActivityLog;
 import ktc.spring_project.enums.ActionType;
@@ -55,7 +56,7 @@ public class ActivityLogService {
             activityLogRepository.save(log);
         } catch (IllegalArgumentException e) {
             // Xử lý trường hợp action không hợp lệ
-            throw new IllegalArgumentException("Invalid action type: " + action);
+            throw new HttpException("Invalid action type: " + action, org.springframework.http.HttpStatus.BAD_REQUEST);
         }
     }
 

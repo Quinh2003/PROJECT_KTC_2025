@@ -5,6 +5,9 @@ import ktc.spring_project.services.UserService;
 import ktc.spring_project.dtos.auth.GoogleLoginRequestDto;
 import ktc.spring_project.dtos.auth.GoogleLoginWithCredentialRequestDto;
 import ktc.spring_project.entities.User;
+import ktc.spring_project.dtos.auth.LoginRequestDTO;
+import ktc.spring_project.exceptions.HttpException;
+import ktc.spring_project.exceptions.EntityDuplicateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +19,6 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Controller responsible for authentication
@@ -52,11 +54,8 @@ public ResponseEntity<List<User>> getAllUsers() {
 // Tạo mới người dùng hoặc đăng nhập
 @PostMapping("/login")
 public ResponseEntity<Map<String, Object>> login(
-        @Valid @RequestBody Map<String, String> credentials) {
-    String email = credentials.get("email");
-    String password = credentials.get("password");
-
-    Map<String, Object> response = authService.authenticate(email, password);
+        @Valid @RequestBody LoginRequestDTO loginRequest) {
+    Map<String, Object> response = authService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
     return ResponseEntity.ok(response);
 }
 // @PostMapping("/users")
@@ -67,15 +66,14 @@ public ResponseEntity<Map<String, Object>> login(
 @PostMapping("/users")
 public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
     System.out.println("==> Đã vào createUser");
-    try {
-        User createdUser = userService.createUser(user);
-        return ResponseEntity.ok(createdUser);
-    } catch (RuntimeException e) {
-        // Return error response with proper message
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", e.getMessage());
-        return ResponseEntity.badRequest().body(errorResponse);
-    }
+        try {
+            User createdUser = userService.createUser(user);
+            return ResponseEntity.ok(createdUser);
+        } catch (EntityDuplicateException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new HttpException(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
 }
 // Cập nhật toàn bộ thông tin người dùng
 @PutMapping("/users/{id}")

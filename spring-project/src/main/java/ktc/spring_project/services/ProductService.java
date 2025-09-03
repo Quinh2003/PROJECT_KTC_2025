@@ -95,6 +95,27 @@ public class ProductService {
         return new ArrayList<>();
     }
 
+    // Tạo mới sản phẩm từ DTO, kiểm tra trùng tên
+    public Product createProductFromDto(ktc.spring_project.dtos.product.CreateProductRequestDTO dto, Authentication authentication) {
+        // Nếu DTO có trường id, kiểm tra trùng id
+        // Nếu id là tự sinh, logic này sẽ không có tác dụng
+        // Giả sử bạn muốn kiểm tra trùng id do client truyền lên
+        if (dto.getCreatedByUserId() != null && productRepository.findById(dto.getCreatedByUserId()).isPresent()) {
+            throw new ktc.spring_project.exceptions.EntityDuplicateException("Product ID already exists");
+        }
+        Product product = new Product();
+        // Nếu muốn gán id từ DTO, thêm dòng sau:
+        // product.setId(dto.getCreatedByUserId());
+        product.setName(dto.getName());
+        product.setDescription(dto.getDescription());
+        product.setUnitPrice(dto.getUnitPrice());
+        product.setWeight(dto.getWeight());
+        product.setIsFragile(dto.getFragile());
+        product.setStockQuantity(dto.getStockQuantity());
+        product.setNotes(dto.getNotes());
+        // ...existing code mapping các trường khác...
+        return save(product);
+    }
 // ...existing code...
 public Product patchProduct(Long id, Map<String, Object> updates, Authentication authentication) {
     Product product = getProductById(id);
@@ -134,12 +155,13 @@ public Product patchProduct(Long id, Map<String, Object> updates, Authentication
 
 
 
-        // Save the product
+        // Kiểm tra trùng lặp tên sản phẩm
+        if (productRepository.findByName(product.getName()).isPresent()) {
+            throw new ktc.spring_project.exceptions.EntityDuplicateException("Product name");
+        }
         Product savedProduct = save(product);
-
         // Log the activity (in a real implementation)
         // activityLogService.logActivity(authentication, "CREATE", "products", savedProduct.getId());
-
         return savedProduct;
     }
 
