@@ -5,15 +5,46 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchOrdersRaw, updateOrderVehicle } from "../../services/OrderAPI";
 import { fetchVehicleStats } from "../../services/VehicleListAPI";
 import type { Vehicle } from "../../types";
-import { FaUserCog, FaCheck, FaTimes, FaCar, FaSync } from "react-icons/fa";
+import { FaUserCog, FaCheck, FaTimes, FaCar } from "react-icons/fa";
+
+type OrderType = {
+  id: number;
+  code: string;
+  customer: string;
+  address: string;
+  note: string;
+  date: string;
+  from: string;
+  to: string;
+  description: string;
+  status: string;
+  priority: string;
+  currentDriver: {
+    id: number;
+    fullName?: string;
+    username: string;
+    phone?: string;
+  } | null;
+  assignedVehicle: {
+    id: number;
+    licensePlate: string;
+    vehicleType: string;
+    currentDriver?: {
+      id: number;
+      fullName?: string;
+      username: string;
+      phone?: string;
+    };
+  } | null;
+  createdAt: string;
+};
 
 interface OrdersAssignmentProps {
-  orders?: any[];
+  orders?: OrderType[];
 }
 
-
-export default function OrdersAssignment({}: OrdersAssignmentProps) {
-  const [detailOrder, setDetailOrder] = useState<any | null>(null);
+export default function OrdersAssignment(_props: OrdersAssignmentProps) {
+  const [detailOrder, setDetailOrder] = useState<OrderType | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const queryClient = useQueryClient();
   const [selectedVehicles, setSelectedVehicles] = useState<{ [orderId: string]: string }>({});
@@ -28,13 +59,13 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
     data: ordersPage = { data: [], total: 0 },
     isLoading: ordersLoading,
     error: ordersError
-  } = useQuery<{ data: any[]; total: number }, Error>({
+  } = useQuery({
     queryKey: ['orders', currentPage, PAGE_SIZE],
     queryFn: ({ queryKey }) => {
       const [, page, size] = queryKey as [string, number, number];
       return fetchOrdersRaw(page, size);
     },
-  placeholderData: (previous) => previous,
+    placeholderData: (previous) => previous,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
@@ -51,22 +82,40 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
   const vehicles = vehiclesData?.sampleVehicles || [];
 
   // Map dữ liệu orders - server trả về { data: [], total: number }
-  const data = (Array.isArray(ordersPage.data) ? ordersPage.data : []).map((item: any): any => ({
-    id: Number(item.id),
-    code: item.code || item.orderCode || item.id,
-    customer: item.customer || item.store?.storeName || "",
-    address: item.address?.address || item.toAddress || item.to || "",
-    note: item.note || "",
-    date: item.date || item.createdAt?.slice(0, 10) || "",
-    from: item.from || item.fromAddress || item.store?.address || "",
-    to: item.to || item.toAddress || item.address?.address || "",
-    description: item.description || "",
-    status: item.status?.name || item.status || "",
-    priority: item.priority || item.status?.statusType || "",
-    currentDriver: item.currentDriver || item.driver || item.assignedDriver || null,
-    assignedVehicle: item.assignedVehicle || item.vehicle || null,
-    createdAt: item.createdAt || "", // Giữ lại để hiển thị
-  }));
+  const data = (Array.isArray((ordersPage as { data: unknown[]; total: number })?.data) ? (ordersPage as { data: unknown[]; total: number }).data : []).map((item: unknown): OrderType => {
+    const orderItem = item as Record<string, unknown>;
+    return {
+      id: Number(orderItem.id),
+      code: (orderItem.code || orderItem.orderCode || orderItem.id) as string,
+      customer: (orderItem.customer || (orderItem.store as { storeName: string })?.storeName || "") as string,
+      address: ((orderItem.address as { address: string })?.address || orderItem.toAddress || orderItem.to || "") as string,
+      note: (orderItem.note || "") as string,
+      date: (orderItem.date || (orderItem.createdAt as string)?.slice(0, 10) || "") as string,
+      from: (orderItem.from || orderItem.fromAddress || (orderItem.store as { address: string })?.address || "") as string,
+      to: (orderItem.to || orderItem.toAddress || (orderItem.address as { address: string })?.address || "") as string,
+      description: (orderItem.description || "") as string,
+      status: ((orderItem.status as { name: string })?.name || orderItem.status || "") as string,
+      priority: (orderItem.priority || (orderItem.status as { statusType: string })?.statusType || "") as string,
+      currentDriver: orderItem.currentDriver ? {
+        id: Number((orderItem.currentDriver as { id: number }).id),
+        fullName: (orderItem.currentDriver as { fullName?: string }).fullName,
+        username: (orderItem.currentDriver as { username: string }).username,
+        phone: (orderItem.currentDriver as { phone?: string }).phone,
+      } : null,
+      assignedVehicle: orderItem.assignedVehicle ? {
+        id: Number((orderItem.assignedVehicle as { id: number }).id),
+        licensePlate: (orderItem.assignedVehicle as { licensePlate: string }).licensePlate,
+        vehicleType: (orderItem.assignedVehicle as { vehicleType: string }).vehicleType,
+        currentDriver: (orderItem.assignedVehicle as { currentDriver?: unknown }).currentDriver ? {
+          id: Number(((orderItem.assignedVehicle as { currentDriver: { id: number } }).currentDriver as { id: number }).id),
+          fullName: ((orderItem.assignedVehicle as { currentDriver: { fullName?: string } }).currentDriver as { fullName?: string }).fullName,
+          username: ((orderItem.assignedVehicle as { currentDriver: { username: string } }).currentDriver as { username: string }).username,
+          phone: ((orderItem.assignedVehicle as { currentDriver: { phone?: string } }).currentDriver as { phone?: string }).phone,
+        } : undefined,
+      } : null,
+      createdAt: (orderItem.createdAt || "") as string,
+    };
+  });
   const totalOrders =
     typeof ordersPage === "object" &&
     ordersPage !== null &&
@@ -74,18 +123,10 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
       ? (ordersPage.total as number)
       : 0;
   const totalPages = Math.ceil(totalOrders / PAGE_SIZE);
-  const paginatedData: any[] = data; // Đã là dữ liệu trang hiện tại
+  const paginatedData: OrderType[] = data; // Đã là dữ liệu trang hiện tại
 
   const loading = ordersLoading || vehiclesLoading;
   const error = ordersError || vehiclesError;
-
-  // Helper function to refresh current page data
-  const refreshData = async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ['orders', currentPage, PAGE_SIZE] }),
-      queryClient.invalidateQueries({ queryKey: ['vehicles'] })
-    ]);
-  };
 
   // Helper function to get available vehicles (vehicles with assigned drivers)
   const getAvailableVehicles = (): Vehicle[] => {
@@ -245,7 +286,7 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
       ) : error ? (
         <div className="text-center py-12 px-4 bg-red-100/80 border border-red-200 rounded-xl text-red-700 font-semibold shadow flex items-center justify-center gap-2">
           <FaTimes className="text-xl text-red-500" />
-          {(error as any)?.message || "Đã xảy ra lỗi khi tải dữ liệu"}
+          {(error as Error)?.message || "Đã xảy ra lỗi khi tải dữ liệu"}
         </div>
       ) : (
         <>
@@ -273,7 +314,7 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedData.map((order: any, index: number) => (
+                  {paginatedData.map((order: OrderType, index: number) => (
                     <tr
                       key={order.id}
                       className={`border-b border-blue-100/40 hover:bg-blue-50/40 transition-all duration-200 ${
@@ -343,7 +384,7 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
                                     👤 {order.assignedVehicle.currentDriver.fullName || order.assignedVehicle.currentDriver.username}
                                   </div>
                                   <div className="text-xs text-gray-600">
-                                    📞 {(order.assignedVehicle.currentDriver as any)?.phone || 'Chưa có SĐT'}
+                                    📞 {order.assignedVehicle.currentDriver?.phone || 'Chưa có SĐT'}
                                   </div>
                                 </>
                               )}
@@ -368,7 +409,7 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
                                       👤 {order.currentDriver.fullName || order.currentDriver.username}
                                     </div>
                                     <div className="text-xs text-gray-600">
-                                      📞 {(order.currentDriver as any)?.phone || 'Chưa có SĐT'}
+                                      📞 {order.currentDriver?.phone || 'Chưa có SĐT'}
                                     </div>
                                   </div>
                                 ) : (
@@ -377,7 +418,7 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
                                       👤 {order.currentDriver.fullName || order.currentDriver.username}
                                     </div>
                                     <div className="text-xs text-gray-600">
-                                      📞 {(order.currentDriver as any)?.phone || 'Chưa có SĐT'}
+                                      📞 {order.currentDriver?.phone || 'Chưa có SĐT'}
                                     </div>
                                     <div className="text-xs text-orange-600 mt-1 font-bold">
                                       ⚠️ Chưa có xe được gán
@@ -409,7 +450,7 @@ export default function OrdersAssignment({}: OrdersAssignmentProps) {
                                           👤 {selectedVehicle.currentDriver.fullName}
                                         </div>
                                         <div className="text-xs text-blue-700">
-                                          📞 {(selectedVehicle.currentDriver as any)?.phone || 'Chưa có SĐT'}
+                                          📞 {selectedVehicle.currentDriver?.phone || 'Chưa có SĐT'}
                                         </div>
                                       </div>
                                     ) : null;

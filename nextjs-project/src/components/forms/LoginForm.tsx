@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { AuthResponse } from "../../types/User";
 import Link from "next/dist/client/link";
 import { loginApi, googleLoginApi } from "../../server/auth.api";
@@ -8,12 +7,24 @@ import ForgotPasswordForm from "./ForgotPasswordForm";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { app } from "../../lib/firebase";
 
+// Validation functions - đơn giản như trong thực tế (theo backend DTO)
+const validateEmail = (email: string) => {
+  if (!email.trim()) return "Email is required";
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) return "Email should be valid";
+  return "";
+};
+
+const validatePassword = (password: string) => {
+  if (!password.trim()) return "Password is required";
+  return "";
+};
+
 interface LoginFormProps {
   onLogin: (response: AuthResponse) => void;
 }
 
 export default function LoginForm({ onLogin }: LoginFormProps) {
-  const router = useRouter();
   // Xử lý đăng nhập bằng Google
   const handleGoogleLogin = async () => {
     const auth = getAuth(app);
@@ -38,6 +49,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       } else {
         alert("This application is for customers only. Please use the employee application.");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       alert("Đăng nhập Google thất bại!");
     }
@@ -48,10 +60,29 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setEmailError("");
+    setPasswordError("");
+    
+    // Validate form
+    const emailErr = validateEmail(email);
+    const passwordErr = validatePassword(password);
+    
+    if (emailErr) {
+      setEmailError(emailErr);
+      return;
+    }
+    
+    if (passwordErr) {
+      setPasswordError(passwordErr);
+      return;
+    }
+    
     setLoading(true);
     try {
       const res = await loginApi(email, password);
@@ -107,12 +138,25 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
             name="email"
             type="email"
             value={email}
-            onChange={e => setEmail(e.target.value)}
-            className="w-full bg-transparent border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400/40 focus:border-blue-400/40 transition-all duration-300"
+            onChange={e => {
+              setEmail(e.target.value);
+              if (emailError) setEmailError("");
+            }}
+            onBlur={e => {
+              const err = validateEmail(e.target.value);
+              setEmailError(err);
+            }}
+            className={`w-full bg-transparent border ${emailError ? 'border-red-400' : 'border-white/20'} rounded-xl px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 ${emailError ? 'focus:ring-red-400/40 focus:border-red-400/40' : 'focus:ring-blue-400/40 focus:border-blue-400/40'} transition-all duration-300`}
             placeholder="Enter email"
             required
             autoComplete="email"
           />
+          {emailError && (
+            <p className="text-red-300 text-sm mt-1 flex items-center gap-1">
+              <span>⚠️</span>
+              {emailError}
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -134,8 +178,15 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
               name="password"
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full bg-transparent border border-white/20 rounded-xl px-4 py-3 pr-12 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400/40 focus:border-blue-400/40 transition-all duration-300"
+              onChange={e => {
+                setPassword(e.target.value);
+                if (passwordError) setPasswordError("");
+              }}
+              onBlur={e => {
+                const err = validatePassword(e.target.value);
+                setPasswordError(err);
+              }}
+              className={`w-full bg-transparent border ${passwordError ? 'border-red-400' : 'border-white/20'} rounded-xl px-4 py-3 pr-12 text-white placeholder-white/60 focus:outline-none focus:ring-2 ${passwordError ? 'focus:ring-red-400/40 focus:border-red-400/40' : 'focus:ring-blue-400/40 focus:border-blue-400/40'} transition-all duration-300`}
               placeholder="Enter password"
               required
               autoComplete="current-password"
@@ -150,6 +201,12 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
               {showPassword ? <FaLockOpen className="w-3 h-3" /> : <FaLock className="w-3 h-3" />}
             </button>
           </div>
+          {passwordError && (
+            <p className="text-red-300 text-sm mt-1 flex items-center gap-1">
+              <span>⚠️</span>
+              {passwordError}
+            </p>
+          )}
         </div>
 
         {error && (

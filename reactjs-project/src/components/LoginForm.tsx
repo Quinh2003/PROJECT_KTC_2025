@@ -1,16 +1,48 @@
 import { useState } from "react";
 import type { User } from "../types/User";
 
+// Validation functions - đơn giản như trong thực tế
+const validateEmail = (email: string) => {
+  if (!email.trim()) return "Email is required";
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) return "Email should be valid";
+  return "";
+};
+
+const validatePassword = (password: string) => {
+  if (!password.trim()) return "Password is required";
+  return "";
+};
+
 export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setEmailError("");
+    setPasswordError("");
+    
+    // Validate form
+    const emailErr = validateEmail(email);
+    const passwordErr = validatePassword(password);
+    
+    if (emailErr) {
+      setEmailError(emailErr);
+      return;
+    }
+    
+    if (passwordErr) {
+      setPasswordError(passwordErr);
+      return;
+    }
+    
     setLoading(true);
     try {
       const res = await fetch("http://localhost:8080/api/auth/login", {
@@ -80,8 +112,15 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
                 id="email"
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
-                className="relative w-full bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300 hover:bg-white/15"
+                onChange={e => {
+                  setEmail(e.target.value);
+                  if (emailError) setEmailError("");
+                }}
+                onBlur={e => {
+                  const err = validateEmail(e.target.value);
+                  setEmailError(err);
+                }}
+                className={`relative w-full bg-white/10 backdrop-blur-sm border ${emailError ? 'border-red-400' : 'border-white/30'} rounded-xl px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 ${emailError ? 'focus:ring-red-400/50 focus:border-red-400/50' : 'focus:ring-blue-400/50 focus:border-blue-400/50'} transition-all duration-300 hover:bg-white/15`}
                 placeholder="Enter your email address"
                 required
                 autoComplete="username"
@@ -90,6 +129,12 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
                 <span className="text-white/40">✉️</span>
               </div>
             </div>
+            {emailError && (
+              <p className="text-red-300 text-sm mt-1 flex items-center gap-1">
+                <span>⚠️</span>
+                {emailError}
+              </p>
+            )}
           </div>
 
           {/* Password Input */}
@@ -103,8 +148,15 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
                 id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="relative w-full bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-3 pr-12 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300 hover:bg-white/15"
+                onChange={e => {
+                  setPassword(e.target.value);
+                  if (passwordError) setPasswordError("");
+                }}
+                onBlur={e => {
+                  const err = validatePassword(e.target.value);
+                  setPasswordError(err);
+                }}
+                className={`relative w-full bg-white/10 backdrop-blur-sm border ${passwordError ? 'border-red-400' : 'border-white/30'} rounded-xl px-4 py-3 pr-12 text-white placeholder-white/60 focus:outline-none focus:ring-2 ${passwordError ? 'focus:ring-red-400/50 focus:border-red-400/50' : 'focus:ring-blue-400/50 focus:border-blue-400/50'} transition-all duration-300 hover:bg-white/15`}
                 placeholder="Enter your password"
                 required
                 autoComplete="current-password"
@@ -119,6 +171,12 @@ export default function LoginForm({ onLogin }: { onLogin: (user: User) => void }
                 {showPassword ? "🙈" : "🐵"}
               </button>
             </div>
+            {passwordError && (
+              <p className="text-red-300 text-sm mt-1 flex items-center gap-1">
+                <span>⚠️</span>
+                {passwordError}
+              </p>
+            )}
           </div>
           {/* Error Message */}
           {error && (
