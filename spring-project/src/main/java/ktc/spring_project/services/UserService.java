@@ -19,6 +19,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +58,7 @@ public class UserService {
     private JavaMailSender mailSender;
 
     public User createUser(User user) {
-        System.out.println("==> Đã vào createUser với email: " + user.getEmail());
+    // Log bảo mật giữ lại nếu cần
         
         // Check if email already exists
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -76,7 +77,7 @@ public class UserService {
                 counter++;
             }
             user.setUsername(username);
-            System.out.println("==> Đã gán username: " + username);
+            // ...existing code...
         } else {
             // Check if provided username already exists
             if (userRepository.findByUsername(user.getUsername()).isPresent()) {
@@ -91,17 +92,16 @@ public class UserService {
                 .orElseGet(() -> roleRepository.findByRoleName("USER")
                     .orElseThrow(() -> new RuntimeException("No default role found")));
             user.setRole(customerRole);
-            System.out.println("==> Đã gán role: " + customerRole.getRoleName());
+            // ...existing code...
         }
         
         // Encode password
-        String rawPassword = user.getPassword();
-        String encodedPassword = passwordEncoder.encode(rawPassword);
-        user.setPassword(encodedPassword);
-        System.out.println("==> Đã encode password");
+    String rawPassword = user.getPassword();
+    // Log bảo mật: chỉ giữ lại nếu cần debug
+    String encodedPassword = passwordEncoder.encode(rawPassword);
+    user.setPassword(encodedPassword);
         
         User savedUser = userRepository.save(user);
-        System.out.println("==> Đã lưu user với ID: " + savedUser.getId());
         
         return savedUser;
     }
@@ -130,7 +130,7 @@ public class UserService {
             user.setEmail(userDetails.getEmail());
         }
         if (userDetails.getPassword() != null) {
-            user.setPassword(userDetails.getPassword());
+                user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
         }
         if (userDetails.getFullName() != null) {
             user.setFullName(userDetails.getFullName());
@@ -192,7 +192,12 @@ User user = getUserById(id);
             Field field = ReflectionUtils.findField(User.class, key);
             if (field != null) {
                 field.setAccessible(true);
-                ReflectionUtils.setField(field, user, value);
+                if ("password".equals(key) && value instanceof String) {
+                    String encodedPassword = passwordEncoder.encode((String) value);
+                    ReflectionUtils.setField(field, user, encodedPassword);
+                } else {
+                    ReflectionUtils.setField(field, user, value);
+                }
             }
         });
 
@@ -277,7 +282,7 @@ User user = getUserById(id);
                 newUser.setPassword(defaultPassword);
                 // Đánh dấu chưa xác thực OTP
                 newUser.setTotpEnabled(false);
-                System.out.println("[GoogleLogin] Password before save: " + newUser.getPassword());
+                // ...existing code...
                 User savedUser = userRepository.save(newUser);
                 // Sinh secret TOTP và gửi email mã OTP/TOTP cho user
                 String secret = getOrCreateTotpSecret(email);
