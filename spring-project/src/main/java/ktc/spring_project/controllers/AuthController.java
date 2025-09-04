@@ -87,7 +87,8 @@ public ResponseEntity<Map<String, Object>> login(
             issuer, email, secret, issuer
         );
         // Gửi secret TOTP về email cho user
-        userService.sendOtpEmail(email, secret);
+        // KHÔNG gửi secret TOTP về email khi đăng ký thường
+        // userService.sendOtpEmail(email, secret);
     }
     Map<String, Object> response = new HashMap<>();
     response.put("user", createdUser);
