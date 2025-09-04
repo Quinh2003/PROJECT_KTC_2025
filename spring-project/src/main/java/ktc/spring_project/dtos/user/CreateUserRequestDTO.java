@@ -11,6 +11,10 @@ public class CreateUserRequestDTO {
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String fullName;
+
+    @NotBlank(message = "Username is required")
+    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    private String username;
     
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
@@ -26,7 +30,8 @@ public class CreateUserRequestDTO {
     @NotNull(message = "Role ID is required")
     private Long roleId;
     
-    @Pattern(regexp = "^[+]?[0-9\\s\\-\\(\\)]{0,20}$", message = "Invalid phone number format")
+    @NotBlank(message = "Phone is required")
+    @Pattern(regexp = "^\\d{10}$", message = "Số điện thoại phải gồm 10 chữ số")
     private String phone;
     
     @Size(max = 255, message = "Address must not exceed 255 characters")
@@ -47,6 +52,9 @@ public class CreateUserRequestDTO {
         this.roleId = roleId;
         this.isActive = true;
     }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
     
     // Getters and Setters
     public String getFullName() { return fullName; }

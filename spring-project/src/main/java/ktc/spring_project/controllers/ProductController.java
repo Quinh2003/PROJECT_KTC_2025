@@ -1,6 +1,7 @@
 package ktc.spring_project.controllers;
 
 import ktc.spring_project.entities.Product;
+import ktc.spring_project.dtos.product.CreateProductRequestDTO;
 import ktc.spring_project.entities.WarehouseTransaction;
 import ktc.spring_project.services.UserService;
 import ktc.spring_project.services.ProductService;
@@ -60,8 +61,19 @@ public class ProductController {
      */
     @PostMapping
     public ResponseEntity<Product> createProduct(
-            @Valid @RequestBody Product product,
+            @Valid @RequestBody CreateProductRequestDTO dto,
             Authentication authentication) {
+
+        Product product = new Product();
+        product.setName(dto.getName());
+        product.setDescription(dto.getDescription());
+        product.setUnitPrice(dto.getUnitPrice());
+        product.setWeight(dto.getWeight());
+    product.setStockQuantity(dto.getStockQuantity());
+        product.setNotes(dto.getNotes());
+        // Map warehouse, createdBy nếu cần (giả sử có các repository/service)
+        // product.setWarehouse(...)
+        // product.setCreatedBy(...)
 
         Product createdProduct = productService.createProduct(product, authentication);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);

@@ -5,6 +5,8 @@ import ktc.spring_project.entities.Vehicle;
 import ktc.spring_project.services.VehicleService;
 import ktc.spring_project.services.UserService;
 import ktc.spring_project.dtos.vehicle.PaginatedVehicleResponseDto;
+import ktc.spring_project.dtos.vehicle.CreateVehicleRequestDTO;
+import ktc.spring_project.enums.VehicleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -117,9 +119,30 @@ public class VehicleController {
      */
     @PostMapping
     public ResponseEntity<Vehicle> createVehicle(
-            @Valid @RequestBody Vehicle vehicle,
+            @Valid @RequestBody CreateVehicleRequestDTO dto,
             Authentication authentication) {
-
+        // Validate DTO xong, map sang entity
+        Vehicle vehicle = new Vehicle();
+        vehicle.setLicensePlate(dto.getLicensePlate());
+        // Map VehicleType từ String sang enum (nếu null hoặc sai sẽ lỗi 400)
+        if (dto.getVehicleType() != null && !dto.getVehicleType().isBlank()) {
+            try {
+                vehicle.setVehicleType(VehicleType.valueOf(dto.getVehicleType().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid vehicleType: " + dto.getVehicleType());
+            }
+        } else {
+            vehicle.setVehicleType(null);
+        }
+        // Giả sử capacity là trọng lượng, bạn có thể sửa lại nếu cần
+        vehicle.setCapacityWeightKg(dto.getCapacity());
+        vehicle.setNotes(dto.getNotes());
+        // Gán status nếu có
+        if (dto.getStatusId() != null) {
+            ktc.spring_project.entities.Status status = new ktc.spring_project.entities.Status();
+            status.setId(dto.getStatusId().shortValue());
+            vehicle.setStatus(status);
+        }
         Vehicle createdVehicle = vehicleService.createVehicle(vehicle);
         return new ResponseEntity<>(createdVehicle, HttpStatus.CREATED);
     }

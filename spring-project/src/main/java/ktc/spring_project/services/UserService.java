@@ -110,8 +110,8 @@ public class UserService {
         public void sendOtpEmail(String toEmail, String otpOrSecret) {
             org.springframework.mail.SimpleMailMessage message = new org.springframework.mail.SimpleMailMessage();
             message.setTo(toEmail);
-            message.setSubject("Mã OTP xác thực đăng ký");
-            message.setText("Mã OTP/TOTP của bạn là: " + otpOrSecret + "\nBạn có thể nhập mã này vào ứng dụng Authenticator hoặc dùng để xác thực đăng nhập.");
+            message.setSubject("Mã OTP xác thực đăng nhập");
+            message.setText(otpOrSecret);
             mailSender.send(message);
         }
 

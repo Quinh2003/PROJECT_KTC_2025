@@ -61,8 +61,18 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<User> createUser(
-            @Valid @RequestBody User user,
+            @Valid @RequestBody ktc.spring_project.dtos.user.CreateUserRequestDTO dto,
             Authentication authentication) {
+
+    User user = new User();
+    user.setFullName(dto.getFullName());
+    user.setEmail(dto.getEmail());
+    user.setPassword(dto.getPassword());
+    user.setPhone(dto.getPhone());
+    user.setUsername(dto.getUsername());
+    // user.setAddress(dto.getAddress());
+    user.setNotes(dto.getNotes());
+    // Map role, status nếu cần (giả sử có các repository/service)
 
         User createdUser = userService.createUser(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
@@ -180,10 +190,9 @@ public class UserController {
             @RequestBody Map<String, Long> roleData,
             Authentication authentication) {
 
-        Long roleId = roleData.get("roleId");
 
-        // Lấy thông tin người dùng
-        User user = userService.getUserById(id);
+    // Lấy thông tin người dùng
+    User user = userService.getUserById(id);
 
         // Cập nhật vai trò
         // Giả sử roleService.getRoleById() trả về Role entity tương ứng với roleId
@@ -208,10 +217,9 @@ public class UserController {
             @RequestBody Map<String, Long> statusData,
             Authentication authentication) {
 
-        Long statusId = statusData.get("statusId");
 
-        // Lấy thông tin người dùng
-        User user = userService.getUserById(id);
+    // Lấy thông tin người dùng
+    User user = userService.getUserById(id);
 
         // Cập nhật trạng thái
         // Giả sử statusService.getStatusById() trả về Status entity tương ứng với statusId

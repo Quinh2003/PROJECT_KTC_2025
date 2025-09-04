@@ -11,6 +11,7 @@ import ktc.spring_project.services.OrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.net.URI;
 import java.util.List;
@@ -28,7 +29,7 @@ public class OrderItemController {
 
     // Tạo mới order item
     @PostMapping
-    public ResponseEntity<?> createOrderItem(@RequestBody CreateOrderItemRequestDTO dto) {
+    public ResponseEntity<?> createOrderItem(@Valid @RequestBody CreateOrderItemRequestDTO dto) {
         Optional<Order> orderOpt = orderRepository.findById(dto.getOrderId());
         Optional<Product> productOpt = productRepository.findById(dto.getProductId());
         if (orderOpt.isEmpty() || productOpt.isEmpty()) {
@@ -38,7 +39,7 @@ public class OrderItemController {
         orderItem.setOrder(orderOpt.get());
         orderItem.setProduct(productOpt.get());
         orderItem.setQuantity(dto.getQuantity());
-        orderItem.setNotes(dto.getNotes());
+    orderItem.setNotes(dto.getNotes());
         OrderItem saved = orderItemService.saveWithShippingCalculation(orderItem);
         return ResponseEntity.created(URI.create("/api/order-items/" + saved.getId())).body(saved);
     }

@@ -96,10 +96,23 @@ public class StoreController {
      */
     @PostMapping
     public ResponseEntity<Store> createStore(
-            @Valid @RequestBody Store store,
+            @Valid @RequestBody ktc.spring_project.dtos.store.CreateStoreRequestDTO dto,
             Authentication authentication) {
 
-        // TO-DO: Add authentication handling once implemented in service
+        Store store = new Store();
+        store.setStoreName(dto.getStoreName());
+        store.setEmail(dto.getEmail());
+        store.setPhone(dto.getPhone());
+        store.setAddress(dto.getAddress());
+        if (dto.getLatitude() != null) {
+            store.setLatitude(java.math.BigDecimal.valueOf(dto.getLatitude()));
+        }
+        if (dto.getLongitude() != null) {
+            store.setLongitude(java.math.BigDecimal.valueOf(dto.getLongitude()));
+        }
+        store.setIsActive(dto.getIsActive());
+        store.setNotes(dto.getNotes());
+
         Store createdStore = storeService.createStore(store);
         return new ResponseEntity<>(createdStore, HttpStatus.CREATED);
     }
