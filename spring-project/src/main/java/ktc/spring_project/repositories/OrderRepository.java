@@ -1,5 +1,6 @@
 package ktc.spring_project.repositories;
 
+import ktc.spring_project.dtos.order.OrderSummaryDTO;
 import ktc.spring_project.entities.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import ktc.spring_project.dtos.order.OrderSummaryDTO;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -68,4 +70,30 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         "AND DATE(o.updatedAt) = CURRENT_DATE")
     int countDeliveredOrdersByDriverIdToday(@Param("driverId") Long driverId);
 
+    @Query("SELECT NEW ktc.spring_project.dtos.order.OrderSummaryDTO(" +
+           "o.id, " +
+           "o.store.id, " +
+           "o.createdAt, " +
+           "o.address.address, " +
+           "(SELECT COUNT(oi) FROM OrderItem oi WHERE oi.order = o), " +
+           "d.deliveryFee, " +
+           "o.status.name) " +
+           "FROM Order o " +
+           "LEFT JOIN Delivery d ON d.order = o " +
+           "WHERE o.store.id = :storeId")
+    List<OrderSummaryDTO> findOrderSummariesByStoreId(@Param("storeId") Long storeId);
+
+    @Query("SELECT NEW ktc.spring_project.dtos.order.OrderSummaryDTO(" +
+           "o.id, " +
+           "o.store.id, " +
+           "o.createdAt, " +
+           "o.address.address, " +
+           "(SELECT COUNT(oi) FROM OrderItem oi WHERE oi.order = o), " +
+           "d.deliveryFee, " +
+           "o.status.name) " +
+           "FROM Order o " +
+           "LEFT JOIN Delivery d ON d.order = o " +
+           "JOIN o.store s " +
+           "WHERE s.createdBy.id = :userId")
+    List<OrderSummaryDTO> findOrderSummariesByUserId(@Param("userId") Long userId);
 }

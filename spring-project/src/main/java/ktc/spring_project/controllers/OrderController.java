@@ -1,9 +1,8 @@
 package ktc.spring_project.controllers;
 
-import ktc.spring_project.dtos.common.ApiResponse;
 import ktc.spring_project.dtos.order.CreateDeliveryOrderRequestDTO;
 import ktc.spring_project.dtos.order.DeliveryOrderResponseDTO;
-import ktc.spring_project.dtos.order.OrderByStoreResponseDTO;
+import ktc.spring_project.dtos.order.OrderSummaryDTO;
 import ktc.spring_project.entities.Order;
 import ktc.spring_project.entities.User;
 import ktc.spring_project.entities.Vehicle;
@@ -278,4 +277,60 @@ public ResponseEntity<Order> putOrder(
         }
     }
 
+    /**
+     * Lấy danh sách đơn hàng theo store ID
+     */
+    @GetMapping("/store/{storeId}")
+    public ResponseEntity<List<Order>> getOrdersByStore(@PathVariable Long storeId) {
+        try {
+            List<Order> orders = orderService.getOrdersByStoreId(storeId);
+            if (orders.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
+    /**
+     * Lấy thông tin tóm tắt của đơn hàng theo store ID, bao gồm:
+     * - Store ID
+     * - Ngày tạo
+     * - Địa chỉ nhận hàng
+     * - Số lượng sản phẩm
+     * - Phí vận chuyển
+     * - Trạng thái đơn hàng
+     */
+    @GetMapping("/store/{storeId}/summary")
+    public ResponseEntity<List<OrderSummaryDTO>> getOrderSummariesByStore(@PathVariable Long storeId) {
+        try {
+            List<OrderSummaryDTO> orderSummaries = orderService.getOrderSummariesByStoreId(storeId);
+            if (orderSummaries.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(orderSummaries);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Lấy thông tin tóm tắt của tất cả đơn hàng theo user ID
+     * User ID sẽ được dùng để tìm các store mà user đó tạo
+     * Sau đó lấy tất cả order của các store đó
+     */
+    @GetMapping("/user/{userId}/summary")
+    public ResponseEntity<List<OrderSummaryDTO>> getOrderSummariesByUser(@PathVariable Long userId) {
+        try {
+            List<OrderSummaryDTO> orderSummaries = orderService.getOrderSummariesByUserId(userId);
+            if (orderSummaries.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(orderSummaries);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+}

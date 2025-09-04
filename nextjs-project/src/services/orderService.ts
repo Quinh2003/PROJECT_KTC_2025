@@ -1,6 +1,16 @@
 import axios from "axios";
 import type { Order } from "@/types/orders";
 
+export interface OrderSummary {
+  orderId: number;
+  storeId: number;
+  createdAt: string;
+  deliveryAddress: string;
+  totalItems: number;
+  deliveryFee: number;
+  orderStatus: string;
+}
+
 const api = axios.create({
   baseURL: "/api",
 });
@@ -33,6 +43,13 @@ export const orderApi = {
 
   deleteOrder: async (id: string) => {
     await api.delete(`/orders/${id}`);
+  },
+
+  getOrdersByUser: async (userId: number): Promise<OrderSummary[]> => {
+    const { data } = await axios.get<OrderSummary[]>(
+      `http://localhost:8080/api/orders/user/${userId}/summary`
+    );
+    return data;
   },
 
   downloadInvoice: async (id: string) => {

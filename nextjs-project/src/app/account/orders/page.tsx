@@ -8,27 +8,24 @@ import {
   Button,
   Space,
   Typography,
-  Input,
-  DatePicker,
-  Select,
   Row,
   Col,
   Tooltip,
-  Badge,
   Modal,
   Timeline,
 } from "antd";
+import { orderApi } from "@/services/orderService";
+import { OrderFilters } from "./components/OrderFilters";
+import type { Dayjs } from "dayjs";
 import {
-  SearchOutlined,
   PlusOutlined,
   EyeOutlined,
   HistoryOutlined,
+  FilePdfOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 
 const { Title } = Typography;
-const { RangePicker } = DatePicker;
-
 interface Order {
   id: string;
   created_at: string;
@@ -49,54 +46,80 @@ interface Order {
   }[];
 }
 
-const orderStatuses = [
-  { id: 1, name: "Chờ xử lý", color: "default" },
-  { id: 2, name: "Đã tiếp nhận", color: "processing" },
-  { id: 3, name: "Đang giao hàng", color: "warning" },
-  { id: 4, name: "Đã giao hàng", color: "success" },
-  { id: 5, name: "Đã huỷ", color: "error" },
-];
+const getStatusId = (status: string): number => {
+  const statusMap: { [key: string]: number } = {
+    PENDING: 1,
+    RECEIVED: 2,
+    IN_PROGRESS: 3,
+    COMPLETED: 4,
+    CANCELLED: 5,
+  };
+  return statusMap[status] || 1;
+};
+
+const getStatusColor = (status: string): string => {
+  const colorMap: { [key: string]: string } = {
+    PENDING: "default",
+    RECEIVED: "processing",
+    IN_PROGRESS: "warning",
+    COMPLETED: "success",
+    CANCELLED: "error",
+  };
+  return colorMap[status] || "default";
+};
 
 export default function OrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
-  const [dateRange, setDateRange] = useState<[any, any]>([null, null]);
+  const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([
+    null,
+    null,
+  ]);
   const [statusFilter, setStatusFilter] = useState<number[]>([]);
   const [isTrackingModalVisible, setIsTrackingModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
-    // TODO: Fetch orders from API
     const fetchOrders = async () => {
+      setLoading(true);
       try {
-        // Temporary mock data
-        const mockOrders: Order[] = Array(10)
-          .fill(null)
-          .map((_, index) => ({
-            id: `ORD${String(index + 1).padStart(5, "0")}`,
-            created_at: new Date(
-              Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000
-            ).toISOString(),
-            store_name: "Cửa hàng A",
-            shipping_address: "123 Đường ABC, Quận XYZ, TP.HCM",
-            total_items: Math.floor(Math.random() * 5) + 1,
-            cod_amount: Math.floor(Math.random() * 1000000),
-            shipping_fee: Math.floor(Math.random() * 200000),
-            status: orderStatuses[Math.floor(Math.random() * 5)],
-            tracking_updates: [
-              {
-                time: new Date().toISOString(),
-                status: "Đã tiếp nhận",
-                description: "Đơn hàng đã được tiếp nhận",
-              },
-            ],
-          }));
-        setOrders(mockOrders);
-        setLoading(false);
+        // Get user from localStorage
+        const userStr = localStorage.getItem("user");
+        if (!userStr) {
+          console.error("User not found in localStorage");
+          return;
+        }
+        const user = JSON.parse(userStr);
+        const ordersData = await orderApi.getOrdersByUser(user.id);
+        const formattedOrders: Order[] = ordersData.map((order, index) => ({
+          id: `ORD${user.id}${String(order.orderId).padStart(5, "0")}-${index}`,
+          created_at: order.createdAt || new Date().toISOString(),
+          store_name: `Store ${order.storeId || "Unknown"}`,
+          shipping_address: order.deliveryAddress || "No address provided",
+          total_items: order.totalItems || 0,
+          cod_amount: 0, // Not available in the API
+          shipping_fee: order.deliveryFee || 0,
+          status: {
+            id: getStatusId(order.orderStatus || "PENDING"),
+            name: order.orderStatus || "PENDING",
+            color: getStatusColor(order.orderStatus || "PENDING"),
+          },
+          tracking_updates: [
+            {
+              time: order.createdAt || new Date().toISOString(),
+              status: order.orderStatus || "PENDING",
+              description: `Order ${(
+                order.orderStatus || "PENDING"
+              ).toLowerCase()}`,
+            },
+          ],
+        }));
+        setOrders(formattedOrders);
       } catch (error) {
         console.error("Failed to fetch orders:", error);
+      } finally {
         setLoading(false);
       }
     };
@@ -109,12 +132,21 @@ export default function OrdersPage() {
     setIsTrackingModalVisible(true);
   };
 
+  const handleViewInvoice = (orderId: string) => {
+    // TODO: Implement invoice viewing functionality
+    console.log(`View invoice for order ${orderId}`);
+  };
+
   const columns = [
     {
       title: "Mã đơn hàng",
       dataIndex: "id",
       key: "id",
-      render: (text: string) => <a>{text}</a>,
+      render: (text: string) => {
+        // Chỉ hiển thị phần mã đơn hàng không bao gồm index
+        const orderCode = text.split("-")[0];
+        return <a>{orderCode}</a>;
+      },
     },
     {
       title: "Ngày tạo",
@@ -123,12 +155,7 @@ export default function OrdersPage() {
       render: (date: string) => new Date(date).toLocaleDateString("vi-VN"),
     },
     {
-      title: "Cửa hàng",
-      dataIndex: "store_name",
-      key: "store_name",
-    },
-    {
-      title: "Địa chỉ giao hàng",
+      title: "Địa chỉ nhận hàng",
       dataIndex: "shipping_address",
       key: "shipping_address",
       ellipsis: true,
@@ -140,23 +167,12 @@ export default function OrdersPage() {
       align: "center" as const,
     },
     {
-      title: "COD",
-      dataIndex: "cod_amount",
-      key: "cod_amount",
-      align: "right" as const,
-      render: (amount: number) =>
-        amount.toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        }),
-    },
-    {
-      title: "Phí ship",
+      title: "Phí vận chuyển",
       dataIndex: "shipping_fee",
       key: "shipping_fee",
       align: "right" as const,
-      render: (amount: number) =>
-        amount.toLocaleString("vi-VN", {
+      render: (amount: number | null) =>
+        (amount || 0).toLocaleString("vi-VN", {
           style: "currency",
           currency: "VND",
         }),
@@ -172,7 +188,7 @@ export default function OrdersPage() {
     {
       title: "Thao tác",
       key: "action",
-      render: (_: any, record: Order) => (
+      render: (_: unknown, record: Order) => (
         <Space size="middle">
           <Tooltip title="Xem chi tiết">
             <Button
@@ -188,62 +204,45 @@ export default function OrdersPage() {
               onClick={() => showTrackingModal(record)}
             />
           </Tooltip>
+          <Tooltip title="Hoá đơn điện tử">
+            <Button
+              type="text"
+              icon={<FilePdfOutlined />}
+              onClick={() => handleViewInvoice(record.id)}
+            />
+          </Tooltip>
         </Space>
       ),
     },
   ];
 
   return (
-    <Card>
-      <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
-        <Col>
-          <Title level={2}>Quản lý đơn hàng</Title>
-        </Col>
-        <Col>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => router.push("/account/orders/new")}
-          >
-            Tạo đơn hàng
-          </Button>
-        </Col>
-      </Row>
-
-      {/* Filters */}
-      <Card size="small" style={{ marginBottom: 24 }}>
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={8} md={6}>
-            <Input
-              placeholder="Tìm mã đơn hàng..."
-              prefix={<SearchOutlined />}
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
+    <Card className="orders-page" style={{ margin: "24px" }}>
+      <div className="orders-header" style={{ marginBottom: "24px" }}>
+        <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+          <Col>
+            <Title level={2}>Quản lý đơn hàng</Title>
           </Col>
-          <Col xs={24} sm={8} md={6}>
-            <RangePicker
-              style={{ width: "100%" }}
-              value={dateRange}
-              onChange={(dates) => setDateRange(dates)}
-              placeholder={["Từ ngày", "Đến ngày"]}
-            />
-          </Col>
-          <Col xs={24} sm={8} md={6}>
-            <Select
-              mode="multiple"
-              style={{ width: "100%" }}
-              placeholder="Lọc theo trạng thái"
-              value={statusFilter}
-              onChange={setStatusFilter}
-              options={orderStatuses.map((status) => ({
-                label: status.name,
-                value: status.id,
-              }))}
-            />
+          <Col>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => router.push("/account/orders/new")}
+            >
+              Tạo đơn hàng
+            </Button>
           </Col>
         </Row>
-      </Card>
+
+        <OrderFilters
+          searchText={searchText}
+          dateRange={dateRange}
+          statusFilter={statusFilter}
+          onSearchChange={setSearchText}
+          onDateRangeChange={(dates) => setDateRange(dates)}
+          onStatusFilterChange={setStatusFilter}
+        />
+      </div>
 
       <Table
         columns={columns}
@@ -254,6 +253,7 @@ export default function OrdersPage() {
           total: orders.length,
           pageSize: 10,
           showTotal: (total) => `${total} đơn hàng`,
+          position: ['bottomCenter']
         }}
       />
 

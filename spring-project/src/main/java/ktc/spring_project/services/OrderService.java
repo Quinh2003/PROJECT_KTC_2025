@@ -1,7 +1,6 @@
 package ktc.spring_project.services;
-
+import ktc.spring_project.dtos.order.OrderSummaryDTO;
 import ktc.spring_project.entities.Order;
-import ktc.spring_project.entities.Address;
 import ktc.spring_project.entities.Vehicle;
 import ktc.spring_project.repositories.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import ktc.spring_project.dtos.order.OrderSummaryDTO;
 
 @Service
 public class OrderService {
@@ -94,6 +94,29 @@ public class OrderService {
     public void deleteOrder(Long id) {
         Order order = getOrderById(id);
         orderRepository.delete(order);
+    }
+
+    /**
+     * Lấy danh sách đơn hàng theo store ID
+     */
+    public List<Order> getOrdersByStoreId(Long storeId) {
+        return orderRepository.findByStore_Id(storeId);
+    }
+
+    /**
+     * Lấy thông tin tóm tắt của đơn hàng theo store ID
+     */
+    public List<OrderSummaryDTO> getOrderSummariesByStoreId(Long storeId) {
+        return orderRepository.findOrderSummariesByStoreId(storeId);
+    }
+
+    /**
+     * Lấy thông tin tóm tắt của đơn hàng theo user ID
+     * User ID sẽ được dùng để tìm các store mà user đó tạo
+     * Sau đó lấy tất cả order của các store đó
+     */
+    public List<OrderSummaryDTO> getOrderSummariesByUserId(Long userId) {
+        return orderRepository.findOrderSummariesByUserId(userId);
     }
 
     public Object getOrderTrackingInfo(Long orderId) {
