@@ -39,36 +39,6 @@ Báo cáo này đánh giá tính tương thích giữa database schema (`databas
 
 ## ⚠️ CÁC VẤN ĐỀ QUAN TRỌNG CẦN ĐIỀU CHỈNH
 
-### 1. Vehicle Entity - Capacity Fields
-
-**🔍 Vấn đề**: Nullable constraints không khớp
-
-```sql
--- Database Schema (lines 22-23)
-`capacity_weight_kg` DECIMAL(10,2) DEFAULT 0.00 COMMENT 'Trọng tải tối đa (kg)',
-`capacity_volume_m3` DECIMAL(10,2) DEFAULT 0.00 COMMENT 'Thể tích chứa hàng tối đa (m3)',
-```
-
-```java
-// Entity hiện tại
-@Column(name = "capacity_weight_kg", precision = 10, scale = 2, nullable = false)
-private BigDecimal capacityWeightKg;
-
-@Column(name = "capacity_volume_m3", precision = 10, scale = 2, nullable = false)
-private BigDecimal capacityVolumeM3;
-```
-
-**❌ Lỗi**: Entity đặt `nullable = false` nhưng DB có `DEFAULT 0.00` (cho phép null)
-
-**🔧 Khuyến nghị**:
-```java
-@Column(name = "capacity_weight_kg", precision = 10, scale = 2, columnDefinition = "DECIMAL(10,2) DEFAULT 0.00")
-private BigDecimal capacityWeightKg = BigDecimal.ZERO;
-
-@Column(name = "capacity_volume_m3", precision = 10, scale = 2, columnDefinition = "DECIMAL(10,2) DEFAULT 0.00")
-private BigDecimal capacityVolumeM3 = BigDecimal.ZERO;
-```
-
 ### 2. Vehicle Type Default Value
 
 **🔍 Vấn đề**: Thiếu giá trị mặc định
