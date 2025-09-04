@@ -1,6 +1,7 @@
 package ktc.spring_project.controllers;
 
 import ktc.spring_project.entities.Delivery;
+import ktc.spring_project.dtos.delivery.CreateDeliveryRequestDTO;
 import ktc.spring_project.entities.User;
 import ktc.spring_project.entities.Vehicle;
 import ktc.spring_project.entities.Status;
@@ -163,62 +164,37 @@ public ResponseEntity<Map<String, Object>> deleteDelivery(@PathVariable Long id)
      * Create a new delivery with automatic fee calculation
      */
     @PostMapping
-public ResponseEntity<Map<String, Object>> createDelivery(
-        @Valid @RequestBody Map<String, Object> deliveryData,
-        Authentication authentication) {
+    public ResponseEntity<Map<String, Object>> createDelivery(
+            @Valid @RequestBody CreateDeliveryRequestDTO dto,
+            Authentication authentication) {
 
-    Delivery delivery = new Delivery();
+        Delivery delivery = new Delivery();
+        // Map DTO sang entity
+        delivery.setOrder(orderService.getOrderById(dto.getOrderId()));
+        delivery.setTransportMode(dto.getTransportMode());
+        delivery.setServiceType(dto.getServiceType());
+        delivery.setPickupDate(dto.getPickupDate());
+        delivery.setScheduleDeliveryTime(dto.getScheduleDeliveryTime());
+        delivery.setOrderDate(dto.getOrderDate());
+        delivery.setLateDeliveryRisk(dto.getLateDeliveryRisk() != null && dto.getLateDeliveryRisk() ? 1 : 0);
+        delivery.setDeliveryNotes(dto.getDeliveryNotes());
+        if (dto.getVehicleId() != null) {
+            delivery.setVehicle(vehicleService.getVehicleById(dto.getVehicleId()));
+        }
+        if (dto.getDriverId() != null) {
+            delivery.setDriver(userService.getUserById(dto.getDriverId()));
+        }
+        if (dto.getRouteId() != null) {
+            delivery.setRoute(routeService.getRouteById(dto.getRouteId()));
+        }
 
-    // Mapping các trường bắt buộc và cơ bản
-    if (deliveryData.get("orderId") != null) {
-        // Bạn cần có OrderService để lấy Order theo id
-        delivery.setOrder(orderService.getOrderById(Long.valueOf(deliveryData.get("orderId").toString())));
-    }
-    // KHÔNG set deliveryFee thủ công nữa - sẽ được tính tự động
-    if (deliveryData.get("transportMode") != null) {
-        delivery.setTransportMode(ktc.spring_project.enums.TransportMode.valueOf(deliveryData.get("transportMode").toString()));
-    }
-    if (deliveryData.get("serviceType") != null) {
-        delivery.setServiceType(ktc.spring_project.enums.ServiceType.valueOf(deliveryData.get("serviceType").toString()));
-    }
-    if (deliveryData.get("pickupDate") != null) {
-        delivery.setPickupDate(java.sql.Timestamp.valueOf(deliveryData.get("pickupDate").toString()));
-    }
-    if (deliveryData.get("scheduleDeliveryTime") != null) {
-        delivery.setScheduleDeliveryTime(java.sql.Timestamp.valueOf(deliveryData.get("scheduleDeliveryTime").toString()));
-    }
-    if (deliveryData.get("actualDeliveryTime") != null) {
-        delivery.setActualDeliveryTime(java.sql.Timestamp.valueOf(deliveryData.get("actualDeliveryTime").toString()));
-    }
-    if (deliveryData.get("lateDeliveryRisk") != null) {
-        delivery.setLateDeliveryRisk(Integer.valueOf(deliveryData.get("lateDeliveryRisk").toString()));
-    }
-    if (deliveryData.get("deliveryAttempts") != null) {
-        delivery.setDeliveryAttempts(Integer.valueOf(deliveryData.get("deliveryAttempts").toString()));
-    }
-    if (deliveryData.get("deliveryNotes") != null) {
-        delivery.setDeliveryNotes(deliveryData.get("deliveryNotes").toString());
-    }
-    if (deliveryData.get("orderDate") != null) {
-        delivery.setOrderDate(java.sql.Timestamp.valueOf(deliveryData.get("orderDate").toString()));
-    }
-    if (deliveryData.get("vehicleId") != null) {
-        delivery.setVehicle(vehicleService.getVehicleById(Long.valueOf(deliveryData.get("vehicleId").toString())));
-    }
-    if (deliveryData.get("driverId") != null) {
-        delivery.setDriver(userService.getUserById(Long.valueOf(deliveryData.get("driverId").toString())));
-    }
-    if (deliveryData.get("routeId") != null) {
-        delivery.setRoute(routeService.getRouteById(Long.valueOf(deliveryData.get("routeId").toString())));
-    }
+        // Sử dụng method với auto-calculation thay vì createDelivery thông thường
+        Delivery createdDelivery = deliveryService.createDeliveryWithFeeCalculation(delivery);
 
-    // Sử dụng method với auto-calculation thay vì createDelivery thông thường
-    Delivery createdDelivery = deliveryService.createDeliveryWithFeeCalculation(delivery);
-
-    // Chuyển đổi kết quả thành Map
-    Map<String, Object> result = new ObjectMapper().convertValue(createdDelivery, Map.class);
-return new ResponseEntity<>(result, HttpStatus.CREATED);
-}
+        // Chuyển đổi kết quả thành Map
+        Map<String, Object> result = new ObjectMapper().convertValue(createdDelivery, Map.class);
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
+    }
 
    @PutMapping("/{id}")
 public ResponseEntity<Map<String, Object>> updateDelivery(
