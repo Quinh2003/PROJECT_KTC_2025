@@ -28,6 +28,15 @@ public class ProductController {
     private ProductService productService;
 
     @Autowired
+    
+    /**
+     * Get product details by ID
+     */
+    @GetMapping("/{productId}")
+    public ResponseEntity<Product> getProduct(@PathVariable Long productId) {
+        Product product = productService.getProductById(productId);
+        return ResponseEntity.ok(product);
+    }
     private UserService userService;
 
     @Autowired

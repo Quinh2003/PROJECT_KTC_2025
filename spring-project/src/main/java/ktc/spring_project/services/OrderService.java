@@ -2,8 +2,11 @@ package ktc.spring_project.services;
 
 import ktc.spring_project.entities.Order;
 import ktc.spring_project.entities.Address;
+import ktc.spring_project.entities.Status;
 import ktc.spring_project.entities.Vehicle;
+import ktc.spring_project.dtos.order.OrderStatusUpdateDTO;
 import ktc.spring_project.repositories.OrderRepository;
+import ktc.spring_project.repositories.StatusRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +26,9 @@ public class OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+    
+    @Autowired
+    private StatusRepository statusRepository;
 
     public Order createOrder(Order order) {
         // Kiểm tra ràng buộc CHECK
@@ -111,5 +117,30 @@ public class OrderService {
         tracking.put("updatedAt", order.getUpdatedAt() != null ? order.getUpdatedAt() : LocalDateTime.now());
 
         return tracking;
+    }
+    
+    /**
+     * Update the status of an order
+     */
+    public void updateOrderStatus(Long orderId, OrderStatusUpdateDTO statusUpdate) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with id: " + orderId));
+        
+        Status status = statusRepository.findById(statusUpdate.getStatusId())
+                .orElseThrow(() -> new RuntimeException("Status not found with id: " + statusUpdate.getStatusId()));
+        
+        order.setStatus(status);
+        
+        // Update notes if provided
+        if (statusUpdate.getNotes() != null && !statusUpdate.getNotes().isEmpty()) {
+            // Append to existing notes or set new notes
+            if (order.getNotes() != null && !order.getNotes().isEmpty()) {
+                order.setNotes(order.getNotes() + "\n" + statusUpdate.getNotes());
+            } else {
+                order.setNotes(statusUpdate.getNotes());
+            }
+        }
+        
+        orderRepository.save(order);
     }
 }

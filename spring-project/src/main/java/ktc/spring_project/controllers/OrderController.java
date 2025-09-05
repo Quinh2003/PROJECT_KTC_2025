@@ -44,6 +44,27 @@ public class OrderController {
     private DeliveryTrackingService deliveryTrackingService;
 
     /**
+     * Get order by ID with items included
+     */
+    @GetMapping("/{orderId}")
+    public ResponseEntity<Order> getOrder(@PathVariable Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+        return ResponseEntity.ok(order);
+    }
+    
+    /**
+     * Get all orders with pagination
+     */
+    @GetMapping
+    public ResponseEntity<Page<Order>> getAllOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<Order> orders = orderService.getAllOrders(
+                org.springframework.data.domain.PageRequest.of(page, size));
+        return ResponseEntity.ok(orders);
+    }
+
+    /**
      * Tạo đơn hàng mới
      */
     @PostMapping
