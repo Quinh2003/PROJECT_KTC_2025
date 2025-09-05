@@ -3,7 +3,7 @@ package ktc.spring_project.dtos.invoice;
 import jakarta.validation.constraints.*;
 
 /**
- * DTO cho yêu cầu hủy hóa đơn điện tử
+ * DTO cho yêu cầu hủy hóa đơn thanh toán
  */
 public class CancelInvoiceRequestDTO {
 

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<title>Hóa đơn điện tử</title>
+<title>Hóa đơn thanh toán</title>
 <style type="text/css">
 body { font-family: Arial, sans-serif; margin: 20px; }
 h1 { text-align: center; color: #2c3e50; }
@@ -18,7 +18,7 @@ th { background-color: #f8f9fa; text-align: left; }
 </head>
 <body>
 <div>
-<h1>HÓA ĐƠN ĐIỆN TỬ</h1>
+<h1>HÓA ĐƠN THANH TOÁN</h1>
 <h2>KTC LOGISTICS</h2>
 <hr/>
 <table>
@@ -50,7 +50,7 @@ th { background-color: #f8f9fa; text-align: left; }
 </table>
 <hr/>
 <div class="footer">
-Hóa đơn điện tử được xuất từ hệ thống KTC Logistics<br/>
+Hóa đơn thanh toán được xuất từ hệ thống KTC Logistics<br/>
 Cảm ơn quý khách đã sử dụng dịch vụ của chúng tôi!
 </div>
 </div>

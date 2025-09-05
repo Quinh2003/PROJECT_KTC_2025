@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hóa đơn điện tử KTC Logistics</title>
+    <title>Hóa đơn thanh toán KTC Logistics</title>
     <style>
         /* CSS inline để đảm bảo hiển thị đúng trên mọi email client */
         body {
@@ -220,7 +220,7 @@
         <!-- HEADER -->
         <div class="header">
             <h1 th:text="${companyName}">KTC Logistics</h1>
-            <p class="subtitle">Hóa đơn điện tử - Electronic Invoice</p>
+            <p class="subtitle">Hóa đơn thanh toán - Electronic Invoice</p>
         </div>
 
         <!-- CONTENT -->
@@ -228,7 +228,7 @@
             <!-- Greeting -->
             <div class="greeting">
                 <p>Kính chào <strong th:text="${customerName}">Quý khách</strong>,</p>
-                <p>Chúng tôi gửi đến Quý khách hóa đơn điện tử cho đơn hàng logistics vừa hoàn thành.</p>
+                <p>Chúng tôi gửi đến Quý khách hóa đơn thanh toán cho đơn hàng logistics vừa hoàn thành.</p>
             </div>
 
             <!-- Invoice Information Card -->
@@ -283,7 +283,7 @@
             <!-- PDF Attachment Notice -->
             <div class="attachment-notice" th:if="${hasPdfAttachment}">
                 <span class="icon">📎</span>
-                <strong>File đính kèm:</strong> Hóa đơn điện tử dạng PDF đã được đính kèm trong email này. 
+                <strong>File đính kèm:</strong> Hóa đơn thanh toán dạng PDF đã được đính kèm trong email này. 
                 Quý khách có thể tải xuống và lưu trữ để làm chứng từ kế toán.
             </div>
 

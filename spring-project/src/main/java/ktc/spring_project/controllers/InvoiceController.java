@@ -33,9 +33,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Controller quản lý hóa đơn điện tử
+ * Controller quản lý hóa đơn thanh toán
  * Bao gồm các chức năng:
- * - Tạo hóa đơn điện tử từ đơn hàng đã hoàn thành giao hàng
+ * - Tạo hóa đơn thanh toán từ đơn hàng đã hoàn thành giao hàng
  * - Xem danh sách và chi tiết hóa đơn
  * - Gửi hóa đơn qua email
  * - Hủy hóa đơn (với quyền hạn)
@@ -83,7 +83,7 @@ public class InvoiceController {
     }
 
     /**
-     * Tạo hóa đơn điện tử mới
+     * Tạo hóa đơn thanh toán mới
      * POST /api/invoices
      */
     @PostMapping
@@ -92,7 +92,7 @@ public class InvoiceController {
             @Valid @RequestBody CreateInvoiceRequestDTO request,
             Authentication authentication) {
         try {
-            log.info("Tạo hóa đơn điện tử cho order {}", request.getOrderId());
+            log.info("Tạo hóa đơn thanh toán cho order {}", request.getOrderId());
             
             // Làm sạch dữ liệu đầu vào
             request.sanitize();
@@ -118,7 +118,7 @@ public class InvoiceController {
             InvoiceResponseDTO responseDTO = new InvoiceResponseDTO(invoice);
             
             return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(responseDTO, "Tạo hóa đơn điện tử thành công"));
+                .body(ApiResponse.success(responseDTO, "Tạo hóa đơn thanh toán thành công"));
                 
         } catch (IllegalArgumentException e) {
             log.warn("Dữ liệu không hợp lệ khi tạo hóa đơn: {}", e.getMessage());
@@ -126,7 +126,7 @@ public class InvoiceController {
                 .body(ApiResponse.error(e.getMessage()));
                 
         } catch (Exception e) {
-            log.error("Lỗi khi tạo hóa đơn điện tử: ", e);
+            log.error("Lỗi khi tạo hóa đơn thanh toán: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("Lỗi hệ thống: " + e.getMessage()));
         }
@@ -220,7 +220,7 @@ public class InvoiceController {
                 return ResponseEntity.ok(ApiResponse.success(responseDTO, "Lấy hóa đơn thành công"));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error("Đơn hàng chưa có hóa đơn điện tử"));
+                    .body(ApiResponse.error("Đơn hàng chưa có hóa đơn thanh toán"));
             }
             
         } catch (Exception e) {
@@ -328,7 +328,7 @@ public class InvoiceController {
     }
 
     /**
-     * Download file PDF của hóa đơn điện tử
+     * Download file PDF của hóa đơn thanh toán
      * GET /api/invoices/{id}/download-pdf
      */
     @GetMapping("/{id}/download-pdf")

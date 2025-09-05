@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 /**
- * Entity cho hóa đơn điện tử
- * Quản lý thông tin hóa đơn điện tử được xuất sau khi hoàn thành giao hàng
+ * Entity cho hóa đơn thanh toán
+ * Quản lý thông tin hóa đơn thanh toán được xuất sau khi hoàn thành giao hàng
  */
 @Entity
 @Table(name = "electronic_invoices")

@@ -37,7 +37,7 @@ Dưới đây là danh sách các giao diện chính theo **vai trò người d�
 - 📥 Nhận lệnh mới từ Dispatcher  
 - 🔄 Cập nhật trạng thái: Đang nhận hàng / Đang giao / Đã giao thành công  
 - 🗺️ Xem chi tiết tuyến đường (Google Maps API tích hợp)  
-- 📸 Gửi hình ảnh biên nhận, ✍️ chữ ký điện tử  
+- 📸 Gửi hình ảnh biên nhận, ✍️ chữ ký thanh toán  
 
 ---
 

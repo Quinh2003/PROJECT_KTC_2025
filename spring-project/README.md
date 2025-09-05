@@ -200,7 +200,7 @@ docker run -d -p 8080:8080 fanglee2003/ktc-logistics-backend
 
 ### 🧾 Electronic Invoice Configuration
 
-Hệ thống hóa đơn điện tử được cấu hình với:
+Hệ thống hóa đơn thanh toán được cấu hình với:
 
 - **Thời gian xuất hóa đơn:** 365 ngày (có thể config qua `invoice.expiry.days`)
 - **Tự động tạo PDF:** Có
