@@ -186,7 +186,7 @@ public class InvoiceController {
      * GET /api/invoices/{id}
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATIONS', 'DISPATCHER', 'VIEWER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATIONS', 'DISPATCHER', 'CUSTOMER')")
     public ResponseEntity<ApiResponse<InvoiceResponseDTO>> getInvoiceById(@PathVariable Long id) {
         try {
             log.info("Lấy chi tiết hóa đơn ID: {}", id);
@@ -235,7 +235,7 @@ public class InvoiceController {
      * POST /api/invoices/{id}/send-email
      */
     @PostMapping("/{id}/send-email")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATIONS','DISPATCHER', 'OPERATIONS')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATIONS', 'DISPATCHER')")
     public ResponseEntity<ApiResponse<String>> sendInvoiceByEmail(
             @PathVariable Long id,
             @RequestParam String emailAddress) {
