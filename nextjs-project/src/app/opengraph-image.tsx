@@ -23,7 +23,7 @@ export default function Image() {
           KTC 2025 PROJECT 
         </span>
         <span style={{ fontSize: 24, marginTop: 16, color: '#333' }}>
-          Chia sẻ thông tin, quản lý vận tải hiện đạix
+          Chia sẻ thông tin, quản lý vận tải hiện đại
         </span>
       </div>
     ),
