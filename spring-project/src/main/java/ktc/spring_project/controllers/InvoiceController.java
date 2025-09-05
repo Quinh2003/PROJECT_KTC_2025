@@ -60,7 +60,7 @@ public class InvoiceController {
      * GET /api/invoices/check-eligibility/{orderId}
      */
     @GetMapping("/check-eligibility/{orderId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'OPERATIONS')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> checkInvoiceEligibility(
             @PathVariable Long orderId) {
         try {
@@ -137,7 +137,7 @@ public class InvoiceController {
      * GET /api/invoices
      */
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'VIEWER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATIONS', 'DISPATCHER', 'CUSTOMER')")
     public ResponseEntity<ApiResponse<List<InvoiceResponseDTO>>> getAllInvoices(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Long orderId,
@@ -186,7 +186,7 @@ public class InvoiceController {
      * GET /api/invoices/{id}
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'VIEWER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATIONS', 'DISPATCHER', 'CUSTOMER')")
     public ResponseEntity<ApiResponse<InvoiceResponseDTO>> getInvoiceById(@PathVariable Long id) {
         try {
             log.info("Lấy chi tiết hóa đơn ID: {}", id);
@@ -208,7 +208,7 @@ public class InvoiceController {
      * GET /api/invoices/by-order/{orderId}
      */
     @GetMapping("/by-order/{orderId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'VIEWER')")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATIONS', 'DISPATCHER', 'CUSTOMER')")
     public ResponseEntity<ApiResponse<InvoiceResponseDTO>> getInvoiceByOrderId(@PathVariable Long orderId) {
         try {
             log.info("Lấy hóa đơn cho order ID: {}", orderId);
@@ -235,7 +235,7 @@ public class InvoiceController {
      * POST /api/invoices/{id}/send-email
      */
     @PostMapping("/{id}/send-email")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'OPERATIONS')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATIONS', 'DISPATCHER')")
     public ResponseEntity<ApiResponse<String>> sendInvoiceByEmail(
             @PathVariable Long id,
             @RequestParam String emailAddress) {
@@ -311,7 +311,7 @@ public class InvoiceController {
      * POST /api/invoices/{id}/generate-pdf
      */
     @PostMapping("/{id}/generate-pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'OPERATIONS')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'OPERATIONS', 'CUSTOMER')")
     public ResponseEntity<ApiResponse<String>> generatePdf(@PathVariable Long id) {
         try {
             log.info("Tạo file PDF cho hóa đơn ID: {}", id);
@@ -332,7 +332,7 @@ public class InvoiceController {
      * GET /api/invoices/{id}/download-pdf
      */
     @GetMapping("/{id}/download-pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATIONS', 'DISPATCHER', 'CUSTOMER')")
     public ResponseEntity<Resource> downloadInvoicePdf(@PathVariable Long id) {
         try {
             log.info("Yêu cầu download PDF cho hóa đơn ID: {}", id);
