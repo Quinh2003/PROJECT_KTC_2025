@@ -1,0 +1,66 @@
+%% KTC Logistics Workflow - Phased Sequence Diagram
+sequenceDiagram
+    autonumber
+    participant CU as "👤 Customer"
+    participant DI as "📋 Dispatcher"
+    participant DR as "🧑‍✈️ Driver"
+    participant FM as "🚚 Fleet Manager"
+    participant OP as "📊 Operations Manager"
+    participant AD as "⚙️ Administrator"
+    participant SY as "🖥️ System"
+
+    rect rgb(235,245,255)
+        note over FM,FM: Phase 1 – Fleet Management
+        FM->>DR: Assign Vehicle to Driver
+        FM->>SY: Register Vehicle-Driver Assignment
+        SY-->FM: Confirm Assignment
+        FM->>FM: Schedule Maintenance
+    end
+
+    rect rgb(255,240,240)
+        note over CU,CU: Phase 2 – Order Placement
+        CU->>SY: Register / Auth
+        CU->>SY: Create Order
+        SY-->DI: Forward Order
+        DI->>CU: Quote & Confirmation
+    end
+
+    rect rgb(240,245,255)
+        note over DI,SY: Phase 3 – Dispatch
+        DI->>DI: Validate & Price
+        DI->>DR: Assign Driver
+        DI->>SY: Set Status(ASSIGNED)
+    end
+
+    rect rgb(235,255,235)
+        note over DR,DI: Phase 4 – Delivery Execution
+        DR->>SY: Accept Order
+        DR->>SY: Start Delivery Journey
+        SY-->DI: Notify Delivery Started
+        DR->>SY: Send Location Update (hourly)
+        SY-->DI: Forward Location Updates
+        DR->>SY: Update Order Status
+        SY-->CU: ETA & Status Notifications
+        DR->>CU: Deliver & Proof (POD)
+        CU->>SY: Confirm Receipt
+        SY-->DI: Update Order Status(DELIVERED)
+        CU->>SY: Feedback / Rating
+        SY-->DI: Customer Satisfaction Update
+    end
+
+    rect rgb(245,245,245)
+        note over SY,DI: Phase 5 – Analytics & Operational Oversight
+        SY->>SY: Aggregate Events
+        OP->>SY: Performance Query
+        SY-->OP: Metrics & Dashboards
+        OP->>FM: Resource Rebalance
+        OP->>DI: Optimization Directives
+    end
+
+    rect rgb(250,235,255)
+        note over AD,FM: Phase 6 – System Management
+        AD->>SY: User / Role Updates
+        AD->>SY: Security Audit
+        SY-->DI: Feature Flags
+        SY-->FM: Config Broadcast
+    end

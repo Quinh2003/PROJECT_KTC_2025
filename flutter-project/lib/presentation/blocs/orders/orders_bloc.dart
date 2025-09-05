@@ -1,0 +1,142 @@
+import 'dart:async';
+import 'package:bloc/bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:meta/meta.dart';
+import 'package:ktc_logistics_driver/domain/models/order/product_cart.dart';
+import 'package:ktc_logistics_driver/services/orders_services.dart';
+import 'package:ktc_logistics_driver/services/user_services.dart';
+import 'package:ktc_logistics_driver/main.dart';
+
+part 'orders_event.dart';
+part 'orders_state.dart';
+
+class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
+
+  OrdersBloc() : super(OrdersState()){
+
+    on<OnAddNewOrdersEvent>( _onAddNewOrders );
+    on<OnUpdateStatusOrderToDispatchedEvent>( _onUpdateStatusOrderToDispatched );
+    on<OnUpdateStatusOrderOnWayEvent>( _onUpdateStatusOrderOnWay );
+    on<OnUpdateStatusOrderDeliveredEvent>( _onUpdateStatusOrderDelivered );
+
+  }
+
+
+
+  Future<void> _onAddNewOrders(OnAddNewOrdersEvent event, Emitter<OrdersState> emit) async {
+
+    try {
+
+      emit( LoadingOrderState() );
+
+      await Future.delayed(Duration(milliseconds: 1500));
+
+      final resp = await ordersServices.addNewOrders(event.uidAddress, event.total, event.typePayment, event.products);
+
+      if( resp.resp ) {
+
+        // TODO: Implement push notification service
+        // final listTokens = await userServices.getAdminsNotificationToken();
+        // Map<String, dynamic> data = { 'click_action' : 'FLUTTER_NOTIFICATION_CLICK' };
+
+       emit( SuccessOrdersState() );
+
+      } else {
+        emit( FailureOrdersState( resp.msg ) );
+      }
+
+      
+    } catch (e) {
+      emit( FailureOrdersState( e.toString() ) );
+    }
+
+  }
+
+
+  Future<void> _onUpdateStatusOrderToDispatched(OnUpdateStatusOrderToDispatchedEvent event, Emitter<OrdersState> emit) async {
+
+    try {
+
+      emit( LoadingOrderState() );
+
+      final resp = await ordersServices.updateStatusOrderToDispatched(event.idOrder, event.idDelivery);
+
+      await Future.delayed(Duration(seconds: 1));
+
+      if( resp.resp ){
+
+        // TODO: Implement push notification service
+        // Map<String, dynamic> data = { 'click_action' : 'FLUTTER_NOTIFICATION_CLICK' };
+        // await pushNotification.sendNotification(
+        //   event.notificationTokenDelivery, 
+        //   data, 
+        //   'Assigned order', 
+        //   'New order assigned'
+        // );
+
+
+
+        emit( SuccessOrdersState() );
+
+      } else {
+        emit( FailureOrdersState(resp.msg) );
+      } 
+
+      
+    } catch (e) {
+      emit( FailureOrdersState(e.toString()) );
+    }
+
+  }
+
+
+  Future<void> _onUpdateStatusOrderOnWay( OnUpdateStatusOrderOnWayEvent event, Emitter<OrdersState> emit ) async {
+
+    try {
+
+      emit(  LoadingOrderState() );
+
+      final resp = await ordersServices.updateOrderStatusOnWay(event.idOrder, event.locationDelivery.latitude.toString(), event.locationDelivery.longitude.toString());
+
+      await Future.delayed(Duration(seconds: 1));
+
+      if( resp.resp ) {
+        emit( SuccessOrdersState() );
+      } else {
+        emit( FailureOrdersState(resp.msg) );
+      }
+      
+    } catch (e) {
+      emit( FailureOrdersState(e.toString()) );
+    }
+
+  }
+
+
+  Future<void> _onUpdateStatusOrderDelivered( OnUpdateStatusOrderDeliveredEvent event, Emitter<OrdersState> emit ) async {
+
+    try {
+
+      emit( LoadingOrderState() );
+
+      final resp = await ordersServices.updateOrderStatusDelivered(event.idOrder);
+
+      await Future.delayed(Duration(milliseconds: 450));
+
+      if( resp.resp ) {
+        emit( SuccessOrdersState() );
+      } else {
+        emit( FailureOrdersState(resp.msg) );
+      }
+      
+    } catch (e) {
+      emit( FailureOrdersState(e.toString()) );
+    }
+
+  }
+
+
+
+}
+
+
