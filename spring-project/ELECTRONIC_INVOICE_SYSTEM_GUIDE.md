@@ -1,8 +1,8 @@
-# Hệ thống Hóa đơn Điện tử KTC Logistics
+# Hệ thống Hóa đơn Thanh toán KTC Logistics
 
 ## 📋 Tổng quan
 
-Hệ thống hóa đơn điện tử KTC Logistics cung cấp giải pháp hoàn chỉnh để tạo, quản lý và phân phối hóa đơn điện tử cho các đơn hàng giao hàng đã hoàn thành.
+Hệ thống hóa đơn thanh toán KTC Logistics cung cấp giải pháp hoàn chỉnh để tạo, quản lý và phân phối hóa đơn thanh toán cho các đơn hàng giao hàng đã hoàn thành.
 
 ### 🆕 **Cập nhật Phiên bản Mới (v2.1 - 2025-08-24)**
 
@@ -20,7 +20,7 @@ Hệ thống hóa đơn điện tử KTC Logistics cung cấp giải pháp hoàn
 ### **Database Schema**
 
 ```sql
--- Bảng hóa đơn điện tử
+-- Bảng hóa đơn thanh toán
 CREATE TABLE electronic_invoices (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     order_id BIGINT NOT NULL,
@@ -111,7 +111,7 @@ GET /api/invoices/check-eligibility/{orderId}
 - ✅ Chưa có hóa đơn trước đó
 - ✅ Trong thời hạn xuất hóa đơn (365 ngày)
 
-#### **2. Tạo hóa đơn điện tử**
+#### **2. Tạo hóa đơn thanh toán**
 
 ```http
 POST /api/invoices
@@ -133,7 +133,7 @@ POST /api/invoices
 ```json
 {
     "success": true,
-    "message": "Tạo hóa đơn điện tử thành công",
+    "message": "Tạo hóa đơn thanh toán thành công",
     "data": {
         "id": 5,
         "orderId": 1,
@@ -249,7 +249,7 @@ POST /api/invoices/{invoiceId}/cancel
 | **Mục** | **Nguồn dữ liệu** | **Ghi chú** |
 |---------|------------------|-------------|
 | **Header** |  |  |
-| Tiêu đề | "HÓA ĐƠN ĐIỆN TỬ" | Cố định |
+| Tiêu đề | "HÓA ĐƠN THANH TOÁN" | Cố định |
 | Công ty | "KTC LOGISTICS" | Cố định |
 | **Thông tin hóa đơn** |  |  |
 | Số hóa đơn | `invoice_number` | Format: INV-YYYYMMDD-HHMMSS-XXX |
@@ -270,7 +270,7 @@ POST /api/invoices/{invoiceId}/cancel
 
 ```
 ┌─────────────────────────────────────────────────┐
-│                HÓA ĐƠN ĐIỆN TỬ                   │
+│                HÓA ĐƠN THANH TOÁN                   │
 │                KTC LOGISTICS                    │
 ├─────────────────────────────────────────────────┤
 │ Số hóa đơn:    INV-20250824-123456-003        │
@@ -289,7 +289,7 @@ POST /api/invoices/{invoiceId}/cancel
 ├─────────────────────────────────────────────────┤
 │ Ghi chú: Giao hàng thành công                  │
 ├─────────────────────────────────────────────────┤
-│      Hóa đơn điện tử từ hệ thống KTC           │
+│      Hóa đơn thanh toán từ hệ thống KTC           │
 │    Cảm ơn quý khách đã sử dụng dịch vụ!       │
 └─────────────────────────────────────────────────┘
 ```
