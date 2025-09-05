@@ -1,7 +1,6 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive",
-    "java.compile.nullAnalysis.mode": "automatic",
-    "java.project.sourcePaths": [
-        "reactjs-project"
-    ]
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.project.sourcePaths": ["reactjs-project"],
+  "cmake.sourceDirectory": "D:/PROJECT_KTC_2025/driver-app/linux"
 }

@@ -47,11 +47,13 @@ public class StoreService {
     //     storeRepository.delete(store);
     // }
 
-    // ...existing code...
-public void deleteStore(Long id) {
+    public void deleteStore(Long id) {
     Store store = getStoreById(id);
     store.setIsActive(false); // Soft delete
     storeRepository.save(store);
 }
-// ...existing code...
+
+public List<Store> getStoresByUserId(Long userId) {
+    return storeRepository.findByCreatedById(userId);
+}
 }

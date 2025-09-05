@@ -255,5 +255,12 @@ public ResponseEntity<Store> patchStore(
     Store updatedStore = storeService.updateStore(id, store);
     return ResponseEntity.ok(updatedStore);
 }
+@GetMapping("/user/{userId}")
+public ResponseEntity<List<Store>> getStoresByUserId(@PathVariable Long userId) {
+    List<Store> stores = storeService.getStoresByUserId(userId);
+    return ResponseEntity.ok(stores);
+}
 
 }
+
+
