@@ -17,7 +17,7 @@ public class CreateProductRequestDTO {
     @Size(max = 500, message = "Description must not exceed 500 characters")
     private String description;
     
-    @NotNull(message = "Unit price is required")
+    // @NotNull(message = "Unit price is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Unit price must be greater than 0")
     private BigDecimal unitPrice;
     

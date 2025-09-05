@@ -1,15 +1,29 @@
+
 package ktc.spring_project.dtos.store;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Email;
 
 /**
  * DTO for creating a new store
  */
 public class CreateStoreRequestDTO {
     
-
+    @NotBlank(message = "Store name is required")
     private String storeName;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
     private String email;
+
+    @NotBlank(message = "Phone is required")
+    @Pattern(regexp = "^\\d{10}$", message = "Số điện thoại phải gồm 10 chữ số")
     private String phone;
+
+    @NotBlank(message = "Address is required")
     private String address;
+
     private Double latitude;
     private Double longitude;
     private Boolean isActive = true;

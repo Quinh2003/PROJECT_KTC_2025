@@ -1,25 +1,44 @@
+
 package ktc.spring_project.dtos.delivery;
 
 import ktc.spring_project.enums.TransportMode;
 import ktc.spring_project.enums.ServiceType;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * DTO for creating a new delivery
  */
 public class CreateDeliveryRequestDTO {
-    
+
+    @NotNull(message = "Order ID is required")
     private Long orderId;
+
     private BigDecimal deliveryFee;
+
+    @NotNull(message = "Transport mode is required")
     private TransportMode transportMode = TransportMode.ROAD;
+
+    @NotNull(message = "Service type is required")
     private ServiceType serviceType = ServiceType.STANDARD;
+
     private Timestamp pickupDate;
+
+    // @NotNull(message = "Schedule delivery time is required")
     private Timestamp scheduleDeliveryTime;
+
+    @NotNull(message = "Late delivery risk is required")
     private Boolean lateDeliveryRisk = false;
+
     private String deliveryNotes;
+
+    @NotNull(message = "Order date is required")
     private Timestamp orderDate;
+
+    @NotNull(message = "Vehicle ID is required")
     private Long vehicleId;
+
     private Long driverId;
     private Long routeId;
     
