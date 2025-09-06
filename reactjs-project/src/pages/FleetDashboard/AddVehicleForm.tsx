@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from "react";
 import { Plus, X, AlertCircle, CheckCircle } from "lucide-react";
-import type { Vehicle } from "./VehicleTable";
+import type { FleetVehicle } from "../../types/dashboard";
 
-interface AddVehicleFormProps {
-  onAdd: (vehicle: Omit<Vehicle, "id" | "status" | "lastMaintenance" | "nextMaintenance" | "driver" | "mileage">) => void;
+type AddVehicleFormProps = {
+  onAdd: (vehicle: Omit<FleetVehicle, "id" | "status" | "lastMaintenance" | "nextMaintenance" | "driver" | "mileage">) => void;
   isLoading?: boolean;
-}
+};
 
 interface FormData {
   licensePlate: string;
@@ -28,8 +28,6 @@ const VEHICLE_TYPES = [
   "Xe tải trung",
   "Xe tải lớn",
   "Xe đầu kéo",
-  "Xe container",
-  "Xe chuyên dụng",
 ] as const;
 
 const POPULAR_BRANDS = [

@@ -56,10 +56,10 @@ public class SecurityConfig {
     //     return new BCryptPasswordEncoder();
     // }
 
-      @Bean
-public PasswordEncoder passwordEncoder() {
-    return NoOpPasswordEncoder.getInstance();
-}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
+    }
 
     /**
      * Authentication Provider để xác thực user

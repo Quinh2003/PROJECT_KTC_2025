@@ -63,7 +63,9 @@ export default function FleetDashboard({ user, onLogout }: FleetDashboardProps) 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100">
       <Sidebar
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         activeTab={tab as any}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onTabChange={tab => handleTabChange(tab as any)}
         role="fleet"
       />

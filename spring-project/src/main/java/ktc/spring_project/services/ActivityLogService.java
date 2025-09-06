@@ -17,6 +17,9 @@ public class ActivityLogService {
     private UserService userService;
 
     @Autowired
+    private ktc.spring_project.repositories.StatusRepository statusRepository;
+
+    @Autowired
     public ActivityLogService(ActivityLogRepository activityLogRepository) {
         this.activityLogRepository = activityLogRepository;
     }
@@ -37,7 +40,15 @@ public class ActivityLogService {
             // Lấy user từ userId để lấy role
             var user = userService.getUserById(userId);
             log.setRole(user.getRole());
-            log.setStatus(user.getStatus());
+                // Set default status if user status is null
+                if (user.getStatus() != null) {
+                    log.setStatus(user.getStatus());
+                } else {
+                    // Lấy status id=1 từ DB
+                    ktc.spring_project.entities.Status status = statusRepository.findById((short)1)
+                        .orElseThrow(() -> new RuntimeException("Status id=1 not found"));
+                    log.setStatus(status);
+                }
             // Có thể đặt thêm các trường nếu cần
             // log.setTableName("users");
             // log.setRecordId(userId);

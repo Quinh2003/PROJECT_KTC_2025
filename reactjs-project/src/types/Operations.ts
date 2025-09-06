@@ -1,43 +1,21 @@
-// export interface Vehicle {
-//   id: string;
-//   name: string;
-//   type: 'TRUCK' | 'VAN' | 'MOTORCYCLE';
-//   status: 'ACTIVE' | 'MAINTENANCE' | 'IDLE' | 'OUT_OF_SERVICE';
-//   driver?: {
-//     id: string;
-//     name: string;
-//     phone: string;
-//   };
-//   location: {
-//     lat: number;
-//     lng: number;
-//     address: string;
-//   };
-//   fuel: number; // percentage
-//   mileage: number;
-//   lastUpdated: string;
-// }
 export interface Vehicle {
-  id: string | number;
-  licensePlate: string;
-  vehicleType: string;
-  status: {
-    id: number;
+  id: string;
+  name: string;
+  type: 'TRUCK' | 'VAN' | 'MOTORCYCLE';
+  status: 'ACTIVE' | 'MAINTENANCE' | 'IDLE' | 'OUT_OF_SERVICE';
+  driver?: {
+    id: string;
     name: string;
-    statusType: string;
-    description: string;
+    phone: string;
   };
-  currentDriver?: {
-    id: string | number;
-    fullName?: string;
-    username?: string;
-    email?: string;
+  location: {
+    lat: number;
+    lng: number;
+    address: string;
   };
-  capacityWeightKg?: number;
-  capacityVolumeM3?: number;
-  notes?: string;
-  updatedAt?: string;
-  // ... các trường khác nếu có
+  fuel: number; // percentage
+  mileage: number;
+  lastUpdated: string;
 }
 
 export interface Route {

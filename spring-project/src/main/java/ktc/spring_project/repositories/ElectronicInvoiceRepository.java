@@ -15,7 +15,7 @@ import java.util.Optional;
 
 /**
  * Repository cho ElectronicInvoice entity
- * Cung cấp các phương thức truy vấn dữ liệu hóa đơn điện tử
+ * Cung cấp các phương thức truy vấn dữ liệu hóa đơn thanh toán
  */
 @Repository
 public interface ElectronicInvoiceRepository extends JpaRepository<ElectronicInvoice, Long> {

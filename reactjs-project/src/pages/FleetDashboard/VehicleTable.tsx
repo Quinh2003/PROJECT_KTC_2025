@@ -1,7 +1,51 @@
-
 import React, { useState, useMemo } from "react";
 import { Edit, Eye, MoreVertical, Calendar, AlertCircle, CheckCircle, Clock } from "lucide-react";
+import type { FleetVehicle } from "../../types/dashboard";
 
+<<<<<<< HEAD
+// eslint-disable-next-line react-refresh/only-export-components
+export const initialVehicles: FleetVehicle[] = [
+  {
+    id: 1,
+    licensePlate: "51A-12345",
+    type: "Xe tải nhỏ",
+    brand: "Hyundai",
+    model: "Porter",
+    year: 2020,
+    status: "Hoạt động",
+    lastMaintenance: "2024-12-15",
+    nextMaintenance: "2025-03-15",
+    driver: "Nguyễn Văn A",
+    mileage: 45000,
+  },
+  {
+    id: 2,
+    licensePlate: "51B-67890",
+    type: "Xe tải lớn",
+    brand: "Isuzu",
+    model: "FVM34W",
+    year: 2019,
+    status: "Cần bảo trì",
+    lastMaintenance: "2024-10-10",
+    nextMaintenance: "2025-01-10",
+    driver: "Nguyễn Văn B",
+    mileage: 80000,
+  },
+  {
+    id: 3,
+    licensePlate: "51C-24680",
+    type: "Xe tải trung",
+    brand: "Fuso",
+    model: "Canter",
+    year: 2021,
+    status: "Bảo trì",
+    lastMaintenance: "2024-11-20",
+    nextMaintenance: "2025-02-20",
+    driver: "Trần Văn C",
+    mileage: 35000,
+  },
+];
+=======
 export interface Vehicle {
   id: number;
   licensePlate: string;
@@ -15,17 +59,18 @@ export interface Vehicle {
   driver: string;
 }
 
+>>>>>>> dd820b7dec040ef3e189b718e7431eec3e2d3d00
 
 interface VehicleTableProps {
-  vehicles: Vehicle[];
-  onEdit?: (vehicle: Vehicle) => void;
-  onView?: (vehicle: Vehicle) => void;
+  vehicles: FleetVehicle[];
+  onEdit?: (vehicle: FleetVehicle) => void;
+  onView?: (vehicle: FleetVehicle) => void;
   onAssignDriver?: (vehicleId: number) => void;
   onScheduleMaintenance?: (vehicleId: number) => void;
 }
 
 // Enhanced Status Badge Component
-const StatusBadge = React.memo<{ status: Vehicle["status"] }>(({ status }) => {
+const StatusBadge = React.memo<{ status: FleetVehicle["status"] }>(({ status }) => {
   const statusConfig = useMemo(() => {
     switch (status) {
       case "Hoạt động":
@@ -67,9 +112,9 @@ StatusBadge.displayName = "StatusBadge";
 
 // Action Dropdown Component
 const ActionDropdown = React.memo<{
-  vehicle: Vehicle;
-  onEdit?: (vehicle: Vehicle) => void;
-  onView?: (vehicle: Vehicle) => void;
+  vehicle: FleetVehicle;
+  onEdit?: (vehicle: FleetVehicle) => void;
+  onView?: (vehicle: FleetVehicle) => void;
   onAssignDriver?: (vehicleId: number) => void;
   onScheduleMaintenance?: (vehicleId: number) => void;
 }>(({ vehicle, onEdit, onView, onAssignDriver, onScheduleMaintenance }) => {

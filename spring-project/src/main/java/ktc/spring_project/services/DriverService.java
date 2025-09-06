@@ -3,9 +3,11 @@ package ktc.spring_project.services;
 import ktc.spring_project.entities.User;
 import ktc.spring_project.entities.Vehicle;
 import ktc.spring_project.entities.Order;
+import ktc.spring_project.entities.Delivery;
 import ktc.spring_project.repositories.UserRepository;
 import ktc.spring_project.repositories.VehicleRepository;
 import ktc.spring_project.repositories.OrderRepository;
+import ktc.spring_project.repositories.DeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  * Service for handling driver-specific operations
@@ -30,6 +33,9 @@ public class DriverService {
     private OrderRepository orderRepository;
 
     @Autowired
+    private DeliveryRepository deliveryRepository;
+
+    @Autowired
     private UserService userService;
 
     /**
@@ -44,10 +50,10 @@ public class DriverService {
     }
 
     /**
-     * Get driver summary including assigned vehicle and current orders
+     * Get driver summary including assigned vehicle and active orders
      *
      * @param authentication Current authenticated user
-     * @return Map with driver summary information
+     * @return Map containing driver summary information
      */
     public Map<String, Object> getDriverSummary(Authentication authentication) {
         User driver = userService.getCurrentUser(authentication);
@@ -55,10 +61,15 @@ public class DriverService {
         // Get assigned vehicle
         Vehicle vehicle = getCurrentVehicle(driver.getId());
 
-        // Get active orders
-        List<Order> activeOrders = orderRepository.findActiveOrdersByDriverId(driver.getId());
+        // Sửa lỗi: sử dụng DeliveryRepository thay vì OrderRepository để tìm active orders theo driver
+        List<Delivery> activeDeliveries = deliveryRepository.findActiveDeliveriesByDriver(driver.getId());
 
-        // Get delivered orders count today
+        // Convert deliveries to orders
+        List<Order> activeOrders = activeDeliveries.stream()
+            .map(Delivery::getOrder)
+            .collect(Collectors.toList());
+
+        // Get delivered orders count today - method này đã có
         int deliveredToday = orderRepository.countDeliveredOrdersByDriverIdToday(driver.getId());
 
         // Assemble response
@@ -89,12 +100,9 @@ public class DriverService {
             return List.of();
         }
 
-        // Get orders that match the vehicle capacity and are in the same area
-        return orderRepository.findAvailableOrdersForVehicle(
-            vehicle.getCapacityWeightKg(),
-            vehicle.getCapacityVolumeM3(),
-            driver.getId()
-        );
+        // Sửa lỗi: sử dụng method có sẵn trong OrderRepository
+        // Thay vì findAvailableOrdersForVehicle (đã xóa), sử dụng findAvailableOrders
+        return orderRepository.findAvailableOrders();
     }
 
     /**

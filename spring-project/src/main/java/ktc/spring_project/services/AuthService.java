@@ -74,7 +74,9 @@ public class AuthService {
         Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
         response.put("refreshToken", refreshToken);
-        response.put("user", mapUserToDto(user));
+    Map<String, Object> userDto = mapUserToDto(user);
+    userDto.put("totpEnabled", user.getTotpEnabled());
+    response.put("user", userDto);
         return response;
     }
 
@@ -192,12 +194,12 @@ public class AuthService {
 
     // JWT Token generation and validation methods
 
-    private String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername(), jwtExpiration);
     }
 
-    private String generateRefreshToken(UserDetails userDetails) {
+    public String generateRefreshToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername(), refreshExpiration);
     }
@@ -272,13 +274,15 @@ public class AuthService {
 
     // Helper method to map User entity to DTO
     private Map<String, Object> mapUserToDto(User user) {
-        Map<String, Object> userDto = new HashMap<>();
-        userDto.put("id", user.getId());
-        userDto.put("username", user.getUsername());
-        userDto.put("email", user.getEmail());
-        userDto.put("fullName", user.getFullName());
-        userDto.put("role", user.getRole().getRoleName());
-        return userDto;
+    Map<String, Object> userDto = new HashMap<>();
+    userDto.put("id", user.getId());
+    userDto.put("username", user.getUsername());
+    userDto.put("email", user.getEmail());
+    userDto.put("fullName", user.getFullName());
+    userDto.put("role", user.getRole() != null ? user.getRole().getRoleName() : null);
+    // Trả về đúng giá trị boolean của totpEnabled
+    userDto.put("totpEnabled", user.getTotpEnabled());
+    return userDto;
     }
 
     /**
@@ -293,7 +297,7 @@ public class AuthService {
         String refreshToken = generateRefreshToken(userDetails);
 
         // Log activity
-        activityLogService.logUserActivity(user.getId(), "GOOGLE_LOGIN", "User logged in via Google");
+    activityLogService.logUserActivity(user.getId(), "LOGIN", "User logged in via Google");
 
         // Return token response
         Map<String, Object> response = new HashMap<>();

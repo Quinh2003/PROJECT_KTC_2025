@@ -1125,4 +1125,3 @@ from ((((`fastroute_test`.`warehouse_transactions` `wt` left join `fastroute_tes
 
 -- comment on column vw_warehouse_transaction_history.creator_name not supported: Họ tên đầy đủ để hiển thị
 
-

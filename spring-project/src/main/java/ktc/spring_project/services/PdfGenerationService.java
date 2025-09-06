@@ -61,7 +61,7 @@ public class PdfGenerationService {
         Font boldFont = new Font(Font.HELVETICA, 12, Font.BOLD);
         
         // Title
-        Paragraph title = new Paragraph("HÓA ĐƠN ĐIỆN TỬ", titleFont);
+        Paragraph title = new Paragraph("HÓA ĐƠN THANH TOÁN", titleFont);
         title.setAlignment(Element.ALIGN_CENTER);
         document.add(title);
         
@@ -155,7 +155,7 @@ public class PdfGenerationService {
         }
         
         // Footer
-        Paragraph footer1 = new Paragraph("Hóa đơn điện tử được xuất từ hệ thống KTC Logistics", normalFont);
+        Paragraph footer1 = new Paragraph("Hóa đơn thanh toán được xuất từ hệ thống KTC Logistics", normalFont);
         footer1.setAlignment(Element.ALIGN_CENTER);
         document.add(footer1);
         

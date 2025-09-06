@@ -33,9 +33,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Controller quản lý hóa đơn điện tử
+ * Controller quản lý hóa đơn thanh toán
  * Bao gồm các chức năng:
- * - Tạo hóa đơn điện tử từ đơn hàng đã hoàn thành giao hàng
+ * - Tạo hóa đơn thanh toán từ đơn hàng đã hoàn thành giao hàng
  * - Xem danh sách và chi tiết hóa đơn
  * - Gửi hóa đơn qua email
  * - Hủy hóa đơn (với quyền hạn)
@@ -60,7 +60,7 @@ public class InvoiceController {
      * GET /api/invoices/check-eligibility/{orderId}
      */
     @GetMapping("/check-eligibility/{orderId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'OPERATIONS')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> checkInvoiceEligibility(
             @PathVariable Long orderId) {
         try {
@@ -83,7 +83,7 @@ public class InvoiceController {
     }
 
     /**
-     * Tạo hóa đơn điện tử mới
+     * Tạo hóa đơn thanh toán mới
      * POST /api/invoices
      */
     @PostMapping
@@ -92,7 +92,7 @@ public class InvoiceController {
             @Valid @RequestBody CreateInvoiceRequestDTO request,
             Authentication authentication) {
         try {
-            log.info("Tạo hóa đơn điện tử cho order {}", request.getOrderId());
+            log.info("Tạo hóa đơn thanh toán cho order {}", request.getOrderId());
             
             // Làm sạch dữ liệu đầu vào
             request.sanitize();
@@ -118,7 +118,7 @@ public class InvoiceController {
             InvoiceResponseDTO responseDTO = new InvoiceResponseDTO(invoice);
             
             return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(responseDTO, "Tạo hóa đơn điện tử thành công"));
+                .body(ApiResponse.success(responseDTO, "Tạo hóa đơn thanh toán thành công"));
                 
         } catch (IllegalArgumentException e) {
             log.warn("Dữ liệu không hợp lệ khi tạo hóa đơn: {}", e.getMessage());
@@ -126,7 +126,7 @@ public class InvoiceController {
                 .body(ApiResponse.error(e.getMessage()));
                 
         } catch (Exception e) {
-            log.error("Lỗi khi tạo hóa đơn điện tử: ", e);
+            log.error("Lỗi khi tạo hóa đơn thanh toán: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("Lỗi hệ thống: " + e.getMessage()));
         }
@@ -137,7 +137,7 @@ public class InvoiceController {
      * GET /api/invoices
      */
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'VIEWER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATIONS', 'DISPATCHER', 'CUSTOMER')")
     public ResponseEntity<ApiResponse<List<InvoiceResponseDTO>>> getAllInvoices(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Long orderId,
@@ -186,7 +186,7 @@ public class InvoiceController {
      * GET /api/invoices/{id}
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'VIEWER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATIONS', 'DISPATCHER', 'CUSTOMER')")
     public ResponseEntity<ApiResponse<InvoiceResponseDTO>> getInvoiceById(@PathVariable Long id) {
         try {
             log.info("Lấy chi tiết hóa đơn ID: {}", id);
@@ -208,7 +208,7 @@ public class InvoiceController {
      * GET /api/invoices/by-order/{orderId}
      */
     @GetMapping("/by-order/{orderId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'VIEWER')")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATIONS', 'DISPATCHER', 'CUSTOMER')")
     public ResponseEntity<ApiResponse<InvoiceResponseDTO>> getInvoiceByOrderId(@PathVariable Long orderId) {
         try {
             log.info("Lấy hóa đơn cho order ID: {}", orderId);
@@ -220,7 +220,7 @@ public class InvoiceController {
                 return ResponseEntity.ok(ApiResponse.success(responseDTO, "Lấy hóa đơn thành công"));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error("Đơn hàng chưa có hóa đơn điện tử"));
+                    .body(ApiResponse.error("Đơn hàng chưa có hóa đơn thanh toán"));
             }
             
         } catch (Exception e) {
@@ -235,7 +235,7 @@ public class InvoiceController {
      * POST /api/invoices/{id}/send-email
      */
     @PostMapping("/{id}/send-email")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'OPERATIONS')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATIONS', 'DISPATCHER')")
     public ResponseEntity<ApiResponse<String>> sendInvoiceByEmail(
             @PathVariable Long id,
             @RequestParam String emailAddress) {
@@ -311,7 +311,7 @@ public class InvoiceController {
      * POST /api/invoices/{id}/generate-pdf
      */
     @PostMapping("/{id}/generate-pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'OPERATIONS')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'OPERATIONS', 'CUSTOMER')")
     public ResponseEntity<ApiResponse<String>> generatePdf(@PathVariable Long id) {
         try {
             log.info("Tạo file PDF cho hóa đơn ID: {}", id);
@@ -328,11 +328,11 @@ public class InvoiceController {
     }
 
     /**
-     * Download file PDF của hóa đơn điện tử
+     * Download file PDF của hóa đơn thanh toán
      * GET /api/invoices/{id}/download-pdf
      */
     @GetMapping("/{id}/download-pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATIONS', 'DISPATCHER', 'CUSTOMER')")
     public ResponseEntity<Resource> downloadInvoicePdf(@PathVariable Long id) {
         try {
             log.info("Yêu cầu download PDF cho hóa đơn ID: {}", id);
