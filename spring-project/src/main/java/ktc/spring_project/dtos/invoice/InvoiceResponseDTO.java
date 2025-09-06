@@ -9,7 +9,7 @@ import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 
 /**
- * DTO cho response hóa đơn điện tử
+ * DTO cho response hóa đơn thanh toán
  * Chứa đầy đủ thông tin hóa đơn để hiển thị
  */
 public class InvoiceResponseDTO {

@@ -1,8 +1,8 @@
 package ktc.spring_project.enums;
 
 /**
- * Enum cho trạng thái hóa đơn điện tử
- * Định nghĩa các trạng thái trong vòng đời của hóa đơn điện tử
+ * Enum cho trạng thái hóa đơn thanh toán
+ * Định nghĩa các trạng thái trong vòng đời của hóa đơn thanh toán
  */
 public enum InvoiceStatus {
     CREATED("Đã tạo", "Invoice has been created but not sent"),

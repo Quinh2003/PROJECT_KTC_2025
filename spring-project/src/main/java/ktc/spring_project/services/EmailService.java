@@ -25,7 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Service xử lý gửi email hóa đơn điện tử
+ * Service xử lý gửi email hóa đơn thanh toán
  * 
  * Chức năng chính:
  * - Gửi email hóa đơn có attachment PDF
@@ -75,7 +75,7 @@ public class EmailService {
     private String companyAddress;
 
     /**
-     * Gửi email hóa đơn điện tử (ASYNC - không block UI)
+     * Gửi email hóa đơn thanh toán (ASYNC - không block UI)
      * 
      * @param invoice Hóa đơn cần gửi
      * @param recipientEmail Email người nhận
@@ -105,7 +105,7 @@ public class EmailService {
     }
 
     /**
-     * Gửi email hóa đơn điện tử (SYNC - block until complete)
+     * Gửi email hóa đơn thanh toán (SYNC - block until complete)
      * 
      * @param invoice Hóa đơn cần gửi
      * @param recipientEmail Email người nhận
@@ -137,7 +137,7 @@ public class EmailService {
             // Bước 2: Set thông tin email cơ bản
             helper.setFrom(fromEmail);
             helper.setTo(recipientEmail.trim());
-            helper.setSubject(subjectPrefix + "Hóa đơn điện tử " + invoice.getInvoiceNumber());
+            helper.setSubject(subjectPrefix + "Hóa đơn thanh toán " + invoice.getInvoiceNumber());
 
             // Bước 3: Tạo HTML content từ template
             String htmlContent = generateEmailContent(invoice);
@@ -250,10 +250,10 @@ public class EmailService {
     private String createFallbackEmailContent(ElectronicInvoice invoice) {
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body>");
-        sb.append("<h2>Hóa đơn điện tử ").append(companyName).append("</h2>");
+        sb.append("<h2>Hóa đơn thanh toán ").append(companyName).append("</h2>");
         sb.append("<p>Kính chào ").append(invoice.getCustomerName() != null ? 
             invoice.getCustomerName() : "Quý khách").append(",</p>");
-        sb.append("<p>Chúng tôi gửi đến Quý khách hóa đơn điện tử:</p>");
+        sb.append("<p>Chúng tôi gửi đến Quý khách hóa đơn thanh toán:</p>");
         sb.append("<ul>");
         sb.append("<li><strong>Số hóa đơn:</strong> ").append(invoice.getInvoiceNumber()).append("</li>");
         sb.append("<li><strong>Tổng tiền:</strong> ").append(formatCurrency(invoice.getTotalAmount())).append("</li>");

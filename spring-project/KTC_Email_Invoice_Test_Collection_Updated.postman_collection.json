@@ -444,7 +444,7 @@
 								"invoices"
 							]
 						},
-						"description": "🆕 Tạo hóa đơn điện tử mới (tự động tạo PDF thật sự). Giờ sử dụng delivery_fee và hiển thị delivery.id."
+						"description": "🆕 Tạo hóa đơn thanh toán mới (tự động tạo PDF thật sự). Giờ sử dụng delivery_fee và hiển thị delivery.id."
 					},
 					"response": []
 				},
@@ -657,7 +657,7 @@
 								"download-pdf"
 							]
 						},
-						"description": "📥 Download file PDF của hóa đơn điện tử. 🆕 File sẽ là PDF thật sự với mã vận đơn."
+						"description": "📥 Download file PDF của hóa đơn thanh toán. 🆕 File sẽ là PDF thật sự với mã vận đơn."
 					},
 					"response": []
 				},

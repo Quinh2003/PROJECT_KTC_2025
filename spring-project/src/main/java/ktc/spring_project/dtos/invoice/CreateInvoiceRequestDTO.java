@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
 /**
- * DTO cho yêu cầu tạo hóa đơn điện tử
+ * DTO cho yêu cầu tạo hóa đơn thanh toán
  */
 public class CreateInvoiceRequestDTO {
 
