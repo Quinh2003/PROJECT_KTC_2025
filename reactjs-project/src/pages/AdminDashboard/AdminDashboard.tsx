@@ -1,5 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import type { User } from "../../types/User";
+<<<<<<< HEAD
+import { fetchUsers } from "../../services/adminAPI";
+=======
 import { fetchUsers, fetchActivityLogs } from "../../services/adminAPI";
 
 // Simple user interface for dashboard display
@@ -13,6 +16,7 @@ interface DashboardUser {
   phone: string;
   password: string;
 }
+>>>>>>> dd820b7dec040ef3e189b718e7431eec3e2d3d00
 import UserTable from "./UserTable";
 import RoleTable from "./RoleTable";
 import SystemConfigForm from "./SystemConfigForm";
@@ -32,6 +36,33 @@ interface AdminDashboardProps {
 
 export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
   const [active, setActive] = useState<AdminTab>("users");
+<<<<<<< HEAD
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Chỉ fetchUsers khi lần đầu vào trang, còn lại cập nhật trực tiếp qua UserTable
+  useEffect(() => {
+    setLoading(true);
+    fetchUsers()
+      .then(data => {
+        const mappedUsers = data.map((u: any) => {
+          let roleIcon = null;
+          switch (u.role?.roleName) {
+            case "DISPATCHER":
+              roleIcon = <span style={{fontWeight: 'bold'}}>D</span>; break;
+            case "FLEET_MANAGER":
+              roleIcon = <span style={{fontWeight: 'bold'}}>F</span>; break;
+            case "DRIVER":
+              roleIcon = <span style={{fontWeight: 'bold'}}>Dr</span>; break;
+            case "ADMIN":
+              roleIcon = <span style={{fontWeight: 'bold'}}>A</span>; break;
+            case "OPERATIONS_MANAGER":
+              roleIcon = <span style={{fontWeight: 'bold'}}>O</span>; break;
+            default:
+              roleIcon = null;
+          }
+=======
   const [users, setUsers] = useState<DashboardUser[]>([]);
   const [auditCount, setAuditCount] = useState<number>(0);
 
@@ -74,14 +105,28 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
         const userData = await fetchUsers();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mappedUsers: DashboardUser[] = userData.map((u: any) => {
+>>>>>>> dd820b7dec040ef3e189b718e7431eec3e2d3d00
           return {
-            id: typeof u.id === 'string' ? parseInt(u.id) : u.id,
+            id: u.id,
             name: u.fullName || u.username || "",
             email: u.email,
             role: u.role?.roleName || "",
+            roleIcon,
             status: u.status?.name?.toLowerCase() === "active" ? "active" : "inactive",
-            lastLogin: "-", // Will be updated from backend later
+            lastLogin: u.updatedAt ? new Date(u.updatedAt).toLocaleString() : "-",
             phone: u.phone || "",
+<<<<<<< HEAD
+            password: "",
+          };
+        });
+        setUsers(mappedUsers);
+        setError(null);
+      })
+      .catch(() => {
+        setError("Failed to fetch users");
+      })
+      .finally(() => setLoading(false));
+=======
             password: u.password || "",
           };
         });
@@ -98,6 +143,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
 
     // Initial fetch only - no auto-refresh
     fetchData();
+>>>>>>> dd820b7dec040ef3e189b718e7431eec3e2d3d00
   }, []);
 
   const uniqueRoles = Array.from(new Set(users.map(u => u.role)));
@@ -167,6 +213,14 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
             </div>
           ))}
         </div>
+<<<<<<< HEAD
+        {/* Content */}
+        <div className="flex-1 p-4 md:p-10">
+          {active === "users" && <UserTable users={users} setUsers={setUsers} />}
+          {active === "roles" && <RoleTable />}
+          {active === "settings" && <SystemConfigForm />}
+          {active === "logs" && <AuditLogTable />}
+=======
         {/* Content - Scrollable */}
         <div className="flex-1 overflow-y-auto">
           <div className="p-4 md:p-10 pt-3 md:pt-4">
@@ -175,6 +229,7 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
             {active === "settings" && <SystemConfigForm />}
             {active === "logs" && <AuditLogTable onAuditCountUpdate={handleAuditCountUpdate} />}
           </div>
+>>>>>>> dd820b7dec040ef3e189b718e7431eec3e2d3d00
         </div>
       </main>
     </div>

@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+import { useState, useCallback, useMemo } from "react";
+import { initialVehicles } from "./VehicleTable";
+import type { FleetVehicle } from "../../types/dashboard";
+=======
 
 import { useState, useCallback, useMemo, useEffect } from "react";
 import type { Vehicle as UIVehicle } from "./VehicleTable";
@@ -12,6 +17,7 @@ interface Pagination {
   totalPages: number;
 }
 
+>>>>>>> dd820b7dec040ef3e189b718e7431eec3e2d3d00
 
 type FleetTab = "vehicles" | "maintenance" | "schedule";
 type VehicleStatus = "Hoạt động" | "Bảo trì" | "Cần bảo trì";
@@ -29,7 +35,11 @@ interface FleetStats {
 export const useFleetDashboard = () => {
   // State management
   const [tab, setTab] = useState<FleetTab>("vehicles");
+<<<<<<< HEAD
+  const [vehicles, setVehicles] = useState<FleetVehicle[]>(initialVehicles);
+=======
   const [vehicles, setVehicles] = useState<UIVehicle[]>([]);
+>>>>>>> dd820b7dec040ef3e189b718e7431eec3e2d3d00
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<VehicleStatus | "all">("all");
   const [isLoading, setIsLoading] = useState(false);
@@ -122,6 +132,33 @@ export const useFleetDashboard = () => {
     });
   }, [vehicles, searchTerm, statusFilter]);
 
+<<<<<<< HEAD
+  // Optimized add vehicle handler
+  const handleAddVehicle = useCallback((data: Omit<FleetVehicle, "id" | "status" | "lastMaintenance" | "nextMaintenance" | "driver" | "mileage">) => {
+    setIsLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      const newVehicle: FleetVehicle = {
+        id: Math.max(...vehicles.map(v => v.id), 0) + 1,
+        licensePlate: data.licensePlate,
+        type: data.type,
+        brand: data.brand,
+        model: data.model,
+        year: Number(data.year),
+        status: "Hoạt động",
+        lastMaintenance: "",
+        nextMaintenance: "",
+        driver: "",
+        mileage: 0,
+      };
+      
+      setVehicles(prev => [...prev, newVehicle]);
+      setShowAddForm(false);
+      setIsLoading(false);
+    }, 500);
+  }, [vehicles]);
+=======
   // Add vehicle handler (call API)
   const handleAddVehicle = useCallback(
     async (data: Omit<UIVehicle, "id" | "status" | "lastMaintenance" | "nextMaintenance" | "driver" | "mileage">) => {
@@ -170,6 +207,7 @@ export const useFleetDashboard = () => {
     },
     []
   );
+>>>>>>> dd820b7dec040ef3e189b718e7431eec3e2d3d00
 
   // Handle tab changes
   const handleTabChange = useCallback((newTab: string) => {

@@ -2,6 +2,7 @@ package ktc.spring_project.controllers;
 
 import ktc.spring_project.services.AuthService;
 import ktc.spring_project.services.UserService;
+import ktc.spring_project.services.TotpService;
 import ktc.spring_project.dtos.auth.GoogleLoginRequestDto;
 import ktc.spring_project.dtos.auth.GoogleLoginWithCredentialRequestDto;
 import ktc.spring_project.entities.User;
@@ -10,9 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import ktc.spring_project.services.CustomUserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.validation.Valid;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,12 +29,19 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     @Autowired
     private AuthService authService;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TotpService totpService;
+
+    
 
     /**
      * User login
@@ -63,10 +74,26 @@ public ResponseEntity<Map<String, Object>> login(
 //     return ResponseEntity.ok(createdUser);
 // }
 @PostMapping("/users")
-public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+ public ResponseEntity<Map<String, Object>> createUser(@Valid @RequestBody User user) {
     System.out.println("==> Đã vào createUser");
     User createdUser = userService.createUser(user);
-    return ResponseEntity.ok(createdUser);
+    String secret = userService.getOrCreateTotpSecret(createdUser.getEmail());
+    String otpauthUrl = null;
+    if (secret != null && !secret.isEmpty()) {
+        String issuer = "KTC_2025";
+        String email = createdUser.getEmail();
+        otpauthUrl = String.format(
+            "otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=SHA1&digits=6&period=30",
+            issuer, email, secret, issuer
+        );
+        // Gửi secret TOTP về email cho user
+        // KHÔNG gửi secret TOTP về email khi đăng ký thường
+        // userService.sendOtpEmail(email, secret);
+    }
+    Map<String, Object> response = new HashMap<>();
+    response.put("user", createdUser);
+    response.put("totpQrUrl", otpauthUrl);
+    return ResponseEntity.ok(response);
 }
 // Cập nhật toàn bộ thông tin người dùng
 @PutMapping("/users/{id}")
@@ -228,5 +255,69 @@ public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Google credential login failed", "message", e.getMessage()));
         }
+    }
+
+    /**
+     * Tạo mã QR TOTP cho người dùng
+     */
+    @GetMapping("/totp/qr")
+    public ResponseEntity<String> getTotpQr(@RequestParam String email) {
+        // Lấy secret từ DB, nếu chưa có thì sinh mới và lưu lại
+        String secret = userService.getOrCreateTotpSecret(email);
+        String qrUrl = totpService.getQRBarcode(email, secret);
+        return ResponseEntity.ok(qrUrl);
+    }
+
+    /**
+     * Xác thực mã OTP
+     */
+    @PostMapping("/totp/verify")
+    public ResponseEntity<?> verifyTotp(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String codeStr = payload.get("code");
+        Map<String, Object> response = new HashMap<>();
+        boolean valid = false;
+        boolean isClassicOtp = false;
+        // Kiểm tra classic OTP trong cache
+        ktc.spring_project.services.UserService.OtpEntry otpEntry = ktc.spring_project.services.UserService.otpCache.get(email);
+        if (otpEntry != null && otpEntry.otp.equals(codeStr)) {
+            if (System.currentTimeMillis() <= otpEntry.expireTime) {
+                valid = true;
+                isClassicOtp = true;
+                // Xóa OTP sau khi xác thực thành công
+                ktc.spring_project.services.UserService.otpCache.remove(email);
+            }
+        }
+        // Nếu không phải classic OTP, kiểm tra TOTP (app Authenticator)
+        if (!valid) {
+            try {
+                int code = Integer.parseInt(codeStr);
+                String secret = userService.getTotpSecret(email);
+                valid = totpService.verifyCode(secret, code);
+            } catch (Exception e) {
+                valid = false;
+            }
+        }
+        response.put("valid", valid);
+        if (valid) {
+            // Nếu là classic OTP thì không cần enableTotp
+            if (!isClassicOtp) {
+                userService.enableTotp(email);
+            }
+            User user = userService.findByEmail(email);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+            String token = authService.generateToken(userDetails);
+            String refreshToken = authService.generateRefreshToken(userDetails);
+            response.put("token", token);
+            response.put("refreshToken", refreshToken);
+            Map<String, Object> userDto = new HashMap<>();
+            userDto.put("id", user.getId());
+            userDto.put("email", user.getEmail());
+            userDto.put("username", user.getUsername());
+            userDto.put("role", user.getRole() != null ? user.getRole().getRoleName() : null);
+            userDto.put("totpEnabled", user.getTotpEnabled());
+            response.put("user", userDto);
+        }
+        return ResponseEntity.ok(response);
     }
 }
