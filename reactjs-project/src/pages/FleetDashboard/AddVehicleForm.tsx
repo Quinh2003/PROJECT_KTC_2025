@@ -28,8 +28,6 @@ const VEHICLE_TYPES = [
   "Xe tải trung",
   "Xe tải lớn",
   "Xe đầu kéo",
-  "Xe container",
-  "Xe chuyên dụng",
 ] as const;
 
 const POPULAR_BRANDS = [
