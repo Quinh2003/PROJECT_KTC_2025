@@ -54,6 +54,10 @@ public class OrderService {
         return orderRepository.findAll(Sort.by("createdAt").descending());
     }
 
+    public Page<Order> getAllOrders(Pageable pageable) {
+        return orderRepository.findAll(pageable);
+    }
+
     public List<Order> getAllOrdersSorted() {
         return orderRepository.findAll(Sort.by("createdAt").descending());
     }

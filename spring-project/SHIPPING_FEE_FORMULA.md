@@ -21,15 +21,16 @@ SHIPPING FEE = PHÍ CƠ BẢN × HỆ SỐ RỦI RO × HỆ SỐ SERVICE_TYPE ×
 PHÍ CƠ BẢN = MAX(Phí theo trọng lượng, Phí theo thể tích quy đổi)
 ```
 
-- **Trọng lượng quy đổi** = Thể tích (cm³) ÷ 5000
-- **Trọng lượng tính phí** = MAX(Trọng lượng thực tế, Trọng lượng quy đổi)
+- **Trọng lượng quy đổi** = Product.volume (cm³) ÷ 5000
+- **Trọng lượng tính phí** = MAX(Product.weight, Trọng lượng quy đổi)
 - **Phí theo trọng lượng** = Trọng lượng tính phí × 10,000 VNĐ/kg
 
 #### 2. Hệ Số Rủi Ro
-- **Hàng thường**: 1.0
-- **Hàng dễ vỡ (isFragile=true)**: 1.3
+- **Hàng thường (Product.isFragile=false)**: 1.0
+- **Hàng dễ vỡ (Product.isFragile=true)**: 1.3
 
 #### 3. Hệ Số Service Type
+Dựa trên Delivery.serviceType (enum ServiceType):
 
 | Service Type  | Hệ Số | Mô Tả        |
 |--------------|-------|--------------|
@@ -39,7 +40,8 @@ PHÍ CƠ BẢN = MAX(Phí theo trọng lượng, Phí theo thể tích quy đổ
 | EXPRESS      | 1.8   | Nhanh        |
 | PRIORITY     | 2.0   | Ưu tiên      |
 
-*Lưu ý: Đã loại bỏ SAME_DAY service type*
+#### 4. Số Lượng
+- OrderItem.quantity: Số lượng sản phẩm trong đơn hàng
 
 ## 🚚 Công Thức Tính Phí Delivery (Order)
 
@@ -55,6 +57,8 @@ DELIVERY FEE = (PHÍ KHOẢNG CÁCH + PHÍ CƠ BẢN DELIVERY) × HỆ SỐ SERV
 PHÍ KHOẢNG CÁCH = Khoảng cách × Đơn giá/km + Phí cơ bản vùng
 ```
 
+Khoảng cách tính từ Route.estimatedDistanceKm
+
 | Vùng               | Khoảng Cách | Phí Cơ Bản | Đơn Giá/km |
 |-------------------|------------|------------|------------|
 | Nội thành          | 0-15km     | 15,000 VNĐ | 1,800 VNĐ/km |
@@ -62,16 +66,22 @@ PHÍ KHOẢNG CÁCH = Khoảng cách × Đơn giá/km + Phí cơ bản vùng
 | Liên tỉnh          | >50km      | 40,000 VNĐ | 500 VNĐ/km   |
 
 #### 2. Phí Cơ Bản Delivery
-- Có thể là tổng shipping fee các OrderItem
+- Có thể là tổng OrderItem.shippingFee của tất cả sản phẩm trong đơn hàng
 - Hoặc một mức phí tối thiểu theo chính sách
 
 #### 3. Hệ Số Service Type
-- Sử dụng cùng bảng hệ số như Shipping Fee (bảng ở trên)
+- Sử dụng Delivery.serviceType (enum ServiceType)
+- Cùng bảng hệ số như Shipping Fee (bảng ở trên)
 
 ## 💡 Ví Dụ Tính Toán
 
 ### Ví Dụ 1: Shipping Fee (OrderItem)
-- **Input**: 1.5kg, 11,250 cm³, fragile=true, EXPRESS, quantity=1
+- **Input**: 
+  - Product.weight = 1.5kg
+  - Product.volume = 11,250 cm³
+  - Product.isFragile = true
+  - Delivery.serviceType = EXPRESS
+  - OrderItem.quantity = 1
 - **Tính toán**:
   - Trọng lượng quy đổi = 11,250 ÷ 5000 = 2.25kg
   - Trọng lượng tính phí = MAX(1.5, 2.25) = 2.25kg
@@ -83,7 +93,10 @@ PHÍ KHOẢNG CÁCH = Khoảng cách × Đơn giá/km + Phí cơ bản vùng
 - **Kết quả**: 22,500 × 1.3 × 1.8 × 1 = **52,650 VNĐ**
 
 ### Ví Dụ 2: Delivery Fee (Order)
-- **Input**: Khoảng cách 12km, Tổng shipping fee = 100,000 VNĐ, Service Type = STANDARD
+- **Input**: 
+  - Route.estimatedDistanceKm = 12km
+  - Tổng OrderItem.shippingFee = 100,000 VNĐ
+  - Delivery.serviceType = STANDARD
 - **Tính toán**:
   - Phí cơ bản vùng (Nội thành) = 15,000 VNĐ
   - Phí theo km = 12 × 1,800 = 21,600 VNĐ
@@ -92,8 +105,13 @@ PHÍ KHOẢNG CÁCH = Khoảng cách × Đơn giá/km + Phí cơ bản vùng
   - Hệ số service = 1.0 (STANDARD)
 - **Kết quả**: (36,600 + 100,000) × 1.0 = **136,600 VNĐ**
 
-### Ví Dụ 3: Hàng thường, PRIORITY (Bảng Giá Cuối Cùng)
-- **Input**: 0.5kg, 3,000 cm³, fragile=false, PRIORITY, quantity=1
+### Ví Dụ 3: Hàng thường, PRIORITY
+- **Input**: 
+  - Product.weight = 0.5kg
+  - Product.volume = 3,000 cm³
+  - Product.isFragile = false
+  - Delivery.serviceType = PRIORITY
+  - OrderItem.quantity = 1
 - **Tính toán**:
   - Trọng lượng quy đổi = 3,000 ÷ 5000 = 0.6kg
   - Trọng lượng tính phí = MAX(0.5, 0.6) = 0.6kg
@@ -108,19 +126,21 @@ PHÍ KHOẢNG CÁCH = Khoảng cách × Đơn giá/km + Phí cơ bản vùng
 
 Tổng phí vận chuyển mà khách hàng phải trả:
 ```
-TỔNG PHÍ = TỔNG SHIPPING FEE (các OrderItem) + DELIVERY FEE (Order)
+TỔNG PHÍ = TỔNG OrderItem.shippingFee (các sản phẩm) + Delivery.deliveryFee (đơn hàng)
 ```
 
 ## 📍 Lưu Ý Quan Trọng
 
 1. **Phí shipping** áp dụng riêng cho **từng sản phẩm** trong đơn hàng, không phụ thuộc khoảng cách.
-2. **Phí delivery** áp dụng cho **toàn bộ đơn hàng**, có tính đến khoảng cách và phí cơ bản.
-3. **Volume**: Sử dụng thể tích (cm³) thay vì length/width/height riêng lẻ khi tính phí shipping.
-4. **Đơn vị**: Trọng lượng tính bằng kg, thể tích tính bằng cm³, khoảng cách tính bằng km.
-5. **Service Type**: Quyết định thời gian giao hàng và ảnh hưởng đến cả shipping fee và delivery fee.
+2. **Phí delivery** áp dụng cho **toàn bộ đơn hàng**, có tính đến khoảng cách từ Route.estimatedDistanceKm.
+3. **Volume**: Sử dụng Product.volume (cm³) khi tính phí shipping.
+4. **Đơn vị**: Product.weight tính bằng kg, Product.volume tính bằng cm³, Route.estimatedDistanceKm tính bằng km.
+5. **Service Type**: Delivery.serviceType quyết định thời gian giao hàng và ảnh hưởng đến cả shipping fee và delivery fee.
 
 ---
 
 **📦 Các Entity Liên Quan**:
-- `OrderItem` (trường `shippingFee`): Lưu phí shipping của từng sản phẩm
-- `Delivery` (trường `deliveryFee`, `serviceType`): Lưu phí vận chuyển của đơn hàng
+- **Product**: isFragile, weight, volume
+- **OrderItem**: quantity, shippingFee
+- **Delivery**: deliveryFee, serviceType, route
+- **Route**: estimatedDistanceKm

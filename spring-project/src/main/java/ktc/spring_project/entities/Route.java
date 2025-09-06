@@ -36,6 +36,21 @@ public class Route {
     @Column(name = "completed_at")
     private Timestamp completedAt;
 
+    @Column(name = "start_latitude", precision = 10, scale = 6)
+    private BigDecimal startLatitude;
+    
+    @Column(name = "start_longitude", precision = 10, scale = 6)
+    private BigDecimal startLongitude;
+    
+    @Column(name = "end_latitude", precision = 10, scale = 6)
+    private BigDecimal endLatitude;
+    
+    @Column(name = "end_longitude", precision = 10, scale = 6)
+    private BigDecimal endLongitude;
+    
+    @Column(columnDefinition = "TEXT")
+    private String polyline;
+
     @ManyToOne
     @JoinColumn(name = "created_by")
     private User createdBy;
@@ -89,12 +104,30 @@ public class Route {
         this.estimatedDistanceKm = estimatedDistanceKm;
     }
 
+    // Add alias methods for compatibility with service code
+    public BigDecimal getEstimatedDistance() {
+        return estimatedDistanceKm;
+    }
+
+    public void setEstimatedDistance(BigDecimal estimatedDistance) {
+        this.estimatedDistanceKm = estimatedDistance;
+    }
+
     public Integer getEstimatedDurationMinutes() {
         return estimatedDurationMinutes;
     }
 
     public void setEstimatedDurationMinutes(Integer estimatedDurationMinutes) {
         this.estimatedDurationMinutes = estimatedDurationMinutes;
+    }
+
+    // Add alias methods for compatibility with service code
+    public Integer getEstimatedDuration() {
+        return estimatedDurationMinutes;
+    }
+
+    public void setEstimatedDuration(Integer estimatedDuration) {
+        this.estimatedDurationMinutes = estimatedDuration;
     }
 
     public BigDecimal getEstimatedCost() {
@@ -112,6 +145,47 @@ public class Route {
 
     public void setCompletedAt(Timestamp completedAt) {
         this.completedAt = completedAt;
+    }
+    
+    // Add getters and setters for new fields
+    public BigDecimal getStartLatitude() {
+        return startLatitude;
+    }
+
+    public void setStartLatitude(BigDecimal startLatitude) {
+        this.startLatitude = startLatitude;
+    }
+
+    public BigDecimal getStartLongitude() {
+        return startLongitude;
+    }
+
+    public void setStartLongitude(BigDecimal startLongitude) {
+        this.startLongitude = startLongitude;
+    }
+
+    public BigDecimal getEndLatitude() {
+        return endLatitude;
+    }
+
+    public void setEndLatitude(BigDecimal endLatitude) {
+        this.endLatitude = endLatitude;
+    }
+
+    public BigDecimal getEndLongitude() {
+        return endLongitude;
+    }
+
+    public void setEndLongitude(BigDecimal endLongitude) {
+        this.endLongitude = endLongitude;
+    }
+    
+    public String getPolyline() {
+        return polyline;
+    }
+
+    public void setPolyline(String polyline) {
+        this.polyline = polyline;
     }
 
     public String getNotes() {

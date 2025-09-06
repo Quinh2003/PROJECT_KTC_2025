@@ -321,7 +321,7 @@ private DeliveryResponseDTO mapToDeliveryResponseDTO(Delivery delivery) {
     
     // Map other fields from delivery entity
     if (delivery.getStatus() != null) {
-        dto.setStatusId(delivery.getStatus().getId());
+        dto.setStatusId(delivery.getStatus().getId().longValue());
         dto.setDeliveryStatus(delivery.getStatus().getName());
     }
     
@@ -405,7 +405,7 @@ private DeliveryDetailResponseDTO mapToDeliveryDetailResponseDTO(Delivery delive
         orderDto.setId(order.getId());
         
         if (order.getStatus() != null) {
-            orderDto.setStatusId(order.getStatus().getId());
+                        orderDto.setStatusId(order.getStatus().getId());
             orderDto.setStatus(order.getStatus().getName());
         }
         

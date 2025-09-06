@@ -68,7 +68,7 @@ public class VehicleController {
                 // Status info
                 if (vehicle.getStatus() != null) {
                     Map<String, Object> statusDTO = new HashMap<>();
-                    statusDTO.put("id", vehicle.getStatus().getId());
+                    statusDTO.put("id", vehicle.getStatus().getId().longValue());
                     statusDTO.put("name", vehicle.getStatus().getName());
                     statusDTO.put("statusType", vehicle.getStatus().getStatusType());
                     statusDTO.put("description", vehicle.getStatus().getDescription());

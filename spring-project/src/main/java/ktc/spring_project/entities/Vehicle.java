@@ -19,6 +19,10 @@ public class Vehicle {
     @Column(name = "license_plate", length = 20, nullable = false, unique = true)
     private String licensePlate;
 
+    // Add the missing model field
+    @Column(name = "model", length = 100)
+    private String model;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "vehicle_type", length = 50, nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'TRUCK'")
     private VehicleType vehicleType = VehicleType.TRUCK;
@@ -67,6 +71,15 @@ public class Vehicle {
 
     public void setLicensePlate(String licensePlate) {
         this.licensePlate = licensePlate;
+    }
+
+    // Add getter and setter for model
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
 
     public VehicleType getVehicleType() {

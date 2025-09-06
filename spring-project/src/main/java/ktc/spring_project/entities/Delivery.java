@@ -21,6 +21,10 @@ public class Delivery {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private Status status;
+
     @Column(name = "delivery_fee")
     private BigDecimal deliveryFee;
 
@@ -49,7 +53,7 @@ private ServiceType serviceType;
     private Integer deliveryAttempts;
 
     @Column(name = "delivery_notes", columnDefinition = "TEXT")
-    private String deliveryNotes;
+    private String notes; // Changed from deliveryNotes to notes
 
     @Column(name = "order_date", nullable = false)
     private Timestamp orderDate;
@@ -86,6 +90,9 @@ private ServiceType serviceType;
     public Order getOrder() { return order; }
     public void setOrder(Order order) { this.order = order; }
 
+    public Status getStatus() { return status; }
+    public void setStatus(Status status) { this.status = status; }
+
     public BigDecimal getDeliveryFee() { return deliveryFee; }
     public void setDeliveryFee(BigDecimal deliveryFee) { this.deliveryFee = deliveryFee; }
 
@@ -120,8 +127,12 @@ public void setServiceType(ServiceType serviceType) {
     public Integer getDeliveryAttempts() { return deliveryAttempts; }
     public void setDeliveryAttempts(Integer deliveryAttempts) { this.deliveryAttempts = deliveryAttempts; }
 
-    public String getDeliveryNotes() { return deliveryNotes; }
-    public void setDeliveryNotes(String deliveryNotes) { this.deliveryNotes = deliveryNotes; }
+    public String getDeliveryNotes() { return notes; }
+    public void setDeliveryNotes(String deliveryNotes) { this.notes = deliveryNotes; }
+
+    // Add new getNotes/setNotes methods for compatibility
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
 
     public Timestamp getOrderDate() { return orderDate; }
     public void setOrderDate(Timestamp orderDate) { this.orderDate = orderDate; }

@@ -55,8 +55,11 @@ public class OrderController {
     }
     
     /**
-     * Get all orders with pagination
+     * Get all orders with pagination (simple version)
+     * @deprecated Use the detailed version with more filters instead
      */
+    // Commented out to fix duplicate mapping
+    /*
     @GetMapping
     public ResponseEntity<Page<Order>> getAllOrders(
             @RequestParam(defaultValue = "0") int page,
@@ -65,6 +68,7 @@ public class OrderController {
                 org.springframework.data.domain.PageRequest.of(page, size));
         return ResponseEntity.ok(orders);
     }
+    */
 
     /**
      * Tạo đơn hàng mới
@@ -119,7 +123,7 @@ public class OrderController {
                 // Status info
                 if (order.getStatus() != null) {
                     Map<String, Object> statusDTO = new HashMap<>();
-                    statusDTO.put("id", order.getStatus().getId());
+                    statusDTO.put("id", order.getStatus().getId().longValue());
                     statusDTO.put("name", order.getStatus().getName());
                     statusDTO.put("statusType", order.getStatus().getStatusType());
                     orderDTO.put("status", statusDTO);
@@ -191,7 +195,9 @@ public class OrderController {
 
     /**
      * Lấy đơn hàng theo ID
+     * Note: This is a duplicate of the method above. The original method has been kept.
      */
+    /*
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
         try {
@@ -201,6 +207,7 @@ public class OrderController {
             return ResponseEntity.notFound().build();
         }
     }
+    */
 
     /**
      * Cập nhật đơn hàng

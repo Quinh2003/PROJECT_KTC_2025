@@ -18,6 +18,13 @@ public class RouteResponseDTO {
     private Boolean aiOptimized;
     private String notes;
     
+    // Geographic coordinates
+    private BigDecimal startLatitude;
+    private BigDecimal startLongitude;
+    private BigDecimal endLatitude;
+    private BigDecimal endLongitude;
+    private String polyline;
+    
     // Created by user information
     private UserResponseDTO createdBy;
     private Long createdByUserId;
@@ -77,6 +84,22 @@ public class RouteResponseDTO {
     
     public Timestamp getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
+    
+    // Geographic coordinates getters and setters
+    public BigDecimal getStartLatitude() { return startLatitude; }
+    public void setStartLatitude(BigDecimal startLatitude) { this.startLatitude = startLatitude; }
+    
+    public BigDecimal getStartLongitude() { return startLongitude; }
+    public void setStartLongitude(BigDecimal startLongitude) { this.startLongitude = startLongitude; }
+    
+    public BigDecimal getEndLatitude() { return endLatitude; }
+    public void setEndLatitude(BigDecimal endLatitude) { this.endLatitude = endLatitude; }
+    
+    public BigDecimal getEndLongitude() { return endLongitude; }
+    public void setEndLongitude(BigDecimal endLongitude) { this.endLongitude = endLongitude; }
+    
+    public String getPolyline() { return polyline; }
+    public void setPolyline(String polyline) { this.polyline = polyline; }
     
     // Utility methods
     public String getDisplayName() {
