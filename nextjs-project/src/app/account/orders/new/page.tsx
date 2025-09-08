@@ -383,7 +383,7 @@ export default function CreateOrder() {
                               formatter={(value) =>
                                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                               }
-                              parser={(value) => value!.replace(/\D/g, "")}
+                              parser={(value) => (Number(value!.replace(/\D/g, "")) || 0) as any}
                               placeholder="Nhập số tiền thu hộ"
                             />
                           </Form.Item>
