@@ -1,69 +1,218 @@
-# React + TypeScript + Vite
+# 🖥️ KTC Logistics Management Platform - Admin Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An administrative dashboard for KTC Logistics built with React 19, TypeScript, and Vite. This web application provides a comprehensive suite of tools for logistics management, integrating dispatcher order management, fleet operations, and performance analytics. The system enables dispatchers, fleet managers, operations managers, and administrators to effectively manage the entire logistics workflow through a modern, responsive interface featuring interactive visualizations and real-time updates.
 
-Currently, two official plugins are available:
+![KTC Logistics Operations Dashboard](public/dashboard-screenshot.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📋 Table of Contents
 
-## Expanding the ESLint configuration
+1. [Getting Started](#-getting-started)
+2. [Main Features](#-main-features)
+3. [Project Structure](#-project-structure)
+4. [Tech Stack](#-tech-stack)
+5. [License & Contact](#-license--contact)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Getting Started
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Prerequisites
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- **Node.js**: 18.17.0 or later
+- **pnpm**: 8.0.0 or later (recommended package manager)
+- **Git**: Latest version
+- **Spring Boot Backend**: Running on port 8080 (or configured API URL)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/Quinh2003/PROJECT_KTC_2025.git
+   cd PROJECT_KTC_2025/reactjs-project
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   pnpm install
+   ```
+
+3. **Environment setup**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Configure your environment variables:
+
+   ```env
+   VITE_API_URL=http://localhost:8080/api
+   VITE_MAPBOX_ACCESS_TOKEN=your-mapbox-token
+   VITE_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
+   ```
+
+4. **Run development server**
+   ```bash
+   pnpm dev
+   ```
+   Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Available Scripts
+
+| Command        | Description                      |
+| -------------- | -------------------------------- |
+| `pnpm dev`     | Start development server         |
+| `pnpm build`   | Build production version         |
+| `pnpm preview` | Preview production build locally |
+| `pnpm lint`    | Run ESLint for code quality      |
+
+### Test Accounts
+
+#### 🔒 **Admin Account**
+- **Email**: `admin@ktclogistics.com`
+- **Password**: `Admin123456`
+
+#### 🔒 **Operations Manager Account**
+- **Email**: `operations@ktclogistics.com`
+- **Password**: `Ops123456`
+
+#### 🔒 **Fleet Manager Account**
+- **Email**: `fleet@ktclogistics.com`
+- **Password**: `Fleet123456`
+
+#### 🔒 **Dispatcher Account**
+- **Email**: `dispatcher@ktclogistics.com`
+- **Password**: `Disp123456`
+
+## 🚀 Main Features
+
+### 📦 Dispatcher Order Management
+- Real-time order allocation and monitoring
+- Exception handling and issue resolution
+- Order tracking with status updates
+- Delivery performance reporting
+
+### 🚚 Fleet Management
+- Vehicle assignment and telemetry monitoring
+- Driver scheduling and resource allocation
+- Vehicle maintenance tracking and alerts
+- Fleet performance analytics and reporting
+
+### 📊 Operations Dashboard
+- Process oversight and performance monitoring
+- Resource allocation and optimization
+- Interactive KPIs and business intelligence
+- Customizable reporting with export capabilities
+
+### 👥 User & System Administration
+- Role-based access control (Admin, Operations Manager, Fleet Manager, Dispatcher)
+- User activity monitoring and audit logs
+- System configuration and maintenance
+- Security management and compliance monitoring
+
+### 🗺️ AI-Assisted Route Planning
+- Intelligent route optimization with machine learning
+- Heat maps of delivery density and performance
+- Geographic data analysis and visualization
+- Service area coverage mapping
+
+### 🔔 Real-time Notification System
+- Instant alerts for delivery exceptions
+- Scheduled reports distribution
+- Critical event monitoring
+- Custom alert rules configuration
+
+## 🏗️ Project Structure
+
+```
+src/
+├── assets/              # Static assets like images and icons
+├── components/          # Reusable UI components
+│   ├── common/          # Shared components (buttons, modals, etc.)
+│   ├── charts/          # Chart and data visualization components
+│   ├── forms/           # Form components and validation
+│   ├── layout/          # Layout components (header, sidebar, etc.)
+│   ├── maps/            # Map-related components
+│   └── tables/          # Table components for data display
+│
+├── constants/           # Application constants and configuration
+│
+├── contexts/            # React context providers
+│   ├── AuthContext.tsx  # Authentication context
+│   └── ThemeContext.tsx # Theme management context
+│
+├── data/                # Mock data and data utilities
+│
+├── hooks/               # Custom React hooks
+│   ├── useAuth.ts       # Authentication hook
+│   ├── useFetch.ts      # Data fetching hook
+│   └── useMap.ts        # Map functionality hook
+│
+├── pages/               # Application pages
+│   ├── dashboard/       # Dashboard page and components
+│   ├── fleet/           # Fleet management pages
+│   ├── users/           # User management pages
+│   ├── analytics/       # Analytics and reporting pages
+│   ├── settings/        # System settings pages
+│   └── auth/            # Authentication pages
+│
+├── services/            # API services and data fetching
+│   ├── api.ts           # API client setup
+│   ├── auth.service.ts  # Authentication service
+│   ├── fleet.service.ts # Fleet management service
+│   └── user.service.ts  # User management service
+│
+├── types/               # TypeScript type definitions
+│
+├── utils/               # Utility functions
+│   ├── auth.ts          # Authentication utilities
+│   ├── formatting.ts    # Data formatting utilities
+│   ├── mapping.ts       # Map-related utilities
+│   └── validation.ts    # Form validation utilities
+│
+├── App.tsx              # Main application component
+├── main.tsx             # Application entry point
+└── index.css            # Global styles
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🛠️ Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Core Technologies
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **Framework**: React 19.1.0
+- **Build Tool**: Vite 7.0.4
+- **Language**: TypeScript 5.8.3
+- **Styling**: TailwindCSS 3.x (via CDN)
+
+### State Management & Data Fetching
+
+- **Server State**: TanStack Query (React Query) 5.85.3
+- **HTTP Client**: Axios 1.11.0
+
+### Mapping & Visualization
+
+- **Maps**: Mapbox GL 2.15.0, React MapGL 7.1.7, Google Maps API
+- **Charts**: Chart.js 4.5.0 with react-chartjs-2 5.3.0
+
+### Additional Libraries
+
+- **Icons**: React Icons 5.5.0, Lucide React 0.541.0
+- **Routing**: React Router 7.7.1
+
+### Development Tools
+
+- **Build Tool**: Vite 7.0.4
+- **Linting**: ESLint 9.30.1
+- **Package Manager**: pnpm
+
+## 📄 License & Contact
+
+Copyright © 2025 KTC Logistics. All rights reserved.
+
+For technical issues or support:
+- **Development Team**: admin-team@ktclogistics.com
+- **Project Lead**: admin-lead@ktclogistics.com
+- Open an issue in the repository for quick assistance
+
+---
+
+© 2025 KTC Logistics. All rights reserved.

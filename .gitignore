@@ -20,3 +20,8 @@ hs_err_pid*.log
 # Configuration files with sensitive information
 spring-project/src/main/resources/application.properties
 spring-project/gradle.properties
+
+/logs
+slides/
+*.pptx
+

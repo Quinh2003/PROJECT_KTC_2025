@@ -1,0 +1,84 @@
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { useState } from "react";
+// Validation functions - đơn giản như trong thực tế
+const validateEmail = (email) => {
+    if (!email.trim())
+        return "Email is required";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email))
+        return "Email should be valid";
+    return "";
+};
+const validatePassword = (password) => {
+    if (!password.trim())
+        return "Password is required";
+    return "";
+};
+export default function LoginForm({ onLogin }) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
+        setEmailError("");
+        setPasswordError("");
+        // Validate form
+        const emailErr = validateEmail(email);
+        const passwordErr = validatePassword(password);
+        if (emailErr) {
+            setEmailError(emailErr);
+            return;
+        }
+        if (passwordErr) {
+            setPasswordError(passwordErr);
+            return;
+        }
+        setLoading(true);
+        try {
+            const res = await fetch("http://localhost:8080/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+            if (!res.ok) {
+                setError("Sai tài khoản hoặc mật khẩu!");
+                setLoading(false);
+                return;
+            }
+            const data = await res.json();
+            // Lưu token và user vào localStorage
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            onLogin(data.user);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        }
+        catch (err) {
+            setError("Không thể kết nối tới máy chủ!");
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+    return (_jsxs("div", { className: "min-h-screen w-full flex items-center justify-center bg-cover bg-center relative overflow-hidden", style: {
+            backgroundImage: "url('/login.jpg')",
+        }, children: [_jsx("div", { className: "absolute inset-0 bg-gradient-to-br from-blue-900/30 via-purple-900/20 to-indigo-900/30 backdrop-blur-sm z-0" }), _jsxs("div", { className: "absolute inset-0 overflow-hidden pointer-events-none", children: [_jsx("div", { className: "absolute top-1/4 left-1/4 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl animate-pulse" }), _jsx("div", { className: "absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-pulse delay-700" }), _jsx("div", { className: "absolute top-3/4 left-3/4 w-64 h-64 bg-indigo-400/10 rounded-full blur-3xl animate-pulse delay-1000" })] }), _jsxs("div", { className: "relative z-10 flex flex-col items-center w-full max-w-md px-6", children: [_jsxs("form", { onSubmit: handleSubmit, className: "w-full bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl px-8 py-10 space-y-6 transform transition-all duration-500 ", children: [_jsxs("div", { className: "text-center mb-8", children: [_jsx("h2", { className: "text-2xl font-semibold text-white drop-shadow-lg", children: "Welcome Back" }), _jsx("p", { className: "text-white/70 text-sm mt-2", children: "Sign in to continue to your dashboard" })] }), _jsxs("div", { className: "space-y-2", children: [_jsx("label", { htmlFor: "email", className: "block text-white/90 text-sm font-medium drop-shadow", children: "Email Address" }), _jsxs("div", { className: "relative group", children: [_jsx("div", { className: "absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300" }), _jsx("input", { id: "email", type: "email", value: email, onChange: e => {
+                                                    setEmail(e.target.value);
+                                                    if (emailError)
+                                                        setEmailError("");
+                                                }, onBlur: e => {
+                                                    const err = validateEmail(e.target.value);
+                                                    setEmailError(err);
+                                                }, className: `relative w-full bg-white/10 backdrop-blur-sm border ${emailError ? 'border-red-400' : 'border-white/30'} rounded-xl px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 ${emailError ? 'focus:ring-red-400/50 focus:border-red-400/50' : 'focus:ring-blue-400/50 focus:border-blue-400/50'} transition-all duration-300 hover:bg-white/15`, placeholder: "Enter your email address", required: true, autoComplete: "username" }), _jsx("div", { className: "absolute inset-y-0 right-0 flex items-center pr-3", children: _jsx("span", { className: "text-white/40", children: "\u2709\uFE0F" }) })] }), emailError && (_jsxs("p", { className: "text-red-300 text-sm mt-1 flex items-center gap-1", children: [_jsx("span", { children: "\u26A0\uFE0F" }), emailError] }))] }), _jsxs("div", { className: "space-y-2", children: [_jsx("label", { htmlFor: "password", className: "block text-white/90 text-sm font-medium drop-shadow", children: "Password" }), _jsxs("div", { className: "relative group", children: [_jsx("div", { className: "absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300" }), _jsx("input", { id: "password", type: showPassword ? "text" : "password", value: password, onChange: e => {
+                                                    setPassword(e.target.value);
+                                                    if (passwordError)
+                                                        setPasswordError("");
+                                                }, onBlur: e => {
+                                                    const err = validatePassword(e.target.value);
+                                                    setPasswordError(err);
+                                                }, className: `relative w-full bg-white/10 backdrop-blur-sm border ${passwordError ? 'border-red-400' : 'border-white/30'} rounded-xl px-4 py-3 pr-12 text-white placeholder-white/60 focus:outline-none focus:ring-2 ${passwordError ? 'focus:ring-red-400/50 focus:border-red-400/50' : 'focus:ring-blue-400/50 focus:border-blue-400/50'} transition-all duration-300 hover:bg-white/15`, placeholder: "Enter your password", required: true, autoComplete: "current-password" }), _jsx("button", { type: "button", onClick: () => setShowPassword(!showPassword), className: "absolute inset-y-0 right-0 flex items-center pr-3 text-white/60 hover:text-white transition-colors duration-200", tabIndex: -1, "aria-label": "Toggle password visibility", children: showPassword ? "🙈" : "🐵" })] }), passwordError && (_jsxs("p", { className: "text-red-300 text-sm mt-1 flex items-center gap-1", children: [_jsx("span", { children: "\u26A0\uFE0F" }), passwordError] }))] }), error && (_jsxs("div", { className: "bg-red-500/20 backdrop-blur-sm border border-red-400/30 text-red-100 rounded-xl px-4 py-3 text-sm flex items-center gap-2 animate-shake", children: [_jsx("span", { children: "\u26A0\uFE0F" }), error] })), _jsxs("button", { type: "submit", disabled: loading, className: "w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group", children: [_jsx("div", { className: "absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" }), _jsx("span", { className: "relative flex items-center justify-center gap-2", children: loading ? (_jsxs(_Fragment, { children: [_jsx("div", { className: "w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" }), "Signing In..."] })) : (_jsx(_Fragment, { children: "Sign In" })) })] }), _jsxs("div", { className: "text-center space-y-2 pt-4", children: [_jsx("p", { className: "text-white/60 text-sm", children: "Need help accessing your account?" }), _jsx("button", { type: "button", className: "text-blue-300 hover:text-blue-200 text-sm font-medium transition-colors duration-200 underline decoration-dotted", children: "Contact Administrator" })] })] }), _jsx("div", { className: "mt-8 text-center", children: _jsx("p", { className: "text-white/50 text-xs", children: "\u00A9 2025 Fast Route Logistics. All rights reserved." }) })] })] }));
+}

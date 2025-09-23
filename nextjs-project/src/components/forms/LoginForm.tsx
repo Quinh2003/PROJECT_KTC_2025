@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { AuthResponse } from "../../types/User";
 import { setTokenCookie, setRefreshTokenCookie } from "../../lib/auth";

@@ -46,6 +46,10 @@ dependencies {
 
 	// Thư viện Google Authenticator
 	implementation 'com.warrenstrange:googleauth:1.5.0'
+
+	// OpenAPI/Swagger documentation
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
+
 	
 	implementation 'mysql:mysql-connector-java:8.0.33'
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -74,3 +78,4 @@ tasks.named('test') {
 bootJar {
     mainClass = 'ktc.spring_project.SpringProjectApplication'
 }
+

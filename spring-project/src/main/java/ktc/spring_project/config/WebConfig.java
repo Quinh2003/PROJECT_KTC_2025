@@ -2,6 +2,7 @@ package ktc.spring_project.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  * Chức năng chính:
  * - Cấu hình CORS (Cross-Origin Resource Sharing) cho phép frontend truy cập API
+ * - Cấu hình Resource Handlers cho các tệp tĩnh (bao gồm Swagger UI)
  * - Có thể mở rộng thêm các cấu hình MVC khác như interceptors, view resolvers, etc.
  *
  * Note: CORS cũng được cấu hình trong SecurityConfig, nhưng cấu hình này
@@ -44,5 +46,20 @@ public class WebConfig implements WebMvcConfigurer {
                 // Cho phép gửi credentials (cookies, authorization headers)
                 // Cần thiết để gửi JWT token trong Authorization header
                 .allowCredentials(true);
+    }
+    
+    /**
+     * Cấu hình các resource handler để phục vụ tệp tĩnh
+     * 
+     * @param registry ResourceHandlerRegistry để đăng ký resource handler
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Đảm bảo các tài nguyên tĩnh của Swagger UI được phục vụ đúng cách
+        registry.addResourceHandler("/swagger-ui/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/");
+                
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }

@@ -1,226 +1,272 @@
-# KTC Logistics Backend - Spring Boot Application
+# ⚙️ KTC Logistics Management Platform - Backend API
 
-## 🚀 Docker Hub Repository
+A robust backend API service for KTC Logistics built with Spring Boot 3.5.4 and Java 21. This microservice provides comprehensive RESTful APIs for logistics management, including user authentication, order processing, fleet management, and real-time tracking capabilities. The backend serves as the core data layer for the KTC Logistics 2025 ecosystem, integrating with PostgreSQL database and providing secure, scalable APIs for web and mobile applications.
 
-**Public Repository:** https://hub.docker.com/r/fanglee2003/ktc-logistics-backend
+![KTC Logistics Backend Architecture](docs/backend-architecture.png)
 
-## 📦 Quick Start
+## 📋 Table of Contents
 
-### Pull và chạy container:
+1. [Getting Started](#-getting-started)
+2. [Main Features](#-main-features)
+3. [Project Structure](#-project-structure)
+4. [Tech Stack](#-tech-stack)
+5. [License & Contact](#-license--contact)
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Java**: 21 (LTS)
+- **Gradle**: 8.14.3 or later
+- **PostgreSQL**: 15 or later
+- **Docker**: Latest version (optional)
+- **Git**: Latest version
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/Quinh2003/PROJECT_KTC_2025.git
+   cd PROJECT_KTC_2025/spring-project
+   ```
+
+2. **Database setup**
+
+   ```bash
+   # Create PostgreSQL database
+   createdb ktc_logistics_db
+   
+   # Import initial schema (optional)
+   psql -d ktc_logistics_db -f docs/schemaDB/database-8-4.sql
+   ```
+
+3. **Environment configuration**
+
+   ```bash
+   cp application.properties.example src/main/resources/application.properties
+   ```
+
+   Configure your database and environment variables:
+
+   ```properties
+   spring.datasource.url=jdbc:postgresql://localhost:5432/ktc_logistics_db
+   spring.datasource.username=your-db-username
+   spring.datasource.password=your-db-password
+   
+   # JWT Configuration
+   app.jwt.secret=your-jwt-secret-key
+   app.jwt.expiration=86400000
+   
+   # Email Configuration
+   spring.mail.host=smtp.gmail.com
+   spring.mail.username=your-email@gmail.com
+   spring.mail.password=your-app-password
+   ```
+
+4. **Run the application**
+   ```bash
+   ./gradlew bootRun
+   ```
+   API server will be available at [http://localhost:8080](http://localhost:8080)
+
+### Docker Deployment
+
+#### Quick Start with Docker Hub
 
 ```bash
+# Pull and run the latest image
 docker pull fanglee2003/ktc-logistics-backend
 docker run -d -p 8080:8080 fanglee2003/ktc-logistics-backend
 ```
 
-## 🌐 API Resources & Endpoints
+#### Build from Source
+
+```bash
+# Build Docker image
+docker build -t ktc-logistics-backend .
+
+# Run with Docker Compose
+docker-compose up -d
+```
+
+### Available Scripts
+
+| Command             | Description                |
+| ------------------- | -------------------------- |
+| `./gradlew bootRun` | Start development server   |
+| `./gradlew build`   | Build production JAR       |
+| `./gradlew test`    | Run unit tests             |
+| `./gradlew bootJar` | Create executable JAR file |
+| `./gradlew clean`   | Clean build artifacts      |
+
+### Test Accounts
+
+#### 🔒 **Admin Account**
+- **Email**: `admin@ktclogistics.com`
+- **Password**: `Admin123456`
+
+#### 🔒 **Driver Account**
+- **Email**: `driver@gmail.com`
+- **Password**: `123456`
+
+#### 🔒 **Customer Account**
+- **Email**: `customer@ktclogistics.com`
+- **Password**: `Customer123456`
+
+## 🚀 Main Features
 
 ### 🔐 Authentication & Authorization
+- JWT-based authentication with refresh tokens
+- Role-based access control (Admin, Dispatcher, Fleet Manager, Driver, Customer)
+- Google OAuth 2.0 integration
+- Two-factor authentication support
+- Password reset and email verification
 
-| Endpoint                        | Method | Description                    | Status      |
-|----------------------------------|--------|--------------------------------|-------------|
-| `/api/auth/login`                | POST   | User login                     | ✅ Đã làm   |
-| `/api/auth/register`             | POST   | User registration              | ✅ Đã làm   |
-| `/api/auth/google`               | POST   | Google OAuth login             | ✅ Đã làm   |
-| `/api/auth/google-credential`    | POST   | Google credential login        | ✅ Đã làm   |
-| `/api/auth/forgot-password`      | POST   | Send password reset email      | ❌ Chưa làm |
-| `/api/auth/reset-password`       | POST   | Reset password with token      | ❌ Chưa làm |
-| `/api/auth/logout`               | POST   | User logout                    | ❌ Chưa làm |
+### 📦 Order Management System
+- Complete order lifecycle management
+- Real-time order status tracking
+- Bulk order processing capabilities
+- Order validation and business rules
+- Integration with delivery tracking
 
-### 👥 User Management
+### 🚚 Fleet & Vehicle Management
+- Vehicle registration and maintenance tracking
+- Driver assignment and scheduling
+- Real-time vehicle telemetry
+- Maintenance request system
+- Fleet performance analytics
 
-| Endpoint                              | Method | Description                   | Status      |
-|----------------------------------------|--------|-------------------------------|-------------|
-| `/api/users`                          | GET    | Get all users                 | ✅ Đã làm   |
-| `/api/users/{id}`                     | GET    | Get user by ID                | ✅ Đã làm   |
-| `/api/users/{id}`                     | PUT    | Update user                   | ✅ Đã làm   |
-| `/api/users/{id}`                     | DELETE | Delete user (soft)            | ✅ Đã làm   |
-| `/api/users/profile`                  | GET    | Get current user profile      | ✅ Đã làm   |
-| `/api/users/profile`                  | PUT    | Update current user profile   | ✅ Đã làm   |
-| `/api/users/{id}/activity-logs`       | GET    | Get user activity logs        | ❌ Chưa làm |
+### 🗺️ Delivery & Route Optimization
+- Advanced routing algorithms
+- GPS-based delivery tracking
+- Proof of delivery management
+- Route optimization with multiple stops
+- Geolocation services integration
 
-### 🏗️ Category Management
+### 💰 Billing & Payment Processing
+- Automated shipping cost calculation
+- Invoice generation and management
+- Multiple payment methods support
+- Electronic invoice system
+- Financial reporting and analytics
 
-| Endpoint                                   | Method | Description                  | Status      |
-|---------------------------------------------|--------|------------------------------|-------------|
-| `/api/categories`                          | GET    | Get all categories           | ✅ Đã làm   |
-| `/api/categories/tree`                     | GET    | Get category tree            | ✅ Đã làm   |
-| `/api/categories/{id}`                     | GET    | Get category by ID           | ✅ Đã làm   |
-| `/api/categories`                          | POST   | Create new category          | ✅ Đã làm   |
-| `/api/categories/{id}`                     | PUT    | Update category              | ✅ Đã làm   |
-| `/api/categories/{id}`                     | PATCH  | Partial update category      | ✅ Đã làm   |
-| `/api/categories/{id}`                     | DELETE | Delete category              | ✅ Đã làm   |
-| `/api/categories/{id}/products`            | GET    | Get products in category     | ✅ Đã làm   |
-| `/api/categories/{id}/statistics`          | GET    | Get category statistics      | ✅ Đã làm   |
+### 📊 Analytics & Reporting
+- Comprehensive dashboard APIs
+- Performance metrics and KPIs
+- Custom report generation
+- Data export capabilities
+- Real-time monitoring endpoints
 
-### 📦 Product Management
+## ️ Project Structure
 
-| Endpoint                                   | Method | Description                  | Status      |
-|---------------------------------------------|--------|------------------------------|-------------|
-| `/api/products`                            | GET    | Get all products             | ✅ Đã làm   |
-| `/api/products/{id}`                       | GET    | Get product by ID            | ✅ Đã làm   |
-| `/api/products`                            | POST   | Create new product           | ✅ Đã làm   |
-| `/api/products/{id}`                       | PUT    | Update product               | ✅ Đã làm   |
-| `/api/products/{id}`                       | PATCH  | Partial update product       | ✅ Đã làm   |
-| `/api/products/{id}`                       | DELETE | Delete product               | ✅ Đã làm   |
-| `/api/products/{id}/inventory`             | GET    | Get product inventory        | ❌ Chưa làm |
+```
+src/main/java/ktc/spring_project/
+├── SpringProjectApplication.java    # Main application entry point
+│
+├── config/                         # Configuration classes
+│   ├── AppConfig.java              # General application configuration
+│   ├── JwtAuthenticationFilter.java # JWT authentication filter
+│   ├── JwtTokenProvider.java       # JWT token utilities
+│   ├── SecurityConfig.java         # Spring Security configuration
+│   ├── WebConfig.java              # Web MVC configuration
+│   └── OpenApiConfig.java          # Swagger/OpenAPI configuration
+│
+├── controllers/                    # REST API controllers
+│   ├── AuthController.java         # Authentication endpoints
+│   ├── UserController.java         # User management endpoints
+│   ├── OrderController.java        # Order management endpoints
+│   ├── DeliveryController.java     # Delivery management endpoints
+│   ├── VehicleController.java      # Vehicle management endpoints
+│   ├── DashboardController.java    # Dashboard analytics endpoints
+│   └── ...                        # Other specialized controllers
+│
+├── entities/                       # JPA entities
+│   ├── User.java                   # User entity
+│   ├── Order.java                  # Order entity
+│   ├── Delivery.java               # Delivery entity
+│   ├── Vehicle.java                # Vehicle entity
+│   └── ...                        # Other domain entities
+│
+├── repositories/                   # JPA repositories
+│   ├── UserRepository.java         # User data access
+│   ├── OrderRepository.java        # Order data access
+│   └── ...                        # Other repositories
+│
+├── services/                       # Business logic services
+│   ├── AuthService.java            # Authentication business logic
+│   ├── UserService.java            # User management business logic
+│   ├── OrderService.java           # Order processing business logic
+│   └── ...                        # Other business services
+│
+├── dtos/                          # Data Transfer Objects
+│   ├── auth/                      # Authentication DTOs
+│   ├── user/                      # User management DTOs
+│   ├── order/                     # Order management DTOs
+│   └── ...                       # Other DTO packages
+│
+├── enums/                         # Enumeration classes
+│   ├── StatusType.java            # Order/delivery status types
+│   ├── PaymentMethod.java         # Payment method types
+│   └── ...                       # Other enums
+│
+└── exceptions/                    # Custom exception classes
+    └── ...                       # Global exception handlers
+```
 
-### 📋 Order Management
+## 🛠️ Tech Stack
 
-| Endpoint                                   | Method | Description                  | Status      |
-|---------------------------------------------|--------|------------------------------|-------------|
-| `/api/orders`                              | GET    | Get all orders               | ✅ Đã làm   |
-| `/api/orders/{id}`                         | GET    | Get order by ID              | ✅ Đã làm   |
-| `/api/orders`                              | POST   | Create new order             | ✅ Đã làm   |
-| `/api/orders/{id}`                         | PUT    | Update order                 | ✅ Đã làm   |
-| `/api/orders/{id}`                         | PATCH  | Partial update order         | ✅ Đã làm   |
-| `/api/orders/{id}/status`                  | PATCH  | Update order status          | ✅ Đã làm   |
-| `/api/orders/{id}/items`                   | GET    | Get order items              | ❌ Chưa làm |
-| `/api/orders/{id}/tracking`                | GET    | Get order tracking info      | ✅ Đã làm   |
+### Core Technologies
 
-### 🚚 Vehicle Management
+- **Framework**: Spring Boot 3.5.4
+- **Language**: Java 21 (LTS)
+- **Build Tool**: Gradle 8.14.3
+- **Database**: PostgreSQL 15+
 
-| Endpoint                                   | Method     | Description                  | Status      |
-|---------------------------------------------|------------|------------------------------|-------------|
-| `/api/vehicles`                            | GET        | Get all vehicles             | ✅ Đã làm   |
-| `/api/vehicles/{id}`                       | GET        | Get vehicle by ID            | ✅ Đã làm   |
-| `/api/vehicles`                            | POST       | Create new vehicle           | ✅ Đã làm   |
-| `/api/vehicles/{id}`                       | PUT/PATCH  | Update vehicle               | ✅ Đã làm   |
-| `/api/vehicles/{id}`                       | DELETE     | Delete vehicle               | ✅ Đã làm   |
-| `/api/vehicles/{id}/maintenance`           | GET        | Get vehicle maintenance      | ❌ Chưa làm |
-| `/api/vehicles/{id}/assignments`           | GET        | Get vehicle assignments      | ❌ Chưa làm |
-| `/api/vehicles/available`                  | GET        | Get available vehicles       | ❌ Chưa làm |
+### Spring Framework Modules
 
-### 📍 Route Management
+- **Spring Data JPA**: Database operations and ORM
+- **Spring Security**: Authentication and authorization
+- **Spring Web**: RESTful web services
+- **Spring Validation**: Input validation
+- **Spring Mail**: Email functionality
 
-| Endpoint                                   | Method | Description                  | Status      |
-|---------------------------------------------|--------|------------------------------|-------------|
-| `/api/routes`                              | GET    | Get all routes               | ✅ Đã làm   |
-| `/api/routes/{id}`                         | GET    | Get route by ID              | ✅ Đã làm   |
-| `/api/routes`                              | POST   | Create new route             | ✅ Đã làm   |
-| `/api/routes/{id}`                         | DELETE | Delete route                 | ✅ Đã làm   |
-| `/api/routes/{id}`                         | PUT    | Update route                 | ✅ Đã làm   |
-| `/api/routes/{id}/tracking`                | GET    | Get route tracking           | ✅ Đã làm   |
+### Additional Libraries
 
-### 🚛 Delivery Management
+- **JWT**: io.jsonwebtoken:jjwt-api 0.11.5
+- **Google Auth**: com.warrenstrange:googleauth 1.5.0
+- **PDF Generation**: com.github.librepdf:openpdf 1.3.30
+- **API Documentation**: springdoc-openapi-starter-webmvc-ui 2.2.0
+- **Database Migration**: Flyway Core (optional)
 
-| Endpoint                                   | Method | Description                  | Status      |
-|---------------------------------------------|--------|------------------------------|-------------|
-| `/api/deliveries`                          | GET    | Get all deliveries           | ✅ Đã làm   |
-| `/api/deliveries/{id}`                     | GET    | Get delivery by ID           | ✅ Đã làm   |
-| `/api/deliveries`                          | POST   | Create new delivery          | ✅ Đã làm   |
-| `/api/deliveries/{id}`                     | DELETE | Delete delivery              | ✅ Đã làm   |
-| `/api/deliveries/{id}`                     | PUT    | Update delivery              | ✅ Đã làm   |
-| `/api/deliveries/{id}/tracking`            | GET    | Get delivery tracking        | ✅ Đã làm   |
+### Development Tools
 
-### 📱 GPS Tracking
+- **Testing**: JUnit 5, Spring Boot Test
+- **Database**: H2 (testing), PostgreSQL (production)
+- **Containerization**: Docker, Docker Compose
+- **API Testing**: Postman Collection included
 
-| Endpoint                                   | Method | Description                  | Status      |
-|---------------------------------------------|--------|------------------------------|-------------|
-| `/api/tracking/vehicles/{id}`              | GET    | Get vehicle real-time loc    | ❌ Chưa làm |
-| `/api/tracking/deliveries/{id}`            | GET    | Get delivery tracking points | ❌ Chưa làm |
-| `/api/tracking/update`                     | POST   | Update GPS location          | ❌ Chưa làm |
-| `/api/tracking/history`                    | GET    | Get tracking history         | ❌ Chưa làm |
+### Security Features
 
-### 💰 Payment Management
+- **JWT Authentication**: Stateless authentication
+- **CORS Configuration**: Cross-origin resource sharing
+- **Input Validation**: Bean validation with custom validators
+- **SQL Injection Protection**: JPA/Hibernate parameterized queries
+- **XSS Protection**: Input sanitization and encoding
 
-| Endpoint                                   | Method | Description                  | Status      |
-|---------------------------------------------|--------|------------------------------|-------------|
-| `/api/payments`                            | GET    | Get all payments             | ✅ Đã làm   |
-| `/api/payments/{id}`                       | GET    | Get payment by ID            | ✅ Đã làm   |
-| `/api/payments/{id}`                       | DELETE | Delete payment               | ✅ Đã làm   |
-| `/api/payments`                            | POST   | Create payment               | ✅ Đã làm   |
-| `/api/payments/{id}`                       | PUT    | Update payment               | ✅ Đã làm   |
+## 📄 License & Contact
 
-### 🏪 Store Management
+Copyright © 2025 KTC Logistics. All rights reserved.
 
-| Endpoint                                   | Method     | Description                  | Status      |
-|---------------------------------------------|------------|------------------------------|-------------|
-| `/api/stores`                              | GET        | Get all stores               | ✅ Đã làm   |
-| `/api/stores/{id}`                         | GET        | Get store by ID              | ✅ Đã làm   |
-| `/api/stores`                              | POST       | Create new store             | ✅ Đã làm   |
-| `/api/stores/{id}`                         | PUT/PATCH  | Update store                 | ✅ Đã làm   |
-| `/api/stores/{id}`                         | DELETE     | Delete store                 | ✅ Đã làm   |
+For technical issues or support:
+- **Backend Team**: backend-team@ktclogistics.com
+- **Project Lead**: backend-lead@ktclogistics.com
+- **API Support**: api-support@ktclogistics.com
+- Open an issue in the repository for quick assistance
 
-### 🏭 Warehouse Management
+### Documentation Resources
 
-| Endpoint                                   | Method | Description                  | Status      |
-|---------------------------------------------|--------|------------------------------|-------------|
-| `/api/warehouses`                          | GET    | Get all warehouses           | ✅ Đã làm   |
-| `/api/warehouses/{id}`                     | GET    | Get warehouse by ID          | ✅ Đã làm   |
-| `/api/warehouses`                          | POST   | Create new warehouse         | ✅ Đã làm   |
-| `/api/warehouses/{id}`                     | PUT    | Update warehouse             | ✅ Đã làm   |
-| `/api/warehouses/{id}`                     | DELETE | Delete warehouse             | ✅ Đã làm   |
-| `/api/warehouses/{id}/transactions`        | GET    | Get warehouse transactions   | ✅ Đã làm |
-| `/api/warehouses/{id}/inventory`           | GET    | Get warehouse inventory      | ✅ Đã làm |
-
-### 🧾 Electronic Invoice Management
-
-| Endpoint                                   | Method | Description                  | Status      |
-|---------------------------------------------|--------|------------------------------|-------------|
-| `/api/invoices/check-eligibility/{orderId}` | GET    | Check order invoice eligibility | ✅ Đã làm   |
-| `/api/invoices`                            | POST   | Create new electronic invoice  | ✅ Đã làm   |
-| `/api/invoices`                            | GET    | Get all invoices with filters  | ✅ Đã làm   |
-| `/api/invoices/{id}`                       | GET    | Get invoice by ID             | ✅ Đã làm   |
-| `/api/invoices/by-order/{orderId}`         | GET    | Get invoice by order ID       | ✅ Đã làm   |
-| `/api/invoices/{id}/send-email`            | POST   | Send invoice via email        | ✅ Đã làm   |
-| `/api/invoices/{id}/cancel`                | POST   | Cancel invoice (Admin only)   | ✅ Đã làm   |
-| `/api/invoices/{id}/generate-pdf`          | POST   | Generate invoice PDF          | ✅ Đã làm   |
-| `/api/invoices/{id}/download-pdf`          | GET    | Download invoice PDF          | ✅ Đã làm   |
-| `/api/invoices/orders-needing-invoice`     | GET    | Get orders needing invoice    | ✅ Đã làm   |
-
-### 📊 Dashboard & Analytics
-
-| Endpoint                                   | Method | Description                  | Status      |
-|---------------------------------------------|--------|------------------------------|-------------|
-| `/api/dashboard/overview`                  | GET    | Get dashboard overview stats | ❌ Chưa làm |
-| `/api/dashboard/kpi`                       | GET    | Get KPI metrics              | ❌ Chưa làm |
-| `/api/reports/orders`                      | GET    | Generate order reports       | ❌ Chưa làm |
-| `/api/reports/deliveries`                  | GET    | Generate delivery reports    | ❌ Chưa làm |
-| `/api/reports/performance`                 | GET    | Generate performance reports | ❌ Chưa làm |
-| `/api/reports/export`                      | POST   | Export reports to file       | ❌ Chưa làm |
-
----
-
-## 📊 API Status Summary
-
-| Status         | Count | Description                        |
-|----------------|-------|------------------------------------|
-| ✅ Đã làm       | 76    | Đã có controller & test Postman    |
-| ❌ Chưa làm     | 19    | Chưa có hoặc chưa hoàn thiện       |
-| **Total**      | **95**| **Tổng số endpoint kiểm tra được** |
-
-## 🔧 Configuration
-
-Ứng dụng sử dụng remote MySQL database:
-
-- **Server:** server.aptech.io:3307
-- **Database:** fastroute_test
-- **Username:** fastroute_user
-
-### 🧾 Electronic Invoice Configuration
-
-Hệ thống hóa đơn thanh toán được cấu hình với:
-
-- **Thời gian xuất hóa đơn:** 365 ngày (có thể config qua `invoice.expiry.days`)
-- **Tự động tạo PDF:** Có
-- **Tự động gửi email:** Có (config qua `invoice.email.auto.send`)
-- **Email SMTP:** Gmail (config qua `spring.mail.*`)
-- **Lưu trữ PDF:** `./invoices/pdfs/` (config qua `invoice.pdf.storage.path`)
-- **Phân quyền:** ADMIN, OPERATIONS, DISPATCHER
-
-## 🏗️ Tech Stack
-
-- **Framework:** Spring Boot 3.x
-- **Security:** Spring Security + JWT
-- **Database:** MySQL 8.0+
-- **ORM:** JPA/Hibernate
-- **Build Tool:** Gradle
-- **Container:** Docker
-
-## 📋 Quick Links
-
-- **Health Check:** http://localhost:8080/actuator/health
-- **API Documentation:** http://localhost:8080/swagger-ui.html (planned)
-- **Database Schema:** [docs/schemaDB/tables_documentation.md](docs/schemaDB/tables_documentation.md)
-- **User Stories:** [docs/userStory/](docs/userStory/)
+- **API Documentation**: [Swagger UI](http://localhost:8080/swagger-ui.html)
+- **Postman Collection**: [FastRoute.postman_collection.json](FastRoute.postman_collection.json)
+- **Database Schema**: [docs/schemaDB/](docs/schemaDB/)
+- **OpenAPI Spec**: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)

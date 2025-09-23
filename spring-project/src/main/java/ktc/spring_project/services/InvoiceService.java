@@ -398,7 +398,8 @@ public class InvoiceService {
      */
     private boolean isValidOrderStatus(String statusName) {
         return "PROCESSED".equalsIgnoreCase(statusName) || 
-               "COMPLETED".equalsIgnoreCase(statusName);
+               "COMPLETED".equalsIgnoreCase(statusName) ||
+               "SHIPPED".equalsIgnoreCase(statusName);  // Thêm SHIPPED vì có 2452 orders
     }
 
     /**

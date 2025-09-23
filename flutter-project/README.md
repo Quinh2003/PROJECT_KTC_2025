@@ -1,8 +1,17 @@
-# 📱 FastRoute Logistics Driver Mobile App 2025
+# 📱 KTC Logistics Management Platform - Driver Mobile App
 
 **FastRoute** is a mobile application for delivery drivers, developed with Flutter and featuring a modern **Spatial UI**. Built on **Clean Architecture** principles, the app is easy to maintain, extend, and test, with clear separation between UI, business logic, and data layers.
 
-## ⚡ Quick Start Guide for Testers
+## 📋 Table of Contents
+
+1. [Quick Start](#-quick-start)
+2. [Main Features](#-main-features)
+3. [Tech Stack & Clean Architecture](#-tech-stack--clean-architecture)
+4. [Project Configuration](#project-configuration)
+5. [Troubleshooting](#-troubleshooting)
+6. [License & Contact](#-license--contact)
+
+## ⚡ Quick Start
 
 Follow these steps to quickly test the app with a local backend:
 
@@ -65,36 +74,15 @@ cd PROJECT_KTC_2025/spring-project
 - Multiple chart types: Area, Bar, Pie, Scatter, Bubble, and Radar Chart
 - Light/Dark mode for all charts
 
-## Main Screens
+### 🔧 Vehicle Maintenance
+- Create emergency maintenance requests
+- Track maintenance status
+- Receive notifications when vehicle is ready
+- View maintenance history
 
-### 🏠 Dashboard Screen
-- Driver performance overview and key metrics
-- Upcoming orders list
-- Trend analysis charts
+## 🛠️ Tech Stack & Clean Architecture
 
-### 🗺️ Route Map Screen
-- MapBox integration with multiple data layers
-- Route optimization and detailed navigation
-- Support for multi-stop delivery and Google Maps integration
-
-### 📊 Analytics Screen
-- Various charts for performance analysis
-- Analysis by time, region, and service type
-- Compatible with Dark/Light Mode
-
-### 📦 Delivery Detail Screen
-- Order details and status management
-- Interact with customers (call, message)
-- Proof of Delivery (photo capture, signature)
-
-### 👤 Profile & Settings
-- Driver and vehicle information
-- Work performance statistics
-- App settings
-
-## 🛠️ Tech Stack
-
-### Frontend
+### Frontend Technologies
 - **Flutter**: 3.32.8 (latest stable)
 - **Dart**: 3.8.1
 - **State Management**: BLoC Pattern
@@ -116,20 +104,20 @@ cd PROJECT_KTC_2025/spring-project
 - **Java**: 21 (LTS)
 - **Min SDK**: 24 (Android 7.0)
 
-## 🏛️ Clean Architecture Implementation
+### Clean Architecture Layers
 
 The app is built following **Clean Architecture** with 3 main layers:
 
-### 🎯 Domain Layer
+#### 🎯 Domain Layer
 - Models, Repository Interfaces, Use Cases, and BLoC
 
-### 📊 Data Layer
+#### 📊 Data Layer
 - Repository Implementations, Data Sources, and DTOs
 
-### 🎨 Presentation Layer
+#### 🎨 Presentation Layer
 - Screens, Widgets, State Management, and Chart Components
 
-### ⚙️ Data Flow & Dependency Injection
+#### ⚙️ Data Flow & Dependency Injection
 - UI → BLoC → Domain → Data → External Sources
 - GetIt service locator for dependency inversion
 
@@ -174,22 +162,6 @@ flutter install
 
 > **Note**: The app is currently using mock data to demo features.
 
-## 🧪 Testing & Debugging
-
-```bash
-# Run tests
-flutter test
-flutter test integration_test/
-
-# Debug on device
-flutter run --debug
-
-# Hot reload during development
-r    # Hot reload
-R    # Hot restart
-q    # Quit
-```
-
 ## 🔧 Troubleshooting
 
 ### Connect real device
@@ -226,12 +198,11 @@ flutter run -v  # to see detailed error
 
 ---
 
-## 📄 License
+## 📄 License & Contact
 
 Copyright © 2025 KTC Logistics. All rights reserved.
 
----
-
-## Contact & Support
-
-If you encounter issues during setup or running, please open an issue in the repository for quick support.
+For technical issues or support:
+- Open an issue in the repository for quick assistance
+- Email: support@ktclogistics.com
+- Project Lead: mobile-team@ktclogistics.com

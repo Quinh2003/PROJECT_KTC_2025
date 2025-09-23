@@ -60,7 +60,7 @@ public class InvoiceController {
      * GET /api/invoices/check-eligibility/{orderId}
      */
     @GetMapping("/check-eligibility/{orderId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'OPERATIONS')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'OPERATIONS', 'CUSTOMER')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> checkInvoiceEligibility(
             @PathVariable Long orderId) {
         try {
@@ -87,7 +87,7 @@ public class InvoiceController {
      * POST /api/invoices
      */
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'OPERATIONS')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DISPATCHER', 'OPERATIONS', 'CUSTOMER')")
     public ResponseEntity<ApiResponse<InvoiceResponseDTO>> createInvoice(
             @Valid @RequestBody CreateInvoiceRequestDTO request,
             Authentication authentication) {
