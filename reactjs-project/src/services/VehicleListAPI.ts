@@ -13,7 +13,49 @@ export async function fetchVehicles(): Promise<Vehicle[]> {
   const headers = getAuthHeaders();
   const res = await fetch(API_URL, headers ? { headers } : undefined);
   if (!res.ok) throw new Error("Failed to fetch vehicles");
-  return res.json();
+  const json = await res.json();
+  // API trả về { data: [...] }
+  return Array.isArray(json.data) ? json.data : [];
+}
+
+// Server-side pagination: trả về { data: Vehicle[], total: number }
+export async function fetchVehiclesRaw(page = 1, size = 5): Promise<{ data: Vehicle[]; total: number }> {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_URL}?page=${page}&size=${size}`, {
+    headers: token ? { "Authorization": `Bearer ${token}` } : undefined,
+  });
+  if (!res.ok) throw new Error("Failed to fetch vehicles");
+  const data = await res.json();
+  // data.data: array, data.totalRecords: number
+  return {
+    data: Array.isArray(data.data) ? data.data : [],
+    total: data.totalRecords || 0
+  };
+}
+
+// Thêm function để lấy tổng số phương tiện và stats
+export async function fetchVehicleStats(): Promise<{
+  totalRecords: number;
+  sampleVehicles: Vehicle[];
+}> {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_URL}?page=1&size=200`, {
+    headers: token ? { "Authorization": `Bearer ${token}` } : undefined,
+  });
+  if (!res.ok) throw new Error("Failed to fetch vehicle stats");
+  const data = await res.json();
+  
+  // Đảm bảo sắp xếp theo thời gian cập nhật mới nhất lên đầu
+  const sampleVehicles = (data.data || []).sort((a: any, b: any) => {
+    const dateA = new Date(a.updatedAt || 0).getTime();
+    const dateB = new Date(b.updatedAt || 0).getTime();
+    return dateB - dateA; // Mới nhất lên đầu
+  });
+  
+  return {
+    totalRecords: data.totalRecords || 0,
+    sampleVehicles
+  };
 }
 
 

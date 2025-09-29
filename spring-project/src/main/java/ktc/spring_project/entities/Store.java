@@ -1,5 +1,6 @@
 package ktc.spring_project.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -8,6 +9,7 @@ import java.sql.Timestamp;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "orders", "createdBy"})
 @Entity
 @Table(name = "stores")
 public class Store {

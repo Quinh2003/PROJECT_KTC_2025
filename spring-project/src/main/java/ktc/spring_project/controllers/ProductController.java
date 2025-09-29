@@ -1,6 +1,7 @@
 package ktc.spring_project.controllers;
 
-import ktc.spring_project.entities.Product;
+import ktc.spring_project.dtos.product.CreateProductRequestDTO;
+import ktc.spring_project.dtos.product.ProductResponseDTO;
 import ktc.spring_project.entities.WarehouseTransaction;
 import ktc.spring_project.services.UserService;
 import ktc.spring_project.services.ProductService;
@@ -36,13 +37,12 @@ public class ProductController {
      * Get all products with optional filters
      */
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts(
+    public ResponseEntity<List<ProductResponseDTO>> getAllProducts(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Long warehouseId) {
-
-        List<Product> products = productService.getFilteredProducts(category, status, search, warehouseId);
+        List<ProductResponseDTO> products = productService.getFilteredProductsDTO(category, status, search, warehouseId);
         return ResponseEntity.ok(products);
     }
 
@@ -50,8 +50,8 @@ public class ProductController {
      * Get product by ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        Product product = productService.getProductById(id);
+    public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable Long id) {
+        ProductResponseDTO product = productService.getProductDTOById(id);
         return ResponseEntity.ok(product);
     }
 
@@ -59,11 +59,10 @@ public class ProductController {
      * Create new product
      */
     @PostMapping
-    public ResponseEntity<Product> createProduct(
-            @Valid @RequestBody Product product,
+    public ResponseEntity<ProductResponseDTO> createProduct(
+            @Valid @RequestBody CreateProductRequestDTO dto,
             Authentication authentication) {
-
-        Product createdProduct = productService.createProduct(product, authentication);
+        ProductResponseDTO createdProduct = productService.createProductFromDTO(dto, authentication);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
@@ -71,23 +70,22 @@ public class ProductController {
      * Update product information
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(
+    public ResponseEntity<ProductResponseDTO> updateProduct(
             @PathVariable Long id,
-            @Valid @RequestBody Product product,
+            @Valid @RequestBody CreateProductRequestDTO dto,
             Authentication authentication) {
-
-        Product updatedProduct = productService.updateProduct(id, product, authentication);
+        ProductResponseDTO updatedProduct = productService.updateProductFromDTO(id, dto, authentication);
         return ResponseEntity.ok(updatedProduct);
     }
 
     // ...existing code...
 
 @PatchMapping("/{id}")
-public ResponseEntity<Product> patchProduct(
+public ResponseEntity<ProductResponseDTO> patchProduct(
         @PathVariable Long id,
         @RequestBody Map<String, Object> updates,
         Authentication authentication) {
-    Product updatedProduct = productService.patchProduct(id, updates, authentication);
+    ProductResponseDTO updatedProduct = productService.patchProductDTO(id, updates, authentication);
     return ResponseEntity.ok(updatedProduct);
 }
 
@@ -99,7 +97,6 @@ public ResponseEntity<Product> patchProduct(
     public ResponseEntity<Void> deleteProduct(
             @PathVariable Long id,
             Authentication authentication) {
-
         productService.deleteProduct(id, authentication);
         return ResponseEntity.noContent().build();
     }
@@ -113,7 +110,6 @@ public ResponseEntity<Product> patchProduct(
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo,
             @RequestParam(required = false) String transactionType) {
-
         List<WarehouseTransaction> transactions = warehouseTransactionService.getProductTransactions(
                 id, dateFrom, dateTo, transactionType);
         return ResponseEntity.ok(transactions);
@@ -123,15 +119,13 @@ public ResponseEntity<Product> patchProduct(
      * Update product stock quantity
      */
     @PatchMapping("/{id}/stock")
-    public ResponseEntity<Product> updateProductStock(
+    public ResponseEntity<ProductResponseDTO> updateProductStock(
             @PathVariable Long id,
             @RequestBody Map<String, Object> stockData,
             Authentication authentication) {
-
         Integer newQuantity = (Integer) stockData.get("quantity");
         String reason = (String) stockData.get("reason");
-
-        Product updatedProduct = productService.updateProductStock(id, newQuantity, reason, authentication);
+        ProductResponseDTO updatedProduct = productService.updateProductStockDTO(id, newQuantity, reason, authentication);
         return ResponseEntity.ok(updatedProduct);
     }
 
@@ -139,10 +133,9 @@ public ResponseEntity<Product> patchProduct(
      * Get low stock products
      */
     @GetMapping("/low-stock")
-    public ResponseEntity<List<Product>> getLowStockProducts(
+    public ResponseEntity<List<ProductResponseDTO>> getLowStockProducts(
             @RequestParam(defaultValue = "10") Integer threshold) {
-
-        List<Product> lowStockProducts = productService.getLowStockProducts(threshold);
+        List<ProductResponseDTO> lowStockProducts = productService.getLowStockProducts(threshold);
         return ResponseEntity.ok(lowStockProducts);
     }
 }

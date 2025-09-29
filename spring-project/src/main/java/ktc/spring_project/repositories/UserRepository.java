@@ -20,6 +20,9 @@ public interface UserRepository extends UserJpaRepository {
     @Query("SELECT u FROM User u WHERE u.role.id = :roleId")
     List<User> findByRoleId(@Param("roleId") Long roleId);
     
+    @Query("SELECT u FROM User u WHERE u.role.roleName = :roleName")
+    List<User> findByRole_RoleName(@Param("roleName") String roleName);
+    
     // Note: The following methods are inherited from UserJpaRepository:
     // - findByUsername(String username)
     // - findByEmail(String email) 

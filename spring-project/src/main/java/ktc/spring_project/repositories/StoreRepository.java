@@ -29,5 +29,9 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
         
     @Query("SELECT COUNT(s) FROM Store s WHERE s.isActive = true")
     long countActiveStores();
+    
+    // Find stores by userId (createdBy)
+    @Query("SELECT s FROM Store s WHERE s.createdBy.id = :userId")
+    List<Store> findByCreatedById(@Param("userId") Long userId);
 }
 

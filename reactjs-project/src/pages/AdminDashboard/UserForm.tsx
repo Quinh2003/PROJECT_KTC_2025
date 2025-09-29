@@ -1,8 +1,19 @@
-
 import { useState, useEffect } from "react";
-import { FaTools, FaChartBar, FaTruck } from "react-icons/fa";
-import { FaBellConcierge } from "react-icons/fa6";
-import type { User } from "../../types/dashboard";
+
+// Định nghĩa User interface cho UserForm
+interface User {
+  id?: number;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  lastLogin: string;
+  phone?: string;
+  password?: string;
+}
+
+// Có thể import icons hoặc sử dụng Unicode
+// import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 interface UserFormProps {
   onAdd: (user: User & { roleIcon: React.ReactNode }) => void;
@@ -11,38 +22,148 @@ interface UserFormProps {
 }
 
 const roles = [
-  { label: "Admin", value: "Admin", icon: <FaTools className="inline mr-1" /> },
-  { label: "Dispatcher", value: "Dispatcher", icon: <FaBellConcierge className="inline mr-1" /> },
-  { label: "Fleet Manager", value: "Fleet Manager", icon: <FaTools className="inline mr-1" /> },
-  { label: "Driver", value: "Driver", icon: <FaTruck className="inline mr-1" /> },
-  { label: "Operations Manager", value: "Operations Manager", icon: <FaChartBar className="inline mr-1" /> },
+  { label: "Admin", value: "Admin", icon: null },
+  { label: "Dispatcher", value: "Dispatcher", icon: null },
+  { label: "Fleet Manager", value: "Fleet Manager", icon: null },
+  { label: "Driver", value: "Driver", icon: null },
+  { label: "Operations Manager", value: "Operations Manager", icon: null },
+  { label: "Customer", value: "Customer", icon: null },
 ];
 
 export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
-  const [role, setRole] = useState(user?.roleValue || roles[0].value);
+  const [emailError, setEmailError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [role, setRole] = useState(user?.role || roles[0].value);
   const [status, setStatus] = useState(
-    user?.status === "inactive" ? "inactive" : "active"
+    user?.status === "inactive" 
+      ? "inactive" 
+      : user?.status === "suspended" 
+        ? "suspended" 
+        : "active"
   );
   const [password, setPassword] = useState(user?.password || "");
   const [phone, setPhone] = useState(user?.phone || "");
 
+  // Format số điện thoại
+  const formatPhoneNumber = (value: string) => {
+    // Chỉ giữ lại số
+    const phoneNumber = value.replace(/[^\d]/g, '');
+    
+    // Format theo pattern: 0123 456 789
+    if (phoneNumber.length <= 4) {
+      return phoneNumber;
+    } else if (phoneNumber.length <= 7) {
+      return `${phoneNumber.slice(0, 4)} ${phoneNumber.slice(4)}`;
+    } else {
+      return `${phoneNumber.slice(0, 4)} ${phoneNumber.slice(4, 7)} ${phoneNumber.slice(7, 10)}`;
+    }
+  };
+
   useEffect(() => {
-  setName(user?.name || "");
-  setEmail(user?.email || "");
-  setRole(user?.roleValue || roles[0].value);
-  setStatus(user?.status === "inactive" ? "inactive" : "active");
-  setPassword(user?.password || "");
-  setPhone(user?.phone || "");
+    setName(user?.name || "");
+    setEmail(user?.email || "");
+    setRole(user?.role || roles[0].value);
+    
+    // Fix status mapping
+    if (user?.status === "inactive") {
+      setStatus("inactive");
+    } else if (user?.status === "suspended") {
+      setStatus("suspended");
+    } else {
+      setStatus("active");
+    }
+    
+    setPassword(user?.password || "");
+    
+    // Format số điện thoại khi load
+    if (user?.phone) {
+      setPhone(formatPhoneNumber(user.phone));
+    } else {
+      setPhone("");
+    }
+    
+    setEmailError("");
+    setPhoneError("");
   }, [user]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Kiểm tra email
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    
+    if (value && !value.includes('@')) {
+      setEmailError(`Vui lòng bao gồm '@' trong địa chỉ email. '${value}' bị thiếu '@'.`);
+    } else {
+      setEmailError("");
+    }
+  };
+
+  // Xử lý số điện thoại
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const rawValue = e.target.value;
+  
+  // Chỉ giữ lại số từ input
+  const phoneDigits = rawValue.replace(/[^\d]/g, '');
+  
+  // Giới hạn ở 10 chữ số
+  const limitedDigits = phoneDigits.slice(0, 10);
+  
+  // Format theo pattern: 0123 456 789
+  let formattedValue = '';
+  if (limitedDigits.length <= 4) {
+    formattedValue = limitedDigits;
+  } else if (limitedDigits.length <= 7) {
+    formattedValue = `${limitedDigits.slice(0, 4)} ${limitedDigits.slice(4)}`;
+  } else {
+    formattedValue = `${limitedDigits.slice(0, 4)} ${limitedDigits.slice(4, 7)} ${limitedDigits.slice(7)}`;
+  }
+  
+  // Luôn cập nhật state phone để có thể nhập từng chữ số
+  setPhone(formattedValue);
+  
+  // Hiển thị lỗi nếu không đủ 10 chữ số
+  if (formattedValue.trim() !== "" && limitedDigits.length !== 10) {
+    setPhoneError("Số điện thoại phải đúng 10 chữ số!");
+  } else {
+    setPhoneError("");
+  }
+};
+
+// Sửa validate trong handleSubmit
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  // Validate phone required
+  const phoneDigits = phone.replace(/[^\d]/g, '');
+  if (!phone.trim()) {
+    setPhoneError("Số điện thoại không được để trống!");
+    return;
+  } else if (phoneDigits.length !== 10) {
+    setPhoneError("Số điện thoại phải đúng 10 chữ số!");
+    return;
+  }
+    
+    // Validate email
+    if (!email.includes('@')) {
+      setEmailError(`Vui lòng bao gồm '@' trong địa chỉ email. '${email}' bị thiếu '@'.`);
+      return;
+    }
+    
+    // Kiểm tra lỗi trước khi submit
+    if (emailError || phoneError) {
+      return;
+    }
+    
     console.log("[UserForm] handleSubmit with role:", role);
     const selectedRole = roles.find(r => r.value === role) || roles[0];
+    
+    // Lưu số điện thoại chỉ là số, bỏ định dạng khoảng trắng
+    const cleanPhone = phone.replace(/\s/g, '');
+    
     const userToSubmit = {
-      id: user?.id || "",
+      id: user?.id || undefined,
       name,
       email,
       role,
@@ -50,7 +171,7 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
       status,
       lastLogin: user?.lastLogin || "-",
       password,
-      phone,
+      phone: cleanPhone,
     };
     console.log("[UserForm] Submitting user:", userToSubmit);
     onAdd(userToSubmit);
@@ -78,32 +199,49 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
         <div>
           <label className="block mb-1 font-semibold">Phone</label>
           <input
-            className="border rounded px-3 py-2 w-full"
+            className={`border rounded px-3 py-2 w-full ${phoneError ? 'border-red-500' : ''}`}
             type="text"
             value={phone}
-            onChange={e => setPhone(e.target.value)}
+            onChange={handlePhoneChange}
+            placeholder="0123 456 789"
+            maxLength={12}
+            required
           />
+          {phoneError && (
+            <div className="bg-orange-100 border border-orange-400 text-orange-700 px-3 py-2 rounded mt-2 text-sm flex items-center">
+              <span className="text-orange-500 mr-2">⚠</span>
+              {phoneError}
+            </div>
+          )}
         </div>
         <div>
           <label className="block mb-1 font-semibold">Email</label>
           <input
-            className="border rounded px-3 py-2 w-full"
-            type="email"
+            className={`border rounded px-3 py-2 w-full ${emailError ? 'border-red-500' : ''}`}
+            type="text"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={handleEmailChange}
             required
             disabled={!!user}
           />
+          {emailError && (
+            <div className="bg-orange-100 border border-orange-400 text-orange-700 px-3 py-2 rounded mt-2 text-sm flex items-center">
+              <span className="text-orange-500 mr-2">⚠</span>
+              {emailError}
+            </div>
+          )}
         </div>
         <div>
           <label className="block mb-1 font-semibold">Password</label>
-          <input
-            className="border rounded px-3 py-2 w-full"
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-          />
+          <div className="relative">
+            <input
+              className="border rounded px-3 py-2 w-full pr-10"
+              type="text"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+          </div>
         </div>
         <div>
           <label className="block mb-1 font-semibold">Role</label>
@@ -118,12 +256,8 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
               </option>
             ))}
           </select>
-          <div className="mt-1">
-            {roles.find(r => r.value === role)?.icon}
-            <span className="ml-1">{roles.find(r => r.value === role)?.label}</span>
-          </div>
         </div>
-        <div>
+        {/* <div>
           <label className="block mb-1 font-semibold">Status</label>
           <select
             className="border rounded px-3 py-2 w-full"
@@ -134,7 +268,7 @@ export default function UserForm({ onAdd, onClose, user }: UserFormProps) {
             <option value="inactive">Inactive</option>
             <option value="suspended">Suspended</option>
           </select>
-        </div>
+        </div> */}
         <div className="flex gap-2 justify-end pt-2">
           <button
             type="button"

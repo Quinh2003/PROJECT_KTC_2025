@@ -1,4 +1,7 @@
+
 package ktc.spring_project.dtos.store;
+
+import jakarta.validation.constraints.*;
 
 /**
  * DTO for creating a new store
@@ -6,13 +9,35 @@ package ktc.spring_project.dtos.store;
 public class CreateStoreRequestDTO {
     
 
+    @NotBlank(message = "Store name is required")
+    @Size(max = 100, message = "Store name must not exceed 100 characters")
     private String storeName;
+
+    @Email(message = "Email must be valid")
+    @Size(max = 100, message = "Email must not exceed 100 characters")
     private String email;
+
+    @NotBlank(message = "Phone is required")
+    @Pattern(regexp = "^(0[0-9]{9})$", message = "Phone must be a valid Vietnamese number")
     private String phone;
+
+    @NotBlank(message = "Address is required")
+    @Size(max = 255, message = "Address must not exceed 255 characters")
     private String address;
+
+    @NotNull(message = "Latitude is required")
+    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
     private Double latitude;
+
+    @NotNull(message = "Longitude is required")
+    @DecimalMin(value = "-180.0", message = "Longitude must be >= -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be <= 180")
     private Double longitude;
+
     private Boolean isActive = true;
+
+    @Size(max = 500, message = "Notes must not exceed 500 characters")
     private String notes;
     
     // Constructors

@@ -71,8 +71,10 @@ public ResponseEntity<DeliveryProof> uploadDeliveryProof(
         );
         return ResponseEntity.ok(proof);
     } catch (Exception e) {
-        // Return a 400 Bad Request or other appropriate response
-        return ResponseEntity.badRequest().build();
+        e.printStackTrace(); // Log lỗi chi tiết ra console
+        return ResponseEntity.badRequest().body(null);
+        // Nếu muốn trả về message rõ ràng:
+        // return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
 
@@ -113,30 +115,65 @@ public ResponseEntity<Void> deleteDeliveryProof(
      * Get delivery proofs for an order
      * TO-DO: Implement findByOrder method in DeliveryProofRepository
      */
-    @GetMapping("/order/{orderId}")
-    public ResponseEntity<List<DeliveryProof>> getDeliveryProofsByOrder(@PathVariable Long orderId) {
-        // TO-DO: This is a temporary implementation.
-        // In the future, implement findByOrder in the repository and service
-
-        // Get the order entity
-        try {
-            Order order = orderService.getOrderById(orderId);
-
-            // For now, return all proofs and filter manually (inefficient, for development only)
-            List<DeliveryProof> allProofs = deliveryProofService.findAll();
-            List<DeliveryProof> orderProofs = new ArrayList<>();
-
-            for (DeliveryProof proof : allProofs) {
-                if (proof.getOrder() != null && proof.getOrder().getId().equals(orderId)) {
-                    orderProofs.add(proof);
-                }
-            }
-
+        @GetMapping("/order/{orderId}")
+        public ResponseEntity<List<DeliveryProof>> getDeliveryProofsByOrder(@PathVariable Long orderId) {
+            List<DeliveryProof> orderProofs = deliveryProofService.findByOrderId(orderId);
             return ResponseEntity.ok(orderProofs);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
+        }
+
+    /**
+     * Serve delivery proof image file with authentication
+     * This endpoint provides authenticated access to proof images
+     * @param filename The filename of the image to retrieve
+     * @return The image file as a byte array with appropriate content type
+     */
+    @GetMapping("/files/{filename:.+}")
+    public ResponseEntity<byte[]> getDeliveryProofFile(@PathVariable String filename) {
+        try {
+            // Construct file path
+            String rootPath = System.getProperty("user.dir");
+            String filePath = rootPath + java.io.File.separator + "uploads" + 
+                              java.io.File.separator + "delivery_proofs" + 
+                              java.io.File.separator + filename;
+            
+            java.io.File file = new java.io.File(filePath);
+            if (!file.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Read file bytes
+            byte[] fileContent = java.nio.file.Files.readAllBytes(file.toPath());
+            
+            // Determine content type
+            String contentType = determineContentType(filename);
+            
+            // Return file with proper content type
+            return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(fileContent);
+                
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-
+    
+    /**
+     * Helper method to determine content type from filename
+     * @param filename The file name to analyze
+     * @return Content type string (MIME type)
+     */
+    private String determineContentType(String filename) {
+        if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else if (filename.toLowerCase().endsWith(".png")) {
+            return "image/png";
+        } else if (filename.toLowerCase().endsWith(".gif")) {
+            return "image/gif";
+        } else if (filename.toLowerCase().endsWith(".pdf")) {
+            return "application/pdf";
+        }
+        // Default to binary stream if unknown
+        return "application/octet-stream";
+    }
 }

@@ -1,0 +1,106 @@
+name: ktc_logistics_driver
+description: Fast Route - Logistics Driver App
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.1.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI & Design
+  cupertino_icons: ^1.0.8
+  font_awesome_flutter: ^10.9.0
+  google_fonts: ^6.3.0
+  flutter_svg: ^2.2.0
+  shimmer: ^3.0.0
+  carousel_slider: ^5.1.1
+  timeline_tile: ^2.0.0
+  mapbox_maps_flutter: ^2.10.0
+  location: ^5.0.0
+  
+  # State Management
+  bloc: ^9.0.0
+  flutter_bloc: ^9.1.1
+  
+  # Storage & Data
+  flutter_secure_storage: ^9.2.4
+  http: ^1.5.0
+  socket_io_client: ^3.1.2
+  web_socket_channel: ^3.0.3
+  shared_preferences: ^2.5.3
+  
+  # Utilities
+  image_picker: ^1.1.2
+  form_field_validator: ^1.1.0
+  android_intent_plus: ^5.3.1
+  permission_handler: ^12.0.1
+  intl: ^0.20.2
+  url_launcher: ^6.3.2
+  meta: ^1.16.0
+  equatable: ^2.0.7
+  get_it: ^8.2.0
+  
+  # Location & Maps
+  geolocator: ^14.0.2
+  google_maps_flutter: ^2.12.3
+  geocoding: ^4.0.0
+  flutter_polyline_points: ^3.0.1
+  
+  # Local Notifications (no Firebase)
+  flutter_local_notifications: ^19.4.0
+  
+  # Firebase
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
+  cloud_firestore: ^4.13.6
+  firebase_storage: ^11.5.6
+  firebase_database: ^10.3.8
+  firebase_messaging: ^14.7.10
+  
+  # New additions for Spatial UI
+  glassmorphism: ^3.0.0
+  cached_network_image: ^3.3.1
+  flutter_animate: ^4.5.0
+  lottie: ^3.1.2
+  
+  # Charts
+  fl_chart: 1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/Logo/
+    - assets/svg/
+
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+

@@ -7,6 +7,13 @@ import java.math.BigDecimal;
  * DTO for creating new products
  */
 public class CreateProductRequestDTO {
+
+    // Thêm trường productStatus để nhận status dạng số từ frontend
+    private Integer productStatus;
+
+    private BigDecimal volume;
+
+    private Long categoryId;
     
 
     
@@ -17,8 +24,8 @@ public class CreateProductRequestDTO {
     @Size(max = 500, message = "Description must not exceed 500 characters")
     private String description;
     
-    @NotNull(message = "Unit price is required")
-    @DecimalMin(value = "0.0", inclusive = false, message = "Unit price must be greater than 0")
+    // @NotNull(message = "Unit price is required")
+    // @DecimalMin(value = "0.0", inclusive = false, message = "Unit price must be greater than 0")
     private BigDecimal unitPrice;
     
     @DecimalMin(value = "0.0", message = "Weight must be positive")
@@ -34,10 +41,8 @@ public class CreateProductRequestDTO {
     @Size(max = 500, message = "Notes must not exceed 500 characters")
     private String notes;
     
-    @NotNull(message = "Warehouse ID is required")
     private Long warehouseId;
-    
-    @NotNull(message = "Created by user ID is required")
+
     private Long createdByUserId;
     
     // Constructors
@@ -54,6 +59,12 @@ public class CreateProductRequestDTO {
     }
     
     // Getters and Setters
+
+    public BigDecimal getVolume() { return volume; }
+    public void setVolume(BigDecimal volume) { this.volume = volume; }
+
+    public Long getCategoryId() { return categoryId; }
+    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
     
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -84,4 +95,7 @@ public class CreateProductRequestDTO {
     
     public Long getCreatedByUserId() { return createdByUserId; }
     public void setCreatedByUserId(Long createdByUserId) { this.createdByUserId = createdByUserId; }
+
+    public Integer getProductStatus() { return productStatus; }
+    public void setProductStatus(Integer productStatus) { this.productStatus = productStatus; }
 }

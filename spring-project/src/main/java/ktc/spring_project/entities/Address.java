@@ -1,5 +1,6 @@
 package ktc.spring_project.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import ktc.spring_project.enums.AddressType;
 
@@ -9,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "addresses")
 public class Address {

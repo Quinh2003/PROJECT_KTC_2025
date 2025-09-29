@@ -5,6 +5,7 @@ import ktc.spring_project.enums.TransportMode;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * DTO for updating an existing delivery without using DeliveryStatus enum
@@ -14,8 +15,14 @@ public class UpdateDeliveryRequestDTO {
     private BigDecimal deliveryFee;
     private TransportMode transportMode;
     private ServiceType serviceType;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Timestamp pickupDate;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Timestamp scheduleDeliveryTime;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Timestamp actualDeliveryTime;
     private Boolean lateDeliveryRisk;
     private String deliveryStatus;  // Sử dụng String thay cho enum DeliveryStatus

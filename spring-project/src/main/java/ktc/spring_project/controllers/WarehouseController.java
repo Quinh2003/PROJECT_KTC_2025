@@ -1,6 +1,7 @@
 package ktc.spring_project.controllers;
 
 import ktc.spring_project.entities.Warehouse;
+import ktc.spring_project.dtos.warehouse.CreateWarehouseRequestDTO;
 import ktc.spring_project.services.UserService;
 import ktc.spring_project.services.WarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,11 +86,19 @@ public class WarehouseController {
     /**
      * Create new warehouse
      */
-   @PostMapping
+@PostMapping
 public ResponseEntity<Warehouse> createWarehouse(
-        @Valid @RequestBody Warehouse warehouse,
+        @Valid @RequestBody CreateWarehouseRequestDTO dto,
         Authentication authentication) {
-    // return new ResponseEntity<>(warehouse, HttpStatus.CREATED); // Test trả về luôn
+    // Map DTO sang entity
+    Warehouse warehouse = new Warehouse();
+    warehouse.setName(dto.getName());
+    warehouse.setAddress(dto.getAddress());
+    warehouse.setLatitude(dto.getLatitude());
+    warehouse.setLongitude(dto.getLongitude());
+    warehouse.setCapacityM3(dto.getCapacityM3());
+    warehouse.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+    warehouse.setNotes(dto.getNotes());
     Warehouse createdWarehouse = warehouseService.createWarehouse(warehouse, authentication);
     return new ResponseEntity<>(createdWarehouse, HttpStatus.CREATED);
 }

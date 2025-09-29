@@ -38,7 +38,7 @@ public class DeliveryOrderResponseDTO {
     private String notes;
     
     // Status information
-    private Long statusId;
+    private Short statusId;
     private String statusCode;
     private String statusDescription;
     
@@ -123,8 +123,8 @@ public class DeliveryOrderResponseDTO {
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
     
-    public Long getStatusId() { return statusId; }
-    public void setStatusId(Long statusId) { this.statusId = statusId; }
+    public Short getStatusId() { return statusId; }
+    public void setStatusId(Short statusId) { this.statusId = statusId; }
     
     public String getStatusCode() { return statusCode; }
     public void setStatusCode(String statusCode) { this.statusCode = statusCode; }
@@ -165,21 +165,5 @@ public class DeliveryOrderResponseDTO {
     public Timestamp getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
     
-    // Utility methods
-    public String getTransportModeDisplayName() {
-        return transportMode != null ? transportMode.getDisplayName() : null;
-    }
-    
-    public boolean hasLocation() {
-        return pickupLatitude != null && pickupLongitude != null 
-            && deliveryLatitude != null && deliveryLongitude != null;
-    }
-    
-    public boolean isScheduled() {
-        return scheduledTime != null;
-    }
-    
-    public boolean isDelivered() {
-        return actualDeliveryTime != null;
-    }
+    // ...existing code...
 }

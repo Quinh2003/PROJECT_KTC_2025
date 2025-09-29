@@ -15,6 +15,7 @@ public class ProductResponseDTO {
     private String description;
     private BigDecimal unitPrice;
     private BigDecimal weight;
+    private BigDecimal volume;
     private Boolean fragile;
     private Integer stockQuantity;
     private Boolean temporary;
@@ -60,6 +61,9 @@ public class ProductResponseDTO {
     
     public BigDecimal getWeight() { return weight; }
     public void setWeight(BigDecimal weight) { this.weight = weight; }
+
+    public BigDecimal getVolume() { return volume; }
+    public void setVolume(BigDecimal volume) { this.volume = volume; }
     
     public Boolean getFragile() { return fragile; }
     public void setFragile(Boolean fragile) { this.fragile = fragile; }

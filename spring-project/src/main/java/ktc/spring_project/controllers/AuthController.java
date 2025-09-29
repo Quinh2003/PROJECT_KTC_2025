@@ -2,18 +2,31 @@ package ktc.spring_project.controllers;
 
 import ktc.spring_project.services.AuthService;
 import ktc.spring_project.services.UserService;
+import ktc.spring_project.services.TotpService;
 import ktc.spring_project.dtos.auth.GoogleLoginRequestDto;
 import ktc.spring_project.dtos.auth.GoogleLoginWithCredentialRequestDto;
 import ktc.spring_project.entities.User;
+import ktc.spring_project.dtos.auth.LoginRequestDTO;
+import ktc.spring_project.exceptions.HttpException;
+import ktc.spring_project.exceptions.EntityDuplicateException;
+import ktc.spring_project.config.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import ktc.spring_project.services.CustomUserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.Date;
+import java.util.HashMap;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,12 +38,22 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     @Autowired
     private AuthService authService;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TotpService totpService;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    
 
     /**
      * User login
@@ -50,11 +73,8 @@ public ResponseEntity<List<User>> getAllUsers() {
 // Tạo mới người dùng hoặc đăng nhập
 @PostMapping("/login")
 public ResponseEntity<Map<String, Object>> login(
-        @Valid @RequestBody Map<String, String> credentials) {
-    String email = credentials.get("email");
-    String password = credentials.get("password");
-
-    Map<String, Object> response = authService.authenticate(email, password);
+        @Valid @RequestBody LoginRequestDTO loginRequest) {
+    Map<String, Object> response = authService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
     return ResponseEntity.ok(response);
 }
 // @PostMapping("/users")
@@ -62,11 +82,32 @@ public ResponseEntity<Map<String, Object>> login(
 //     User createdUser = userService.createUser(user);
 //     return ResponseEntity.ok(createdUser);
 // }
+// ...existing code...
 @PostMapping("/users")
-public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+ public ResponseEntity<Map<String, Object>> createUser(@Valid @RequestBody User user) {
     System.out.println("==> Đã vào createUser");
-    User createdUser = userService.createUser(user);
-    return ResponseEntity.ok(createdUser);
+    try {
+        User createdUser = userService.createUser(user);
+        String secret = userService.getOrCreateTotpSecret(createdUser.getEmail());
+        String otpauthUrl = null;
+        if (secret != null && !secret.isEmpty()) {
+            String issuer = "KTC_2025";
+            String email = createdUser.getEmail();
+            otpauthUrl = String.format(
+                "otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=SHA1&digits=6&period=30",
+                issuer, email, secret, issuer
+            );
+            // Gửi secret TOTP về email cho user
+            // KHÔNG gửi secret TOTP về email khi đăng ký thường
+            // userService.sendOtpEmail(email, secret);
+        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", createdUser);
+        response.put("otpauthUrl", otpauthUrl);
+        return ResponseEntity.ok(response);
+    } catch (RuntimeException e) {
+        throw new HttpException(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
 // Cập nhật toàn bộ thông tin người dùng
 @PutMapping("/users/{id}")
@@ -185,6 +226,64 @@ public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
     }
 
     /**
+     * Check token expiration status
+     * Provides information about when the current JWT token will expire
+     */
+    @GetMapping("/token-status")
+    public ResponseEntity<Map<String, Object>> getTokenStatus(HttpServletRequest request) {
+        String token = extractTokenFromRequest(request);
+        
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "No token provided"));
+        }
+
+        try {
+            Date expiration = jwtTokenProvider.getExpirationDateFromToken(token);
+            long currentTime = System.currentTimeMillis();
+            long expirationTime = expiration.getTime();
+            long timeRemaining = expirationTime - currentTime;
+            
+            // Thêm kiểm tra hết hạn sớm (nếu còn ít hơn 5 phút)
+            boolean needsRefresh = timeRemaining > 0 && timeRemaining < 300000; // 5 phút
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("valid", timeRemaining > 0);
+            response.put("needsRefresh", needsRefresh);
+            response.put("expiresAt", expiration.toString());
+            response.put("timeRemainingMs", timeRemaining);
+            response.put("timeRemainingMinutes", Math.max(0, timeRemaining / 60000));
+            response.put("isExpired", timeRemaining <= 0);
+            
+            if (timeRemaining <= 0) {
+                response.put("message", "Token has expired. Please log in again.");
+            } else if (timeRemaining < 300000) { // Less than 5 minutes
+                response.put("message", "Token will expire soon. Consider refreshing.");
+                response.put("shouldRefresh", true);
+            } else {
+                response.put("message", "Token is valid.");
+                response.put("shouldRefresh", false);
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid token", "message", e.getMessage()));
+        }
+    }
+
+    /**
+     * Helper method to extract JWT token from request
+     */
+    private String extractTokenFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    /**
      * Google Login with Access Token
      * Validates Google access token and authenticates/creates user
      */
@@ -228,5 +327,69 @@ public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Google credential login failed", "message", e.getMessage()));
         }
+    }
+
+    /**
+     * Tạo mã QR TOTP cho người dùng
+     */
+    @GetMapping("/totp/qr")
+    public ResponseEntity<String> getTotpQr(@RequestParam String email) {
+        // Lấy secret từ DB, nếu chưa có thì sinh mới và lưu lại
+        String secret = userService.getOrCreateTotpSecret(email);
+        String qrUrl = totpService.getQRBarcode(email, secret);
+        return ResponseEntity.ok(qrUrl);
+    }
+
+    /**
+     * Xác thực mã OTP
+     */
+    @PostMapping("/totp/verify")
+    public ResponseEntity<?> verifyTotp(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String codeStr = payload.get("code");
+        Map<String, Object> response = new HashMap<>();
+        boolean valid = false;
+        boolean isClassicOtp = false;
+        // Kiểm tra classic OTP trong cache
+        ktc.spring_project.services.UserService.OtpEntry otpEntry = ktc.spring_project.services.UserService.otpCache.get(email);
+        if (otpEntry != null && otpEntry.otp.equals(codeStr)) {
+            if (System.currentTimeMillis() <= otpEntry.expireTime) {
+                valid = true;
+                isClassicOtp = true;
+                // Xóa OTP sau khi xác thực thành công
+                ktc.spring_project.services.UserService.otpCache.remove(email);
+            }
+        }
+        // Nếu không phải classic OTP, kiểm tra TOTP (app Authenticator)
+        if (!valid) {
+            try {
+                int code = Integer.parseInt(codeStr);
+                String secret = userService.getTotpSecret(email);
+                valid = totpService.verifyCode(secret, code);
+            } catch (Exception e) {
+                valid = false;
+            }
+        }
+        response.put("valid", valid);
+        if (valid) {
+            // Nếu là classic OTP thì không cần enableTotp
+            if (!isClassicOtp) {
+                userService.enableTotp(email);
+            }
+            User user = userService.findByEmail(email);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+            String token = authService.generateToken(userDetails);
+            String refreshToken = authService.generateRefreshToken(userDetails);
+            response.put("token", token);
+            response.put("refreshToken", refreshToken);
+            Map<String, Object> userDto = new HashMap<>();
+            userDto.put("id", user.getId());
+            userDto.put("email", user.getEmail());
+            userDto.put("username", user.getUsername());
+            userDto.put("role", user.getRole() != null ? user.getRole().getRoleName() : null);
+            userDto.put("totpEnabled", user.getTotpEnabled());
+            response.put("user", userDto);
+        }
+        return ResponseEntity.ok(response);
     }
 }

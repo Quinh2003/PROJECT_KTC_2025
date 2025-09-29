@@ -1,3 +1,5 @@
+import { type ReactNode } from 'react';
+
 interface StatCardProps {
   title: string;
   value: string | number;
@@ -6,7 +8,7 @@ interface StatCardProps {
     value: number;
     isPositive: boolean;
   };
-  icon?: string;
+  icon?: string | ReactNode;
 }
 
 export default function StatCard({ title, value, subtitle, trend, icon }: StatCardProps) {
@@ -16,7 +18,11 @@ export default function StatCard({ title, value, subtitle, trend, icon }: StatCa
         <h3 className="text-gray-700 text-sm font-medium">{title}</h3>
         {icon && (
           <div className="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center">
-            <span className="text-gray-700 text-lg">{icon}</span>
+            {typeof icon === 'string' ? (
+              <span className="text-gray-700 text-lg">{icon}</span>
+            ) : (
+              <div className="text-gray-700">{icon}</div>
+            )}
           </div>
         )}
       </div>

@@ -1,0 +1,129 @@
+@startuml KTC_UseCase_Diagram
+!theme plain
+skinparam backgroundColor white
+skinparam actor {
+    BackgroundColor white
+    BorderColor black
+    FontColor black
+    FontSize 10
+}
+skinparam usecase {
+    BackgroundColor white
+    BorderColor black
+    FontColor black
+    FontSize 9
+}
+skinparam rectangle {
+    BackgroundColor white
+    BorderColor black
+    FontColor black
+}
+
+title KTC Logistics System - Use Case Diagram
+
+' Force horizontal layout
+left to right direction
+
+' Left side actors - External users
+actor Customer
+actor Driver
+
+' System with explicit column layout
+rectangle "KTC Logistics Platform" {
+    ' LEFT COLUMN - External systems
+    together {
+        rectangle "Customer Portal" as LeftColumn #white {
+            (Create / schedule orders) as UC1
+            (Estimate shipping cost) as UC2
+            (View invoices) as UC3
+            (Track order status) as UC4
+            (View order history) as UC5
+            (Monitor SLAs) as UC6
+        }
+
+        rectangle "Mobile App" #white {
+            (Navigate routes) as UC26
+            (Update delivery status) as UC27
+            (Capture proof of delivery) as UC28
+            (Share real-time location) as UC29
+            (Request maintenance) as UC30
+            (View performance dashboard) as UC31
+            (Report issues / delays) as UC32
+        }
+    }
+
+    ' RIGHT COLUMN - Management Dashboard
+    package "Management Dashboard" as ManagementDashboard {
+        ' Force separation between columns with hidden arrow
+        LeftColumn -[hidden]-> ManagementDashboard
+
+        rectangle "Dispatcher Dashboard" #white {
+            (Validate & Accept order) as UC7
+            (Assign deliveries) as UC8
+            (Route planning) as UC9
+            (Track & monitor orders) as UC11
+        }
+
+        rectangle "Fleet Dashboard" #white {
+            (Plan maintenance) as UC12
+            (Track vehicles) as UC13
+            (Monitor vehicle status) as UC15
+        }
+
+        rectangle "Operations Dashboard" #white {
+            (KPI review) as UC16
+            (Shipping cost analysis) as UC19
+            (Resource monitoring) as UC20
+            (SLA monitoring) as UC21
+            (Demand forecasting analytics) as UC22
+        }
+
+        rectangle "Admin Dashboard" #white {
+            (Manage users) as UC23
+            (Manage roles) as UC24
+        }
+    }
+}
+
+' Right side actors - Internal staff
+actor Dispatcher
+actor "Fleet Manager" as FleetManager
+actor "Operations Manager" as OperationsManager
+actor "System Admin" as SystemAdmin
+
+' Left side associations (Customer, Driver)
+Customer --> UC1
+Customer --> UC2
+Customer --> UC3
+Customer --> UC4
+Customer --> UC5
+Customer --> UC6
+
+Driver --> UC26
+Driver --> UC27
+Driver --> UC28
+Driver --> UC29
+Driver --> UC30
+Driver --> UC31
+Driver --> UC32
+
+' Right side associations (internal staff)
+UC7 <-- Dispatcher
+UC8 <-- Dispatcher
+UC9 <-- Dispatcher
+UC11 <-- Dispatcher
+
+UC12 <-- FleetManager
+UC13 <-- FleetManager
+UC15 <-- FleetManager
+
+UC16 <-- OperationsManager
+UC19 <-- OperationsManager
+UC20 <-- OperationsManager
+UC21 <-- OperationsManager
+UC22 <-- OperationsManager
+
+UC23 <-- SystemAdmin
+UC24 <-- SystemAdmin
+
+@enduml

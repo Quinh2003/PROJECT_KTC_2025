@@ -1,4 +1,7 @@
+
 package ktc.spring_project.entities;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,6 +11,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "users")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", "totpSecret", "stores", "vehicles", "deliveryProofs"})
 public class User {
 
     @Id
@@ -50,6 +54,12 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Timestamp updatedAt;
+
+    @Column(name = "totp_secret", length = 64)
+    private String totpSecret;
+
+    @Column(name = "totp_enabled")
+    private boolean totpEnabled = false;
 
     public User() {}
 
@@ -150,6 +160,22 @@ public class User {
 
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getTotpSecret() {
+        return totpSecret;
+    }
+
+    public void setTotpSecret(String totpSecret) {
+        this.totpSecret = totpSecret;
+    }
+
+    public boolean getTotpEnabled() {
+        return totpEnabled;
+    }
+
+    public void setTotpEnabled(boolean totpEnabled) {
+        this.totpEnabled = totpEnabled;
     }
 
 

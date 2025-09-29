@@ -1,0 +1,51 @@
+2025.09.27 08:53:37 INFO  Started: Metals version 1.6.2 in folders 'D:\PROJECT_KTC_2025' for client Visual Studio Code 1.104.2.
+Sep 27, 2025 8:54:06 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+2025.09.27 08:54:35 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 08:54:36 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+Sep 27, 2025 8:54:36 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 2
+2025.09.27 08:54:36 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 08:54:38 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 08:57:26 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 08:57:26 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:03:57 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:06:47 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:06:47 WARN  no build target for: D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java
+2025.09.27 09:06:48 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:06:47 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:09:49 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:09:50 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:09:50 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:09:50 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+Sep 27, 2025 9:09:51 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+2025.09.27 09:10:44 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:10:44 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:10:44 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+Sep 27, 2025 9:10:44 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 54
+Sep 27, 2025 9:10:45 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+2025.09.27 09:11:33 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:11:33 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:11:50 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+Sep 27, 2025 9:12:43 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+2025.09.27 09:13:23 INFO  no build target found for D:\PROJECT_KTC_2025\spring-project\src\main\java\ktc\spring_project\controllers\ShippingCalculationController.java. Using fallback presentation compiler.
+2025.09.27 09:50:44 INFO  Shutting down server
+2025.09.27 09:50:44 INFO  shutting down Metals
+2025.09.27 09:50:44 INFO  Exiting server
+2025.09.27 09:50:44 ERROR Unexpected error initializing server: 
+org.eclipse.lsp4j.jsonrpc.ResponseErrorException: Request window/showMessageRequest failed with message: Canceled
+	at org.eclipse.lsp4j.jsonrpc.RemoteEndpoint.handleResponse(RemoteEndpoint.java:220)
+	at org.eclipse.lsp4j.jsonrpc.RemoteEndpoint.consume(RemoteEndpoint.java:204)
+	at org.eclipse.lsp4j.jsonrpc.json.StreamMessageProducer.handleMessage(StreamMessageProducer.java:185)
+	at org.eclipse.lsp4j.jsonrpc.json.StreamMessageProducer.listen(StreamMessageProducer.java:97)
+	at org.eclipse.lsp4j.jsonrpc.json.ConcurrentMessageProcessor.run(ConcurrentMessageProcessor.java:114)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1583)
+

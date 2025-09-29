@@ -58,4 +58,11 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
     List<User> findByUsernameContainingIgnoreCase(String username);
 
     List<User> findByFullNameContainingIgnoreCase(String fullName);
+
+    // Count methods for staff statistics
+    @Query("SELECT COUNT(u) FROM User u WHERE u.role.roleName = :roleName")
+    long countByRole_RoleName(@Param("roleName") String roleName);
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.status.name = :statusName AND u.role.roleName != :excludeRole")
+    long countByStatusNameAndRoleRoleNameNot(@Param("statusName") String statusName, @Param("excludeRole") String excludeRole);
 }

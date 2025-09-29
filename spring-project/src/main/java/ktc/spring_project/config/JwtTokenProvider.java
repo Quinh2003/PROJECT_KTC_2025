@@ -134,6 +134,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+/**
+ * JWT Token Provider - Component chịu trách nhiệm tạo và validate JWT tokens
+ *
+ * Updated to support 15-minute token expiration with proper error handling
+ */
 @Component
 public class JwtTokenProvider {
 
@@ -141,7 +146,8 @@ public class JwtTokenProvider {
     @Value("${jwt.secret:mySecretKey}")
     private String jwtSecret;
 
-    @Value("${jwt.expiration:86400000}")
+    // Updated to use 15 minutes (900000ms) as default instead of 24 hours
+    @Value("${jwt.expiration:900000}")
     private int jwtExpirationInMs;
 
     private Key getSigningKey() {
@@ -150,13 +156,33 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /**
+     * Generate JWT token with 15-minute expiration
+     */
     public String generateToken(Authentication authentication) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
-        Date expiryDate = new Date(System.currentTimeMillis() + jwtExpirationInMs);
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
-                .setIssuedAt(new Date())
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    /**
+     * Generate token with custom expiration time
+     */
+    public String generateToken(Authentication authentication, long expirationTimeMs) {
+        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expirationTimeMs);
+
+        return Jwts.builder()
+                .setSubject(userPrincipal.getUsername())
+                .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
@@ -171,6 +197,33 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
+    /**
+     * Get expiration date from token
+     */
+    public Date getExpirationDateFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getExpiration();
+    }
+
+    /**
+     * Check if token is expired
+     */
+    public boolean isTokenExpired(String token) {
+        try {
+            Date expiration = getExpirationDateFromToken(token);
+            return expiration.before(new Date());
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    /**
+     * Enhanced token validation with detailed error handling
+     */
     public boolean validateToken(String authToken) {
         try {
             Jwts.parserBuilder()
@@ -179,16 +232,33 @@ public class JwtTokenProvider {
                 .parseClaimsJws(authToken);
             return true;
         } catch (SecurityException ex) {
-            System.err.println("Invalid JWT signature");
+            System.err.println("Invalid JWT signature: " + ex.getMessage());
         } catch (MalformedJwtException ex) {
-            System.err.println("Invalid JWT token");
+            System.err.println("Invalid JWT token: " + ex.getMessage());
         } catch (ExpiredJwtException ex) {
-            System.err.println("Expired JWT token");
+            System.err.println("Expired JWT token. Token expired at: " + ex.getClaims().getExpiration());
         } catch (UnsupportedJwtException ex) {
-            System.err.println("Unsupported JWT token");
+            System.err.println("Unsupported JWT token: " + ex.getMessage());
         } catch (IllegalArgumentException ex) {
-            System.err.println("JWT claims string is empty");
+            System.err.println("JWT claims string is empty: " + ex.getMessage());
         }
         return false;
+    }
+
+    /**
+     * Get token expiration info for logging/debugging
+     */
+    public String getTokenExpirationInfo(String token) {
+        try {
+            Date expiration = getExpirationDateFromToken(token);
+            long timeLeft = expiration.getTime() - System.currentTimeMillis();
+            if (timeLeft > 0) {
+                return "Token expires in " + (timeLeft / 60000) + " minutes";
+            } else {
+                return "Token expired " + Math.abs(timeLeft / 60000) + " minutes ago";
+            }
+        } catch (Exception e) {
+            return "Unable to determine token expiration";
+        }
     }
 }

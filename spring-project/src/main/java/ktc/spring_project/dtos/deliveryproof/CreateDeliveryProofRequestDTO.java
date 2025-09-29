@@ -1,18 +1,29 @@
+
 package ktc.spring_project.dtos.deliveryproof;
+
 
 import ktc.spring_project.enums.ProofType;
 import java.sql.Timestamp;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * DTO for creating a new delivery proof
  */
 public class CreateDeliveryProofRequestDTO {
-    
+
+    @NotNull(message = "Order ID is required")
     private Long orderId;
+
+    @NotNull(message = "Proof type is required")
     private ProofType proofType;
+
     private String filePath;
     private String fileName;
+
+    @NotBlank(message = "Recipient name is required")
     private String recipientName;
+
     private String recipientSignature;
     private Timestamp capturedAt;
     private Long uploadedBy;

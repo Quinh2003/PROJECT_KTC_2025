@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ktc.spring_project.entities.Status;
 import ktc.spring_project.enums.StatusType;
+import ktc.spring_project.dtos.payment.CreatePaymentRequestDTO;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -80,13 +81,26 @@ public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
      */
     @PostMapping
     public ResponseEntity<Payment> createPayment(
-            @Valid @RequestBody Payment payment,
+            @Valid @RequestBody CreatePaymentRequestDTO dto,
             Authentication authentication) {
 
-        // Lấy thông tin người dùng hiện tại nếu cần
-        // User currentUser = userService.getCurrentUser(authentication);
+        // Map DTO to Payment entity
+        Payment payment = new Payment();
+        payment.setAmount(dto.getAmount());
+        payment.setPaymentMethod(dto.getPaymentMethod());
+        payment.setTransactionId(dto.getTransactionId());
+        payment.setNotes(dto.getNotes());
+        // Map order, status, createdBy nếu cần (giả sử có các repository/service)
+        if (dto.getOrderId() != null) {
+            payment.setOrder(new ktc.spring_project.entities.Order());
+            payment.getOrder().setId(dto.getOrderId());
+        }
+        if (dto.getStatusId() != null) {
+            payment.setStatus(new Status());
+            payment.getStatus().setId(dto.getStatusId().shortValue());
+        }
+    // Nếu cần set createdBy, hãy implement logic lấy User từ userId ở service/repository
 
-        // Tạo thanh toán mới
         Payment createdPayment = paymentService.save(payment);
         return new ResponseEntity<>(createdPayment, HttpStatus.CREATED);
     }

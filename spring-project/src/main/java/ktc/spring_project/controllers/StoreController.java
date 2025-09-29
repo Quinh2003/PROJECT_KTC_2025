@@ -8,9 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +15,14 @@ import java.util.Map;
 
 /**
  * Controller responsible for managing stores
- * Based on database schema for stores table
+ * 
+ * Store Information Update Endpoints:
+ * - PUT /api/stores/{id}/info - Update store information with restricted fields (storeName, email, phone, isActive, notes)
+ * - GET /api/stores/{id}/info - Get store information for editing (includes read-only address)
+ * - PATCH /api/stores/{id} - Partial update of allowed store fields only
+ * - PUT /api/stores/{id} - Full store update (legacy, includes all fields)
+ * 
+ * Note: Address field is displayed but cannot be updated through the info endpoints
  */
 @RestController
 @RequestMapping("/api/stores")
@@ -88,20 +92,59 @@ public class StoreController {
     @GetMapping("/{id}")
     public ResponseEntity<Store> getStoreById(@PathVariable Long id) {
         Store store = storeService.getStoreById(id);
-        return ResponseEntity.ok(store);
+        return ResponseEntity.ok(store); 
     }
 
     /**
-     * Create a new store
+     * Create a new store (DTO, validation)
      */
     @PostMapping
     public ResponseEntity<Store> createStore(
-            @Valid @RequestBody Store store,
+            @Valid @RequestBody ktc.spring_project.dtos.store.CreateStoreRequestDTO dto,
             Authentication authentication) {
 
-        // TO-DO: Add authentication handling once implemented in service
+        Store store = new Store();
+        store.setStoreName(dto.getStoreName());
+        store.setEmail(dto.getEmail());
+        store.setPhone(dto.getPhone());
+        store.setAddress(dto.getAddress());
+        if (dto.getLatitude() != null) {
+            store.setLatitude(java.math.BigDecimal.valueOf(dto.getLatitude()));
+        }
+        if (dto.getLongitude() != null) {
+            store.setLongitude(java.math.BigDecimal.valueOf(dto.getLongitude()));
+        }
+        store.setIsActive(dto.getIsActive());
+        store.setNotes(dto.getNotes());
+
         Store createdStore = storeService.createStore(store);
         return new ResponseEntity<>(createdStore, HttpStatus.CREATED);
+    }
+
+    /**
+     * Update store information with restricted fields
+     * Only updates: storeName, email, phone, isActive, notes
+     * Address is displayed but cannot be updated
+     */
+    @PutMapping("/{id}/info")
+    public ResponseEntity<ktc.spring_project.dtos.store.StoreInfoResponseDTO> updateStoreInfo(
+            @PathVariable Long id,
+            @Valid @RequestBody ktc.spring_project.dtos.store.UpdateStoreInfoDTO dto,
+            Authentication authentication) {
+
+        Store updatedStore = storeService.updateStoreInfo(id, dto);
+        ktc.spring_project.dtos.store.StoreInfoResponseDTO responseDTO = storeService.convertToStoreInfoResponseDTO(updatedStore);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    /**
+     * Get store information for editing (returns updateable fields + read-only address)
+     */
+    @GetMapping("/{id}/info")
+    public ResponseEntity<ktc.spring_project.dtos.store.UpdateStoreInfoDTO> getStoreInfoForEdit(@PathVariable Long id) {
+        Store store = storeService.getStoreById(id);
+        ktc.spring_project.dtos.store.UpdateStoreInfoDTO dto = storeService.convertToUpdateStoreInfoDTO(store);
+        return ResponseEntity.ok(dto);
     }
 
     /**
@@ -241,19 +284,43 @@ public ResponseEntity<Void> deleteStore(
     }
 
     @PatchMapping("/{id}")
-public ResponseEntity<Store> patchStore(
+public ResponseEntity<ktc.spring_project.dtos.store.StoreInfoResponseDTO> patchStore(
         @PathVariable Long id,
         @RequestBody Map<String, Object> updates,
         Authentication authentication) {
 
     Store store = storeService.getStoreById(id);
+    
+    // Only update allowed fields
     if (updates.containsKey("storeName")) {
         store.setStoreName((String) updates.get("storeName"));
     }
-    // Thêm các trường khác nếu cần PATCH
+    if (updates.containsKey("email")) {
+        store.setEmail((String) updates.get("email"));
+    }
+    if (updates.containsKey("phone")) {
+        store.setPhone((String) updates.get("phone"));
+    }
+    if (updates.containsKey("isActive")) {
+        store.setIsActive((Boolean) updates.get("isActive"));
+    }
+    if (updates.containsKey("notes")) {
+        store.setNotes((String) updates.get("notes"));
+    }
+    
+    // Address and coordinates are not allowed to be updated via PATCH
+    // They require a separate endpoint or full update
 
     Store updatedStore = storeService.updateStore(id, store);
-    return ResponseEntity.ok(updatedStore);
+    ktc.spring_project.dtos.store.StoreInfoResponseDTO responseDTO = storeService.convertToStoreInfoResponseDTO(updatedStore);
+    return ResponseEntity.ok(responseDTO);
+}
+@GetMapping("/user/{userId}")
+public ResponseEntity<List<Store>> getStoresByUserId(@PathVariable Long userId) {
+    List<Store> stores = storeService.getStoresByUserId(userId);
+    return ResponseEntity.ok(stores);
 }
 
 }
+
+

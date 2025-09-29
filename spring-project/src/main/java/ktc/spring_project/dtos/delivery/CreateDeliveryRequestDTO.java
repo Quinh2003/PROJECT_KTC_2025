@@ -1,25 +1,44 @@
+
 package ktc.spring_project.dtos.delivery;
 
 import ktc.spring_project.enums.TransportMode;
 import ktc.spring_project.enums.ServiceType;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import jakarta.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * DTO for creating a new delivery
  */
 public class CreateDeliveryRequestDTO {
     
+    @NotNull(message = "Order ID is required")
     private Long orderId;
+
+    @DecimalMin(value = "0.0", inclusive = true, message = "Delivery fee must be >= 0")
     private BigDecimal deliveryFee;
+
     private TransportMode transportMode = TransportMode.ROAD;
+
+    @NotNull(message = "Service type is required")
     private ServiceType serviceType = ServiceType.STANDARD;
-    private Timestamp pickupDate;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate pickupDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Timestamp scheduleDeliveryTime;
+
     private Boolean lateDeliveryRisk = false;
+    @Size(max = 500, message = "Delivery notes must not exceed 500 characters")
     private String deliveryNotes;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Timestamp orderDate;
     private Long vehicleId;
+
     private Long driverId;
     private Long routeId;
     
@@ -45,8 +64,8 @@ public class CreateDeliveryRequestDTO {
     public ServiceType getServiceType() { return serviceType; }
     public void setServiceType(ServiceType serviceType) { this.serviceType = serviceType; }
     
-    public Timestamp getPickupDate() { return pickupDate; }
-    public void setPickupDate(Timestamp pickupDate) { this.pickupDate = pickupDate; }
+    public LocalDate getPickupDate() { return pickupDate; }
+    public void setPickupDate(LocalDate pickupDate) { this.pickupDate = pickupDate; }
     
     public Timestamp getScheduleDeliveryTime() { return scheduleDeliveryTime; }
     public void setScheduleDeliveryTime(Timestamp scheduleDeliveryTime) { this.scheduleDeliveryTime = scheduleDeliveryTime; }

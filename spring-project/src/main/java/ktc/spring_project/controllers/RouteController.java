@@ -65,8 +65,15 @@ public class RouteController {
      */
     @PostMapping
     public ResponseEntity<Route> createRoute(
-            @Valid @RequestBody Route route,
+            @Valid @RequestBody ktc.spring_project.dtos.route.CreateRouteRequestDTO dto,
             Authentication authentication) {
+
+        Route route = new Route();
+        route.setName(dto.getName());
+        route.setWaypoints(dto.getWaypoints());
+    route.setEstimatedCost(dto.getEstimatedCost());
+        route.setNotes(dto.getNotes());
+        // Map createdBy nếu cần (giả sử có các repository/service)
 
         Route createdRoute = routeService.save(route);
         return new ResponseEntity<>(createdRoute, HttpStatus.CREATED);

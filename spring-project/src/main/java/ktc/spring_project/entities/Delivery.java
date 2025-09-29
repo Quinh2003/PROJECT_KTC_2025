@@ -21,6 +21,8 @@ public class Delivery {
     @JoinColumn(name = "order_id")
     private Order order;
 
+
+
     @Column(name = "delivery_fee")
     private BigDecimal deliveryFee;
 
@@ -49,7 +51,7 @@ private ServiceType serviceType;
     private Integer deliveryAttempts;
 
     @Column(name = "delivery_notes", columnDefinition = "TEXT")
-    private String deliveryNotes;
+    private String notes; // Changed from deliveryNotes to notes
 
     @Column(name = "order_date", nullable = false)
     private Timestamp orderDate;
@@ -68,6 +70,10 @@ private ServiceType serviceType;
     @ManyToOne
     @JoinColumn(name = "route_id")
     private Route route;
+    
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private Status status;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -85,6 +91,8 @@ private ServiceType serviceType;
 
     public Order getOrder() { return order; }
     public void setOrder(Order order) { this.order = order; }
+
+    // Removed duplicate getter/setter for status
 
     public BigDecimal getDeliveryFee() { return deliveryFee; }
     public void setDeliveryFee(BigDecimal deliveryFee) { this.deliveryFee = deliveryFee; }
@@ -120,8 +128,12 @@ public void setServiceType(ServiceType serviceType) {
     public Integer getDeliveryAttempts() { return deliveryAttempts; }
     public void setDeliveryAttempts(Integer deliveryAttempts) { this.deliveryAttempts = deliveryAttempts; }
 
-    public String getDeliveryNotes() { return deliveryNotes; }
-    public void setDeliveryNotes(String deliveryNotes) { this.deliveryNotes = deliveryNotes; }
+    public String getDeliveryNotes() { return notes; }
+    public void setDeliveryNotes(String deliveryNotes) { this.notes = deliveryNotes; }
+
+    // Add new getNotes/setNotes methods for compatibility
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
 
     public Timestamp getOrderDate() { return orderDate; }
     public void setOrderDate(Timestamp orderDate) { this.orderDate = orderDate; }
@@ -137,6 +149,17 @@ public void setServiceType(ServiceType serviceType) {
 
     public Route getRoute() { return route; }
     public void setRoute(Route route) { this.route = route; }
+    
+    public Status getStatus() { return status; }
+    public void setStatus(Status status) { this.status = status; }
+    
+    // Helper method để lấy delivery proofs qua order
+    public List<DeliveryProof> getDeliveryProofs() {
+        if (order != null && order.getDeliveryProofs() != null) {
+            return order.getDeliveryProofs();
+        }
+        return List.of(); // Return empty list instead of null
+    }
 
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }

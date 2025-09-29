@@ -7,6 +7,24 @@ import java.sql.Timestamp;
  * DTO for order item response data
  */
 public class OrderItemResponseDTO {
+    private java.math.BigDecimal volume;
+    private java.math.BigDecimal weight;
+
+    public java.math.BigDecimal getVolume() {
+        return volume;
+    }
+
+    public void setVolume(java.math.BigDecimal volume) {
+        this.volume = volume;
+    }
+
+    public java.math.BigDecimal getWeight() {
+        return weight;
+    }
+
+    public void setWeight(java.math.BigDecimal weight) {
+        this.weight = weight;
+    }
     
     private Long id;
     

@@ -1,9 +1,4 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
   "compilerOptions": {
     "target": "esnext", // Điều chỉnh target theo yêu cầu của bạn (esnext hoặc es6)
     "module": "esnext", // Điều chỉnh module
@@ -18,14 +13,12 @@
       "@/*": ["*"], // Alias cho @
       "@assets/*": ["src/*"] // Alias cho @assets
     },
-    "outDir": "./dist", // Chỉ định thư mục đầu ra cho file JS biên dịch
-    "declaration": true, // Bật tạo file .d.ts
-    "declarationDir": "./types", // Chỉ định thư mục lưu trữ các file .d.ts
-    "allowJs": true, // Cho phép biên dịch cả file JS
-    "composite": true
+    "types": ["vite/client", "node"],
+    "allowJs": true, // Allow importing JS files during transition
+    "noEmit": true // TypeScript chỉ dùng để type checking, không compile
   },
   "include": [
-    "src/**/*" // Đảm bảo include tất cả tệp trong src
+    "src/**/*"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }

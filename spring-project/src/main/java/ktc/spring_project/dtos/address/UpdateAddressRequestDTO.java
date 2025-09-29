@@ -1,24 +1,38 @@
+
 package ktc.spring_project.dtos.address;
 
 import ktc.spring_project.enums.AddressType;
 import java.math.BigDecimal;
+import jakarta.validation.constraints.*;
 
 /**
  * DTO for updating an existing address
  */
 public class UpdateAddressRequestDTO {
-    
+
+    @NotNull(message = "Address type is required")
     private AddressType addressType;
+
+    @NotBlank(message = "Address is required")
     private String address;
+
     private BigDecimal latitude;
     private BigDecimal longitude;
+
+    @NotBlank(message = "City is required")
     private String city;
+
     private String state;
+
+    @NotBlank(message = "Country is required")
     private String country;
+
     private String region;
     private String postalCode;
     private String contactName;
     private String contactPhone;
+
+    @Email(message = "Contact email must be valid")
     private String contactEmail;
     private String floorNumber;
     

@@ -63,4 +63,12 @@ public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> 
     // Danh sách table name duy nhất
     @Query("SELECT DISTINCT al.tableName FROM ActivityLog al ORDER BY al.tableName")
     List<String> findDistinctTableNames();
+    
+    // Kiểm tra user có thực hiện action nào đó không - sử dụng metadata field
+    @Query("SELECT COUNT(al) > 0 FROM ActivityLog al WHERE al.actor.id = :actorId AND al.metadata LIKE %:action%")
+    boolean existsByActorIdAndActionContaining(@Param("actorId") Long actorId, @Param("action") String action);
+
+    // Thay đổi method này cho khớp với database schema  
+    @Query("SELECT COUNT(al) > 0 FROM ActivityLog al WHERE al.actor.id = :userId AND al.metadata LIKE %:action%")
+    boolean existsByUserIdAndActionContaining(@Param("userId") Long userId, @Param("action") String action);
 }

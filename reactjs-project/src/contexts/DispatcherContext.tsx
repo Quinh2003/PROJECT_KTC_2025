@@ -1,11 +1,13 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { fetchOrdersRaw } from '../services/OrderAPI';
-import { fetchVehicles } from '../services/VehicleListAPI';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import { fetchOrdersRaw } from '../services/orderAPI';
+import { fetchVehicleStats } from '../services/VehicleListAPI';
 import { fetchDrivers } from '../services/adminAPI';
 import type { Vehicle } from '../types/Operations';
 import type { User } from '../types/User';
+import type { Order } from '../types/Order';
 
-interface Order {
+interface OrderLegacy {
   id: string;
   status: string;
   priority: string;
@@ -19,10 +21,14 @@ interface Order {
 
 interface DispatcherContextType {
   // Orders
-  orders: Order[];
+  orders: OrderLegacy[];
   ordersLoading: boolean;
   ordersError: string;
   refreshOrders: (force?: boolean) => Promise<void>;
+  
+  // Selected Order for routing
+  selectedOrder: Order | null;
+  setSelectedOrder: (order: Order | null) => void;
   
   // Vehicles
   vehicles: Vehicle[];
@@ -54,10 +60,13 @@ interface DispatcherProviderProps {
 
 export const DispatcherProvider = ({ children }: DispatcherProviderProps) => {
   // Orders state
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderLegacy[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [ordersError, setOrdersError] = useState('');
   const [ordersLastFetch, setOrdersLastFetch] = useState<number>(0);
+  
+  // Selected Order state
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   
   // Vehicles state
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -85,7 +94,7 @@ export const DispatcherProvider = ({ children }: DispatcherProviderProps) => {
       setOrdersError('');
       const data = await fetchOrdersRaw();
       
-      const mapped = data.map((item: any) => ({
+      const mapped = data.data.map((item: any) => ({
         id: String(item.id),
         status: item.status?.name || '',
         priority: item.priority || item.status?.statusType || '',
@@ -115,8 +124,10 @@ export const DispatcherProvider = ({ children }: DispatcherProviderProps) => {
     try {
       setVehiclesLoading(true);
       setVehiclesError('');
-      const data = await fetchVehicles();
-      setVehicles(data);
+      
+      // Sử dụng fetchVehicleStats để lấy tất cả vehicles
+      const stats = await fetchVehicleStats();
+      setVehicles(stats.sampleVehicles);
       setVehiclesLastFetch(now);
     } catch (err: any) {
       setVehiclesError(err.message || 'Đã xảy ra lỗi');
@@ -135,9 +146,18 @@ export const DispatcherProvider = ({ children }: DispatcherProviderProps) => {
       setDriversLoading(true);
       setDriversError('');
       const driverList = await fetchDrivers();
-      const filteredDrivers = driverList.filter((u: User) => 
-        u.role && typeof u.role === 'object' && u.role.roleName === 'DRIVER'
-      );
+      // Lọc lại chỉ lấy user có role là DRIVER hoặc role_id = 7
+      const filteredDrivers = driverList.filter((u: any) => {
+        // u.role có thể là string hoặc object
+        if (typeof u.role === 'string') {
+          return u.role.toLowerCase() === 'driver';
+        }
+        if (typeof u.role === 'object' && u.role !== null) {
+          return (u.role.roleName && u.role.roleName.toLowerCase() === 'driver') || u.role.id === 7;
+        }
+        // fallback cho trường hợp có role_id
+        return u.role_id === 7;
+      });
       setDrivers(filteredDrivers);
       setDriversLastFetch(now);
     } catch (err: any) {
@@ -169,6 +189,9 @@ export const DispatcherProvider = ({ children }: DispatcherProviderProps) => {
     ordersLoading,
     ordersError,
     refreshOrders,
+    
+    selectedOrder,
+    setSelectedOrder,
     
     vehicles,
     vehiclesLoading,

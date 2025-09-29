@@ -1,43 +1,46 @@
-// export interface Vehicle {
-//   id: string;
-//   name: string;
-//   type: 'TRUCK' | 'VAN' | 'MOTORCYCLE';
-//   status: 'ACTIVE' | 'MAINTENANCE' | 'IDLE' | 'OUT_OF_SERVICE';
-//   driver?: {
-//     id: string;
-//     name: string;
-//     phone: string;
-//   };
-//   location: {
-//     lat: number;
-//     lng: number;
-//     address: string;
-//   };
-//   fuel: number; // percentage
-//   mileage: number;
-//   lastUpdated: string;
-// }
+// Define vehicle status types to handle API responses
+type VehicleStatusString = 'AVAILABLE' | 'IN_USE' | 'MAINTENANCE' | 'MAINTENANCE_PENDING';
+type VehicleStatusNumber = 17 | 18 | 19 | 51; // Backend status codes
+type VehicleStatusObject = {
+  id: number;
+  name: string;
+  description?: string;
+};
+
 export interface Vehicle {
   id: string | number;
+  name?: string;
   licensePlate: string;
   vehicleType: string;
-  status: {
-    id: number;
-    name: string;
-    statusType: string;
-    description: string;
-  };
-  currentDriver?: {
-    id: string | number;
-    fullName?: string;
-    username?: string;
-    email?: string;
-  };
+  type?: 'TRUCK' | 'VAN' | 'MOTORCYCLE' | 'CAR';
+  brand?: string;
+  model?: string;
   capacityWeightKg?: number;
   capacityVolumeM3?: number;
+  year?: number;
+  status: VehicleStatusString | VehicleStatusNumber | string | VehicleStatusObject;
+  lastMaintenance?: string;
+  nextMaintenance?: string;
+  currentDriver?: {
+    id?: string | number;
+    fullName?: string;
+    email?: string;
+    phone?: string;
+  };
+  driver?: {
+    id: string;
+    name: string;
+    phone: string;
+  };
   notes?: string;
-  updatedAt?: string;
-  // ... các trường khác nếu có
+  location?: {
+    lat: number;
+    lng: number;
+    address: string;
+  };
+  fuel?: number; // percentage
+  mileage?: number;
+  updatedAt: string;
 }
 
 export interface Route {

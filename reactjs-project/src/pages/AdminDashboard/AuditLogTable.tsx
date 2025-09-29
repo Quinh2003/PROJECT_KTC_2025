@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { fetchActivityLogs, type ActivityLog } from "../../services/adminAPI";
 
 type DateFilter = "today" | "last7days" | "last30days" | "custom";
@@ -8,6 +9,7 @@ interface AuditLogTableProps {
 }
 
 export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps) {
+  const { t } = useTranslation();
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [filteredLogs, setFilteredLogs] = useState<ActivityLog[]>([]);
   const [dateFilter, setDateFilter] = useState<DateFilter>("today");
@@ -40,7 +42,7 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
         console.log(`Initial load: ${data.length} logs loaded`);
       } catch (err) {
         console.error("Failed to fetch activity logs:", err);
-        setError("Failed to load activity logs");
+        setError(t('errors.loadingData', 'Failed to load data'));
         setLogs([]);
       } finally {
         setLoading(false);
@@ -126,7 +128,7 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
       console.log("Manual refresh completed - audit count updated");
     } catch (err) {
       console.error("Manual refresh failed:", err);
-      setError("Failed to refresh logs");
+      setError(t('errors.refreshFailed', 'Failed to refresh'));
     } finally {
       setLoading(false);
     }
@@ -166,7 +168,7 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
               {loading ? "⏳" : "🔄 Refresh"}
             </button>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={() => handleDateFilterChange("today")}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -175,7 +177,8 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
                   : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
               }`}
             >
-              Today
+              <span className="hidden sm:inline">Today</span>
+              <span className="sm:hidden">1D</span>
             </button>
             <button
               onClick={() => handleDateFilterChange("last7days")}
@@ -185,7 +188,8 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
                   : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
               }`}
             >
-              Last 7 Days
+              <span className="hidden sm:inline">Last 7 Days</span>
+              <span className="sm:hidden">7D</span>
             </button>
             <button
               onClick={() => handleDateFilterChange("last30days")}
@@ -195,7 +199,8 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
                   : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
               }`}
             >
-              Last 30 Days
+              <span className="hidden sm:inline">Last 30 Days</span>
+              <span className="sm:hidden">30D</span>
             </button>
             <button
               onClick={() => handleDateFilterChange("custom")}
@@ -214,7 +219,7 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
       {/* Custom Date Range Picker */}
       {dateFilter === "custom" && (
         <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <div className="flex gap-4 items-center">
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Start Date
@@ -223,7 +228,7 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
                 type="date"
                 value={customStartDate}
                 onChange={(e) => setCustomStartDate(e.target.value)}
-                className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 w-full sm:w-auto"
               />
             </div>
             <div>
@@ -234,7 +239,7 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
                 type="date"
                 value={customEndDate}
                 onChange={(e) => setCustomEndDate(e.target.value)}
-                className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 w-full sm:w-auto"
               />
             </div>
           </div>
@@ -270,7 +275,7 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
             <tr>
               <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Time</th>
               <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">User</th>
-              <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Action</th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300 hidden sm:table-cell">Action</th>
               <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Status</th>
             </tr>
           </thead>
@@ -280,7 +285,7 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
                 <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                   <div className="flex items-center justify-center gap-2">
                     <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                    Loading logs...
+                    {t('common.loading', 'Loading')}...
                   </div>
                 </td>
               </tr>
@@ -294,17 +299,19 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
               displayedLogs.map((log) => (
                 <tr key={log.id} className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
                   <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                    {new Date(log.time).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                    <div>
-                      <div className="font-medium">{log.user}</div>
-                      {log.role && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400">{log.role}</div>
-                      )}
+                    <div className="truncate max-w-24 sm:max-w-none">
+                      {new Date(log.time).toLocaleString()}
                     </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                    <div>
+                      <div className="font-medium truncate max-w-20 sm:max-w-none">{log.user}</div>
+                      {log.role && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">{log.role}</div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 hidden sm:table-cell">
                     <div>
                       <div className="font-medium">{log.action}</div>
                       <div className="text-gray-500 dark:text-gray-400 text-xs">
@@ -321,12 +328,14 @@ export default function AuditLogTable({ onAuditCountUpdate }: AuditLogTableProps
                   </td>
                   <td className="px-4 py-3">
                     {log.status === "success" ? (
-                      <span className="inline-block px-3 py-1 rounded-full bg-green-500 dark:bg-green-700 text-white text-xs font-semibold">
-                        Success
+                      <span className="inline-block px-2 sm:px-3 py-1 rounded-full bg-green-500 dark:bg-green-700 text-white text-xs font-semibold">
+                        <span className="hidden sm:inline">Success</span>
+                        <span className="sm:hidden">✓</span>
                       </span>
                     ) : (
-                      <span className="inline-block px-3 py-1 rounded-full bg-red-500 dark:bg-red-700 text-white text-xs font-semibold">
-                        Error
+                      <span className="inline-block px-2 sm:px-3 py-1 rounded-full bg-red-500 dark:bg-red-700 text-white text-xs font-semibold">
+                        <span className="hidden sm:inline">Error</span>
+                        <span className="sm:hidden">✗</span>
                       </span>
                     )}
                   </td>

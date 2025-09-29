@@ -1,6 +1,7 @@
 package ktc.spring_project.entities;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ktc.spring_project.enums.ProofType;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -8,6 +9,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "delivery_proofs")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "order"})
 public class DeliveryProof {
 
     @Id

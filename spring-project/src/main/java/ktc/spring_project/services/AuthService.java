@@ -1,4 +1,5 @@
 package ktc.spring_project.services;
+import ktc.spring_project.exceptions.HttpException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ktc.spring_project.exceptions.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -30,7 +33,8 @@ public class AuthService {
     @Value("${jwt.secret:defaultSecretKey}")
     private String jwtSecret;
 
-    @Value("${jwt.expiration:86400000}")
+    // Updated to use 15 minutes (900000ms) as default for JWT tokens
+    @Value("${jwt.expiration:900000}")
     private long jwtExpiration;
 
     @Value("${jwt.refresh-expiration:604800000}")
@@ -53,8 +57,8 @@ public class AuthService {
 
     public Map<String, Object> authenticate(String email, String password) {
         // Tìm user theo email
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
 
         // Thực hiện authentication
         Authentication authentication = authenticationManager.authenticate(
@@ -74,7 +78,9 @@ public class AuthService {
         Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
         response.put("refreshToken", refreshToken);
-        response.put("user", mapUserToDto(user));
+    Map<String, Object> userDto = mapUserToDto(user);
+    userDto.put("totpEnabled", user.getTotpEnabled());
+    response.put("user", userDto);
         return response;
     }
 
@@ -96,7 +102,7 @@ public class AuthService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         if (!isTokenValid(refreshToken, userDetails)) {
-            throw new RuntimeException("Invalid refresh token");
+            throw new HttpException("Invalid refresh token", HttpStatus.UNAUTHORIZED);
         }
 
         // Generate new tokens
@@ -116,8 +122,8 @@ public class AuthService {
     }
 
     public void sendPasswordResetEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
 
         // Generate password reset token (implementation can be extended)
         String resetToken = generatePasswordResetToken(user);
@@ -132,8 +138,8 @@ public class AuthService {
         // Validate token and get username
         String username = extractUsernameFromResetToken(token);
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Invalid reset token"));
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new HttpException("Invalid reset token", HttpStatus.BAD_REQUEST));
 
         // Update password
         user.setPassword(passwordEncoder.encode(newPassword));
@@ -145,12 +151,12 @@ public class AuthService {
 
     public void changePassword(String currentPassword, String newPassword, Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    User user = userRepository.findByUsername(userDetails.getUsername())
+        .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         // Verify current password
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new RuntimeException("Current password is incorrect");
+            throw new HttpException("Current password is incorrect", org.springframework.http.HttpStatus.BAD_REQUEST);
         }
 
         // Update to new password
@@ -166,8 +172,8 @@ public class AuthService {
         // This is a simplified version
         String username = extractUsernameFromVerificationToken(token);
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Invalid verification token"));
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new HttpException("Invalid verification token", HttpStatus.BAD_REQUEST));
 
         // Đánh dấu là đã xác minh email - thay đổi trạng thái của người dùng
         // Vì không có trường emailVerified nên chúng ta có thể cập nhật trạng thái
@@ -184,20 +190,20 @@ public class AuthService {
 
     public Map<String, Object> getCurrentUserInfo(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    User user = userRepository.findByUsername(userDetails.getUsername())
+        .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         return mapUserToDto(user);
     }
 
     // JWT Token generation and validation methods
 
-    private String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername(), jwtExpiration);
     }
 
-    private String generateRefreshToken(UserDetails userDetails) {
+    public String generateRefreshToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername(), refreshExpiration);
     }
@@ -257,7 +263,7 @@ public class AuthService {
     private String extractUsernameFromResetToken(String token) {
         Claims claims = extractAllClaims(token);
         if (!"password_reset".equals(claims.get("purpose"))) {
-            throw new RuntimeException("Invalid token purpose");
+            throw new HttpException("Invalid token purpose", org.springframework.http.HttpStatus.BAD_REQUEST);
         }
         return claims.getSubject();
     }
@@ -265,20 +271,22 @@ public class AuthService {
     private String extractUsernameFromVerificationToken(String token) {
         Claims claims = extractAllClaims(token);
         if (!"email_verification".equals(claims.get("purpose"))) {
-            throw new RuntimeException("Invalid token purpose");
+            throw new HttpException("Invalid token purpose", org.springframework.http.HttpStatus.BAD_REQUEST);
         }
         return claims.getSubject();
     }
 
     // Helper method to map User entity to DTO
     private Map<String, Object> mapUserToDto(User user) {
-        Map<String, Object> userDto = new HashMap<>();
-        userDto.put("id", user.getId());
-        userDto.put("username", user.getUsername());
-        userDto.put("email", user.getEmail());
-        userDto.put("fullName", user.getFullName());
-        userDto.put("role", user.getRole().getRoleName());
-        return userDto;
+    Map<String, Object> userDto = new HashMap<>();
+    userDto.put("id", user.getId());
+    userDto.put("username", user.getUsername());
+    userDto.put("email", user.getEmail());
+    userDto.put("fullName", user.getFullName());
+    userDto.put("role", user.getRole() != null ? user.getRole().getRoleName() : null);
+    // Trả về đúng giá trị boolean của totpEnabled
+    userDto.put("totpEnabled", user.getTotpEnabled());
+    return userDto;
     }
 
     /**
@@ -293,7 +301,7 @@ public class AuthService {
         String refreshToken = generateRefreshToken(userDetails);
 
         // Log activity
-        activityLogService.logUserActivity(user.getId(), "GOOGLE_LOGIN", "User logged in via Google");
+    activityLogService.logUserActivity(user.getId(), "LOGIN", "User logged in via Google");
 
         // Return token response
         Map<String, Object> response = new HashMap<>();

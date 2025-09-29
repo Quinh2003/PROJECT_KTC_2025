@@ -14,6 +14,8 @@ import java.util.Optional;
 @Repository
 public interface StatusRepository extends JpaRepository<Status, Short> {
     List<Status> findByName(String name);
+    
+    Optional<Status> findFirstByName(String name);
 
     List<Status> findByStatusType(StatusType statusType);
 

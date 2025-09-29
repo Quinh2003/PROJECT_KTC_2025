@@ -3,6 +3,8 @@ package ktc.spring_project.controllers;
 import ktc.spring_project.entities.Category;
 import ktc.spring_project.services.CategoryService;
 import ktc.spring_project.services.UserService;
+import ktc.spring_project.dtos.category.CreateCategoryRequestDTO;
+import ktc.spring_project.dtos.category.UpdateCategoryRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -134,13 +136,20 @@ public class CategoryController {
      */
     @PostMapping
     public ResponseEntity<Category> createCategory(
-            @Valid @RequestBody Category category,
+            @Valid @RequestBody CreateCategoryRequestDTO dto,
             Authentication authentication) {
 
-        // Lấy thông tin người dùng hiện tại nếu cần
-        // User currentUser = userService.getCurrentUser(authentication);
+        // Map DTO sang entity
+        Category category = new Category();
+        category.setName(dto.getName());
+        category.setDescription(dto.getDescription());
+        category.setIsActive(dto.getIsActive());
+        category.setNotes(dto.getNotes());
+        if (dto.getParentId() != null) {
+            Category parent = categoryService.getCategoryById(dto.getParentId());
+            category.setParent(parent);
+        }
 
-        // Tạo danh mục mới
         Category createdCategory = categoryService.createCategory(category);
         return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
@@ -151,14 +160,20 @@ public class CategoryController {
     @PutMapping("/{id}")
     public ResponseEntity<Category> updateCategory(
             @PathVariable Long id,
-            @Valid @RequestBody Category category,
+            @Valid @RequestBody UpdateCategoryRequestDTO dto,
             Authentication authentication) {
 
-        // Lấy thông tin người dùng hiện tại nếu cần
-        // User currentUser = userService.getCurrentUser(authentication);
+        Category categoryDetails = new Category();
+        categoryDetails.setName(dto.getName());
+        categoryDetails.setDescription(dto.getDescription());
+        categoryDetails.setIsActive(dto.getIsActive());
+        categoryDetails.setNotes(dto.getNotes());
+        if (dto.getParentId() != null) {
+            Category parent = categoryService.getCategoryById(dto.getParentId());
+            categoryDetails.setParent(parent);
+        }
 
-        // Cập nhật danh mục
-        Category updatedCategory = categoryService.updateCategory(id, category);
+        Category updatedCategory = categoryService.updateCategory(id, categoryDetails);
         return ResponseEntity.ok(updatedCategory);
     }
 

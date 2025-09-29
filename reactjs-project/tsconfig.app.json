@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "composite": true,
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2022",
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
@@ -10,12 +8,10 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    // "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
-    // "noEmit": true,
-    "composite": true,
-    "jsx": "react-jsx",
+    "noEmit": true,
+  // "jsx": "react-jsx",
 
     /* Linting */
     "strict": true,

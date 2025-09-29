@@ -1,13 +1,14 @@
 import { MdManageAccounts } from "react-icons/md";
 import { RiShieldKeyholeLine } from "react-icons/ri";
 import { AiOutlineSetting, AiOutlineSafetyCertificate } from "react-icons/ai";
-import { FiActivity } from "react-icons/fi";
+import { FiActivity, FiBarChart2, FiHome, FiUsers } from "react-icons/fi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
-import logo from "../assets/logo.png";
+import { useTranslation } from 'react-i18next';
+// Logo từ public folder
 
 
 
-export type DispatcherTab = "orders" | "resources" | "assignment";
+export type DispatcherTab = "orders" | "resources" | "assignment" | "completedOrders";
 export type OperationsTab = "overview" | "performance" | "monitoring" | "staff";
 export type AdminTab = "users" | "roles" | "settings" | "logs";
 export type FleetTab = "vehicles" | "maintenance" | "schedule";
@@ -29,17 +30,19 @@ interface MenuItem<T extends TabType> {
 }
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ALL_MENUS: Record<UserRole, MenuItem<any>[]> = {
   dispatcher: [
     { key: "orders", label: "Orders", icon: <MdManageAccounts /> },
+    { key: "completedOrders", label: "Completed Orders", icon: <AiOutlineSafetyCertificate /> },
     { key: "resources", label: "Resources", icon: <RiShieldKeyholeLine /> },
     { key: "assignment", label: "Assignment", icon: <AiOutlineSetting /> },
   ],
  operations : [
-    { key: "overview", label: "Overview", icon: <MdManageAccounts /> },
-    { key: "performance", label: "Performance", icon: <AiOutlineSafetyCertificate /> },
-    { key: "monitoring", label: "Monitoring", icon: <HiOutlineDocumentReport /> },
-    { key: "staff", label: "Staff", icon: <RiShieldKeyholeLine /> },
+    { key: "overview", label: "Overview", icon: <FiHome /> },
+    { key: "performance", label: "Performance", icon: <FiBarChart2 /> },
+    { key: "monitoring", label: "Monitoring", icon: <FiActivity /> },
+    { key: "staff", label: "Staff", icon: <FiUsers /> },
   ],
   fleet: [
     { key: "vehicles", label: "Quản lý phương tiện", icon: <MdManageAccounts /> },
@@ -55,7 +58,6 @@ const ALL_MENUS: Record<UserRole, MenuItem<any>[]> = {
 };
 
 function getMenu<T extends TabType>(role: UserRole): MenuItem<T>[] {
-  // @ts-ignore
   return ALL_MENUS[role] as MenuItem<T>[];
 }
 
@@ -65,14 +67,15 @@ export default function Sidebar<T extends TabType>({
   onTabChange,
   role,
 }: SidebarProps<T>) {
-  const MENU = getMenu<T>(role);
+  const { t } = useTranslation();
+    const MENU = getMenu<T>(role);
 
   return (
     <aside className="group ml-3 flex-shrink-0 w-20 hover:w-64 transition-all duration-300 bg-white/20 backdrop-blur-lg border-r border-white/30 text-gray-800 flex flex-col py-6 px-4 overflow-hidden h-screen sticky top-0">
       <div className="mb-5 flex items-center -mt-3 -ml-4 gap-1">
         <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden ">
           <img
-            src={logo}
+            src="/logo.png"
             alt="Logo"
             className="w-12 h-12 rounded-full object-cover"
           />

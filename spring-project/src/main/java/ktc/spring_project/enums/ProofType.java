@@ -6,7 +6,9 @@ public enum ProofType {
     AUDIO("Audio"),
     VIDEO("Video"),
     DOCUMENT("Document"),
-    RECEIPT("Receipt");
+    RECEIPT("Receipt"),
+    SMS_CONFIRMATION("SMS Confirmation"),
+    PHONE_CONFIRMATION("Phone Confirmation");
 
     private final String displayName;
 

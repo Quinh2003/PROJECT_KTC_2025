@@ -1,7 +1,8 @@
 import { Component } from 'react';
 import type { ErrorInfo, ReactNode } from 'react';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-interface Props {
+interface Props extends WithTranslation {
   children: ReactNode;
 }
 
@@ -63,7 +64,7 @@ export class MapErrorBoundary extends Component<Props, State> {
             </div>
             
             <h3 className="text-xl font-semibold text-gray-800 mb-3">
-              {isAutoRetrying ? 'Reloading Map...' : 'Map Temporarily Unavailable'}
+              {isAutoRetrying ? this.props.t('common.loading', 'Loading') + '...' : this.props.t('errors.mapUnavailable', 'Map Temporarily Unavailable')}
             </h3>
             
             <p className="text-gray-600 mb-2 text-sm">
@@ -104,4 +105,4 @@ export class MapErrorBoundary extends Component<Props, State> {
   }
 }
 
-export default MapErrorBoundary;
+export default withTranslation()(MapErrorBoundary);

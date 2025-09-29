@@ -1,6 +1,11 @@
+
 package ktc.spring_project.controllers;
 
+import ktc.spring_project.services.ChecklistService;
+import lombok.extern.slf4j.Slf4j;
+
 import ktc.spring_project.entities.Delivery;
+import ktc.spring_project.dtos.delivery.CreateDeliveryRequestDTO;
 import ktc.spring_project.entities.User;
 import ktc.spring_project.entities.Vehicle;
 import ktc.spring_project.entities.Status;
@@ -16,10 +21,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ktc.spring_project.exceptions.EntityNotFoundException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ktc.spring_project.services.OrderService; // Add this import if missing
+import ktc.spring_project.services.OrderService;
+import ktc.spring_project.dtos.delivery.CreateDeliveryRequestDTO;
+import ktc.spring_project.dtos.delivery.UpdateDeliveryRequestDTO;
 
 import jakarta.validation.Valid;
 import java.util.ArrayList;
@@ -33,10 +41,14 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/deliveries")
+@Slf4j
 public class DeliveryController {
 
     @Autowired
     private DeliveryService deliveryService;
+
+    @Autowired
+    private ChecklistService checklistService;
 
     @Autowired
     private UserService userService;
@@ -65,14 +77,20 @@ public class DeliveryController {
             @RequestParam(required = false) Long driverId,
             @RequestParam(required = false) Long vehicleId,
             @RequestParam(required = false) String dateFrom,
-            @RequestParam(required = false) String dateTo) {
+            @RequestParam(required = false) String dateTo,
+            @RequestParam(required = false) Long orderId) {
 
         // Lấy tất cả giao hàng
-        List<Delivery> allDeliveries = deliveryService.getAllDeliveries();
+        List<Delivery> deliveries;
+        if (orderId != null) {
+            deliveries = deliveryService.findByOrderId(orderId);
+        } else {
+            deliveries = deliveryService.getAllDeliveries();
+        }
 
         // Chuyển đổi từ Delivery sang Map để dễ dàng thêm thông tin bổ sung nếu cần
         List<Map<String, Object>> deliveriesMap = new ArrayList<>();
-        for (Delivery delivery : allDeliveries) {
+        for (Delivery delivery : deliveries) {
             Map<String, Object> deliveryMap = new HashMap<>();
             deliveryMap.put("id", delivery.getId());
             deliveryMap.put("orderId", delivery.getOrder() != null ? delivery.getOrder().getId() : null);
@@ -117,39 +135,43 @@ public class DeliveryController {
     /**
      * Get delivery by ID
      */
-    // @GetMapping("/{id}")
-    // public ResponseEntity<Map<String, Object>> getDeliveryById(@PathVariable Long id) {
-    //     // Lấy thông tin giao hàng
-    //     Delivery delivery = deliveryService.getDeliveryById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> getDeliveryById(@PathVariable Long id) {
+        Delivery delivery = deliveryService.getDeliveryById(id);
+        // Sử dụng ObjectMapper để convert entity sang Map
+        Map<String, Object> deliveryMap = new com.fasterxml.jackson.databind.ObjectMapper()
+                .convertValue(delivery, Map.class);
+        return ResponseEntity.ok(deliveryMap);
+    }
 
-    //     // Chuyển đổi thành Map
-    //     Map<String, Object> deliveryMap = new HashMap<>();
-    //     deliveryMap.put("id", delivery.getId());
-    //     deliveryMap.put("orderId", delivery.getOrder() != null ? delivery.getOrder().getId() : null);
-    //     deliveryMap.put("deliveryFee", delivery.getDeliveryFee());
-    //     deliveryMap.put("transportMode", delivery.getTransportMode());
-    //     deliveryMap.put("serviceType", delivery.getServiceType());
-    //     deliveryMap.put("orderDate", delivery.getOrderDate());
-    //     deliveryMap.put("pickupDate", delivery.getPickupDate());
-    //     deliveryMap.put("scheduleDeliveryTime", delivery.getScheduleDeliveryTime());
-    //     deliveryMap.put("actualDeliveryTime", delivery.getActualDeliveryTime());
-    //     deliveryMap.put("orderStatus", delivery.getOrder() != null && delivery.getOrder().getStatus() != null ?
-    //         delivery.getOrder().getStatus().getName() : null);
-    //     deliveryMap.put("driverId", delivery.getDriver() != null ? delivery.getDriver().getId() : null);
-    //     deliveryMap.put("vehicleId", delivery.getVehicle() != null ? delivery.getVehicle().getId() : null);
-    //     deliveryMap.put("deliveryAttempts", delivery.getDeliveryAttempts());
-    //     deliveryMap.put("deliveryNotes", delivery.getDeliveryNotes());
-
-    //     return ResponseEntity.ok(deliveryMap);
-    // }
-@GetMapping("/{id}")
-public ResponseEntity<Map<String, Object>> getDeliveryById(@PathVariable Long id) {
-    Delivery delivery = deliveryService.getDeliveryById(id);
-    // Sử dụng ObjectMapper để convert entity sang Map
-    Map<String, Object> deliveryMap = new com.fasterxml.jackson.databind.ObjectMapper()
-            .convertValue(delivery, Map.class);
-    return ResponseEntity.ok(deliveryMap);
-}
+    /**
+     * Get deliveries by order ID
+     */
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<List<Map<String, Object>>> getDeliveriesByOrderId(@PathVariable Long orderId) {
+        List<Delivery> deliveries = deliveryService.findByOrderId(orderId);
+        
+        List<Map<String, Object>> deliveriesMap = new ArrayList<>();
+        for (Delivery delivery : deliveries) {
+            Map<String, Object> deliveryMap = new HashMap<>();
+            deliveryMap.put("id", delivery.getId());
+            deliveryMap.put("orderId", delivery.getOrder() != null ? delivery.getOrder().getId() : null);
+            deliveryMap.put("deliveryFee", delivery.getDeliveryFee());
+            deliveryMap.put("transportMode", delivery.getTransportMode());
+            deliveryMap.put("serviceType", delivery.getServiceType());
+            deliveryMap.put("orderDate", delivery.getOrderDate());
+            deliveryMap.put("pickupDate", delivery.getPickupDate());
+            deliveryMap.put("scheduleDeliveryTime", delivery.getScheduleDeliveryTime());
+            deliveryMap.put("actualDeliveryTime", delivery.getActualDeliveryTime());
+            deliveryMap.put("driverId", delivery.getDriver() != null ? delivery.getDriver().getId() : null);
+            deliveryMap.put("vehicleId", delivery.getVehicle() != null ? delivery.getVehicle().getId() : null);
+            deliveryMap.put("deliveryAttempts", delivery.getDeliveryAttempts());
+            deliveryMap.put("deliveryNotes", delivery.getDeliveryNotes());
+            deliveriesMap.add(deliveryMap);
+        }
+        
+        return ResponseEntity.ok(deliveriesMap);
+    }
 
 @DeleteMapping("/{id}")
 public ResponseEntity<Map<String, Object>> deleteDelivery(@PathVariable Long id) {
@@ -160,124 +182,66 @@ public ResponseEntity<Map<String, Object>> deleteDelivery(@PathVariable Long id)
     ));
 }
     /**
-     * Create a new delivery
+     * Create a new delivery with automatic fee calculation
      */
     @PostMapping
-public ResponseEntity<Map<String, Object>> createDelivery(
-        @Valid @RequestBody Map<String, Object> deliveryData,
-        Authentication authentication) {
-
-    Delivery delivery = new Delivery();
-
-    // Mapping các trường bắt buộc và cơ bản
-    if (deliveryData.get("orderId") != null) {
-        // Bạn cần có OrderService để lấy Order theo id
-        delivery.setOrder(orderService.getOrderById(Long.valueOf(deliveryData.get("orderId").toString())));
-    }
-    if (deliveryData.get("deliveryFee") != null) {
-        delivery.setDeliveryFee(new java.math.BigDecimal(deliveryData.get("deliveryFee").toString()));
-    }
-    if (deliveryData.get("transportMode") != null) {
-        delivery.setTransportMode(ktc.spring_project.enums.TransportMode.valueOf(deliveryData.get("transportMode").toString()));
-    }
-    if (deliveryData.get("serviceType") != null) {
-        delivery.setServiceType(ktc.spring_project.enums.ServiceType.valueOf(deliveryData.get("serviceType").toString()));
-    }
-    if (deliveryData.get("pickupDate") != null) {
-        delivery.setPickupDate(java.sql.Timestamp.valueOf(deliveryData.get("pickupDate").toString()));
-    }
-    if (deliveryData.get("scheduleDeliveryTime") != null) {
-        delivery.setScheduleDeliveryTime(java.sql.Timestamp.valueOf(deliveryData.get("scheduleDeliveryTime").toString()));
-    }
-    if (deliveryData.get("actualDeliveryTime") != null) {
-        delivery.setActualDeliveryTime(java.sql.Timestamp.valueOf(deliveryData.get("actualDeliveryTime").toString()));
-    }
-    if (deliveryData.get("lateDeliveryRisk") != null) {
-        delivery.setLateDeliveryRisk(Integer.valueOf(deliveryData.get("lateDeliveryRisk").toString()));
-    }
-    if (deliveryData.get("deliveryAttempts") != null) {
-        delivery.setDeliveryAttempts(Integer.valueOf(deliveryData.get("deliveryAttempts").toString()));
-    }
-    if (deliveryData.get("deliveryNotes") != null) {
-        delivery.setDeliveryNotes(deliveryData.get("deliveryNotes").toString());
-    }
-    if (deliveryData.get("orderDate") != null) {
-        delivery.setOrderDate(java.sql.Timestamp.valueOf(deliveryData.get("orderDate").toString()));
-    }
-    if (deliveryData.get("vehicleId") != null) {
-        delivery.setVehicle(vehicleService.getVehicleById(Long.valueOf(deliveryData.get("vehicleId").toString())));
-    }
-    if (deliveryData.get("driverId") != null) {
-        delivery.setDriver(userService.getUserById(Long.valueOf(deliveryData.get("driverId").toString())));
-    }
-    if (deliveryData.get("routeId") != null) {
-        delivery.setRoute(routeService.getRouteById(Long.valueOf(deliveryData.get("routeId").toString())));
+    public ResponseEntity<Map<String, Object>> createDelivery(
+            @Valid @RequestBody CreateDeliveryRequestDTO dto,
+            Authentication authentication) {
+        
+        // Chuyển logic tạo delivery vào service
+        Delivery createdDelivery = deliveryService.createDeliveryFromDTO(dto);
+        
+        Map<String, Object> result = new ObjectMapper().convertValue(createdDelivery, Map.class);
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
-    // Lưu giao hàng
-    Delivery createdDelivery = deliveryService.createDelivery(delivery);
-
-    // Chuyển đổi kết quả thành Map
-    Map<String, Object> result = new ObjectMapper().convertValue(createdDelivery, Map.class);
-return new ResponseEntity<>(result, HttpStatus.CREATED);
-}
-
-   @PutMapping("/{id}")
-public ResponseEntity<Map<String, Object>> updateDelivery(
-        @PathVariable Long id,
-        @Valid @RequestBody Map<String, Object> deliveryData,
-        Authentication authentication) {
-
-    Delivery delivery = deliveryService.getDeliveryById(id); // Lấy entity cũ
-
-    if (deliveryData.get("orderId") != null) {
-        delivery.setOrder(orderService.getOrderById(Long.valueOf(deliveryData.get("orderId").toString())));
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> updateDelivery(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateDeliveryRequestDTO dto,
+            Authentication authentication) {
+        Delivery delivery = deliveryService.getDeliveryById(id);
+        if (dto.getDeliveryFee() != null) {
+            delivery.setDeliveryFee(dto.getDeliveryFee());
+        }
+        if (dto.getTransportMode() != null) {
+            delivery.setTransportMode(dto.getTransportMode());
+        }
+        if (dto.getServiceType() != null) {
+            delivery.setServiceType(dto.getServiceType());
+        }
+        if (dto.getPickupDate() != null) {
+            delivery.setPickupDate(dto.getPickupDate());
+        }
+        if (dto.getScheduleDeliveryTime() != null) {
+            delivery.setScheduleDeliveryTime(dto.getScheduleDeliveryTime());
+        }
+        if (dto.getActualDeliveryTime() != null) {
+            delivery.setActualDeliveryTime(dto.getActualDeliveryTime());
+        }
+        if (dto.getLateDeliveryRisk() != null) {
+            delivery.setLateDeliveryRisk(dto.getLateDeliveryRisk() ? 1 : 0);
+        }
+        if (dto.getDeliveryAttempts() != null) {
+            delivery.setDeliveryAttempts(dto.getDeliveryAttempts());
+        }
+        if (dto.getDeliveryNotes() != null) {
+            delivery.setDeliveryNotes(dto.getDeliveryNotes());
+        }
+        if (dto.getVehicleId() != null) {
+            delivery.setVehicle(vehicleService.getVehicleById(dto.getVehicleId()));
+        }
+        if (dto.getDriverId() != null) {
+            delivery.setDriver(userService.getUserById(dto.getDriverId()));
+        }
+        if (dto.getRouteId() != null) {
+            delivery.setRoute(routeService.getRouteById(dto.getRouteId()));
+        }
+        Delivery updatedDelivery = deliveryService.createDelivery(delivery);
+        Map<String, Object> result = new ObjectMapper().convertValue(updatedDelivery, Map.class);
+        return ResponseEntity.ok(result);
     }
-    if (deliveryData.get("deliveryFee") != null) {
-        delivery.setDeliveryFee(new java.math.BigDecimal(deliveryData.get("deliveryFee").toString()));
-    }
-    if (deliveryData.get("transportMode") != null) {
-        delivery.setTransportMode(ktc.spring_project.enums.TransportMode.valueOf(deliveryData.get("transportMode").toString()));
-    }
-    if (deliveryData.get("serviceType") != null) {
-        delivery.setServiceType(ktc.spring_project.enums.ServiceType.valueOf(deliveryData.get("serviceType").toString()));
-    }
-    if (deliveryData.get("pickupDate") != null) {
-        delivery.setPickupDate(java.sql.Timestamp.valueOf(deliveryData.get("pickupDate").toString()));
-    }
-    if (deliveryData.get("scheduleDeliveryTime") != null) {
-        delivery.setScheduleDeliveryTime(java.sql.Timestamp.valueOf(deliveryData.get("scheduleDeliveryTime").toString()));
-    }
-    if (deliveryData.get("actualDeliveryTime") != null) {
-        delivery.setActualDeliveryTime(java.sql.Timestamp.valueOf(deliveryData.get("actualDeliveryTime").toString()));
-    }
-    if (deliveryData.get("lateDeliveryRisk") != null) {
-        delivery.setLateDeliveryRisk(Integer.valueOf(deliveryData.get("lateDeliveryRisk").toString()));
-    }
-    if (deliveryData.get("deliveryAttempts") != null) {
-        delivery.setDeliveryAttempts(Integer.valueOf(deliveryData.get("deliveryAttempts").toString()));
-    }
-    if (deliveryData.get("deliveryNotes") != null) {
-        delivery.setDeliveryNotes(deliveryData.get("deliveryNotes").toString());
-    }
-    if (deliveryData.get("orderDate") != null) {
-        delivery.setOrderDate(java.sql.Timestamp.valueOf(deliveryData.get("orderDate").toString()));
-    }
-    if (deliveryData.get("vehicleId") != null) {
-        delivery.setVehicle(vehicleService.getVehicleById(Long.valueOf(deliveryData.get("vehicleId").toString())));
-    }
-    if (deliveryData.get("driverId") != null) {
-        delivery.setDriver(userService.getUserById(Long.valueOf(deliveryData.get("driverId").toString())));
-    }
-    if (deliveryData.get("routeId") != null) {
-        delivery.setRoute(routeService.getRouteById(Long.valueOf(deliveryData.get("routeId").toString())));
-    }
-
-    Delivery updatedDelivery = deliveryService.createDelivery(delivery); // hoặc save/update
-
-    Map<String, Object> result = new com.fasterxml.jackson.databind.ObjectMapper().convertValue(updatedDelivery, Map.class);
-    return ResponseEntity.ok(result);
-}
 
 // @PostMapping("/{id}/proof")
 // public ResponseEntity<Map<String, Object>> uploadDeliveryProof(
@@ -331,9 +295,11 @@ public ResponseEntity<Map<String, Object>> updateDelivery(
         // Lưu giao hàng đã cập nhật
         Delivery updatedDelivery = deliveryService.updateDelivery(id, delivery);
 
+        // ...ghi log checklist sẽ được tối ưu hóa ở service hoặc AOP...
+
         // Chuyển đổi kết quả thành Map
-         Map<String, Object> result = new com.fasterxml.jackson.databind.ObjectMapper().convertValue(updatedDelivery, Map.class);
-    return ResponseEntity.ok(result);
+        Map<String, Object> result = new com.fasterxml.jackson.databind.ObjectMapper().convertValue(updatedDelivery, Map.class);
+        return ResponseEntity.ok(result);
 }
 
     /**
@@ -358,6 +324,8 @@ public ResponseEntity<Map<String, Object>> updateDelivery(
 
         // Lưu giao hàng đã cập nhật
         Delivery updatedDelivery = deliveryService.updateDelivery(id, delivery);
+
+        // ...ghi log checklist sẽ được tối ưu hóa ở service hoặc AOP...
 
         // Chuyển đổi kết quả thành Map
         Map<String, Object> result = new HashMap<>();
@@ -529,5 +497,56 @@ public ResponseEntity<Map<String, Object>> updateDelivery(
                 "description", "This endpoint will identify deliveries that may be delayed based on predictive analysis"
             )
         ));
+    }
+
+    /**
+     * Tính tổng doanh thu cho ngày cụ thể từ các delivery đã hoàn thành
+     * GET /api/deliveries/revenue-by-date?date=2025-09-15
+     */
+    @GetMapping("/revenue-by-date")
+    public ResponseEntity<Long> getRevenueByDate(@RequestParam String date) {
+        try {
+            Long revenue = deliveryService.calculateRevenueByDate(date);
+            return ResponseEntity.ok(revenue);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0L);
+        }
+    }
+
+    /**
+     * Tính performance statistics cho 2 tuần (tuần này vs tuần trước)
+     * GET /api/deliveries/performance-stats
+     */
+    @GetMapping("/performance-stats")
+    public ResponseEntity<Map<String, Object>> getPerformanceStats() {
+        try {
+            Map<String, Object> stats = deliveryService.calculatePerformanceStats();
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            Map<String, Object> errorStats = new HashMap<>();
+            errorStats.put("percentage", 0);
+            errorStats.put("changePercent", 0.0);
+            errorStats.put("trend", "stable");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorStats);
+        }
+    }
+
+    /**
+     * Tính doanh thu theo tháng trong 12 tháng gần nhất
+     * GET /api/deliveries/monthly-revenue
+     */
+    @GetMapping("/monthly-revenue")
+    public ResponseEntity<Map<String, Object>> getMonthlyRevenue() {
+        try {
+            Map<String, Object> monthlyData = deliveryService.calculateMonthlyRevenue();
+            return ResponseEntity.ok(monthlyData);
+        } catch (Exception e) {
+            Map<String, Object> errorData = new HashMap<>();
+            errorData.put("monthlyRevenue", new ArrayList<>());
+            errorData.put("totalRevenue", 0L);
+            errorData.put("growthPercent", 0.0);
+            errorData.put("averageRevenue", 0L);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorData);
+        }
     }
 }

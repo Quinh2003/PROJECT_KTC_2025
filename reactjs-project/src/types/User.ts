@@ -1,49 +1,27 @@
-// import type { ReactNode } from "react";
+import type { ReactNode } from "react";
 
+export type Role = "ADMIN" | "DISPATCHER" | "FLEET" | "DRIVER" | "OPERATIONS";
 
-export interface Role {
+export interface UserStatus {
   id: number;
-  roleName: string;
-  permission?: any;
+  name: string;
+  statusType: string;
   description?: string;
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
 }
-
-// export interface User {
-//   fullName: ReactNode;
-//   email: string;
-//   password: string;
-//   role: Role;
-//   name: string;
-// }
-
-
 
 export interface User {
   id?: string | number;
   email: string;
-  password?: string;
+  password?: string; // Optional for responses
   role: Role;
-  name?: string;
-  fullName?: string;
-  username?: string;
+  name: string;
   phone?: string;
   avatar?: string;
   createdAt?: string;
   updatedAt?: string;
   isActive?: boolean;
-  notes?: string | null;
-  googleId?: string | null;
-  status?: {
-    id: number;
-    statusType: string;
-    name: string;
-    description: string;
-    createdAt?: string;
-    updatedAt?: string;
-  };
+  fullName?: string;
+  status: UserStatus;
 }
 
 export interface AuthUser {
@@ -52,6 +30,33 @@ export interface AuthUser {
   role: Role;
   name: string;
   token: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  user: AuthUser;
+  message?: string;
+}
+
+export interface RegisterRequest {
+  fullName: ReactNode;
+  status: string;
+  email: string;
+  password: string;
+  name: string;
+  role: Role;
+  phone?: string;
+}
+
+export interface UserApiResponse {
+  success: boolean;
+  data: User | User[];
+  message?: string;
 }
 
 export interface LoginRequest {

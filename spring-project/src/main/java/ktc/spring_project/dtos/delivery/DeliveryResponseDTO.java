@@ -15,14 +15,19 @@ public class DeliveryResponseDTO {
     private String orderNumber;
     private String orderDescription;
 
+    // Status information
+    private Long statusId;
+    private String deliveryStatus; // dùng String thay cho enum DeliveryStatus
+
     private BigDecimal deliveryFee;
     private TransportMode transportMode;
     private ServiceType serviceType;
     private Timestamp pickupDate;
     private Timestamp scheduleDeliveryTime;
+    // Thêm trường scheduledTime để tương thích ngược
+    private Timestamp scheduledTime;
     private Timestamp actualDeliveryTime;
     private Boolean lateDeliveryRisk;
-    private String deliveryStatus; // dùng String thay cho enum DeliveryStatus
     private Integer deliveryAttempts;
     private String deliveryNotes;
     private Timestamp orderDate;
@@ -36,6 +41,9 @@ public class DeliveryResponseDTO {
     private Long driverId;
     private String driverName;
     private String driverPhone;
+
+    // Address information
+    private String deliveryAddress;
 
     // Thông tin theo dõi
     private Long trackingId;
@@ -90,6 +98,10 @@ public class DeliveryResponseDTO {
     public Timestamp getScheduleDeliveryTime() { return scheduleDeliveryTime; }
     public void setScheduleDeliveryTime(Timestamp scheduleDeliveryTime) { this.scheduleDeliveryTime = scheduleDeliveryTime; }
 
+    // Getter/Setter cho scheduledTime (để tương thích ngược)
+    public Timestamp getScheduledTime() { return scheduledTime; }
+    public void setScheduledTime(Timestamp scheduledTime) { this.scheduledTime = scheduledTime; }
+
     public Timestamp getActualDeliveryTime() { return actualDeliveryTime; }
     public void setActualDeliveryTime(Timestamp actualDeliveryTime) { this.actualDeliveryTime = actualDeliveryTime; }
 
@@ -98,6 +110,12 @@ public class DeliveryResponseDTO {
 
     public String getDeliveryStatus() { return deliveryStatus; }
     public void setDeliveryStatus(String deliveryStatus) { this.deliveryStatus = deliveryStatus; }
+
+    // Add method to set status - alias for deliveryStatus
+    public void setStatus(String status) { this.deliveryStatus = status; }
+
+    public Long getStatusId() { return statusId; }
+    public void setStatusId(Long statusId) { this.statusId = statusId; }
 
     public Integer getDeliveryAttempts() { return deliveryAttempts; }
     public void setDeliveryAttempts(Integer deliveryAttempts) { this.deliveryAttempts = deliveryAttempts; }
@@ -114,6 +132,9 @@ public class DeliveryResponseDTO {
     public String getVehicleLicensePlate() { return vehicleLicensePlate; }
     public void setVehicleLicensePlate(String vehicleLicensePlate) { this.vehicleLicensePlate = vehicleLicensePlate; }
 
+    // Add method to set license plate - alias for vehicleLicensePlate
+    public void setLicensePlate(String licensePlate) { this.vehicleLicensePlate = licensePlate; }
+
     public String getVehicleType() { return vehicleType; }
     public void setVehicleType(String vehicleType) { this.vehicleType = vehicleType; }
 
@@ -125,6 +146,10 @@ public class DeliveryResponseDTO {
 
     public String getDriverPhone() { return driverPhone; }
     public void setDriverPhone(String driverPhone) { this.driverPhone = driverPhone; }
+
+    // Add getter and setter for deliveryAddress
+    public String getDeliveryAddress() { return deliveryAddress; }
+    public void setDeliveryAddress(String deliveryAddress) { this.deliveryAddress = deliveryAddress; }
 
     public Long getTrackingId() { return trackingId; }
     public void setTrackingId(Long trackingId) { this.trackingId = trackingId; }

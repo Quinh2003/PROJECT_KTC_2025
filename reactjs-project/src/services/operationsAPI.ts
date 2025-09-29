@@ -1,13 +1,73 @@
+import type { Vehicle, Staff } from "../types/dashboard";
 
-import type {
-  Vehicle,
-  Order,
-  OperationsApiResponse,
-  PerformanceMetrics,
-  OperationsSummary
-} from '../types/Operations';
+// Re-export types for external use
+export type { Staff } from "../types/dashboard";
 
+// API endpoints và các interface để tương tác với backend
 export const API_BASE_URL = 'http://localhost:8080/api';
+
+// Missing types
+interface OperationsSummary {
+  todayOrders: number;
+  activeVehicles: number;
+  totalStaff: number;
+  revenue: number;
+}
+
+interface Order {
+  id: string;
+  orderCode: string;
+  description: string;
+  totalAmount: string;
+  status: string;
+  customerName: string;
+  customerPhone: string;
+  deliveryAddress: string;
+  assignedVehicle: string;
+  assignedDriver: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface PaginatedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  currentPage: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+}
+
+interface PerformanceMetrics {
+  deliverySuccessRate: number;
+  averageDeliveryTime: number;
+  vehicleUtilization: number;
+  customerSatisfaction: number;
+}
+
+interface SystemMetrics {
+  uptime: number;
+  cpuUsage: number;
+  memoryUsage: number;
+  diskUsage: number;
+}
+
+interface Alert {
+  id: string;
+  type: string;
+  message: string;
+  acknowledged: boolean;
+  timestamp: string;
+}
+
+interface Report {
+  id: string;
+  type: string;
+  status: string;
+  downloadUrl?: string;
+}
 
 export const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -17,7 +77,7 @@ export const getAuthHeaders = () => {
   };
 };
 
-
+// API functions
 export const operationsAPI = {
   // Dashboard overview
   getOverviewStats: async (): Promise<OperationsSummary> => {
@@ -67,8 +127,8 @@ export const operationsAPI = {
     return response.json();
   },
 
-  // Staff
-  getStaff: async (department?: string): Promise<any[]> => {
+  // Staff management
+  getStaff: async (department?: string): Promise<Staff[]> => {
     const queryParams = department ? `?department=${department}` : '';
     const response = await fetch(`${API_BASE_URL}/operations/staff${queryParams}`, {
       headers: getAuthHeaders(),
@@ -77,7 +137,7 @@ export const operationsAPI = {
     return response.json();
   },
 
-  updateStaffStatus: async (staffId: string, status: string): Promise<any> => {
+  updateStaffStatus: async (staffId: string, status: Staff['status']): Promise<Staff> => {
     const response = await fetch(`${API_BASE_URL}/operations/staff/${staffId}/status`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
@@ -97,7 +157,7 @@ export const operationsAPI = {
   },
 
   // System Monitoring
-  getSystemMetrics: async (): Promise<any> => {
+  getSystemMetrics: async (): Promise<SystemMetrics> => {
     const response = await fetch(`${API_BASE_URL}/operations/system/metrics`, {
       headers: getAuthHeaders(),
     });
@@ -105,7 +165,7 @@ export const operationsAPI = {
     return response.json();
   },
 
-  getAlerts: async (acknowledged?: boolean): Promise<any[]> => {
+  getAlerts: async (acknowledged?: boolean): Promise<Alert[]> => {
     const queryParams = acknowledged !== undefined ? `?acknowledged=${acknowledged}` : '';
     const response = await fetch(`${API_BASE_URL}/operations/alerts${queryParams}`, {
       headers: getAuthHeaders(),
@@ -114,7 +174,7 @@ export const operationsAPI = {
     return response.json();
   },
 
-  acknowledgeAlert: async (alertId: string): Promise<any> => {
+  acknowledgeAlert: async (alertId: string): Promise<Alert> => {
     const response = await fetch(`${API_BASE_URL}/operations/alerts/${alertId}/acknowledge`, {
       method: 'POST',
       headers: getAuthHeaders(),
@@ -124,13 +184,35 @@ export const operationsAPI = {
   },
 
   // Reports
-  generateReport: async (type: string, params: Record<string, unknown>): Promise<any> => {
+  generateReport: async (type: string, params: Record<string, unknown>): Promise<Report> => {
     const response = await fetch(`${API_BASE_URL}/operations/reports/${type}`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(params),
     });
     if (!response.ok) throw new Error('Failed to generate report');
+    return response.json();
+  },
+
+  // Maintenance requests count
+  getMaintenanceRequestsCount: async (): Promise<{ count: number; message: string }> => {
+    const response = await fetch(`${API_BASE_URL}/operations/maintenance-requests/count`, {
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to fetch maintenance requests count');
+    return response.json();
+  },
+
+  // Get orders for operations dashboard with pagination and status filter
+  getOrdersForOperations: async (page: number = 0, size: number = 10, statusFilter?: string): Promise<PaginatedResponse<Order>> => {
+    let url = `${API_BASE_URL}/operations/orders?page=${page}&size=${size}`;
+    if (statusFilter && statusFilter !== 'Tất cả') {
+      url += `&status=${encodeURIComponent(statusFilter)}`;
+    }
+    const response = await fetch(url, {
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to fetch orders');
     return response.json();
   },
 };

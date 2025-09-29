@@ -1,4 +1,4 @@
-package ktc.spring_project.repositories;
+package ktc.spring_project.repositories; 
 
 import ktc.spring_project.entities.Vehicle;
 import ktc.spring_project.enums.VehicleType;
@@ -38,9 +38,16 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     @Query("SELECT COUNT(v) FROM Vehicle v WHERE v.status.name = 'ACTIVE'")
     long countActiveVehicles();
 
+    // Đếm xe theo status_id
+    long countByStatusId(Byte statusId);
+
     @Modifying
 @Query("UPDATE Vehicle v SET v.currentDriver = NULL WHERE v.currentDriver.id = :driverId")
 void clearDriverAssignment(@Param("driverId") Long driverId);
+
+@Modifying
+    @Query("UPDATE Vehicle v SET v.status.id = :statusId WHERE v.id = :vehicleId")
+    void updateStatus(@Param("vehicleId") Long vehicleId, @Param("statusId") Short statusId);
 
 }
 

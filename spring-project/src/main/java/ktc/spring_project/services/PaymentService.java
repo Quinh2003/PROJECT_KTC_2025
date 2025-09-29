@@ -13,6 +13,9 @@ public class PaymentService {
 
     @Autowired
     private PaymentRepository paymentRepository;
+    
+    @Autowired
+    private ChecklistService checklistService;
 
     public List<Payment> findAll() {
         return paymentRepository.findAll();
@@ -22,8 +25,28 @@ public class PaymentService {
         return paymentRepository.findById(id);
     }
 
-    public Payment save(Payment entities) {
-        return paymentRepository.save(entities);
+    public Payment save(Payment payment) {
+        Payment savedPayment = paymentRepository.save(payment);
+        
+        // ✅ Log checklist step: Customer đã thanh toán
+        try {
+            if (payment.getOrder() != null && payment.getOrder().getCreatedBy() != null && 
+                payment.getStatus() != null && 
+                ("Completed".equals(payment.getStatus().getName()) || "Success".equals(payment.getStatus().getName()))) {
+                
+                checklistService.markStepCompleted(
+                    payment.getOrder().getCreatedBy().getId(), 
+                    payment.getOrder().getId(),
+                    "CUSTOMER_PAYMENT", 
+                    "Payment completed for Order: " + payment.getOrder().getId() + " - Amount: " + payment.getAmount()
+                );
+            }
+        } catch (Exception e) {
+            // Log warning but don't break payment flow
+            System.err.println("Failed to log checklist step CUSTOMER_PAYMENT: " + e.getMessage());
+        }
+        
+        return savedPayment;
     }
 
     public void delete(Long id) {

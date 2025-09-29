@@ -1,4 +1,5 @@
 package ktc.spring_project.services;
+import ktc.spring_project.exceptions.HttpException;
 
 import ktc.spring_project.entities.User;
 import ktc.spring_project.entities.Vehicle;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import ktc.spring_project.dtos.ChecklistProgressResponse;
 
 /**
  * Service for handling driver-specific operations
@@ -37,6 +39,10 @@ public class DriverService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ChecklistService checklistService;
+
 
     /**
      * Get current vehicle assigned to driver
@@ -94,7 +100,6 @@ public class DriverService {
 
         // Get driver's vehicle to check capacity
         Vehicle vehicle = getCurrentVehicle(driver.getId());
-
         if (vehicle == null) {
             // No vehicle assigned, return empty list
             return List.of();
@@ -112,13 +117,14 @@ public class DriverService {
      * @param vehicleId ID of the vehicle to assign
      * @return Updated vehicle
      */
-    public Vehicle assignVehicle(Long driverId, Long vehicleId) {
+    public Map<String, Object> assignVehicle(Long driverId, Long vehicleId) {
+        Map<String, Object> result = new HashMap<>();
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
             .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
-        // Check if vehicle is already assigned
-        if (vehicle.getCurrentDriver() != null && !vehicle.getCurrentDriver().equals(driverId)) {
-            throw new RuntimeException("Vehicle already assigned to another driver");
+        if (vehicle.getCurrentDriver() != null && !vehicle.getCurrentDriver().getId().equals(driverId)) {
+            result.put("error", "Vehicle already assigned to another driver");
+            return result;
         }
 
         // Unassign from previous vehicle if any
@@ -126,6 +132,16 @@ public class DriverService {
 
         // Assign to new vehicle
         vehicle.setCurrentDriver(userRepository.findById(driverId).orElseThrow(() -> new RuntimeException("Driver not found")));
-        return vehicleRepository.save(vehicle);
+        Vehicle updatedVehicle = vehicleRepository.save(vehicle);
+
+        // Ghi log checklist khi driver nhận xe
+        checklistService.markStepCompleted(driverId, updatedVehicle.getId(), "DRIVER_ASSIGN_VEHICLE", "Driver assigned vehicle");
+
+        // Trả về cả thông tin vehicle và log checklist
+        result.put("vehicle", updatedVehicle);
+        result.put("message", "Gán xe cho tài xế thành công!");
+        ChecklistProgressResponse checklistLog = checklistService.getChecklistProgress(driverId, updatedVehicle.getId());
+        result.put("checklistLog", checklistLog);
+        return result;
     }
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "974082182255",
+    "project_id": "ktc-logistics-ecd9f",
+    "storage_bucket": "ktc-logistics-ecd9f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:974082182255:android:7b688c7a7e14a5b0d8919a",
+        "android_client_info": {
+          "package_name": "com.ktc.logistics_driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr1nIzcVZDDShgMB0931DGOhXU74csZV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

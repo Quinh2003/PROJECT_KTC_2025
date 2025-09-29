@@ -64,9 +64,9 @@ export function useMapResize(
     // Debounced resize function
     const debouncedResize = (delay: number = 200) => {
       clearResizeTimeout();
-      resizeTimeoutRef.current = setTimeout(() => {
+      resizeTimeoutRef.current = window.setTimeout(() => {
         safeResize();
-      }, delay);
+      }, delay) as unknown as number;
     };
 
     const handleResize = () => {

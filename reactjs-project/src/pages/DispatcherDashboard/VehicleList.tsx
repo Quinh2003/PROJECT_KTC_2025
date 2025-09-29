@@ -1,22 +1,87 @@
-import { useState } from "react";
-import { assignDriverToVehicle, updateVehicleStatus } from "../../services/VehicleListAPI";
+import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
+import { fetchVehiclesRaw, assignDriverToVehicle, updateVehicleStatus } from "../../services/VehicleListAPI";
 import type { Vehicle } from "../../types/Operations";
-import type { User } from "../../types/User";
 import { useDispatcherContext } from "../../contexts/DispatcherContext";
+import { useQueryClient } from "@tanstack/react-query";
+
 
 export default function VehicleList() {
-  const { 
-    vehicles, 
-    vehiclesLoading, 
-    vehiclesError, 
-    refreshVehicles, 
-    updateVehicleInList,
+  const { t } = useTranslation();
+  const {
     drivers,
     driversLoading,
-    driversError,
-    refreshDrivers
+    refreshDrivers,
+    refreshVehicles: refreshContextVehicles
   } = useDispatcherContext();
 
+  const queryClient = useQueryClient();
+
+  // Compute status logic: MAINTENANCE > IN_USE (if has driver) > AVAILABLE
+  // Map various status formats to standardized string
+  const getStatusFromValue = (status: any): 'AVAILABLE' | 'IN_USE' | 'MAINTENANCE' | 'MAINTENANCE_PENDING' | null => {
+    // Convert to string for consistent comparison
+    const statusStr = String(status).toLowerCase();
+    
+    switch (statusStr) {
+      case '17':
+      case 'available':
+        return 'AVAILABLE';
+      case '18':
+      case 'in_use':
+        return 'IN_USE';
+      case '19':
+      case 'maintenance':
+        return 'MAINTENANCE';
+      case '51':
+      case 'maintenance_pending':
+        return 'MAINTENANCE_PENDING';
+      default:
+        return null;
+    }
+  };
+
+  const getComputedStatus = (vehicle: Vehicle): 'MAINTENANCE' | 'IN_USE' | 'AVAILABLE' | 'MAINTENANCE_PENDING' => {
+    // Ưu tiên trạng thái cần bảo trì
+    if (
+      vehicle.status === 'MAINTENANCE_PENDING' ||
+      vehicle.status === 51 ||
+      vehicle.status === '51' ||
+      (typeof vehicle.status === 'object' && vehicle.status !== null && 'id' in vehicle.status && vehicle.status.id === 51) ||
+      (typeof vehicle.status === 'object' && vehicle.status !== null && 'name' in vehicle.status && vehicle.status.name === 'MAINTENANCE_PENDING')
+    ) {
+      return 'MAINTENANCE_PENDING';
+    }
+    if (vehicle.status !== undefined && vehicle.status !== null) {
+      // Handle object status (e.g., {id: 17, name: 'AVAILABLE'})
+      if (typeof vehicle.status === 'object' && 'id' in vehicle.status) {
+        const mapped = getStatusFromValue(vehicle.status.id);
+        if (mapped) return mapped;
+      }
+      // Handle string/number status
+      if (typeof vehicle.status === 'string' || typeof vehicle.status === 'number') {
+        const mapped = getStatusFromValue(vehicle.status);
+        if (mapped) return mapped;
+      }
+    }
+    const today = new Date();
+    if (vehicle.lastMaintenance && vehicle.nextMaintenance) {
+      const maintenanceStart = new Date(vehicle.lastMaintenance);
+      const maintenanceEnd = new Date(vehicle.nextMaintenance);
+      if (today >= maintenanceStart && today <= maintenanceEnd) {
+        return 'MAINTENANCE';
+      } else if (vehicle.driver?.name || vehicle.currentDriver?.fullName) {
+        return 'IN_USE';
+      } else {
+        return 'AVAILABLE';
+      }
+    } else if (vehicle.driver?.name || vehicle.currentDriver?.fullName) {
+      return 'IN_USE';
+    }
+    return 'AVAILABLE';
+  };
+
+  // State hooks
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [selectedDriverId, setSelectedDriverId] = useState<string | number | null>(null);
@@ -26,7 +91,37 @@ export default function VehicleList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [updatingStatus, setUpdatingStatus] = useState<string | number | null>(null);
+  // Pagination and vehicles
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [totalVehicles, setTotalVehicles] = useState(0);
+  const [vehiclesLoading, setVehiclesLoading] = useState(false);
+  const [vehiclesError, setVehiclesError] = useState("");
 
+  // Fetch vehicles with pagination
+  const fetchVehicles = async (page = 1, size = 5) => {
+    setVehiclesLoading(true);
+    setVehiclesError("");
+    try {
+      const res = await fetchVehiclesRaw(page, size);
+      setVehicles(res.data);
+      setTotalVehicles(res.total);
+    } catch (err: any) {
+      setVehicles([]);
+      setTotalVehicles(0);
+      setVehiclesError(err.message || t('errors.loadingData', 'Error loading data'));
+    } finally {
+      setVehiclesLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVehicles(currentPage, itemsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, itemsPerPage]);
+
+  // Assign driver handler (fixed placement)
   const handleAssignDriver = async () => {
     if (!selectedVehicle) return;
     setAssigning(true);
@@ -36,19 +131,37 @@ export default function VehicleList() {
       if (!selectedDriverId) {
         // Nếu chọn 'Chưa gán tài xế', gửi driverId là null
         await assignDriverToVehicle(selectedVehicle.id, null);
-        setAssignSuccess("Đã bỏ gán tài xế!");
+        // Nếu bỏ gán tài xế, chuyển trạng thái về AVAILABLE
+        await updateVehicleStatus(selectedVehicle.id, "AVAILABLE");
+        setAssignSuccess(t('dispatcher.vehicles.unassignSuccess', 'Driver unassigned successfully!'));
       } else {
         const driverObj = drivers.find(d => String(d.id) === String(selectedDriverId));
-        if (!driverObj) throw new Error("Không tìm thấy tài xế");
+        if (!driverObj) throw new Error(t('dispatcher.drivers.driverNotFound', 'Driver not found'));
         await assignDriverToVehicle(selectedVehicle.id, driverObj.id ?? "");
-        setAssignSuccess("Gán tài xế thành công!");
+        // Sau khi gán tài xế, chuyển trạng thái xe sang IN_USE
+        await updateVehicleStatus(selectedVehicle.id, "IN_USE");
+        setAssignSuccess(t('dashboard.dispatcher.vehicles.assignSuccess', 'Gán tài xế thành công!'));
       }
-      await refreshVehicles(true); // Force refresh vehicles
+      // Refresh vehicles after assignment (local, context, và dashboard fleet)
+      fetchVehicles(currentPage, itemsPerPage);
+      queryClient.refetchQueries({ queryKey: ['vehicles'] });
+      queryClient.refetchQueries({ queryKey: ['ordersForList'] });
+      refreshContextVehicles(true);
+      // Gọi thêm hàm cập nhật dashboard fleet nếu có (với delay để backend cập nhật)
+      setTimeout(() => {
+        if (window && typeof window.dispatchEvent === 'function') {
+          window.dispatchEvent(new CustomEvent('vehicleAssignmentChanged'));
+        }
+        // Gọi trực tiếp refreshVehicles của FleetDashboard nếu có
+        if (window && (window as any).fleetDashboardRefresh) {
+          (window as any).fleetDashboardRefresh();
+        }
+      }, 500); // Delay 500ms để backend cập nhật
       setTimeout(() => {
         closeAssignModal();
       }, 1000);
     } catch (err: any) {
-      setAssignError(err.message || "Gán tài xế thất bại");
+      setAssignError(err.message || t('dashboard.dispatcher.vehicles.assignError', 'Gán tài xế thất bại'));
     } finally {
       setAssigning(false);
     }
@@ -89,15 +202,16 @@ export default function VehicleList() {
       }
       await updateVehicleStatus(vehicleId, newStatus);
       
-      // Update vehicle in context
-      updateVehicleInList(vehicleId, {
-        status: {
-          id: 1, // temporary id
-          name: newStatus,
-          statusType: "VEHICLE_STATUS",
-          description: ""
-        }
-      });
+      // Refresh vehicles after status update
+      fetchVehicles(currentPage, itemsPerPage);
+      
+      // Force refetch React Query cache để các component khác cũng cập nhật ngay lập tức
+      queryClient.refetchQueries({ queryKey: ['vehicles'] });
+      queryClient.refetchQueries({ queryKey: ['ordersForList'] }); // Cập nhật OrderList
+      
+      // Cập nhật Context vehicles
+      refreshContextVehicles(true);
+      
     } catch (err: any) {
       console.error("Failed to update vehicle status:", err);
       alert(`Lỗi cập nhật trạng thái xe: ${err.message}`);
@@ -106,22 +220,37 @@ export default function VehicleList() {
     }
   };
 
+  // Local search/filter (client-side, for now)
   const filteredVehicles = vehicles.filter(vehicle => {
-    const matchesSearch = 
+    const computedStatus = getComputedStatus(vehicle);
+    const matchesSearch =
       vehicle.licensePlate.toLowerCase().includes(searchTerm.toLowerCase()) ||
       vehicle.vehicleType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (vehicle.currentDriver?.fullName || vehicle.currentDriver?.username || "").toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === "all" || 
-      (statusFilter === "available" && vehicle.status?.name === "AVAILABLE") ||
-      (statusFilter === "assigned" && vehicle.currentDriver) ||
-      (statusFilter === "unassigned" && !vehicle.currentDriver);
-    
+      (vehicle.currentDriver?.fullName || "").toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" ||
+      (statusFilter === "available" && computedStatus === "AVAILABLE") ||
+      (statusFilter === "assigned" && computedStatus === "IN_USE") ||
+      (statusFilter === "unassigned" && computedStatus !== "IN_USE");
     return matchesSearch && matchesStatus;
   });
 
+  const totalPages = Math.ceil(totalVehicles / itemsPerPage);
+  const currentVehicles = filteredVehicles;
+
+  // Reset to first page when filters change
+  const handleSearchChange = (term: string) => {
+    setSearchTerm(term);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (status: string) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
+  };
+
+  // Compute status logic: MAINTENANCE > IN_USE (if has driver) > AVAILABLE
   const getStatusBadge = (vehicle: Vehicle) => {
-    const statusName = vehicle.status?.name;
+    const computedStatus = getComputedStatus(vehicle);
     const isUpdating = updatingStatus === vehicle.id;
     let badgeProps = {
       color: '',
@@ -130,11 +259,20 @@ export default function VehicleList() {
       bg: '',
       icon: '',
     };
-    switch (statusName) {
+    switch (computedStatus) {
+      case 'MAINTENANCE_PENDING':
+        badgeProps = {
+          color: 'red-800',
+          text: t('dashboard.dispatcher.vehicles.maintenanceRequired', 'Maintenance Required'),
+          border: 'red-200',
+          bg: 'red-100',
+          icon: 'red-500',
+        };
+        break;
       case 'AVAILABLE':
         badgeProps = {
           color: 'green-800',
-          text: 'Sẵn sàng',
+          text: t('dashboard.dispatcher.vehicles.available', 'Available'),
           border: 'green-200',
           bg: 'green-100',
           icon: 'green-500',
@@ -143,7 +281,7 @@ export default function VehicleList() {
       case 'IN_USE':
         badgeProps = {
           color: 'red-800',
-          text: 'Đang sử dụng',
+          text: t('dashboard.dispatcher.vehicles.inUse', 'In Use'),
           border: 'red-200',
           bg: 'red-100',
           icon: 'red-500',
@@ -152,7 +290,7 @@ export default function VehicleList() {
       case 'MAINTENANCE':
         badgeProps = {
           color: 'gray-800',
-          text: 'Bảo trì',
+          text: t('dashboard.dispatcher.vehicles.maintenance', 'Maintenance'),
           border: 'gray-200',
           bg: 'gray-100',
           icon: 'gray-500',
@@ -169,7 +307,7 @@ export default function VehicleList() {
     }
     return (
       <button
-        onClick={() => toggleVehicleStatus(vehicle.id, vehicle.status)}
+        onClick={() => toggleVehicleStatus(vehicle.id, computedStatus)}
         disabled={isUpdating}
         className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-${badgeProps.bg} text-${badgeProps.color} border border-${badgeProps.border} hover:bg-${badgeProps.bg.replace('100','200')} hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed`}
       >
@@ -189,29 +327,8 @@ export default function VehicleList() {
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-lg">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold mb-2">Quản lý phương tiện</h2>
-            <button
-              onClick={() => refreshVehicles(true)}
-              disabled={vehiclesLoading}
-              className="px-4 py-2 bg-white/20 hover:bg-white/30 disabled:opacity-50 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
-            >
-              {vehiclesLoading ? (
-                <>
-                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
-                  Đang tải...
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  Làm mới
-                </>
-              )}
-            </button>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            
+            <h2 className="text-2xl font-bold mb-2">Vehicle Management</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('dashboard.dispatcher.vehicles.title')}</h2>
           </div>
         </div>
       </div>
@@ -227,33 +344,37 @@ export default function VehicleList() {
             </div>
             <input
               type="text"
-              placeholder="Tìm kiếm theo biển số, loại xe hoặc tài xế..."
+              placeholder={t('dashboard.dispatcher.vehicles.searchPlaceholder', 'Search by license plate, vehicle type or driver...')}
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90 backdrop-blur-sm"
             />
           </div>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90 backdrop-blur-sm"
-          >
-            <option value="all">Tất cả trạng thái</option>
-            <option value="available">Sẵn sàng</option>
-            <option value="assigned">Có tài xế</option>
-            <option value="unassigned">Chưa có tài xế</option>
-          </select>
           
+          {/* Status Filter */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">{t('dashboard.dispatcher.vehicles.status', 'Trạng thái')}:</label>
+            <select
+              value={statusFilter}
+              onChange={(e) => handleStatusFilterChange(e.target.value)}
+              className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90 backdrop-blur-sm text-sm"
+            >
+              <option value="all">{t('common.all', 'All')}</option>
+              <option value="available">{t('dashboard.dispatcher.vehicles.available')}</option>
+              <option value="assigned">{t('dashboard.dispatcher.vehicles.inUse')}</option>
+              <option value="unassigned">{t('dashboard.dispatcher.vehicles.unassigned', 'Unassigned')}</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Content Section */}
+      {/* Vehicle List Content */}
       <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/50">
         {vehiclesLoading ? (
           <div className="flex items-center justify-center p-12">
             <div className="flex items-center gap-3">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="text-gray-600 font-medium">Đang tải dữ liệu...</span>
+              <span className="text-gray-600 font-medium">Đang tải phương tiện...</span>
             </div>
           </div>
         ) : vehiclesError ? (
@@ -268,7 +389,7 @@ export default function VehicleList() {
               <p className="text-red-600">{vehiclesError}</p>
             </div>
           </div>
-        ) : filteredVehicles.length === 0 ? (
+        ) : currentVehicles.length === 0 ? (
           <div className="flex items-center justify-center p-12">
             <div className="text-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -277,97 +398,133 @@ export default function VehicleList() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0M15 17a2 2 0 104 0" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Không tìm thấy phương tiện</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('dispatcher.vehicles.noVehiclesFound', 'No vehicles found')}</h3>
               <p className="text-gray-500">
-                {searchTerm || statusFilter !== "all" ? "Không có phương tiện nào phù hợp với bộ lọc" : "Chưa có phương tiện nào trong hệ thống"}
+                {searchTerm || statusFilter !== "all" ? t('dispatcher.vehicles.noFilterResults', 'No vehicles match your filter criteria') : t('dispatcher.vehicles.noVehiclesInSystem', 'No vehicles in the system yet')}
               </p>
             </div>
           </div>
         ) : (
-          <div className="space-y-4 p-6">
-            {filteredVehicles.map((vehicle) => (
-              <div key={vehicle.id} className="bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-                <div className="flex items-center p-4 gap-4">
-                  {/* Vehicle Icon & Info */}
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0M15 17a2 2 0 104 0" />
-                      </svg>
+          <>            
+            {/* Vehicle List */}
+            <div className="space-y-4 p-6">
+              {currentVehicles.map((vehicle) => (
+                <div key={vehicle.id} className="bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+                  <div className="flex items-center p-4 gap-4">
+                    {/* Vehicle Icon & Info */}
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0M15 17a2 2 0 104 0" />
+                        </svg>
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-gray-900 text-lg">{vehicle.licensePlate}</h3>
+                        <p className="text-sm text-gray-600 uppercase tracking-wide">{vehicle.vehicleType}</p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <h3 className="font-bold text-gray-900 text-lg">{vehicle.licensePlate}</h3>
-                      <p className="text-sm text-gray-600 uppercase tracking-wide">{vehicle.vehicleType}</p>
+
+                    {/* Status Badge */}
+                    <div className="flex-shrink-0">
+                      {getStatusBadge(vehicle)}
                     </div>
                   </div>
 
-                  {/* Status Badge */}
-                  <div className="flex-shrink-0">
-                    {getStatusBadge(vehicle)}
-                  </div>
-                </div>
-
-                {/* Driver Info */}
-                <div className="px-4 pb-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <span className="text-sm text-gray-500">Tài xế: </span>
-                      {vehicle.currentDriver ? (
-                        <span className="font-medium text-gray-900">
-                          {vehicle.currentDriver.fullName || vehicle.currentDriver.username}
-                        </span>
-                      ) : (
-                        <span className="text-gray-400 italic">Chưa có tài xế</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Specifications */}
-                <div className="px-4 pb-2">
-                  <div className="flex gap-8 text-sm">
-                    <div>
-                      <span className="text-gray-500">Trọng tải: </span>
-                      <span className="font-semibold text-gray-900">{vehicle.capacityWeightKg || "-"} tấn</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Thể tích: </span>
-                      <span className="font-semibold text-gray-900">{vehicle.capacityVolumeM3 || "-"} m³</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Notes (if exists) */}
-                {vehicle.notes && (
+                  {/* Driver Info */}
                   <div className="px-4 pb-2">
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
-                      <span className="text-xs text-yellow-700">Ghi chú: </span>
-                      <span className="text-sm text-yellow-800">{vehicle.notes}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm text-gray-500">{t('dashboard.dispatcher.vehicles.driver', 'Tài xế')}: </span>
+                        {vehicle.currentDriver ? (
+                          <span className="font-medium text-gray-900">
+                            {vehicle.currentDriver.fullName || vehicle.currentDriver.email}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400 italic">Chưa có tài xế</span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                )}
 
-                {/* Footer with Update Time and Action */}
-                <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
-                  <span className="text-xs text-gray-400">
-                    Cập nhật: {vehicle.updatedAt ? new Date(vehicle.updatedAt).toLocaleString('vi-VN') : "-"}
-                  </span>
-                  <button
-                    onClick={() => openAssignModal(vehicle)}
-                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md text-sm"
-                  >
-                    Gán tài xế
-                  </button>
+                  {/* Specifications */}
+                  <div className="px-4 pb-2">
+                    <div className="flex gap-8 text-sm">
+                      <div>
+                        <span className="text-gray-500">{t('dashboard.dispatcher.vehicles.weight', 'Trọng tải')}: </span>
+                        <span className="font-semibold text-gray-900">{vehicle.capacityWeightKg || "-"} {t('dashboard.dispatcher.vehicles.weightUnit', 'tấn')}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">{t('dashboard.dispatcher.vehicles.volume', 'Thể tích')}: </span>
+                        <span className="font-semibold text-gray-900">{vehicle.capacityVolumeM3 || "-"} m³</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Notes (if exists) */}
+                  {vehicle.notes && (
+                    <div className="px-4 pb-2">
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
+                        <span className="text-xs text-yellow-700">Ghi chú: </span>
+                        <span className="text-sm text-yellow-800">{vehicle.notes}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Footer with Update Time and Action */}
+                  <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                    <span className="text-xs text-gray-400">
+{t('dashboard.dispatcher.vehicles.updated', 'Cập nhật')}: {vehicle.updatedAt ? new Date(vehicle.updatedAt).toLocaleString('vi-VN') : "-"}
+                    </span>
+                    <button
+                      onClick={() => openAssignModal(vehicle)}
+                      className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md text-sm"
+                    >
+{t('dashboard.dispatcher.vehicles.assignDriver', 'Gán tài xế')}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    
+                    <span className="text-sm text-gray-600 mx-2">
+{t('dashboard.dispatcher.pagination.page', 'Page {{current}} / {{total}}', { current: currentPage, total: totalPages })} ({t('dashboard.dispatcher.vehicles.total', 'Total')}: {totalVehicles})
+                    </span>
+                    
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
 
@@ -378,7 +535,7 @@ export default function VehicleList() {
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 rounded-t-2xl">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold">Gán tài xế cho xe</h2>
+                <h2 className="text-xl font-bold">{t('dashboard.dispatcher.vehicles.assignDriverToVehicle', 'Gán tài xế cho xe')}</h2>
                 <button
                   onClick={closeAssignModal}
                   className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors duration-200"
@@ -389,7 +546,7 @@ export default function VehicleList() {
                 </button>
               </div>
               <p className="text-blue-100 mt-2">
-                Biển số: <span className="font-semibold">{selectedVehicle?.licensePlate}</span>
+{t('dashboard.dispatcher.vehicles.licensePlate', 'Biển số')}: <span className="font-semibold">{selectedVehicle?.licensePlate}</span>
               </p>
             </div>
 
@@ -399,7 +556,6 @@ export default function VehicleList() {
                 <div className="flex items-center justify-center py-8">
                   <div className="flex items-center gap-3">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                    <span className="text-gray-600">Đang tải danh sách tài xế...</span>
                   </div>
                 </div>
               ) : (
@@ -430,7 +586,7 @@ export default function VehicleList() {
                   {/* Driver Selection */}
                   <div className="space-y-4">
                     <label className="block text-sm font-medium text-gray-700">
-                      Chọn tài xế
+{t('dashboard.dispatcher.vehicles.selectDriver', 'Chọn tài xế')}
                     </label>
                     <select
                       value={selectedDriverId ?? ""}
@@ -438,10 +594,17 @@ export default function VehicleList() {
                       disabled={assigning}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white disabled:bg-gray-50 disabled:cursor-not-allowed"
                     >
-                      <option value="">-- Chưa gán tài xế --</option>
-                      {drivers.map(driver => (
+                      <option value="">-- {t('dashboard.dispatcher.vehicles.noDriverAssigned', 'No driver assigned')} --</option>
+                      {drivers.filter(driver => {
+                        // Lọc theo toàn bộ danh sách xe từ context (không chỉ trang hiện tại)
+                        // Đảm bảo tài xế đã gán cho bất kỳ xe nào cũng không xuất hiện, trừ khi đang là currentDriver của xe đang chọn
+                        const { vehicles: allVehicles } = useDispatcherContext();
+                        const isAssigned = allVehicles.some(v => v.currentDriver?.id === driver.id);
+                        const isCurrent = selectedVehicle?.currentDriver?.id === driver.id;
+                        return !isAssigned || isCurrent;
+                      }).map(driver => (
                         <option key={driver.id} value={driver.id}>
-                          {driver.fullName || driver.username} ({driver.email})
+                          {driver.fullName || driver.name} ({driver.email})
                         </option>
                       ))}
                     </select>
@@ -463,10 +626,10 @@ export default function VehicleList() {
                         {assigning ? (
                           <div className="flex items-center justify-center gap-2">
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                            Đang gán...
+                            {t('dispatcher.vehicles.assigning', 'Assigning...')}
                           </div>
                         ) : (
-                          "Xác nhận gán"
+                          t('dispatcher.vehicles.confirmAssign', 'Confirm Assignment')
                         )}
                       </button>
                     </div>

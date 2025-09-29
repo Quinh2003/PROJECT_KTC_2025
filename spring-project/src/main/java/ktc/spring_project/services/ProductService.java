@@ -22,6 +22,78 @@ import java.util.Optional;
 @Service
 public class ProductService {
     @Autowired
+    private ktc.spring_project.services.UserService userService;
+    // --- DTO methods for controller ---
+    public List<ktc.spring_project.dtos.product.ProductResponseDTO> getFilteredProductsDTO(String category, String status, String search, Long warehouseId) {
+        List<Product> products = getFilteredProducts(category, status, search, warehouseId);
+        List<ktc.spring_project.dtos.product.ProductResponseDTO> dtos = new ArrayList<>();
+        for (Product p : products) {
+            dtos.add(toProductResponseDTO(p));
+        }
+        return dtos;
+    }
+
+    public ktc.spring_project.dtos.product.ProductResponseDTO getProductDTOById(Long id) {
+        Product p = getProductById(id);
+        return toProductResponseDTO(p);
+    }
+
+    public ktc.spring_project.dtos.product.ProductResponseDTO createProductFromDTO(ktc.spring_project.dtos.product.CreateProductRequestDTO dto, Authentication authentication) {
+        Product product = createProductFromDto(dto, authentication);
+        return toProductResponseDTO(product);
+    }
+
+    public ktc.spring_project.dtos.product.ProductResponseDTO updateProductFromDTO(Long id, ktc.spring_project.dtos.product.CreateProductRequestDTO dto, Authentication authentication) {
+        Product existing = getProductById(id);
+        // Update fields from DTO
+        existing.setName(dto.getName());
+        existing.setDescription(dto.getDescription());
+        existing.setUnitPrice(dto.getUnitPrice());
+        existing.setWeight(dto.getWeight());
+        existing.setIsFragile(dto.getFragile());
+        existing.setStockQuantity(dto.getStockQuantity());
+        existing.setNotes(dto.getNotes());
+        // ...map các trường khác nếu cần...
+        Product updated = save(existing);
+        return toProductResponseDTO(updated);
+    }
+
+    public ktc.spring_project.dtos.product.ProductResponseDTO patchProductDTO(Long id, Map<String, Object> updates, Authentication authentication) {
+        Product patched = patchProduct(id, updates, authentication);
+        return toProductResponseDTO(patched);
+    }
+
+    public ktc.spring_project.dtos.product.ProductResponseDTO updateProductStockDTO(Long id, Integer newQuantity, String reason, Authentication authentication) {
+        Product updated = updateProductStock(id, newQuantity, reason, authentication);
+        return toProductResponseDTO(updated);
+    }
+
+    public List<ktc.spring_project.dtos.product.ProductResponseDTO> getLowStockProducts(Integer threshold) {
+        List<Product> products = productRepository.findProductsWithLowStock(threshold);
+        List<ktc.spring_project.dtos.product.ProductResponseDTO> dtos = new ArrayList<>();
+        for (Product p : products) {
+            dtos.add(toProductResponseDTO(p));
+        }
+        return dtos;
+    }
+
+    // Helper: convert Product entity to ProductResponseDTO
+    private ktc.spring_project.dtos.product.ProductResponseDTO toProductResponseDTO(Product p) {
+        ktc.spring_project.dtos.product.ProductResponseDTO dto = new ktc.spring_project.dtos.product.ProductResponseDTO();
+        dto.setId(p.getId());
+        dto.setName(p.getName());
+        dto.setDescription(p.getDescription());
+        dto.setUnitPrice(p.getUnitPrice());
+        dto.setWeight(p.getWeight());
+        dto.setVolume(p.getVolume());
+        dto.setFragile(p.getIsFragile());
+        dto.setStockQuantity(p.getStockQuantity());
+        dto.setNotes(p.getNotes());
+        dto.setWarehouseId(p.getWarehouse() != null ? p.getWarehouse().getId() : null);
+        // ...map các trường khác nếu cần...
+        return dto;
+    }
+    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
@@ -95,6 +167,50 @@ public class ProductService {
         return new ArrayList<>();
     }
 
+    // Tạo mới sản phẩm từ DTO, kiểm tra trùng tên
+    public Product createProductFromDto(ktc.spring_project.dtos.product.CreateProductRequestDTO dto, Authentication authentication) {
+    // Không kiểm tra trùng id sản phẩm theo createdByUserId (id sản phẩm là tự sinh)
+        Product product = new Product();
+        product.setName(dto.getName());
+        product.setDescription(dto.getDescription());
+        product.setUnitPrice(dto.getUnitPrice());
+        product.setWeight(dto.getWeight());
+        product.setIsFragile(dto.getFragile());
+        product.setStockQuantity(dto.getStockQuantity());
+        product.setNotes(dto.getNotes());
+
+        // Map categoryId sang entity (có thể null)
+        if (dto.getCategoryId() != null) {
+            categoryRepository.findById(dto.getCategoryId()).ifPresent(product::setCategory);
+        }
+        // Không set category nếu null
+
+        // Map warehouseId sang entity (chỉ set nếu có)
+        if (dto.getWarehouseId() != null) {
+            warehouseRepository.findById(dto.getWarehouseId()).ifPresent(product::setWarehouse);
+        } else {
+            product.setWarehouse(null);
+        }
+
+        // Map createdByUserId sang entity (chỉ set nếu có)
+        if (dto.getCreatedByUserId() != null) {
+            ktc.spring_project.entities.User user = userService.getUserById(dto.getCreatedByUserId());
+            product.setCreatedBy(user);
+        } else {
+            product.setCreatedBy(null);
+        }
+
+    // Map volume nếu có
+    product.setVolume(dto.getVolume());
+
+    // Map productStatus nếu có, mặc định ACTIVE nếu null
+    if (dto.getProductStatus() != null) {
+        product.setProductStatus(ktc.spring_project.enums.ProductStatus.fromValue(dto.getProductStatus()));
+    } else {
+        product.setProductStatus(ktc.spring_project.enums.ProductStatus.ACTIVE);
+    }
+    return save(product);
+    }
 // ...existing code...
 public Product patchProduct(Long id, Map<String, Object> updates, Authentication authentication) {
     Product product = getProductById(id);
@@ -134,12 +250,13 @@ public Product patchProduct(Long id, Map<String, Object> updates, Authentication
 
 
 
-        // Save the product
+        // Kiểm tra trùng lặp tên sản phẩm
+        if (productRepository.findByName(product.getName()).isPresent()) {
+            throw new ktc.spring_project.exceptions.EntityDuplicateException("Product name");
+        }
         Product savedProduct = save(product);
-
         // Log the activity (in a real implementation)
         // activityLogService.logActivity(authentication, "CREATE", "products", savedProduct.getId());
-
         return savedProduct;
     }
 
@@ -236,13 +353,4 @@ public Product patchProduct(Long id, Map<String, Object> updates, Authentication
         return updatedProduct;
     }
 
-    /**
-     * Get products with stock quantity below threshold
-     *
-     * @param threshold Stock threshold
-     * @return List of products with stock below threshold
-     */
-    public List<Product> getLowStockProducts(Integer threshold) {
-        return productRepository.findProductsWithLowStock(threshold);
-    }
 }

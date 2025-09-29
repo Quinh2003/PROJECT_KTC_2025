@@ -125,7 +125,18 @@ export class AuthService {
       const result: UserApiResponse = await response.json();
       
       if (result.success && result.data) {
-        return result.data as AuthUser;
+        // Handle both single User and User array cases
+        const userData = Array.isArray(result.data) ? result.data[0] : result.data;
+        if (userData) {
+          // Convert User to AuthUser format
+          return {
+            id: userData.id?.toString() || '',
+            email: userData.email,
+            role: userData.role,
+            name: userData.name,
+            token: this.getToken() || ''
+          } as AuthUser;
+        }
       }
       
       return null;

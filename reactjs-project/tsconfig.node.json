@@ -13,7 +13,7 @@
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     // "noEmit": true,
-    "composite": true,
+    // "composite": true,
 
     /* Linting */
     "strict": true,

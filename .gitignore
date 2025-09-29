@@ -1,3 +1,36 @@
 requirements/PROJECT_KTC_2025.code-workspace
 .idea
+.vscode/
 .DS_Store
+# Node
+node_modules/
+package-lock.json
+.cursor
+~/.cursor/mcp.json
+spring-project/document/ELECTRONIC_INVOICE_SYSTEM_GUIDE.md
+spring-project/document/migration_electronic_invoices.sql
+spring-project/document/TROUBLESHOOTING_IDE_ERRORS.md
+spring-project/document/INVOICE_SYSTEM_GUIDE.md
+spring-project/document/EMAIL_SETUP_GUIDE.md
+spring-project/document/DEMO_EMAIL_FLOW.md
+spring-project/document/database-8-4.sql
+spring-project/document/tailieu.md
+spring-project/document/todo.md
+hs_err_pid*.log
+
+# Configuration files with sensitive information
+spring-project/src/main/resources/application.properties
+spring-project/gradle.properties
+mydocument/
+/logs
+slides/
+*.pptx
+
+I18N_TEST_EXECUTION_REPORT.md
+I18N_REACT_TEST_SCRIPT.js
+I18N_EXECUTIVE_SUMMARY.md
+I18N_COMPREHENSIVE_TEST_CASES.md
+I18N_COMPREHENSIVE_FEEDBACK.md
+NEXTJS_I18N_FIXES.md
+*.backup
+*.tsbuildinfo

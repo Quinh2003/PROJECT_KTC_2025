@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import ktc.spring_project.config.MoneyFormatSerializer;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -11,6 +13,11 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "order_items")
 public class OrderItem {
+    @Column(name = "product_code", length = 50, nullable = true)
+    private String productCode;
+
+    public String getProductCode() { return productCode; }
+    public void setProductCode(String productCode) { this.productCode = productCode; }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,9 +27,7 @@ public class OrderItem {
     @Column(nullable = false)
     private Integer quantity;
 
-    @Column(name = "unit_price")    
-    private BigDecimal unitPrice;
-
+    @JsonSerialize(using = MoneyFormatSerializer.class)
     @Column(name = "shipping_fee")
     private BigDecimal shippingFee;
 
@@ -66,13 +71,6 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
 
     public BigDecimal getShippingFee() {
         return shippingFee;

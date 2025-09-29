@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import GlassCard from '../../components/GlassCard';
 import StatCard from '../../components/StatCard';
 import DataTable, { TableRow, TableCell } from '../../components/DataTable';
 import GlassButton from '../../components/GlassButton';
 import { operationsAPI, type Staff } from '../../services/operationsAPI';
+import { FaChartLine, FaUmbrellaBeach, FaUsers } from 'react-icons/fa6';
+import { MdWorkHistory } from 'react-icons/md';
 
 export default function StaffManagement() {
+  const { t } = useTranslation();
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [staff, setStaff] = useState<Staff[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +23,7 @@ export default function StaffManagement() {
       setStaff(data);
       setError('');
     } catch {
-      setError('Không thể tải dữ liệu nhân viên. Sử dụng dữ liệu mẫu.');
+      setError('Unable to load staff data. Using sample data.');
       // Fallback data
       setStaff([
         { 
@@ -29,26 +33,12 @@ export default function StaffManagement() {
           phone: '0912345678',
           role: 'DRIVER',
           status: 'ACTIVE',
-          department: 'Vận chuyển', 
+          department: 'Transportation', 
           shiftStart: '06:00', 
           shiftEnd: '14:00',
           performanceScore: 92,
           totalDeliveries: 245,
           onTimeDeliveries: 225
-        },
-        { 
-          id: '2', 
-          name: 'Trần Thị B', 
-          email: 'tranthib@company.com',
-          phone: '0987654321',
-          role: 'WAREHOUSE_STAFF',
-          status: 'ON_LEAVE',
-          department: 'Kho', 
-          shiftStart: '08:00', 
-          shiftEnd: '16:00',
-          performanceScore: 88,
-          totalDeliveries: 0,
-          onTimeDeliveries: 0
         },
         { 
           id: '3', 
@@ -57,26 +47,12 @@ export default function StaffManagement() {
           phone: '0123456789',
           role: 'DRIVER',
           status: 'ACTIVE',
-          department: 'Vận chuyển', 
+          department: 'Transportation', 
           shiftStart: '08:00', 
           shiftEnd: '16:00',
           performanceScore: 95,
           totalDeliveries: 312,
           onTimeDeliveries: 298
-        },
-        { 
-          id: '4', 
-          name: 'Phạm Thị D', 
-          email: 'phamthid@company.com',
-          phone: '0456789123',
-          role: 'WAREHOUSE_STAFF',
-          status: 'ACTIVE',
-          department: 'Kho', 
-          shiftStart: '07:00', 
-          shiftEnd: '15:00',
-          performanceScore: 82,
-          totalDeliveries: 0,
-          onTimeDeliveries: 0
         },
         { 
           id: '5', 
@@ -85,10 +61,24 @@ export default function StaffManagement() {
           phone: '0789123456',
           role: 'DISPATCHER',
           status: 'ACTIVE',
-          department: 'Điều phối', 
+          department: 'Dispatch', 
           shiftStart: '08:00', 
           shiftEnd: '17:00',
           performanceScore: 90,
+          totalDeliveries: 0,
+          onTimeDeliveries: 0
+        },
+        { 
+          id: '6', 
+          name: 'Đặng Văn F', 
+          email: 'dangvanf@company.com',
+          phone: '0456123789',
+          role: 'FLEET',
+          status: 'ACTIVE',
+          department: 'Maintenance', 
+          shiftStart: '07:00', 
+          shiftEnd: '15:00',
+          performanceScore: 88,
           totalDeliveries: 0,
           onTimeDeliveries: 0
         },
@@ -107,7 +97,7 @@ export default function StaffManagement() {
         setStaff(data);
         setError('');
       } catch {
-        setError('Không thể tải dữ liệu nhân viên. Sử dụng dữ liệu mẫu.');
+        setError('Unable to load staff data. Using sample data.');
         // Fallback data
         setStaff([
           { 
@@ -117,26 +107,12 @@ export default function StaffManagement() {
             phone: '0912345678',
             role: 'DRIVER',
             status: 'ACTIVE',
-            department: 'Vận chuyển', 
+            department: 'Transportation', 
             shiftStart: '06:00', 
             shiftEnd: '14:00',
             performanceScore: 92,
             totalDeliveries: 245,
             onTimeDeliveries: 225
-          },
-          { 
-            id: '2', 
-            name: 'Trần Thị B', 
-            email: 'tranthib@company.com',
-            phone: '0987654321',
-            role: 'WAREHOUSE_STAFF',
-            status: 'ON_LEAVE',
-            department: 'Kho', 
-            shiftStart: '08:00', 
-            shiftEnd: '16:00',
-            performanceScore: 88,
-            totalDeliveries: 0,
-            onTimeDeliveries: 0
           },
           { 
             id: '3', 
@@ -145,26 +121,12 @@ export default function StaffManagement() {
             phone: '0123456789',
             role: 'DRIVER',
             status: 'ACTIVE',
-            department: 'Vận chuyển', 
+            department: 'Transportation', 
             shiftStart: '08:00', 
             shiftEnd: '16:00',
             performanceScore: 95,
             totalDeliveries: 312,
             onTimeDeliveries: 298
-          },
-          { 
-            id: '4', 
-            name: 'Phạm Thị D', 
-            email: 'phamthid@company.com',
-            phone: '0456789123',
-            role: 'WAREHOUSE_STAFF',
-            status: 'ACTIVE',
-            department: 'Kho', 
-            shiftStart: '07:00', 
-            shiftEnd: '15:00',
-            performanceScore: 82,
-            totalDeliveries: 0,
-            onTimeDeliveries: 0
           },
           { 
             id: '5', 
@@ -173,10 +135,24 @@ export default function StaffManagement() {
             phone: '0789123456',
             role: 'DISPATCHER',
             status: 'ACTIVE',
-            department: 'Điều phối', 
+            department: 'Dispatch', 
             shiftStart: '08:00', 
             shiftEnd: '17:00',
             performanceScore: 90,
+            totalDeliveries: 0,
+            onTimeDeliveries: 0
+          },
+          { 
+            id: '6', 
+            name: 'Đặng Văn F', 
+            email: 'dangvanf@company.com',
+            phone: '0456123789',
+            role: 'FLEET',
+            status: 'ACTIVE',
+            department: 'Maintenance', 
+            shiftStart: '07:00', 
+            shiftEnd: '15:00',
+            performanceScore: 88,
             totalDeliveries: 0,
             onTimeDeliveries: 0
           },
@@ -188,21 +164,11 @@ export default function StaffManagement() {
     fetchData();
   }, [selectedDepartment]);
 
-  const handleStatusUpdate = async (staffId: string, newStatus: Staff['status']) => {
-    try {
-      await operationsAPI.updateStaffStatus(staffId, newStatus);
-      await fetchStaff(); // Refresh data
-    } catch {
-      setError('Không thể cập nhật trạng thái nhân viên');
-    }
-  };
-
   const departments = [
-    { key: 'all', label: 'Tất cả' },
-    { key: 'Vận chuyển', label: 'Vận chuyển' },
-    { key: 'Kho', label: 'Kho' },
-    { key: 'Điều phối', label: 'Điều phối' },
-    { key: 'Bảo trì', label: 'Bảo trì' },
+    { key: 'all', label: t('common.all') },
+    { key: 'Vận chuyển', label: t('dashboard.operations.staff.departments.transportation', 'Transportation') },
+    { key: 'Điều phối', label: t('dashboard.operations.staff.departments.dispatch', 'Dispatch') },
+    { key: 'Bảo trì', label: t('dashboard.operations.staff.departments.maintenance', 'Maintenance') },
   ];
 
   const getStatusColor = (status: Staff['status']) => {
@@ -217,21 +183,29 @@ export default function StaffManagement() {
 
   const getStatusText = (status: Staff['status']) => {
     switch (status) {
-      case 'ACTIVE': return 'Đang làm việc';
-      case 'ON_LEAVE': return 'Nghỉ phép';
-      case 'SICK_LEAVE': return 'Nghỉ ốm';
-      case 'TERMINATED': return 'Nghỉ việc';
+      case 'ACTIVE': return t('dashboard.operations.staff.status.working', 'Working');
+      case 'ON_LEAVE': return t('dashboard.operations.staff.status.onLeave', 'On Leave');
+      case 'SICK_LEAVE': return t('dashboard.operations.staff.status.sickLeave', 'Sick Leave');
+      case 'TERMINATED': return t('dashboard.operations.staff.status.terminated', 'Terminated');
       default: return status;
     }
   };
 
   const getRoleText = (role: Staff['role']) => {
     switch (role) {
-      case 'DRIVER': return 'Tài xế';
-      case 'DISPATCHER': return 'Điều phối viên';
-      case 'WAREHOUSE_STAFF': return 'Nhân viên kho';
-      case 'MAINTENANCE': return 'Nhân viên bảo trì';
+      case 'DRIVER': return t('dashboard.operations.staff.roles.driver', 'Driver');
+      case 'DISPATCHER': return t('dashboard.operations.staff.roles.dispatcher', 'Dispatcher');
+      case 'FLEET': return t('dashboard.operations.staff.roles.fleetManager', 'Fleet Manager');
       default: return role;
+    }
+  };
+
+  const getDepartmentText = (department: string) => {
+    switch (department) {
+      case 'Vận chuyển': return t('dashboard.operations.staff.departments.transportation', 'Transportation');
+      case 'Điều phối': return t('dashboard.operations.staff.departments.dispatch', 'Dispatch');
+      case 'Bảo trì': return t('dashboard.operations.staff.departments.maintenance', 'Maintenance');
+      default: return department;
     }
   };
 
@@ -254,13 +228,13 @@ export default function StaffManagement() {
   if (loading) {
     return (
       <GlassCard className="flex items-center justify-center h-64">
-        <div className="text-gray-800 text-lg">Đang tải dữ liệu nhân viên...</div>
+        <div className="text-gray-800 text-lg">{t('common.loading', 'Loading')}...</div>
       </GlassCard>
     );
   }
 
   return (
-    <GlassCard className="space-y-6">
+  <GlassCard className="space-y-6">
       {error && (
         <div className="bg-yellow-500/30 border border-yellow-400/50 text-yellow-800 p-4 rounded-lg">
           ⚠️ {error}
@@ -268,7 +242,7 @@ export default function StaffManagement() {
       )}
 
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-800">Quản lý nhân viên</h2>
+        <h2 className="text-xl font-semibold text-gray-800">{t('dashboard.operations.tabs.staff')}</h2>
         <div className="flex gap-2">
           {departments.map((dept) => (
             <GlassButton
@@ -281,34 +255,31 @@ export default function StaffManagement() {
             </GlassButton>
           ))}
           <GlassButton size="sm" variant="secondary" onClick={fetchStaff}>
-            🔄 Làm mới
+🔄 {t('common.refresh')}
           </GlassButton>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Tổng nhân viên"
+title={t('dashboard.operations.staff.metrics.totalStaff', 'Total Staff')}
           value={totalStaff.toString()}
-          icon="👥"
-          trend={{ value: 5.2, isPositive: true }}
+          icon={<FaUsers size={24} color="#4B5563" />}
         />
         <StatCard
-          title="Đang làm việc"
+title={t('dashboard.operations.staff.metrics.working', 'Working')}
           value={activeStaff.toString()}
-          icon="✅"
-          subtitle={`${Math.round((activeStaff / totalStaff) * 100)}% tổng số`}
+          icon={<MdWorkHistory size={24} color="#10b981" />}
         />
         <StatCard
-          title="Nghỉ phép"
+title={t('dashboard.operations.staff.metrics.onLeave', 'On Leave')}
           value={onLeaveStaff.toString()}
-          icon="🏖️"
-          subtitle={`${Math.round((onLeaveStaff / totalStaff) * 100)}% tổng số`}
+          icon={<FaUmbrellaBeach size={24} color="#f59e0b" />}
         />
         <StatCard
-          title="Hiệu suất TB"
+title={t('dashboard.operations.staff.metrics.avgPerformance', 'Avg Performance')}
           value={`${avgPerformance}%`}
-          icon="📊"
+          icon={<FaChartLine size={24} color="#4f46e5" />}
           trend={{ value: 2.3, isPositive: true }}
         />
       </div>
@@ -316,19 +287,22 @@ export default function StaffManagement() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium">
-            Danh sách nhân viên 
+{t('dashboard.operations.staff.staffList', 'Staff List')} 
             {selectedDepartment !== 'all' && (
               <span className="text-gray-600 text-base ml-2">
                 - {departments.find(d => d.key === selectedDepartment)?.label}
               </span>
             )}
           </h3>
-          <GlassButton variant="primary" size="sm">
-            + Thêm nhân viên
-          </GlassButton>
         </div>
         
-        <DataTable headers={['Tên', 'Chức vụ', 'Phòng ban', 'Trạng thái', 'Hiệu suất', 'Ca làm việc', 'Liên hệ', 'Hành động']}>
+        <DataTable headers={[
+          t('dashboard.operations.staff.headers.name', 'Name'),
+          t('dashboard.operations.staff.headers.role', 'Role'),
+          t('dashboard.operations.staff.headers.department', 'Department'),
+          t('dashboard.operations.staff.headers.status', 'Status'),
+          t('dashboard.operations.staff.headers.contact', 'Contact')
+        ]}>
           {filteredStaff.map((person) => (
             <TableRow key={person.id}>
               <TableCell>
@@ -336,50 +310,16 @@ export default function StaffManagement() {
                 <div className="text-gray-600 text-xs">ID: {person.id}</div>
               </TableCell>
               <TableCell>{getRoleText(person.role)}</TableCell>
-              <TableCell>{person.department}</TableCell>
+              <TableCell>{getDepartmentText(person.department)}</TableCell>
               <TableCell>
                 <span className={`font-medium ${getStatusColor(person.status)}`}>
                   {getStatusText(person.status)}
                 </span>
               </TableCell>
               <TableCell>
-                <span className={`font-medium ${getPerformanceColor(person.performanceScore)}`}>
-                  {person.performanceScore}%
-                </span>
-                {person.role === 'DRIVER' && (
-                  <div className="text-gray-600 text-xs">
-                    {person.onTimeDeliveries}/{person.totalDeliveries} đúng hạn
-                  </div>
-                )}
-              </TableCell>
-              <TableCell>
-                <div className="text-sm">
-                  {person.shiftStart} - {person.shiftEnd}
-                </div>
-              </TableCell>
-              <TableCell>
                 <div className="text-sm">
                   <div>{person.phone}</div>
                   <div className="text-gray-600 text-xs">{person.email}</div>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <GlassButton size="sm" variant="ocean">
-                    Hồ sơ
-                  </GlassButton>
-                  <GlassButton size="sm" variant="green">
-                    Chỉnh sửa
-                  </GlassButton>
-                  {person.status === 'ACTIVE' && (
-                    <GlassButton 
-                      size="sm" 
-                      variant="danger"
-                      onClick={() => handleStatusUpdate(person.id, 'ON_LEAVE')}
-                    >
-                      Nghỉ phép
-                    </GlassButton>
-                  )}
                 </div>
               </TableCell>
             </TableRow>

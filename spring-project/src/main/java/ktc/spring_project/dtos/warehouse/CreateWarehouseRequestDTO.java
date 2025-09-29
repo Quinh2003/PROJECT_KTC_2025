@@ -1,18 +1,26 @@
 package ktc.spring_project.dtos.warehouse;
 
 import java.math.BigDecimal;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * DTO for creating a new warehouse
  */
 public class CreateWarehouseRequestDTO {
-    
 
+    @NotBlank(message = "Warehouse name is required")
     private String name;
+
+    @NotBlank(message = "Warehouse address is required")
     private String address;
+
     private BigDecimal latitude;
     private BigDecimal longitude;
+
+    @NotNull(message = "Capacity (m3) is required")
     private BigDecimal capacityM3;
+
     private Boolean isActive = true;
     private String notes;
     

@@ -13,98 +13,139 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import io.jsonwebtoken.ExpiredJwtException;
 
 import java.io.IOException;
 
 /**
- * JWT Authentication Filter - Filter xử lý JWT token trong mỗi HTTP request
+ * JWT Authentication Filter - Enhanced with proper expired token handling
  *
- * Class này extends OncePerRequestFilter để đảm bảo filter chỉ chạy 1 lần per request
- *
- * Chức năng:
- * - Extract JWT token từ Authorization header
- * - Validate JWT token
- * - Set authentication context cho Spring Security nếu token hợp lệ
- * - Cho phép request tiếp tục nếu token hợp lệ
+ * This filter now properly handles expired tokens by sending appropriate
+ * HTTP responses instead of just logging errors.
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    // Component để validate và extract thông tin từ JWT token
     @Autowired
     private JwtTokenProvider tokenProvider;
 
-    // Service để load thông tin user từ database
     @Autowired
     private UserDetailsService userDetailsService;
 
-    /**
-     * Method chính của filter, được gọi cho mỗi HTTP request
-     *
-     * @param request HTTP request
-     * @param response HTTP response
-     * @param filterChain Filter chain để tiếp tục xử lý request
-     */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                   HttpServletResponse response,
                                   FilterChain filterChain) throws ServletException, IOException {
         try {
-            // 1. Extract JWT token từ request header
+            // 1. Extract JWT token from request header
             String jwt = getJwtFromRequest(request);
 
-            // 2. Kiểm tra token có tồn tại và hợp lệ không
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                // 3. Extract username từ token
-                String username = tokenProvider.getUsernameFromToken(jwt);
+            // 2. Check if token exists and validate it
+            if (StringUtils.hasText(jwt)) {
+                // Check if token is expired first
+                if (tokenProvider.isTokenExpired(jwt)) {
+                    handleExpiredToken(request, response);
+                    return; // Don't continue the filter chain
+                }
+                
+                // Validate token (signature, format, etc.)
+                if (tokenProvider.validateToken(jwt)) {
+                    // 3. Extract username from token
+                    String username = tokenProvider.getUsernameFromToken(jwt);
 
-                // 4. Load thông tin user từ database
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    // 4. Load user details from database
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                // 5. Tạo Authentication object cho Spring Security
-                UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    // 5. Create Authentication object for Spring Security
+                    UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-                // 6. Set thêm thông tin chi tiết từ request
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    // 6. Set additional details from request
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // 7. Set authentication vào SecurityContext để Spring Security biết user đã đăng nhập
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    // 7. Set authentication in SecurityContext
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    // Token is invalid
+                    handleInvalidToken(request, response);
+                    return;
+                }
             }
+        } catch (ExpiredJwtException ex) {
+            logger.error("JWT token is expired: " + ex.getMessage());
+            handleExpiredToken(request, response);
+            return;
         } catch (Exception ex) {
-            // Log lỗi nhưng không throw exception để không block request
             logger.error("Could not set user authentication in security context", ex);
+            handleInvalidToken(request, response);
+            return;
         }
 
-        // 8. Tiếp tục với filter chain (cho phép request được xử lý tiếp)
+        // 8. Continue with filter chain
         filterChain.doFilter(request, response);
     }
 
     /**
-     * Extract JWT token từ Authorization header
-     *
-     * JWT token thường được gửi trong format: "Bearer <token>"
-     * Method này sẽ extract phần <token>
-     *
-     * @param request HTTP request
-     * @return JWT token string hoặc null nếu không có
+     * Handle expired JWT token
+     */
+    private void handleExpiredToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        
+        String jsonResponse = "{"
+            + "\"error\": \"Token expired\","
+            + "\"message\": \"Your session has expired after 15 minutes of inactivity. Please log in again.\","
+            + "\"timestamp\": \"" + java.time.Instant.now().toString() + "\","
+            + "\"path\": \"" + request.getRequestURI() + "\","
+            + "\"status\": 401"
+            + "}";
+            
+        response.getWriter().write(jsonResponse);
+    }
+
+    /**
+     * Handle invalid JWT token
+     */
+    private void handleInvalidToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        
+        String jsonResponse = "{"
+            + "\"error\": \"Invalid token\","
+            + "\"message\": \"The provided authentication token is invalid. Please log in again.\","
+            + "\"timestamp\": \"" + java.time.Instant.now().toString() + "\","
+            + "\"path\": \"" + request.getRequestURI() + "\","
+            + "\"status\": 401"
+            + "}";
+            
+        response.getWriter().write(jsonResponse);
+    }
+
+    /**
+     * Extract JWT token from Authorization header
      */
     private String getJwtFromRequest(HttpServletRequest request) {
-        // Lấy Authorization header
         String bearerToken = request.getHeader("Authorization");
-
-        // Kiểm tra header có tồn tại và bắt đầu với "Bearer " không
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            // Return phần token (bỏ "Bearer " ở đầu)
             return bearerToken.substring(7);
         }
         return null;
     }
 
- @Override
-protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-    String path = request.getRequestURI();
-    // Bỏ qua filter cho các endpoint public (tùy chỉnh theo API của bạn)
-    return path.startsWith("/api/auth/");
-}
+    /**
+     * Skip filter for public endpoints
+     */
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        // Skip filter for authentication endpoints and public resources
+        return path.startsWith("/api/auth/") || 
+               path.startsWith("/swagger-ui/") || 
+               path.startsWith("/v3/api-docs/") ||
+               path.equals("/login") ||
+               path.equals("/register") ||
+               path.startsWith("/public/");
+    }
 }
