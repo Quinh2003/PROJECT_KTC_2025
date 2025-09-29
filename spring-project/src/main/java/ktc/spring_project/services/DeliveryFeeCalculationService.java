@@ -23,38 +23,30 @@ public class DeliveryFeeCalculationService {
     @Autowired
     private DistanceCalculationService distanceCalculationService;
 
-    // BẢNG GIÁ VIETTELPOST CHO ĐÀ NẴNG (Nội thành - Liên miền)
-    // Dựa theo bảng giá ViettelPost tiêu chuẩn và hỏa tốc
+    // BẢNG GIÁ VIETTELPOST CHO ĐÀ NẴNG (Theo hình user cung cấp)
+    // Phí cơ bản + Phí nội cụm
     
-    // Phí cơ bản cho các mức trọng lượng (VNĐ) - STANDARD
-    private static final BigDecimal STANDARD_FEE_UNDER_250G = new BigDecimal("16500");
-    private static final BigDecimal STANDARD_FEE_250_500G = new BigDecimal("16500");
-    private static final BigDecimal STANDARD_FEE_500_1000G = new BigDecimal("16500");
-    private static final BigDecimal STANDARD_FEE_1000_1500G = new BigDecimal("16500");
-    private static final BigDecimal STANDARD_FEE_1500_2000G = new BigDecimal("16500");
-    private static final BigDecimal STANDARD_FEE_2000_2500G = new BigDecimal("16500");
-    private static final BigDecimal STANDARD_FEE_2500_3000G = new BigDecimal("16500");
-    private static final BigDecimal STANDARD_FEE_ADDITIONAL_500G = new BigDecimal("2500");
+    // Phí cơ bản cho các mức trọng lượng (VNĐ) - Theo cột đầu tiên
+    private static final BigDecimal BASE_FEE_UNDER_250G = new BigDecimal("16500");
+    private static final BigDecimal BASE_FEE_250_500G = new BigDecimal("16500");
+    private static final BigDecimal BASE_FEE_500_1000G = new BigDecimal("16500");
+    private static final BigDecimal BASE_FEE_1000_1500G = new BigDecimal("16500");
+    private static final BigDecimal BASE_FEE_1500_2000G = new BigDecimal("16500");
+    private static final BigDecimal BASE_FEE_2000_2500G = new BigDecimal("16500");
+    private static final BigDecimal BASE_FEE_2500_3000G = new BigDecimal("16500");
+    private static final BigDecimal BASE_FEE_ADDITIONAL_500G = new BigDecimal("2500");
     
-    // Phí ship theo khu vực (VNĐ) - STANDARD
-    private static final BigDecimal STANDARD_INNER_CITY_UNDER_250G = new BigDecimal("28000");
-    private static final BigDecimal STANDARD_INNER_CITY_250_500G = new BigDecimal("30000");
-    private static final BigDecimal STANDARD_INNER_CITY_500_1000G = new BigDecimal("33000");
-    private static final BigDecimal STANDARD_INNER_CITY_1000_1500G = new BigDecimal("36000");
-    private static final BigDecimal STANDARD_INNER_CITY_1500_2000G = new BigDecimal("39000");
-    private static final BigDecimal STANDARD_INNER_CITY_2000_2500G = new BigDecimal("42000");
-    private static final BigDecimal STANDARD_INNER_CITY_2500_3000G = new BigDecimal("45000");
-    private static final BigDecimal STANDARD_INNER_CITY_ADDITIONAL_500G = new BigDecimal("3000");
+    // Phí nội cụm (VNĐ) - Theo cột "Nội cụm" 
+    private static final BigDecimal INNER_AREA_FEE_UNDER_250G = new BigDecimal("28000");
+    private static final BigDecimal INNER_AREA_FEE_250_500G = new BigDecimal("30000");
+    private static final BigDecimal INNER_AREA_FEE_500_1000G = new BigDecimal("33000");
+    private static final BigDecimal INNER_AREA_FEE_1000_1500G = new BigDecimal("36000");
+    private static final BigDecimal INNER_AREA_FEE_1500_2000G = new BigDecimal("39000");
+    private static final BigDecimal INNER_AREA_FEE_2000_2500G = new BigDecimal("42000");
+    private static final BigDecimal INNER_AREA_FEE_2500_3000G = new BigDecimal("45000");
+    private static final BigDecimal INNER_AREA_FEE_ADDITIONAL_500G = new BigDecimal("3000");
     
-    // Phí ship liên miền (VNĐ) - STANDARD
-    private static final BigDecimal STANDARD_INTER_REGION_UNDER_250G = new BigDecimal("31000");
-    private static final BigDecimal STANDARD_INTER_REGION_250_500G = new BigDecimal("32000");
-    private static final BigDecimal STANDARD_INTER_REGION_500_1000G = new BigDecimal("37000");
-    private static final BigDecimal STANDARD_INTER_REGION_1000_1500G = new BigDecimal("42000");
-    private static final BigDecimal STANDARD_INTER_REGION_1500_2000G = new BigDecimal("47000");
-    private static final BigDecimal STANDARD_INTER_REGION_2000_2500G = new BigDecimal("52000");
-    private static final BigDecimal STANDARD_INTER_REGION_2500_3000G = new BigDecimal("57000");
-    private static final BigDecimal STANDARD_INTER_REGION_ADDITIONAL_500G = new BigDecimal("5000");
+    // CHỈ PHỤC VỤ NỘI CỤM ĐÀ NẴNG - Không cần phí liên miền
     
     // Hệ số First Class so với Standard
     private static final double FIRST_CLASS_MULTIPLIER = 1.2; // Tăng 20% so với Standard
@@ -205,29 +197,30 @@ public class DeliveryFeeCalculationService {
     }
     
     /**
-     * Tính phí Standard theo bảng giá ViettelPost (nội thành Đà Nẵng)
+     * Tính phí Standard theo bảng giá ViettelPost (nội cụm Đà Nẵng)
+     * Sử dụng cột "Nội cụm" từ bảng giá
      */
     private BigDecimal calculateStandardShippingFee(BigDecimal weightInGrams) {
         if (weightInGrams.compareTo(new BigDecimal("250")) <= 0) {
-            return STANDARD_INNER_CITY_UNDER_250G;
+            return INNER_AREA_FEE_UNDER_250G;
         } else if (weightInGrams.compareTo(new BigDecimal("500")) <= 0) {
-            return STANDARD_INNER_CITY_250_500G;
+            return INNER_AREA_FEE_250_500G;
         } else if (weightInGrams.compareTo(new BigDecimal("1000")) <= 0) {
-            return STANDARD_INNER_CITY_500_1000G;
+            return INNER_AREA_FEE_500_1000G;
         } else if (weightInGrams.compareTo(new BigDecimal("1500")) <= 0) {
-            return STANDARD_INNER_CITY_1000_1500G;
+            return INNER_AREA_FEE_1000_1500G;
         } else if (weightInGrams.compareTo(new BigDecimal("2000")) <= 0) {
-            return STANDARD_INNER_CITY_1500_2000G;
+            return INNER_AREA_FEE_1500_2000G;
         } else if (weightInGrams.compareTo(new BigDecimal("2500")) <= 0) {
-            return STANDARD_INNER_CITY_2000_2500G;
+            return INNER_AREA_FEE_2000_2500G;
         } else if (weightInGrams.compareTo(new BigDecimal("3000")) <= 0) {
-            return STANDARD_INNER_CITY_2500_3000G;
+            return INNER_AREA_FEE_2500_3000G;
         } else {
             // Trên 3kg: phí cơ bản 3kg + phí cho từng 500g tiếp theo
-            BigDecimal baseFee = STANDARD_INNER_CITY_2500_3000G;
+            BigDecimal baseFee = INNER_AREA_FEE_2500_3000G;
             BigDecimal excessWeight = weightInGrams.subtract(new BigDecimal("3000"));
             BigDecimal additional500gBlocks = excessWeight.divide(new BigDecimal("500"), 0, RoundingMode.UP);
-            BigDecimal additionalFee = additional500gBlocks.multiply(STANDARD_INNER_CITY_ADDITIONAL_500G);
+            BigDecimal additionalFee = additional500gBlocks.multiply(INNER_AREA_FEE_ADDITIONAL_500G);
             return baseFee.add(additionalFee);
         }
     }
@@ -264,7 +257,7 @@ public class DeliveryFeeCalculationService {
         details.append(String.format("- Store: %s\n", order.getStore().getStoreName()));
         details.append(String.format("- Địa chỉ giao hàng: %s\n", order.getAddress().getAddress()));
         details.append(String.format("- Tổng trọng lượng: %.0f gram\n", totalWeight));
-        details.append(String.format("- Khu vực: Nội thành Đà Nẵng\n"));
+        details.append(String.format("- Khu vực: Nội cụm Đà Nẵng\n"));
         details.append(String.format("- Service Type: %s\n\n", serviceType.getDisplayName()));
         
         // Tính phí theo bảng giá ViettelPost

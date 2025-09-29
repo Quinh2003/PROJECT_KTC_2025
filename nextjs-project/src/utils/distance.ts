@@ -9,14 +9,14 @@ export interface DistanceFeeResult {
 }
 
 /**
- * VIETTELPOST ĐÀ NẴNG: Chỉ phục vụ nội thành - KHÔNG CÓ PHÍ KHOẢNG CÁCH
+ * FASTROUTE ĐÀ NẴNG: Chỉ phục vụ nội thành - KHÔNG CÓ PHÍ KHOẢNG CÁCH
  * Phí được tính theo trọng lượng trong backend
  */
 export const calculateDistanceFee = (distance: number): DistanceFeeResult => {
-  // Đà Nẵng chỉ phục vụ nội thành, không có phí khoảng cách
+  // Không áp dụng phí khoảng cách trong cấu hình hiện tại
   return {
-    fee: 0, // Không có phí khoảng cách
-    region: "Nội thành Đà Nẵng",
+    fee: 0,
+    region: "Đà Nẵng",
     base: 0,
     perKm: 0,
   };

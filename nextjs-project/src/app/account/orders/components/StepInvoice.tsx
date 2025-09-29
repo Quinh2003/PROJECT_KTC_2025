@@ -345,11 +345,7 @@ export default function StepInvoice({ form, store }: Props) {
                       <Divider style={{ margin: "12px 0" }} />
                     </Col>
 
-                    <Col xs={24} style={{ marginBottom: 8 }}>
-                      <Text style={{ fontSize: 12, color: "#666", fontStyle: "italic" }}>
-                        📍 ViettelPost - Dịch vụ chuyển phát nhanh nội thành Đà Nẵng
-                      </Text>
-                    </Col>
+                    <Col xs={24} style={{ marginBottom: 8 }}></Col>
                     
                     <Col xs={12}>
                       <Text strong style={{ fontSize: 16 }}>

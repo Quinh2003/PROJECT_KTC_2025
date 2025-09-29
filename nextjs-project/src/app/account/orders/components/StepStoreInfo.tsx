@@ -474,7 +474,6 @@ export default function StepStoreInfo({ store }: Props) {
                     color: "#1890ff", 
                     fontWeight: 500 
                   }}>
-                    📍 Chỉ phục vụ nội thành Đà Nẵng
                   </div>
                   <Select
                     placeholder="Province/City"
