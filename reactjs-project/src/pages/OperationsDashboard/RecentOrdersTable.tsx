@@ -28,8 +28,17 @@ function getStatusColor(status: string) {
 }
 
 function getStatusText(status: string) {
-  // Backend đã trả về status tiếng Việt, chỉ cần trả về như cũ
-  return status;
+  // Convert Vietnamese status from backend to English for display
+  switch (status) {
+    case 'Hoàn thành': return 'Completed';
+    case 'Đã giao': return 'Delivered';
+    case 'Đang giao': return 'Shipping';
+    case 'Chờ xử lý': return 'Pending';
+    case 'Đang xử lý': return 'Processing';
+    case 'Đã hủy': return 'Cancelled';
+    case 'Chưa xác định': return 'Unknown';
+    default: return status;
+  }
 }
 
 function formatDateTime(dateString: string) {
@@ -41,14 +50,15 @@ function formatDateTime(dateString: string) {
   }
   const date = new Date(dateString);
   return {
-    date: date.toLocaleDateString('vi-VN', {
+    date: date.toLocaleDateString('en-US', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
     }),
-    time: date.toLocaleTimeString('vi-VN', {
+    time: date.toLocaleTimeString('en-US', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: false
     })
   };
 }
@@ -57,10 +67,10 @@ export default function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center">
-        <h3 className="text-lg font-medium">Đơn hàng gần đây</h3>
+        <h3 className="text-lg font-medium">Recent Orders</h3>
       </div>
       <div className="overflow-x-auto">
-        <DataTable headers={['Mã đơn', 'Khách hàng', 'Tuyến đường', 'Thời gian tạo', 'Trạng thái']} className="min-w-full">
+        <DataTable headers={['Order ID', 'Customer', 'Route', 'Created Time', 'Status']} className="min-w-full">
           {orders.map((order) => {
             const createdTime = formatDateTime(order.createdAt);
             

@@ -10,7 +10,8 @@ An administrative dashboard for KTC Logistics built with React 19, TypeScript, a
 2. [Main Features](#-main-features)
 3. [Project Structure](#-project-structure)
 4. [Tech Stack](#-tech-stack)
-5. [License & Contact](#-license--contact)
+5. [Internationalization](#-internationalization)
+6. [License & Contact](#-license--contact)
 
 ## 🚀 Getting Started
 
@@ -121,6 +122,14 @@ An administrative dashboard for KTC Logistics built with React 19, TypeScript, a
 - Critical event monitoring
 - Custom alert rules configuration
 
+### 🌐 Internationalization (i18n)
+- **Dual Language Support**: English and Vietnamese
+- **Real-time Language Switching**: No page reload required
+- **Comprehensive Coverage**: All dashboards, forms, and components translated
+- **Professional UI**: Language switcher with flags and smooth transitions
+- **Persistent Selection**: Language preference saved across sessions
+- **Role-based Translations**: Specialized terms for each dashboard type
+
 ## 🏗️ Project Structure
 
 ```
@@ -197,12 +206,46 @@ src/
 
 - **Icons**: React Icons 5.5.0, Lucide React 0.541.0
 - **Routing**: React Router 7.7.1
+- **Internationalization**: react-i18next 13.5.0, i18next 23.7.6, i18next-browser-languagedetector 7.2.0
 
 ### Development Tools
 
 - **Build Tool**: Vite 7.0.4
 - **Linting**: ESLint 9.30.1
 - **Package Manager**: pnpm
+
+## 🌐 Internationalization
+
+The application features comprehensive dual-language support (English/Vietnamese) with:
+
+- **🎯 Complete Coverage**: All 5 dashboards fully translated
+- **🔄 Real-time Switching**: Instant language changes without page reload
+- **💾 Persistent Settings**: Language preference saved across sessions
+- **🎨 Professional UI**: Language switcher with country flags
+- **📱 Responsive**: Optimized for both desktop and mobile devices
+
+### Quick Usage
+
+```typescript
+import { useTranslation } from 'react-i18next';
+
+function MyComponent() {
+  const { t } = useTranslation();
+  return <h1>{t('dashboard.title')}</h1>;
+}
+```
+
+### Documentation
+
+- 📚 **[Complete i18n Documentation](./INTERNATIONALIZATION.md)**: Detailed implementation guide
+- 🚀 **[Quick Start Guide](./I18N_QUICK_GUIDE.md)**: Fast setup and common patterns
+
+### Supported Languages
+
+| Language | Code | Status | Coverage |
+|----------|------|--------|----------|
+| English  | `en` | ✅ Complete | 100% |
+| Vietnamese | `vi` | ✅ Complete | 100% |
 
 ## 📄 License & Contact
 

@@ -90,17 +90,13 @@ export default function CustomerAccount() {
     setLoading(true);
     try {
       const userStr = localStorage.getItem("user");
-      if (!userStr) {
-        console.error("User not found in localStorage");
-        return;
-      }
+      if (!userStr) return;
       const user = JSON.parse(userStr);
 
-      // Get only 3 most recent orders using the stable existing API
       const response = await orderApi.getOrdersByUserPaginated(
         user.id,
-        1, // page
-        3 // size - only get 3 most recent orders
+        1,
+        3
       );
 
       const formattedOrders: Order[] = response.data.map((order) => ({
@@ -120,7 +116,6 @@ export default function CustomerAccount() {
 
       setRecentOrders(formattedOrders);
     } catch (error) {
-      console.error("Failed to fetch recent orders:", error);
       messageApi.error("Không thể tải danh sách đơn hàng");
     } finally {
       setLoading(false);
@@ -130,18 +125,11 @@ export default function CustomerAccount() {
   const fetchOrderStats = useCallback(async () => {
     try {
       const userStr = localStorage.getItem("user");
-      if (!userStr) {
-        console.error("User not found in localStorage");
-        return;
-      }
+      if (!userStr) return;
       const user = JSON.parse(userStr);
-      console.log("Debug Stats - User from localStorage:", user);
 
-      // First get the user's stores to find the store ID
       const stores = await storeService.getStoresByUserId(user.id.toString());
-      console.log("Debug Stats - Stores found:", stores);
       if (stores.length === 0) {
-        console.error("No stores found for user");
         setStats({
           totalOrders: 0,
           shippingOrders: 0,
@@ -150,21 +138,15 @@ export default function CustomerAccount() {
         return;
       }
 
-      // Use the first store's ID (assuming user has one store)
       const storeId = stores[0].id;
-      console.log("Debug Stats - Using storeId:", storeId);
-
-      // Get accurate statistics from the stats API using the store ID
       const statsResponse = await orderApi.getUserOrderStats(storeId);
-      console.log("Debug Stats - API response:", statsResponse);
 
       setStats({
         totalOrders: statsResponse.totalOrders,
-        shippingOrders: statsResponse.processingOrders, // Only PROCESSING orders as requested
+        shippingOrders: statsResponse.processingOrders,
         completedOrders: statsResponse.completedOrders,
       });
     } catch (error) {
-      console.error("Failed to fetch order stats:", error);
       messageApi.error("Không thể tải thống kê đơn hàng");
     }
   }, [messageApi]);
@@ -247,74 +229,65 @@ export default function CustomerAccount() {
       ),
     },
   ];
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       {/* Welcome Section */}
       <Card>
-        <Title level={2} style={{ marginBottom: 16 }}>
+        <Title level={2} style={{ marginBottom: 16, fontSize: "clamp(20px, 4vw, 28px)" }}>
           Chào mừng đến với Fast Route! <CarOutlined />
         </Title>
-        <Text style={{ fontSize: 16 }}>
+        <Text style={{ fontSize: "clamp(14px, 3vw, 16px)" }}>
           Dịch vụ giao hàng thông minh với công nghệ tối ưu hóa tuyến đường.
           Chúng tôi cam kết mang đến trải nghiệm giao hàng nhanh chóng, an toàn
           và tiết kiệm chi phí.
         </Text>
       </Card>
 
+      {/* Feature cards */}
       <Row gutter={[24, 24]}>
-        <Col xs={24} md={8}>
+        <Col xs={24} sm={12} md={8}>
           <Link href="/account/orders/new">
             <Card hoverable>
               <div style={{ textAlign: "center", marginBottom: 16 }}>
                 <BoxPlotOutlined style={{ fontSize: 32, color: "#1890ff" }} />
               </div>
-              <Title level={4} style={{ marginBottom: 8, textAlign: "center" }}>
+              <Title level={4} style={{ textAlign: "center" }}>
                 Tạo đơn hàng
               </Title>
-              <Text
-                type="secondary"
-                style={{ textAlign: "center", display: "block" }}
-              >
-                Tạo đơn hàng giao hàng mới một cách nhanh chóng
+              <Text type="secondary" style={{ display: "block", textAlign: "center" }}>
+                Tạo đơn hàng giao hàng mới nhanh chóng
               </Text>
             </Card>
           </Link>
         </Col>
 
-        <Col xs={24} md={8}>
+        <Col xs={24} sm={12} md={8}>
           <Link href="/account/orders">
             <Card hoverable>
               <div style={{ textAlign: "center", marginBottom: 16 }}>
-                <EnvironmentOutlined
-                  style={{ fontSize: 32, color: "#1890ff" }}
-                />
+                <EnvironmentOutlined style={{ fontSize: 32, color: "#1890ff" }} />
               </div>
-              <Title level={4} style={{ marginBottom: 8, textAlign: "center" }}>
+              <Title level={4} style={{ textAlign: "center" }}>
                 Theo dõi đơn hàng
               </Title>
-              <Text
-                type="secondary"
-                style={{ textAlign: "center", display: "block" }}
-              >
+              <Text type="secondary" style={{ display: "block", textAlign: "center" }}>
                 Xem trạng thái và vị trí đơn hàng real-time
               </Text>
             </Card>
           </Link>
         </Col>
 
-        <Col xs={24} md={8}>
+        <Col xs={24} sm={12} md={8}>
           <Link href="/account/estimate">
             <Card hoverable>
               <div style={{ textAlign: "center", marginBottom: 16 }}>
                 <DollarOutlined style={{ fontSize: 32, color: "#1890ff" }} />
               </div>
-              <Title level={4} style={{ marginBottom: 8, textAlign: "center" }}>
+              <Title level={4} style={{ textAlign: "center" }}>
                 Tính phí giao hàng
               </Title>
-              <Text
-                type="secondary"
-                style={{ textAlign: "center", display: "block" }}
-              >
+              <Text type="secondary" style={{ display: "block", textAlign: "center" }}>
                 Ước tính chi phí giao hàng trước khi đặt
               </Text>
             </Card>
@@ -325,14 +298,8 @@ export default function CustomerAccount() {
       {/* Recent Orders */}
       <Card
         title={
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Title level={3} style={{ margin: 0 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
+            <Title level={3} style={{ margin: 0, fontSize: "clamp(18px, 3vw, 22px)" }}>
               Đơn hàng gần đây
             </Title>
             <Link href="/account/orders">
@@ -349,19 +316,15 @@ export default function CustomerAccount() {
             rowKey="id"
             pagination={false}
             size="small"
+            scroll={{ x: "max-content" }}
           />
         ) : (
           <div style={{ textAlign: "center", padding: "32px 0" }}>
-            <BoxPlotOutlined
-              style={{ fontSize: 64, color: "#bfbfbf", marginBottom: 16 }}
-            />
+            <BoxPlotOutlined style={{ fontSize: 64, color: "#bfbfbf" }} />
             <Title level={4} type="secondary">
               Chưa có đơn hàng nào
             </Title>
-            <Text
-              type="secondary"
-              style={{ display: "block", marginBottom: 24 }}
-            >
+            <Text type="secondary" style={{ display: "block", marginBottom: 24 }}>
               Tạo đơn hàng đầu tiên để bắt đầu!
             </Text>
             <Link href="/account/orders/new">
@@ -375,17 +338,13 @@ export default function CustomerAccount() {
 
       {/* Stats Overview */}
       <Row gutter={[24, 24]}>
-        <Col xs={24} md={8}>
+        <Col xs={24} sm={12} md={8}>
           <Card>
-            <Statistic
-              title="Tổng đơn hàng"
-              value={stats.totalOrders}
-              prefix={<BarChartOutlined />}
-            />
+            <Statistic title="Tổng đơn hàng" value={stats.totalOrders} prefix={<BarChartOutlined />} />
           </Card>
         </Col>
 
-        <Col xs={24} md={8}>
+        <Col xs={24} sm={12} md={8}>
           <Card>
             <Statistic
               title="Đang vận chuyển"
@@ -396,7 +355,7 @@ export default function CustomerAccount() {
           </Card>
         </Col>
 
-        <Col xs={24} md={8}>
+        <Col xs={24} sm={12} md={8}>
           <Card>
             <Statistic
               title="Đã hoàn thành"
@@ -408,12 +367,9 @@ export default function CustomerAccount() {
         </Col>
       </Row>
 
-      {/* Modal chi tiết đơn hàng */}
+      {/* Modal */}
       {isDetailModalVisible && detailOrderId && (
-        <OrderDetailModal
-          orderId={Number(detailOrderId)}
-          onClose={() => setIsDetailModalVisible(false)}
-        />
+        <OrderDetailModal orderId={Number(detailOrderId)} onClose={() => setIsDetailModalVisible(false)} />
       )}
 
       {contextHolder}

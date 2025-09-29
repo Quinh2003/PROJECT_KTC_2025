@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import OrderOverview from "./OrderOverview";
 import OrderList from "./OrderList";
 import OrderAssignment from "./OrderAssignment";
@@ -32,6 +33,7 @@ export default function DispatcherDashboard({
   user,
   onLogout,
 }: DispatcherDashboardProps) {
+  const { t } = useTranslation();
   // Thêm "assignment" vào state tab
   const [tab, setTab] = useState<DispatcherTab>("orders");
 
@@ -49,8 +51,8 @@ export default function DispatcherDashboard({
           <Navbar
             user={user}
             onLogout={onLogout}
-            title="Dispatcher Dashboard"
-            subtitle=""
+            title={t('dashboard.dispatcher.title')}
+            subtitle={t('dashboard.dispatcher.subtitle')}
           />
           <main className="flex-1 p-6">
             {/* Orders Tab */}

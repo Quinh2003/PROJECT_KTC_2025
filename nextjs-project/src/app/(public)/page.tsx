@@ -1,25 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getOrderTrackingApi } from "../../server/order.api";
 import { useRouter, useSearchParams } from "next/navigation";
+import { getOrderTrackingApi } from "../../server/order.api";
 
-// Format ISO date string to Vietnamese readable format
-const formatDate = (isoString: string) => {
-  if (!isoString) return "";
-  const date = new Date(isoString);
-  return date.toLocaleString("vi-VN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-};
+const formatDate = (isoString: string) =>
+  isoString
+    ? new Date(isoString).toLocaleString("vi-VN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "";
 
 export default function PublicHome() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const [trackingCode, setTrackingCode] = useState("");
   const [trackingResult, setTrackingResult] = useState<{
     code: string;
@@ -30,317 +29,303 @@ export default function PublicHome() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Mark that we're on the client side
-    setIsClient(true);
-    
-    // Check if user is logged in
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
 
-    // Check if redirected from ReactJS login with token
     const urlToken = searchParams.get("token");
     const urlUser = searchParams.get("user");
-    
     if (urlToken && urlUser) {
-      try {
-        // Store authentication data
-        localStorage.setItem("token", urlToken);
-        localStorage.setItem("user", decodeURIComponent(urlUser));
-        setIsLoggedIn(true);
-        // Clean URL and redirect to account dashboard
-        window.history.replaceState({}, document.title, "/");
-        router.push("/account");
-      } catch (error) {
-        console.error("Error processing authentication:", error);
-      }
+      localStorage.setItem("token", urlToken);
+      localStorage.setItem("user", decodeURIComponent(urlUser));
+      setIsLoggedIn(true);
+      window.history.replaceState({}, document.title, "/");
+      router.push("/account");
     }
 
-    // Auto-fill tracking code if provided in URL
     const urlTrackingCode = searchParams.get("trackingCode");
-    if (urlTrackingCode) {
-      setTrackingCode(urlTrackingCode);
-    }
+    if (urlTrackingCode) setTrackingCode(urlTrackingCode);
   }, [searchParams, router]);
 
   const handleTrackingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!trackingCode.trim()) return;
-
+    if (!trackingCode.trim()) {
+      setTrackingResult(null); // clear luôn nếu không nhập gì
+      return;
+    }
     setIsLoading(true);
     try {
       const res = await getOrderTrackingApi(trackingCode);
       if (!res.ok) {
         setTrackingResult(null);
-        setIsLoading(false);
         alert("Order not found!");
-        return;
+      } else {
+        const order = await res.json();
+        setTrackingResult({
+          code: order.orderId,
+          status: order.status || "Unknown",
+          from: order.storeAddress || "",
+          to: order.address || "",
+          estimatedDelivery: order.estimatedDelivery || "",
+        });
       }
-  const order = await res.json();
-  console.log("Order tracking data:", order);
-      setTrackingResult({
-        code: order.orderId,
-        status: order.status || "Unknown",
-  from: order.storeAddress || "",
-        to: order.address || "",
-        estimatedDelivery: order.estimatedDelivery || ""
-      });
-      setIsLoading(false);
     } catch (error) {
       console.error("Error tracking order:", error);
-      setIsLoading(false);
+      setTrackingResult(null); // clear nếu lỗi
       alert("An error occurred while tracking the order!");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleLoginRedirect = () => {
-    // Redirect to Next.js login page
-    router.push("/login");
-  };
-
-  const handleCreateOrder = () => {
-    // Check if user is logged in, if not redirect to login
-    if (!isLoggedIn) {
-      alert("You need to log in to create an order!");
-      handleLoginRedirect();
-    } else {
-      // Redirect to create order page
-      router.push("/account/orders/new");
-    }
-  };
-
-  const handleDashboard = () => {
-    router.push("/account");
-  };
-
+  const handleLogin = () => router.push("/login");
+  const handleDashboard = () => router.push("/account");
+  const handleCreateOrder = () =>
+    isLoggedIn ? router.push("/account/orders/new") : handleLogin();
   const handleLogout = () => {
-    if (isClient) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-    }
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setIsLoggedIn(false);
     setTrackingResult(null);
   };
 
   return (
-    <div
-      className="relative min-h-screen w-full flex items-center justify-center"
-      style={{
-        backgroundImage: 'url(/login.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      {/* Overlay blur */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm z-0" />
-      {/* Main content glassmorphism */}
-      <div className="relative z-10 w-full">
-  {/* Header */}
-  <header className="bg-green-700 shadow-md rounded-b-2xl bg-opacity-80 backdrop-blur-md w-full">
-    <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <span className="ml-2 text-xl font-bold text-white">Fast Route</span>
-            </div>
-            <div className="flex items-center gap-4">
-              {isLoggedIn ? (
-                <>
-                  <button
-                    onClick={handleDashboard}
-                    className="text-white px-4 py-2 rounded-lg hover:bg-green-800 transition-colors"
-                  >
-                    Account
-                  </button>
-                  <button
-                    onClick={handleCreateOrder}
-                    className="bg-white text-green-700 px-4 py-2 rounded-lg hover:bg-green-100 transition-colors"
-                  >
-                    Create Order
-                  </button>
-                  <button
-                    onClick={handleLogout}
-                    className="border border-gray-300 text-green-700 px-4 py-2 rounded-lg hover:bg-green-50 transition-colors"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={handleCreateOrder}
-                    className="bg-white text-green-700 px-4 py-2 rounded-lg hover:bg-green-100 transition-colors"
-                  >
-                    Create Order
-                  </button>
-                  <button
-                    onClick={handleLoginRedirect}
-                    className="border border-white text-white px-4 py-2 rounded-lg hover:bg-green-800 transition-colors"
-                  >
-                    Login
-                  </button>
-                </>
-              )}
-            </div>
+    <div className="flex flex-col min-h-screen w-full bg-gray-50">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-green-700 shadow-md bg-opacity-90 backdrop-blur-md h-16 flex items-center px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center w-full">
+          <span className="ml-2 text-xl font-bold text-white">Fast Route</span>
+          <div className="flex items-center gap-4">
+            {isLoggedIn ? (
+              <>
+                <button
+                  onClick={handleDashboard}
+                  className="text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-green-800 text-sm sm:text-base"
+                >
+                  Account
+                </button>
+                <button
+                  onClick={handleCreateOrder}
+                  className="bg-white text-green-700 px-3 sm:px-4 py-2 rounded-lg hover:bg-green-100 text-sm sm:text-base"
+                >
+                  Create Order
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="border border-gray-300 text-green-700 px-3 sm:px-4 py-2 rounded-lg hover:bg-green-50 text-sm sm:text-base"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={handleCreateOrder}
+                  className="bg-white text-green-700 px-3 sm:px-4 py-2 rounded-lg hover:bg-green-100 text-sm sm:text-base"
+                >
+                  Create Order
+                </button>
+                <button
+                  onClick={handleLogin}
+                  className="border border-white text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-green-800 text-sm sm:text-base"
+                >
+                  Login
+                </button>
+              </>
+            )}
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-0 py-12 w-full">
-        {/* Glassmorphism card full screen */}
-  <div className="w-full rounded-2xl bg-white shadow-2xl p-8 mx-auto">
-  {/* Hero Section */}
-  <div className="text-center mb-12 w-full">
-          <h1 className="text-4xl font-bold text-green-700 mb-4">
+      <main className="flex-1 flex flex-col items-center justify-start mt-16 px-4 sm:px-6 lg:px-12 py-8 sm:py-12 bg-white">
+        {/* Hero */}
+        <div className="text-center mb-8 sm:mb-12 max-w-2xl">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-700 mb-4">
             Fast and reliable delivery service
           </h1>
-          <p className="text-xl text-gray-700 mb-8">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-700">
             Track your order or create a new one today
           </p>
         </div>
 
-  {/* Tracking Section */}
-    <div className="bg-white rounded-2xl shadow-lg p-8 mb-12 backdrop-blur-md border border-gray-200">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold text-green-700 mb-6 text-center">
-              Track your order
-            </h2>
-            <form onSubmit={handleTrackingSubmit} className="space-y-4">
-              <div className="flex gap-4">
-                <input
-                  type="text"
-                  value={trackingCode}
-                  onChange={(e) => setTrackingCode(e.target.value)}
-                  placeholder="Enter tracking code (e.g. FR001, FR002...)"
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-green-700"
+        {/* Tracking */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-12 border border-gray-200 w-full max-w-full sm:max-w-xl lg:max-w-3xl">
+          <h2 className="text-lg sm:text-2xl font-bold text-green-700 mb-6 text-center">
+            Track your order
+          </h2>
+          <form onSubmit={handleTrackingSubmit} className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <input
+                type="text"
+                value={trackingCode}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setTrackingCode(val);
+                  if (!val.trim()) setTrackingResult(null); // clear khi xoá hết
+                }}
+                placeholder="Enter tracking code (e.g. FR001, FR002...)"
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-700 text-sm sm:text-base"
+              />
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="bg-green-700 text-white px-6 sm:px-8 py-3 rounded-lg hover:bg-green-800 disabled:opacity-50 text-sm sm:text-base"
+              >
+                {isLoading ? "Searching..." : "Track"}
+              </button>
+            </div>
+          </form>
+
+          {trackingResult && (
+            <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-lg text-sm sm:text-base">
+              <h3 className="text-lg font-semibold text-green-800 mb-4">
+                Order information: {trackingResult.code}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Info label="Status" value={trackingResult.status} />
+                <Info
+                  label="Estimated delivery"
+                  value={formatDate(trackingResult.estimatedDelivery)}
                 />
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="bg-green-700 text-white px-8 py-3 rounded-lg hover:bg-green-800 transition-colors disabled:opacity-50"
-                >
-                  {isLoading ? "Searching..." : "Track"}
-                </button>
+                <Info label="From" value={trackingResult.from} />
+                <Info label="To" value={trackingResult.to} />
               </div>
-            </form>
-
-            {/* Tracking Result */}
-            {trackingResult && (
-              <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-lg">
-                <h3 className="text-lg font-semibold text-green-800 mb-4">
-                  Order information: {trackingResult.code}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-700">Status:</p>
-                    <p className="font-semibold text-green-700">{trackingResult.status}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-700">Estimated delivery:</p>
-                    <p className="font-semibold text-green-700">{formatDate(trackingResult.estimatedDelivery)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-700">From:</p>
-                    <p className="font-semibold text-green-700">{trackingResult.from}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-700">To:</p>
-                    <p className="font-semibold text-green-700">{trackingResult.to}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
-  {/* Features Section */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <div className="text-center p-6 bg-white rounded-xl shadow-lg">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">🚚</span>
-            </div>
-            <h3 className="text-xl font-semibold mb-2 text-green-700">Express delivery</h3>
-            <p className="text-gray-700">Guaranteed delivery within 24 hours</p>
-          </div>
-          <div className="text-center p-6 bg-white rounded-xl shadow-lg">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">📍</span>
-            </div>
-            <h3 className="text-xl font-semibold mb-2 text-green-700">Real-time tracking</h3>
-            <p className="text-gray-700">Track your order live on the map</p>
-          </div>
-          <div className="text-center p-6 bg-white rounded-xl shadow-lg">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">🔒</span>
-            </div>
-            <h3 className="text-xl font-semibold mb-2 text-green-700">Secure & safe</h3>
-            <p className="text-gray-700">Ensuring your package is delivered to the right recipient</p>
-          </div>
+        {/* Features */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12 w-full">
+          <Feature
+            icon="🚚"
+            title="Express delivery"
+            text="Guaranteed delivery within 24 hours"
+          />
+          <Feature
+            icon="📍"
+            title="Real-time tracking"
+            text="Track your order live on the map"
+          />
+          <Feature
+            icon="🔒"
+            title="Secure & safe"
+            text="Ensuring your package is delivered to the right recipient"
+          />
         </div>
 
-  {/* Call to Action */}
-  <div className="bg-gradient-to-r from-green-700 to-green-900 rounded-2xl p-8 text-center text-white bg-opacity-90 backdrop-blur-md">
-          <h2 className="text-3xl font-bold mb-4">Start shipping today</h2>
-          <p className="text-xl mb-6">Sign up to experience the best service</p>
-          <div className="flex gap-4 justify-center">
+        {/* Call to Action */}
+        <div className="bg-gradient-to-r from-green-700 to-green-900 rounded-2xl p-6 sm:p-8 text-center text-white w-full">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+            Start shipping today
+          </h2>
+          <p className="text-lg sm:text-xl mb-6">
+            Sign up to experience the best service
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={handleCreateOrder}
-              className="bg-white text-green-700 px-8 py-3 rounded-lg font-semibold hover:bg-green-100 transition-colors"
+              className="bg-white text-green-700 px-6 sm:px-8 py-3 rounded-lg font-semibold hover:bg-green-100 text-sm sm:text-base"
             >
               Create order now
             </button>
             <button
-              onClick={handleLoginRedirect}
-              className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-800 hover:text-white transition-colors"
+              onClick={handleLogin}
+              className="border-2 border-white px-6 sm:px-8 py-3 rounded-lg font-semibold hover:bg-green-800 text-sm sm:text-base"
             >
               Login / Register
             </button>
           </div>
         </div>
-        </div>
       </main>
 
-  {/* Footer */}
-  <footer className="bg-black/80 text-white py-12 mt-16 rounded-t-2xl backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-green-700">Fast Route</h3>
-              <p className="text-gray-400">Fast and reliable delivery service</p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4 text-green-700">Services</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>Local delivery</li>
-                <li>Interprovincial delivery</li>
-                <li>International delivery</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4 text-green-700">Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>Hotline: 1900-xxxx</li>
-                <li>Email: support@fastroute.com</li>
-                <li>FAQ</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4 text-green-700">Follow us</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>Facebook</li>
-                <li>Instagram</li>
-                <li>LinkedIn</li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 Fast Route. All rights reserved.</p>
-          </div>
+      {/* Footer */}
+      <footer className="bg-black/80 text-white py-12 mt-16 rounded-t-2xl backdrop-blur-md">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FooterCol
+            title="Fast Route"
+            items={["Fast and reliable delivery service"]}
+            highlight
+          />
+          <FooterCol
+            title="Services"
+            items={[
+              "Local delivery",
+              "Interprovincial delivery",
+              "International delivery",
+            ]}
+          />
+          <FooterCol
+            title="Support"
+            items={[
+              "Hotline: 1900-xxxx",
+              "Email: support@fastroute.com",
+              "FAQ",
+            ]}
+          />
+          <FooterCol
+            title="Follow us"
+            items={["Facebook", "Instagram", "LinkedIn"]}
+          />
+        </div>
+        <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-xs sm:text-sm">
+          &copy; 2025 Fast Route. All rights reserved.
         </div>
       </footer>
-      </div>
     </div>
   );
 }
+
+/* --- Small reusable components --- */
+const Info = ({ label, value }: { label: string; value: string }) => (
+  <div>
+    <p className="text-xs sm:text-sm text-gray-700">{label}:</p>
+    <p className="font-semibold text-green-700">{value}</p>
+  </div>
+);
+
+const Feature = ({
+  icon,
+  title,
+  text,
+}: {
+  icon: string;
+  title: string;
+  text: string;
+}) => (
+  <div className="text-center p-6 bg-white rounded-xl shadow-lg">
+    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-xl sm:text-2xl">
+      {icon}
+    </div>
+    <h3 className="text-lg sm:text-xl font-semibold mb-2 text-green-700">
+      {title}
+    </h3>
+    <p className="text-gray-700 text-sm sm:text-base">{text}</p>
+  </div>
+);
+
+const FooterCol = ({
+  title,
+  items,
+  highlight = false,
+}: {
+  title: string;
+  items: string[];
+  highlight?: boolean;
+}) => (
+  <div>
+    <h4
+      className={`font-semibold mb-4 ${
+        highlight ? "text-base sm:text-lg text-green-700" : "text-green-700"
+      }`}
+    >
+      {title}
+    </h4>
+    <ul className="space-y-2 text-gray-400 text-sm sm:text-base">
+      {items.map((item, idx) => (
+        <li key={idx}>{item}</li>
+      ))}
+    </ul>
+  </div>
+);

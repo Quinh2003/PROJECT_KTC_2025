@@ -15,6 +15,7 @@ import {
   Modal,
   Spin,
   Switch,
+  Grid,
 } from "antd";
 import {
   ShopOutlined,
@@ -28,12 +29,14 @@ import { storeService } from "@/services/storeService";
 
 const { Title } = Typography;
 const { TextArea } = Input;
+const { useBreakpoint } = Grid;
 
 export default function StorePage() {
   const [form] = Form.useForm();
   const [store, setStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const screens = useBreakpoint();
 
   useEffect(() => {
     const fetchStoreData = async () => {
@@ -63,7 +66,6 @@ export default function StorePage() {
         }
 
         const data = await storeService.getStoresByUserId(userId.toString());
-
         if (data && data.length > 0) {
           setStore(data[0]);
         } else {
@@ -105,7 +107,6 @@ export default function StorePage() {
         values
       );
 
-      // Convert StoreInfoResponseDto back to Store for state update
       setStore({
         ...store,
         storeName: updatedStoreInfo.storeName,
@@ -140,11 +141,28 @@ export default function StorePage() {
 
   return (
     <Card>
-      <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
-        <Title level={2}>Thông tin cửa hàng</Title>
-        <Button type="primary" icon={<EditOutlined />} onClick={showEditModal}>
-          Cập nhật thông tin
-        </Button>
+      {/* Header responsive */}
+      <Row
+        justify="space-between"
+        align="middle"
+        style={{ marginBottom: 24 }}
+        wrap
+      >
+        <Col xs={24} sm="auto">
+          <Title level={2} style={{ marginBottom: 12 }}>
+            Thông tin cửa hàng
+          </Title>
+        </Col>
+        <Col xs={24} sm="auto">
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={showEditModal}
+            block={!screens.md} // mobile full width
+          >
+            Cập nhật thông tin
+          </Button>
+        </Col>
       </Row>
 
       {!store ? (
@@ -164,7 +182,7 @@ export default function StorePage() {
               Có thể bạn chưa đăng ký cửa hàng hoặc thông tin đăng nhập không
               chính xác.
             </p>
-            <Space>
+            <Space direction={screens.md ? "horizontal" : "vertical"}>
               <Button type="primary" onClick={() => window.location.reload()}>
                 Tải lại trang
               </Button>
@@ -213,12 +231,15 @@ export default function StorePage() {
         </Card>
       )}
 
+      {/* Modal cập nhật */}
       <Modal
         title="Cập nhật thông tin cửa hàng"
         open={isEditModalVisible}
         onCancel={() => setIsEditModalVisible(false)}
         footer={null}
-        width={800}
+        width={screens.md ? 800 : "100%"}
+        style={{ top: screens.md ? 100 : 0 }}
+        styles={{ body: { padding: screens.md ? 24 : 12 } }}
       >
         <div style={{ marginBottom: 16 }}>
           <Typography.Text type="secondary">
@@ -234,7 +255,7 @@ export default function StorePage() {
           initialValues={store || {}}
         >
           <Row gutter={16}>
-            <Col span={12}>
+            <Col xs={24} md={12}>
               <Form.Item
                 name="storeName"
                 label="Tên cửa hàng"
@@ -248,7 +269,7 @@ export default function StorePage() {
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} md={12}>
               <Form.Item
                 name="phone"
                 label="Số điện thoại"

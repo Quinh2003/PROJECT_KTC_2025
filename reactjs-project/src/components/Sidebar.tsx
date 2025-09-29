@@ -3,6 +3,7 @@ import { RiShieldKeyholeLine } from "react-icons/ri";
 import { AiOutlineSetting, AiOutlineSafetyCertificate } from "react-icons/ai";
 import { FiActivity, FiBarChart2, FiHome, FiUsers } from "react-icons/fi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
+import { useTranslation } from 'react-i18next';
 import logo from "../assets/logo.png";
 
 
@@ -43,9 +44,9 @@ const ALL_MENUS: Record<UserRole, MenuItem<any>[]> = {
     { key: "staff", label: "Staff", icon: <FiUsers /> },
   ],
   fleet: [
-    { key: "vehicles", label: "Quản lý phương tiện", icon: <MdManageAccounts /> },
-    { key: "maintenance", label: "Bảo trì xe", icon: <AiOutlineSetting /> },
-    { key: "schedule", label: "Lịch bảo trì", icon: <FiActivity /> },
+    { key: "vehicles", label: "Vehicle Management", icon: <MdManageAccounts /> },
+    { key: "maintenance", label: "Vehicle Maintenance", icon: <AiOutlineSetting /> },
+    { key: "schedule", label: "Maintenance Schedule", icon: <FiActivity /> },
   ],
   admin: [
     { key: "users", label: "User Management", icon: <MdManageAccounts /> },
@@ -55,8 +56,32 @@ const ALL_MENUS: Record<UserRole, MenuItem<any>[]> = {
   ],
 };
 
-function getMenu<T extends TabType>(role: UserRole): MenuItem<T>[] {
-  return ALL_MENUS[role] as MenuItem<T>[];
+function getMenu<T extends TabType>(role: UserRole, t: any): MenuItem<T>[] {
+  const MENUS: Record<UserRole, MenuItem<any>[]> = {
+    dispatcher: [
+      { key: "orders", label: t('dashboard.dispatcher.tabs.orders'), icon: <MdManageAccounts /> },
+      { key: "resources", label: t('dashboard.dispatcher.tabs.resources'), icon: <RiShieldKeyholeLine /> },
+      { key: "assignment", label: t('dashboard.dispatcher.tabs.assignment'), icon: <AiOutlineSetting /> },
+    ],
+    operations: [
+      { key: "overview", label: t('dashboard.operations.tabs.overview', 'Overview'), icon: <FiHome /> },
+      { key: "performance", label: t('dashboard.operations.tabs.performance', 'Performance'), icon: <FiBarChart2 /> },
+      { key: "monitoring", label: t('dashboard.operations.tabs.monitoring', 'Monitoring'), icon: <FiActivity /> },
+      { key: "staff", label: t('dashboard.operations.tabs.staff', 'Staff'), icon: <FiUsers /> },
+    ],
+    fleet: [
+      { key: "vehicles", label: t('dashboard.fleet.tabs.vehicles', 'Vehicle Management'), icon: <MdManageAccounts /> },
+      { key: "maintenance", label: t('dashboard.fleet.tabs.maintenance', 'Vehicle Maintenance'), icon: <AiOutlineSetting /> },
+      { key: "schedule", label: t('dashboard.fleet.tabs.schedule', 'Maintenance Schedule'), icon: <FiActivity /> },
+    ],
+    admin: [
+      { key: "users", label: t('dashboard.admin.tabs.users', 'User Management'), icon: <MdManageAccounts /> },
+      { key: "roles", label: t('dashboard.admin.tabs.roles', 'Role Permissions'), icon: <RiShieldKeyholeLine /> },
+      { key: "settings", label: t('dashboard.admin.tabs.settings', 'System Settings'), icon: <AiOutlineSetting /> },
+      { key: "logs", label: t('dashboard.admin.tabs.logs', 'Audit Logs'), icon: <FiActivity /> },
+    ],
+  };
+  return MENUS[role] as MenuItem<T>[];
 }
 
 
@@ -65,7 +90,8 @@ export default function Sidebar<T extends TabType>({
   onTabChange,
   role,
 }: SidebarProps<T>) {
-  const MENU = getMenu<T>(role);
+  const { t } = useTranslation();
+  const MENU = getMenu<T>(role, t);
 
   return (
     <aside className="group ml-3 flex-shrink-0 w-20 hover:w-64 transition-all duration-300 bg-white/20 backdrop-blur-lg border-r border-white/30 text-gray-800 flex flex-col py-6 px-4 overflow-hidden h-screen sticky top-0">

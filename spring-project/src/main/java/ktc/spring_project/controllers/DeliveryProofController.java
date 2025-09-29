@@ -71,8 +71,10 @@ public ResponseEntity<DeliveryProof> uploadDeliveryProof(
         );
         return ResponseEntity.ok(proof);
     } catch (Exception e) {
-        // Return a 400 Bad Request or other appropriate response
-        return ResponseEntity.badRequest().build();
+        e.printStackTrace(); // Log lỗi chi tiết ra console
+        return ResponseEntity.badRequest().body(null);
+        // Nếu muốn trả về message rõ ràng:
+        // return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
 

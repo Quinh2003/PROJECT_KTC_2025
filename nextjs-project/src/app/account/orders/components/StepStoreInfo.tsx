@@ -62,7 +62,7 @@ export default function StepStoreInfo({ store }: Props) {
   const validateAddressData = () => {
     const values = form.getFieldsValue();
     console.log("Validating address data:", values);
-    
+
     if (!values.address || values.address.trim() === "") {
       console.error("Missing address field");
       return false;
@@ -84,7 +84,7 @@ export default function StepStoreInfo({ store }: Props) {
 
   // Expose validation function to parent
   React.useImperativeHandle(React.createRef(), () => ({
-    validateAddressData
+    validateAddressData,
   }));
 
   // Khi component mount, nếu form đã có dữ liệu thì khôi phục lại các state địa chỉ
@@ -329,20 +329,36 @@ export default function StepStoreInfo({ store }: Props) {
           <Form.Item
             name="pickup_date"
             label="Ngày lấy hàng"
-            rules={[{ required: true, message: "Vui lòng chọn ngày lấy hàng!" }]}
+            rules={[
+              { required: true, message: "Vui lòng chọn ngày lấy hàng!" },
+            ]}
           >
-            <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" placeholder="Chọn ngày lấy hàng" />
+            <DatePicker
+              style={{ width: "100%" }}
+              format="DD/MM/YYYY"
+              placeholder="Chọn ngày lấy hàng"
+              disabledDate={(current) =>
+                current && current.valueOf() < Date.now() - 24 * 60 * 60 * 1000
+              }
+            />
           </Form.Item>
         </Col>
         <Col xs={24} lg={12}>
           <Form.Item
             name="pickup_time_period"
             label="Thời gian buổi lấy hàng"
-            rules={[{ required: true, message: "Vui lòng chọn thời gian buổi lấy hàng!" }]}
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn thời gian buổi lấy hàng!",
+              },
+            ]}
           >
             <Select placeholder="Chọn buổi lấy hàng">
               <Select.Option value="morning">Sáng (7h30 - 11h00)</Select.Option>
-              <Select.Option value="afternoon">Chiều (14h00 - 17h00)</Select.Option>
+              <Select.Option value="afternoon">
+                Chiều (14h00 - 17h00)
+              </Select.Option>
               <Select.Option value="evening">Tối (18h00 - 21h00)</Select.Option>
             </Select>
           </Form.Item>
@@ -427,12 +443,16 @@ export default function StepStoreInfo({ store }: Props) {
                 cursor: "default",
               }}
               suffix={
-                addressValue ? (
-                  <CloseCircleOutlined
-                    onClick={handleClearAddress}
-                    style={{ cursor: "pointer", color: "#999" }}
-                  />
-                ) : null
+                <CloseCircleOutlined
+                  onClick={handleClearAddress}
+                  style={{
+                    cursor: "pointer",
+                    color: "#999",
+                    visibility: addressValue ? "visible" : "hidden",
+                    opacity: addressValue ? 1 : 0,
+                    transition: "opacity 0.2s",
+                  }}
+                />
               }
             />
             {/* Hiển thị tọa độ nếu có */}

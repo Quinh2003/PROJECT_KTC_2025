@@ -21,7 +21,7 @@ export default function StaffManagement() {
       setStaff(data);
       setError('');
     } catch {
-      setError('Không thể tải dữ liệu nhân viên. Sử dụng dữ liệu mẫu.');
+      setError('Unable to load staff data. Using sample data.');
       // Fallback data
       setStaff([
         { 
@@ -31,7 +31,7 @@ export default function StaffManagement() {
           phone: '0912345678',
           role: 'DRIVER',
           status: 'ACTIVE',
-          department: 'Vận chuyển', 
+          department: 'Transportation', 
           shiftStart: '06:00', 
           shiftEnd: '14:00',
           performanceScore: 92,
@@ -45,7 +45,7 @@ export default function StaffManagement() {
           phone: '0123456789',
           role: 'DRIVER',
           status: 'ACTIVE',
-          department: 'Vận chuyển', 
+          department: 'Transportation', 
           shiftStart: '08:00', 
           shiftEnd: '16:00',
           performanceScore: 95,
@@ -59,7 +59,7 @@ export default function StaffManagement() {
           phone: '0789123456',
           role: 'DISPATCHER',
           status: 'ACTIVE',
-          department: 'Điều phối', 
+          department: 'Dispatch', 
           shiftStart: '08:00', 
           shiftEnd: '17:00',
           performanceScore: 90,
@@ -73,7 +73,7 @@ export default function StaffManagement() {
           phone: '0456123789',
           role: 'FLEET',
           status: 'ACTIVE',
-          department: 'Bảo trì', 
+          department: 'Maintenance', 
           shiftStart: '07:00', 
           shiftEnd: '15:00',
           performanceScore: 88,
@@ -95,7 +95,7 @@ export default function StaffManagement() {
         setStaff(data);
         setError('');
       } catch {
-        setError('Không thể tải dữ liệu nhân viên. Sử dụng dữ liệu mẫu.');
+        setError('Unable to load staff data. Using sample data.');
         // Fallback data
         setStaff([
           { 
@@ -105,7 +105,7 @@ export default function StaffManagement() {
             phone: '0912345678',
             role: 'DRIVER',
             status: 'ACTIVE',
-            department: 'Vận chuyển', 
+            department: 'Transportation', 
             shiftStart: '06:00', 
             shiftEnd: '14:00',
             performanceScore: 92,
@@ -119,7 +119,7 @@ export default function StaffManagement() {
             phone: '0123456789',
             role: 'DRIVER',
             status: 'ACTIVE',
-            department: 'Vận chuyển', 
+            department: 'Transportation', 
             shiftStart: '08:00', 
             shiftEnd: '16:00',
             performanceScore: 95,
@@ -133,7 +133,7 @@ export default function StaffManagement() {
             phone: '0789123456',
             role: 'DISPATCHER',
             status: 'ACTIVE',
-            department: 'Điều phối', 
+            department: 'Dispatch', 
             shiftStart: '08:00', 
             shiftEnd: '17:00',
             performanceScore: 90,
@@ -147,7 +147,7 @@ export default function StaffManagement() {
             phone: '0456123789',
             role: 'FLEET',
             status: 'ACTIVE',
-            department: 'Bảo trì', 
+            department: 'Maintenance', 
             shiftStart: '07:00', 
             shiftEnd: '15:00',
             performanceScore: 88,
@@ -163,10 +163,10 @@ export default function StaffManagement() {
   }, [selectedDepartment]);
 
   const departments = [
-    { key: 'all', label: 'Tất cả' },
-    { key: 'Vận chuyển', label: 'Vận chuyển' },
-    { key: 'Điều phối', label: 'Điều phối' },
-    { key: 'Bảo trì', label: 'Bảo trì' },
+    { key: 'all', label: 'All' },
+    { key: 'Vận chuyển', label: 'Transportation' },
+    { key: 'Điều phối', label: 'Dispatch' },
+    { key: 'Bảo trì', label: 'Maintenance' },
   ];
 
   const getStatusColor = (status: Staff['status']) => {
@@ -181,20 +181,29 @@ export default function StaffManagement() {
 
   const getStatusText = (status: Staff['status']) => {
     switch (status) {
-      case 'ACTIVE': return 'Đang làm việc';
-      case 'ON_LEAVE': return 'Nghỉ phép';
-      case 'SICK_LEAVE': return 'Nghỉ ốm';
-      case 'TERMINATED': return 'Nghỉ việc';
+      case 'ACTIVE': return 'Working';
+      case 'ON_LEAVE': return 'On Leave';
+      case 'SICK_LEAVE': return 'Sick Leave';
+      case 'TERMINATED': return 'Terminated';
       default: return status;
     }
   };
 
   const getRoleText = (role: Staff['role']) => {
     switch (role) {
-      case 'DRIVER': return 'Tài xế';
-      case 'DISPATCHER': return 'Điều phối viên';
-      case 'FLEET': return 'Quản lý đội xe';
+      case 'DRIVER': return 'Driver';
+      case 'DISPATCHER': return 'Dispatcher';
+      case 'FLEET': return 'Fleet Manager';
       default: return role;
+    }
+  };
+
+  const getDepartmentText = (department: string) => {
+    switch (department) {
+      case 'Vận chuyển': return 'Transportation';
+      case 'Điều phối': return 'Dispatch';
+      case 'Bảo trì': return 'Maintenance';
+      default: return department;
     }
   };
 
@@ -217,7 +226,7 @@ export default function StaffManagement() {
   if (loading) {
     return (
       <GlassCard className="flex items-center justify-center h-64">
-        <div className="text-gray-800 text-lg">Đang tải dữ liệu nhân viên...</div>
+        <div className="text-gray-800 text-lg">Loading staff data...</div>
       </GlassCard>
     );
   }
@@ -231,7 +240,7 @@ export default function StaffManagement() {
       )}
 
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-800">Quản lý nhân viên</h2>
+        <h2 className="text-xl font-semibold text-gray-800">Staff Management</h2>
         <div className="flex gap-2">
           {departments.map((dept) => (
             <GlassButton
@@ -244,29 +253,29 @@ export default function StaffManagement() {
             </GlassButton>
           ))}
           <GlassButton size="sm" variant="secondary" onClick={fetchStaff}>
-            🔄 Làm mới
+            🔄 Refresh
           </GlassButton>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Tổng nhân viên"
+          title="Total Staff"
           value={totalStaff.toString()}
           icon={<FaUsers size={24} color="#4B5563" />}
         />
         <StatCard
-          title="Đang làm việc"
+          title="Working"
           value={activeStaff.toString()}
           icon={<MdWorkHistory size={24} color="#10b981" />}
         />
         <StatCard
-          title="Nghỉ phép"
+          title="On Leave"
           value={onLeaveStaff.toString()}
           icon={<FaUmbrellaBeach size={24} color="#f59e0b" />}
         />
         <StatCard
-          title="Hiệu suất TB"
+          title="Avg Performance"
           value={`${avgPerformance}%`}
           icon={<FaChartLine size={24} color="#4f46e5" />}
           trend={{ value: 2.3, isPositive: true }}
@@ -276,7 +285,7 @@ export default function StaffManagement() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium">
-            Danh sách nhân viên 
+            Staff List 
             {selectedDepartment !== 'all' && (
               <span className="text-gray-600 text-base ml-2">
                 - {departments.find(d => d.key === selectedDepartment)?.label}
@@ -285,7 +294,7 @@ export default function StaffManagement() {
           </h3>
         </div>
         
-        <DataTable headers={['Tên', 'Chức vụ', 'Phòng ban', 'Trạng thái', 'Liên hệ']}>
+        <DataTable headers={['Name', 'Role', 'Department', 'Status', 'Contact']}>
           {filteredStaff.map((person) => (
             <TableRow key={person.id}>
               <TableCell>
@@ -293,7 +302,7 @@ export default function StaffManagement() {
                 <div className="text-gray-600 text-xs">ID: {person.id}</div>
               </TableCell>
               <TableCell>{getRoleText(person.role)}</TableCell>
-              <TableCell>{person.department}</TableCell>
+              <TableCell>{getDepartmentText(person.department)}</TableCell>
               <TableCell>
                 <span className={`font-medium ${getStatusColor(person.status)}`}>
                   {getStatusText(person.status)}

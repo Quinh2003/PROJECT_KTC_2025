@@ -12,8 +12,14 @@ import {
 import { Store } from "@/types/Store";
 import { OrderItem } from "@/types/orders";
 import { FormInstance } from "antd";
-import { calculateShippingFee, getServiceMultiplier, calculateBaseShippingFee } from "@/utils/shipping";
-import { calculateDistanceFee, calculateTotalDistance } from "@/utils/distance";
+import {
+  getServiceMultiplier,
+  calculateBaseShippingFee,
+} from "@/utils/shipping";
+import {
+  calculateDistanceFee,
+  calculateTotalDistance,
+} from "@/utils/distance";
 import { getMapboxRoute } from "@/utils/mapbox";
 import { isValidItem, calculateVolume } from "@/utils/orderItems";
 
@@ -25,7 +31,6 @@ interface Props {
 }
 
 export default function StepInvoice({ form, store }: Props) {
-  // Lấy dữ liệu từ form
   const shippingAddress = form.getFieldValue("shipping_address");
   const receiverName = form.getFieldValue("receiver_name");
   const receiverPhone = form.getFieldValue("receiver_phone");
@@ -34,80 +39,68 @@ export default function StepInvoice({ form, store }: Props) {
   const notes = form.getFieldValue("notes");
   const items: OrderItem[] = form.getFieldValue("items") || [];
 
-  // Watch những field cần real-time update
   const serviceType = Form.useWatch("service_type", form) ?? "STANDARD";
 
-  // State cho tính toán khoảng cách
   const [distanceKm, setDistanceKm] = React.useState<number | null>(null);
   const [distanceFee, setDistanceFee] = React.useState<number | null>(null);
   const [distanceRegion, setDistanceRegion] = React.useState<string>("");
-  const [loadingRoute, setLoadingRoute] = React.useState(false);
 
-  // Tự động lấy route và tính phí khi đủ tọa độ
   React.useEffect(() => {
     const fetchRouteAndCalculate = async () => {
-      // Reset state
       setDistanceKm(null);
       setDistanceFee(null);
       setDistanceRegion("");
-      
-      // Kiểm tra tọa độ
+
       if (!store?.longitude || !store?.latitude) return;
-      
+
       const endLat = form.getFieldValue("latitude");
       const endLng = form.getFieldValue("longitude");
       if (!endLat || !endLng) return;
-      
-      setLoadingRoute(true);
-      
+
       try {
-        // Lấy route từ Mapbox
         const coordinates = await getMapboxRoute(
           store.longitude,
           store.latitude,
           endLng,
           endLat
         );
-        
-        // Tính khoảng cách
+
         if (coordinates.length >= 2) {
           const distance = calculateTotalDistance(coordinates);
           setDistanceKm(distance);
-          
-          // Tính phí theo khoảng cách
+
           const feeResult = calculateDistanceFee(distance);
-          console.log(`🗺️ Distance: ${distance.toFixed(2)}km, Fee result:`, feeResult);
           setDistanceFee(feeResult.fee);
           setDistanceRegion(feeResult.region);
         }
       } catch (error) {
         console.error("Lỗi khi tính toán route:", error);
-      } finally {
-        setLoadingRoute(false);
       }
     };
 
     fetchRouteAndCalculate();
-  }, [store?.longitude, store?.latitude, form.getFieldValue("latitude"), form.getFieldValue("longitude")]);
+  }, [
+    store?.longitude,
+    store?.latitude,
+    form.getFieldValue("latitude"),
+    form.getFieldValue("longitude"),
+  ]);
 
-  // Tính toán phí vận chuyển
   const serviceFeeMultiplier = getServiceMultiplier(serviceType);
-  
-  // Tính tổng phí sản phẩm (chỉ tính phí cơ bản, chưa áp dụng hệ số dịch vụ)
+
   let baseShippingFee = 0;
   items.forEach((item) => {
     if (isValidItem(item)) {
       const itemFragile = (item as any)?.is_fragile || false;
-      // Tính phí cơ bản (chưa áp dụng hệ số dịch vụ)
       const itemFee = calculateBaseShippingFee([item], itemFragile);
       baseShippingFee += itemFee;
     }
   });
 
-  // Tổng phí vận chuyển = (phí sản phẩm × hệ số dịch vụ) + phí khoảng cách
-  const totalFee = Math.round(baseShippingFee * serviceFeeMultiplier + (distanceFee || 0));
+  const totalFee = Math.round(
+    baseShippingFee * serviceFeeMultiplier + (distanceFee || 0)
+  );
 
-  // Tự động lưu totalFee vào form
   React.useEffect(() => {
     form.setFieldValue("delivery_fee", totalFee);
   }, [totalFee, form]);
@@ -116,89 +109,74 @@ export default function StepInvoice({ form, store }: Props) {
     <Card>
       <Title level={4}>Chi tiết đơn hàng</Title>
       <Row gutter={[16, 24]}>
+        {/* ===== Thông tin giao hàng ===== */}
         <Col xs={24}>
           <Card size="small" title="Thông tin giao hàng">
-            <Row gutter={24}>
+            <Row gutter={[16, 16]}>
               <Col xs={24} md={12}>
-                <div style={{ marginBottom: 16 }}>
-                  <Title
-                    level={5}
-                    style={{ margin: 0, marginBottom: 12, color: "#1890ff" }}
-                  >
-                    📍 Địa chỉ lấy hàng
-                  </Title>
-                  <div
-                    style={{ display: "flex", flexDirection: "column", gap: 8 }}
-                  >
-                    <div>
-                      <Text strong>Tên cửa hàng: </Text>
-                      <Text>{store?.storeName || "Đang tải"}</Text>
-                    </div>
-                    <div>
-                      <Text strong>Số điện thoại: </Text>
-                      <Text>{store?.phone || "Đang tải..."}</Text>
-                    </div>
-                    <div>
-                      <Text strong>Email: </Text>
-                      <Text>{store?.email || "Đang tải..."}</Text>
-                    </div>
-                    <div>
-                      <Text strong>Địa chỉ: </Text>
-                      <Text>{store?.address || "Đang tải..."}</Text>
-                    </div>
-                  </div>
+                <Title level={5} style={{ marginBottom: 12, color: "#1890ff" }}>
+                  📍 Địa chỉ lấy hàng
+                </Title>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <Text>
+                    <Text strong>Tên cửa hàng: </Text>
+                    {store?.storeName || "Đang tải..."}
+                  </Text>
+                  <Text>
+                    <Text strong>Số điện thoại: </Text>
+                    {store?.phone || "Đang tải..."}
+                  </Text>
+                  <Text>
+                    <Text strong>Email: </Text>
+                    {store?.email || "Đang tải..."}
+                  </Text>
+                  <Text>
+                    <Text strong>Địa chỉ: </Text>
+                    {store?.address || "Đang tải..."}
+                  </Text>
                 </div>
               </Col>
+
               <Col xs={24} md={12}>
-                <div style={{ marginBottom: 16 }}>
-                  <Title
-                    level={5}
-                    style={{ margin: 0, marginBottom: 12, color: "#52c41a" }}
-                  >
-                    🏠 Địa chỉ nhận hàng
-                  </Title>
-                  <div
-                    style={{ display: "flex", flexDirection: "column", gap: 8 }}
-                  >
-                    <div>
-                      <Text strong>Tên người nhận: </Text>
-                      <Text>{receiverName || "Chưa nhập tên người nhận"}</Text>
-                    </div>
-                    <div>
-                      <Text strong>Số điện thoại: </Text>
-                      <Text>{receiverPhone || "Chưa nhập số điện thoại"}</Text>
-                    </div>
-                    <div>
-                      <Text strong>Email: </Text>
-                      <Text>{receiverEmail || "Không có"}</Text>
-                    </div>
-                    <div>
-                      <Text strong>Địa chỉ: </Text>
-                      <Text>
-                        {shippingAddress || "Chưa nhập địa chỉ giao hàng"}
-                      </Text>
-                    </div>
-                  </div>
+                <Title level={5} style={{ marginBottom: 12, color: "#52c41a" }}>
+                  🏠 Địa chỉ nhận hàng
+                </Title>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <Text>
+                    <Text strong>Tên người nhận: </Text>
+                    {receiverName || "Chưa nhập"}
+                  </Text>
+                  <Text>
+                    <Text strong>Số điện thoại: </Text>
+                    {receiverPhone || "Chưa nhập"}
+                  </Text>
+                  <Text>
+                    <Text strong>Email: </Text>
+                    {receiverEmail || "Không có"}
+                  </Text>
+                  <Text>
+                    <Text strong>Địa chỉ: </Text>
+                    {shippingAddress || "Chưa nhập"}
+                  </Text>
                 </div>
               </Col>
             </Row>
+
             {(description || notes) && (
               <>
                 <Divider style={{ margin: "16px 0" }} />
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 8 }}
-                >
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {description && (
-                    <div>
+                    <Text>
                       <Text strong>Mô tả đơn hàng: </Text>
-                      <Text>{description}</Text>
-                    </div>
+                      {description}
+                    </Text>
                   )}
                   {notes && (
-                    <div>
+                    <Text>
                       <Text strong>Ghi chú: </Text>
-                      <Text>{notes}</Text>
-                    </div>
+                      {notes}
+                    </Text>
                   )}
                 </div>
               </>
@@ -206,6 +184,7 @@ export default function StepInvoice({ form, store }: Props) {
           </Card>
         </Col>
 
+        {/* ===== Danh sách sản phẩm ===== */}
         <Col xs={24}>
           <Card size="small" title="Danh sách sản phẩm">
             {items.length === 0 ? (
@@ -220,22 +199,30 @@ export default function StepInvoice({ form, store }: Props) {
                 }))}
                 pagination={false}
                 size="small"
+                scroll={{ x: 800 }}
                 columns={[
                   {
                     title: "Tên sản phẩm",
                     dataIndex: "product_name",
                     key: "product_name",
                   },
-                  { title: "Số lượng", dataIndex: "quantity", key: "quantity" },
+                  {
+                    title: "Số lượng",
+                    dataIndex: "quantity",
+                    key: "quantity",
+                    
+                  },
                   {
                     title: "Cân nặng (kg)",
                     dataIndex: "weight",
                     key: "weight",
+                    
                     render: (w: number) => `${w || 0} kg`,
                   },
                   {
                     title: "Thể tích (cm³)",
                     key: "volume",
+                    responsive: ["lg"],
                     render: (_, r: OrderItem) => {
                       const volume = calculateVolume(r);
                       return volume > 0
@@ -246,11 +233,12 @@ export default function StepInvoice({ form, store }: Props) {
                   {
                     title: "Hàng dễ vỡ",
                     key: "is_fragile",
+                    responsive: ["md"],
                     render: (_, r: OrderItem) => {
-                      const itemFragile = (r as any)?.is_fragile || false;
+                      const fragile = (r as any)?.is_fragile || false;
                       return (
-                        <Text style={{ color: itemFragile ? "#ff4d4f" : "#52c41a" }}>
-                          {itemFragile ? "Có" : "Không"}
+                        <Text style={{ color: fragile ? "#ff4d4f" : "#52c41a" }}>
+                          {fragile ? "Có" : "Không"}
                         </Text>
                       );
                     },
@@ -259,12 +247,11 @@ export default function StepInvoice({ form, store }: Props) {
                     title: "Phí vận chuyển",
                     key: "shipping_fee",
                     render: (_, r: OrderItem) => {
-                      const itemFragile = (r as any)?.is_fragile || false;
-                      // Hiển thị phí cơ bản (chưa áp dụng hệ số dịch vụ)
-                      const itemFee = calculateBaseShippingFee([r], itemFragile);
+                      const fragile = (r as any)?.is_fragile || false;
+                      const fee = calculateBaseShippingFee([r], fragile);
                       return (
                         <Text strong style={{ color: "#1890ff" }}>
-                          {itemFee.toLocaleString("vi-VN")} ₫
+                          {fee.toLocaleString("vi-VN")} ₫
                         </Text>
                       );
                     },
@@ -275,17 +262,18 @@ export default function StepInvoice({ form, store }: Props) {
           </Card>
         </Col>
 
+        {/* ===== Chi phí ===== */}
         <Col xs={24}>
           <Card size="small" title="Chi phí">
             <Row gutter={[16, 16]}>
-              <Col xs={24} md={12}>
+              <Col xs={24} sm={12}>
                 <Form.Item
                   name="service_type"
                   label="Loại dịch vụ"
                   initialValue="STANDARD"
                   rules={[{ required: true, message: "Chọn loại dịch vụ" }]}
                 >
-                  <Select placeholder="Chọn loại dịch vụ">
+                  <Select placeholder="Chọn loại dịch vụ" style={{ width: "100%" }}>
                     <Select.Option value="SECOND_CLASS">
                       Tiết kiệm (-20%)
                     </Select.Option>
@@ -293,16 +281,12 @@ export default function StepInvoice({ form, store }: Props) {
                     <Select.Option value="FIRST_CLASS">
                       Cao cấp (+30%)
                     </Select.Option>
-                    <Select.Option value="EXPRESS">
-                      Hỏa tốc (+80%)
-                    </Select.Option>
-                    {/* <Select.Option value="PRIORITY">
-                      Ưu tiên (+100%)
-                    </Select.Option> */}
+                    <Select.Option value="EXPRESS">Hỏa tốc (+80%)</Select.Option>
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={24}>
+
+              <Col xs={24}>
                 <div
                   style={{
                     background: "#f5f5f5",
@@ -310,28 +294,29 @@ export default function StepInvoice({ form, store }: Props) {
                     borderRadius: 6,
                   }}
                 >
-                  <Row gutter={[16, 8]}>
-                    <Col span={12}>
-                      <Text>Phí sản phẩm (theo trọng lượng & loại hàng):</Text>
+                  <Row gutter={[8, 8]}>
+                    <Col xs={24} sm={12}>
+                      <Text>Phí sản phẩm:</Text>
                     </Col>
-                    <Col span={12} style={{ textAlign: "right" }}>
+                    <Col xs={24} sm={12} style={{ textAlign: "right" }}>
                       <Text>{baseShippingFee.toLocaleString("vi-VN")} ₫</Text>
                     </Col>
-                    <Col span={12}>
-                      <Text>Loại dịch vụ ({serviceType || "STANDARD"}):</Text>
+
+                    <Col xs={24} sm={12}>
+                      <Text>Loại dịch vụ:</Text>
                     </Col>
-                    <Col span={12} style={{ textAlign: "right" }}>
+                    <Col xs={24} sm={12} style={{ textAlign: "right" }}>
                       <Text>x {serviceFeeMultiplier}</Text>
                     </Col>
-                    {/* Đã xóa phần phí hàng dễ vỡ theo yêu cầu */}
-                    {/* Hiển thị phí vận chuyển theo khoảng cách nếu có */}
+
                     {distanceFee !== null && (
-                      <Col span={24} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Col xs={24} style={{ display: "flex", justifyContent: "space-between" }}>
                         <span>
-                          Phí vận chuyển theo khoảng cách ({distanceRegion}
-                          {distanceKm !== null && (
-                            <span style={{ color: '#888', fontWeight: 400 }}>
-                              {' '}~{distanceKm.toFixed(2)} km
+                          Phí theo khoảng cách ({distanceRegion}
+                          {distanceKm && (
+                            <span style={{ color: "#888" }}>
+                              {" "}
+                              ~{distanceKm.toFixed(2)} km
                             </span>
                           )}
                           )
@@ -341,15 +326,17 @@ export default function StepInvoice({ form, store }: Props) {
                         </span>
                       </Col>
                     )}
+
                     <Col span={24}>
                       <Divider style={{ margin: "12px 0" }} />
                     </Col>
-                    <Col span={12}>
+
+                    <Col xs={12}>
                       <Text strong style={{ fontSize: 16 }}>
                         Tổng phí vận chuyển:
                       </Text>
                     </Col>
-                    <Col span={12} style={{ textAlign: "right" }}>
+                    <Col xs={12} style={{ textAlign: "right" }}>
                       <Text strong style={{ fontSize: 18, color: "#1890ff" }}>
                         {totalFee.toLocaleString("vi-VN")} ₫
                       </Text>

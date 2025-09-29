@@ -19,7 +19,7 @@ export interface Vehicle {
   id: string;
   name: string;
   type: 'TRUCK' | 'VAN' | 'MOTORCYCLE';
-  status: 'ACTIVE' | 'MAINTENANCE' | 'IDLE' | 'OUT_OF_SERVICE';
+  status: 'AVAILABLE' | 'IN_USE' | 'MAINTENANCE' | 'MAINTENANCE_PENDING';
   statusDisplay?: string; // Vietnamese display name for status
   statusCode?: string; // status.name
   statusDescription?: string; // status.description
@@ -119,7 +119,7 @@ export interface Vehicle {
   id: string;
   name: string;
   type: 'TRUCK' | 'VAN' | 'MOTORCYCLE';
-  status: 'ACTIVE' | 'MAINTENANCE' | 'IDLE' | 'OUT_OF_SERVICE';
+  status: 'AVAILABLE' | 'IN_USE' | 'MAINTENANCE' | 'MAINTENANCE_PENDING';
   driver?: {
     id: string;
     name: string;

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { User } from "../../types/User";
 import Sidebar, { type OperationsTab } from '../../components/Sidebar';
 import Navbar from '../../components/Navbar';
@@ -15,6 +16,7 @@ interface OperationsDashboardProps {
 }
 
 export default function OperationsDashboard({ user, onLogout }: OperationsDashboardProps) {
+  const { t } = useTranslation();
   const [tab, setTab] = useState<OperationsTab>("overview");
   const [previousTab, setPreviousTab] = useState<OperationsTab>("overview");
   
@@ -133,8 +135,8 @@ export default function OperationsDashboard({ user, onLogout }: OperationsDashbo
         <Navbar 
           user={user}
           onLogout={onLogout}
-          title="Operations Manager Dashboard"
-          subtitle=""
+          title={t('dashboard.operations.title', 'Operations Manager Dashboard')}
+          subtitle={t('dashboard.operations.subtitle', 'Monitor and manage operational metrics')}
         />
         {/* Mobile Navigation - Tab bar at bottom for mobile */}
         <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-white/30 px-4 py-2 z-50">
@@ -144,28 +146,28 @@ export default function OperationsDashboard({ user, onLogout }: OperationsDashbo
               className={`flex flex-col items-center py-2 px-1 ${tab === "overview" ? "text-blue-600" : "text-gray-600"}`}
             >
               <FiHome className="text-xl mb-1" />
-              <span className="text-xs">Overview</span>
+              <span className="text-xs">{t('dashboard.operations.tabs.overview', 'Overview')}</span>
             </button>
             <button
               onClick={() => setTab("performance")}
               className={`flex flex-col items-center py-2 px-1 ${tab === "performance" ? "text-blue-600" : "text-gray-600"}`}
             >
               <FiBarChart2 className="text-xl mb-1" />
-              <span className="text-xs">Performance</span>
+              <span className="text-xs">{t('dashboard.operations.tabs.performance', 'Performance')}</span>
             </button>
             <button
               onClick={() => setTab("monitoring")}
               className={`flex flex-col items-center py-2 px-1 ${tab === "monitoring" ? "text-blue-600" : "text-gray-600"}`}
             >
               <FiActivity className="text-xl mb-1" />
-              <span className="text-xs">Monitoring</span>
+              <span className="text-xs">{t('dashboard.operations.tabs.monitoring', 'Monitoring')}</span>
             </button>
             <button
               onClick={() => setTab("staff")}
               className={`flex flex-col items-center py-2 px-1 ${tab === "staff" ? "text-blue-600" : "text-gray-600"}`}
             >
               <FiUsers className="text-xl mb-1" />
-              <span className="text-xs">Staff</span>
+              <span className="text-xs">{t('dashboard.operations.tabs.staff', 'Staff')}</span>
             </button>
           </div>
         </div>

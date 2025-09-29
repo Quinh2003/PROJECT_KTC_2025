@@ -44,7 +44,7 @@ export default function MonthlyRevenueChart({ onRefreshAll }: MonthlyRevenueChar
 
   // Tạo labels cho 12 tháng gần nhất
   const generateLabels = () => {
-    return ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+    return ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11', 'M12'];
   };
 
   // Truyền dữ liệu chart theo VND gốc
@@ -101,14 +101,14 @@ export default function MonthlyRevenueChart({ onRefreshAll }: MonthlyRevenueChar
   // Format số để hiển thị (VND -> tỷ/triệu, có dấu phân tách)
   // Hiển thị đầy đủ số, có dấu, có đơn vị VND
   const formatCurrency = (amount: number) => {
-    return amount.toLocaleString('vi-VN') + ' VND';
+    return amount.toLocaleString('en-US') + ' VND';
   };
 
   const monthlyRevenueData = {
     labels,
     datasets: [
       {
-        label: 'Doanh thu (triệu VND)',
+        label: 'Revenue (million VND)',
         data: chartDataValues,
         borderColor: '#3b82f6',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -139,10 +139,10 @@ export default function MonthlyRevenueChart({ onRefreshAll }: MonthlyRevenueChar
         cornerRadius: 8,
         displayColors: true,
         callbacks: {
-          title: (context) => `Tháng ${context[0].label}`,
+          title: (context) => `Month ${context[0].label}`,
           label: (context) => {
             // context.parsed.y là VND gốc
-            return `Doanh thu: ${context.parsed.y.toLocaleString('vi-VN')} VND`;
+            return `Revenue: ${context.parsed.y.toLocaleString('en-US')} VND`;
           }
         }
       }
@@ -173,7 +173,7 @@ export default function MonthlyRevenueChart({ onRefreshAll }: MonthlyRevenueChar
           },
           callback: function(value) {
             // value là VND, chia triệu và format
-            return (Number(value) / 1_000_000).toLocaleString('vi-VN', { maximumFractionDigits: 0 }) + 'M';
+            return (Number(value) / 1_000_000).toLocaleString('en-US', { maximumFractionDigits: 0 }) + 'M';
           }
         }
       }
@@ -197,14 +197,14 @@ export default function MonthlyRevenueChart({ onRefreshAll }: MonthlyRevenueChar
   return (
     <div className="bg-white/40 backdrop-blur-md rounded-xl p-6 border border-white/20 shadow-lg">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-800">Doanh thu theo tháng</h3>
+        <h3 className="text-lg font-semibold text-gray-800">Monthly Revenue</h3>
         <div className="flex gap-2">
           <button 
             className="px-3 py-1 text-xs rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
             onClick={handleRefreshAll}
             disabled={loading}
           >
-            {loading ? 'Đang tải...' : 'Làm mới'}
+            {loading ? 'Loading...' : 'Refresh'}
           </button>
         </div>
       </div>
@@ -225,19 +225,19 @@ export default function MonthlyRevenueChart({ onRefreshAll }: MonthlyRevenueChar
           <div className="text-2xl font-bold text-blue-600">
             {formatCurrency(totalRevenue)}
           </div>
-          <div className="text-sm text-gray-600">Tổng doanh thu năm</div>
+          <div className="text-sm text-gray-600">Total annual revenue</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-green-600">
             {growthPercent > 0 ? '+' : ''}{growthPercent.toFixed(1)}%
           </div>
-          <div className="text-sm text-gray-600">Tăng trưởng so với tháng trước</div>
+          <div className="text-sm text-gray-600">Growth compared to last month</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-amber-600">
             {formatCurrency(averageRevenue)}
           </div>
-          <div className="text-sm text-gray-600">Trung bình tháng</div>
+          <div className="text-sm text-gray-600">Monthly average</div>
         </div>
       </div>
     </div>

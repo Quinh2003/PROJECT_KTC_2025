@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from 'react-i18next';
 import type { User } from "../../types/User";
 
 import { fetchUsers, fetchActivityLogs } from "../../services/adminAPI";
@@ -33,6 +34,7 @@ interface AdminDashboardProps {
 }
 
 export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
+  const { t } = useTranslation();
   const [active, setActive] = useState<AdminTab>("users");
 
   const [users, setUsers] = useState<DashboardUser[]>([]);
@@ -122,22 +124,22 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
   const uniqueRoles = Array.from(new Set(users.map(u => u.role)));
   const stats = [
     {
-      label: "Total Users",
+      label: t('dashboard.admin.stats.totalUsers', 'Total Users'),
       value: users.length.toLocaleString(),
       icon: <MdManageAccounts className="text-3xl text-blue-600" />,
     },
     {
-      label: "Total Roles",
+      label: t('dashboard.admin.stats.totalRoles', 'Total Roles'),
       value: uniqueRoles.length.toLocaleString(),
       icon: <RiShieldKeyholeLine className="text-3xl text-green-600" />,
     },
     {
-      label: "System Config",
+      label: t('dashboard.admin.stats.systemConfig', 'System Config'),
       value: "",
       icon: <AiOutlineSafetyCertificate className="text-3xl text-yellow-600" />,
     },
     {
-      label: "Audit Events",
+      label: t('dashboard.admin.stats.auditEvents', 'Audit Events'),
       value: auditCount.toLocaleString(),
       icon: <HiOutlineDocumentReport className="text-3xl text-purple-600" />,
     },
@@ -160,14 +162,15 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
           user={user}
           onLogout={onLogout}
           title={active === "users"
-            ? "User Management Dashboard"
+            ? t('dashboard.admin.title.userManagement', 'User Management Dashboard')
             : active === "roles"
-              ? "Role Permissions Dashboard"
+              ? t('dashboard.admin.title.rolePermissions', 'Role Permissions Dashboard')
               : active === "settings"
-                ? "System Configuration Dashboard"
+                ? t('dashboard.admin.title.systemConfiguration', 'System Configuration Dashboard')
                 : active === "logs"
-                  ? "System Logs Dashboard"
-                  : "Admin Dashboard"} subtitle={""}         
+                  ? t('dashboard.admin.title.systemLogs', 'System Logs Dashboard')
+                  : t('dashboard.admin.title.admin', 'Admin Dashboard')} 
+          subtitle={t('dashboard.admin.subtitle', 'Manage system users, roles and configurations')}         
         />
         {/* Mobile Navigation - Tab bar at bottom for mobile */}
         <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-white/30 px-4 py-2 z-50">
@@ -177,28 +180,28 @@ export default function AdminDashboard({ user, onLogout }: AdminDashboardProps) 
               className={`flex flex-col items-center py-2 px-1 ${active === "users" ? "text-blue-600" : "text-gray-600"}`}
             >
               <MdManageAccounts className="text-xl mb-1" />
-              <span className="text-xs">Users</span>
+              <span className="text-xs">{t('dashboard.admin.tabs.users', 'Users')}</span>
             </button>
             <button
               onClick={() => setActive("roles")}
               className={`flex flex-col items-center py-2 px-1 ${active === "roles" ? "text-blue-600" : "text-gray-600"}`}
             >
               <RiShieldKeyholeLine className="text-xl mb-1" />
-              <span className="text-xs">Roles</span>
+              <span className="text-xs">{t('dashboard.admin.tabs.roles', 'Roles')}</span>
             </button>
             <button
               onClick={() => setActive("settings")}
               className={`flex flex-col items-center py-2 px-1 ${active === "settings" ? "text-blue-600" : "text-gray-600"}`}
             >
               <AiOutlineSafetyCertificate className="text-xl mb-1" />
-              <span className="text-xs">Config</span>
+              <span className="text-xs">{t('dashboard.admin.tabs.settings', 'Config')}</span>
             </button>
             <button
               onClick={() => setActive("logs")}
               className={`flex flex-col items-center py-2 px-1 ${active === "logs" ? "text-blue-600" : "text-gray-600"}`}
             >
               <HiOutlineDocumentReport className="text-xl mb-1" />
-              <span className="text-xs">Logs</span>
+              <span className="text-xs">{t('dashboard.admin.tabs.logs', 'Logs')}</span>
             </button>
           </div>
         </div>

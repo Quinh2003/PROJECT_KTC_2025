@@ -23,13 +23,13 @@ interface PerformanceMetrics {
 }
 
 export default function PerformanceAnalytics() {
-  // Hàm làm mới dữ liệu hiệu suất và đơn hàng
+  // Function to refresh performance and orders data
   const handleRefresh = async () => {
     setLoading(true);
     setOrdersLoading(true);
     await Promise.all([
       fetchMetricsData(),
-      fetchOrdersData(0, selectedStatus)
+      fetchOrdersData(0, convertStatusForAPI(selectedStatus))
     ]);
     setLoading(false);
     setOrdersLoading(false);
@@ -41,15 +41,15 @@ export default function PerformanceAnalytics() {
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Trạng thái filter (khớp với backend status mapping)
-  const [selectedStatus, setSelectedStatus] = useState<string>('Tất cả');
+  // Status filter (matching backend status mapping)
+  const [selectedStatus, setSelectedStatus] = useState<string>('All');
   const statusOptions = [
-    'Tất cả',
-    'Chờ xử lý',      // Pending (ID: 1)
-    'Đang xử lý',     // Processing (ID: 4)
-    'Đang giao',      // Shipped (ID: 5)
-    'Hoàn thành',     // Completed (ID: 2)
-    'Đã hủy',         // Cancelled (ID: 3)
+    'All',
+    'Pending',        // Pending (ID: 1)
+    'Processing',     // Processing (ID: 4)
+    'Shipped',        // Shipped (ID: 5)
+    'Completed',      // Completed (ID: 2)
+    'Cancelled',      // Cancelled (ID: 3)
   ];
 
   // Server-side pagination states
@@ -96,7 +96,7 @@ export default function PerformanceAnalytics() {
           costPerKm: 13000,
         }
       });
-      setError('Đang sử dụng dữ liệu mẫu do lỗi kết nối API.');
+      setError('Using sample data due to API connection error.');
     } finally {
       setLoading(false);
     }
@@ -112,7 +112,7 @@ export default function PerformanceAnalytics() {
       setTotalPages(ordersResponse.totalPages);
       setTotalElements(ordersResponse.totalElements);
     } catch (err) {
-      setError('Lỗi khi tải danh sách đơn hàng');
+      setError('Error loading order list');
       console.error('Error fetching orders:', err);
     } finally {
       setOrdersLoading(false);
@@ -122,14 +122,27 @@ export default function PerformanceAnalytics() {
   // Function to handle page change
   const handlePageChange = useCallback((newPage: number) => {
     setCurrentPage(newPage);
-    fetchOrdersData(newPage, selectedStatus);
+    fetchOrdersData(newPage, convertStatusForAPI(selectedStatus));
   }, [selectedStatus, fetchOrdersData]);
+
+  // Function to convert English status to Vietnamese for API
+  const convertStatusForAPI = (status: string) => {
+    const statusMap: Record<string, string> = {
+      'All': 'Tất cả',
+      'Pending': 'Chờ xử lý',
+      'Processing': 'Đang xử lý',
+      'Shipped': 'Đang giao',
+      'Completed': 'Hoàn thành',
+      'Cancelled': 'Đã hủy'
+    };
+    return statusMap[status] || status;
+  };
 
   // Function to handle status filter change
   const handleStatusChange = useCallback((status: string) => {
     setSelectedStatus(status);
     setCurrentPage(0); // Reset to first page when filter changes
-    fetchOrdersData(0, status); // Fetch with new filter
+    fetchOrdersData(0, convertStatusForAPI(status)); // Fetch with new filter
   }, [fetchOrdersData]);
 
   useEffect(() => {
@@ -139,39 +152,39 @@ export default function PerformanceAnalytics() {
 
   useEffect(() => {
     // Fetch orders data when selectedStatus changes
-    fetchOrdersData(0, selectedStatus);
+    fetchOrdersData(0, convertStatusForAPI(selectedStatus));
     setCurrentPage(0); // Reset page when status changes
   }, [selectedStatus, fetchOrdersData]);
 
   if (loading) {
     return (
       <GlassCard className="flex items-center justify-center h-64">
-        <div className="text-gray-800 text-lg">Đang tải dữ liệu hiệu suất...</div>
+        <div className="text-gray-800 text-lg">Loading performance data...</div>
       </GlassCard>
     );
   }
 
   const performanceData = metrics ? [
     { 
-      metric: 'Tỷ lệ giao hàng thành công', 
+      metric: 'Delivery Success Rate', 
       current: metrics.deliverySuccessRate, 
       target: metrics.target.deliverySuccessRate, 
       trend: Number((metrics.deliverySuccessRate - metrics.target.deliverySuccessRate).toFixed(1))
     },
     { 
-      metric: 'Thời gian giao hàng trung bình', 
+      metric: 'Average Delivery Time', 
       current: metrics.avgDeliveryTime, 
       target: metrics.target.avgDeliveryTime, 
       trend: Number((metrics.target.avgDeliveryTime - metrics.avgDeliveryTime).toFixed(1))
     },
     { 
-      metric: 'Chi phí vận chuyển/km', 
+      metric: 'Transportation Cost/km', 
       current: metrics.costPerKm, 
       target: metrics.target.costPerKm, 
       trend: Number((((metrics.costPerKm - metrics.target.costPerKm) / metrics.target.costPerKm) * 100).toFixed(1))
     },
     { 
-      metric: 'Tổng số km đã vận chuyển', 
+      metric: 'Total km Transported', 
       current: metrics.totalDistanceKm, 
       target: 0, // No target for total distance as it's cumulative
       trend: 0 // No trend for total distance as it's cumulative
@@ -188,7 +201,7 @@ export default function PerformanceAnalytics() {
 
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h2 className="text-xl font-semibold text-gray-800">Phân tích hiệu suất</h2>
+        <h2 className="text-xl font-semibold text-gray-800">Performance Analytics</h2>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
           <div className="flex flex-wrap gap-2">
             {statusOptions.map((status) => (
@@ -205,7 +218,7 @@ export default function PerformanceAnalytics() {
           <GlassButton onClick={handleRefresh} size="sm" variant="primary" className="whitespace-nowrap self-start sm:self-auto" disabled={loading || ordersLoading}>
             <span className="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M4.93 19.07a10 10 0 1 0 0-14.14M4 4v5h5"/></svg>
-              Làm mới
+              Refresh
             </span>
           </GlassButton>
         </div>
@@ -218,49 +231,64 @@ export default function PerformanceAnalytics() {
     orders={recentOrders}
   />
   
-  {/* Pagination Controls */}
+  {/* Pagination Controls - Glass Morphism Style */}
   {totalPages > 1 && (
-    <div className="flex justify-center items-center mt-6 space-x-2">
-      <button
-        onClick={() => handlePageChange(Math.max(currentPage - 1, 0))}
-        disabled={currentPage === 0}
-        className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Trước
-      </button>
-      
-      <div className="flex space-x-1">
-        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-          const pageNumber = Math.max(0, currentPage - 2) + i;
-          if (pageNumber >= totalPages) return null;
-          
-          return (
-            <button
-              key={pageNumber}
-              onClick={() => handlePageChange(pageNumber)}
-              className={`px-3 py-2 text-sm font-medium rounded-md ${
-                currentPage === pageNumber
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              {pageNumber + 1}
-            </button>
-          );
-        })}
+    <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200/30">
+      <div className="text-sm text-gray-600 font-medium">
+        Showing {currentPage * ITEMS_PER_PAGE + 1}-{Math.min((currentPage + 1) * ITEMS_PER_PAGE, totalElements)} of {totalElements} orders
       </div>
-      
-      <button
-        onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages - 1))}
-        disabled={currentPage === totalPages - 1}
-        className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Sau
-      </button>
-      
-      <span className="text-sm text-gray-700 ml-4">
-        Trang {currentPage + 1} / {totalPages} ({totalElements} đơn hàng)
-      </span>
+      <div className="flex items-center gap-1">
+        <GlassButton
+          size="sm"
+          variant="secondary"
+          onClick={() => handlePageChange(Math.max(currentPage - 1, 0))}
+          disabled={currentPage === 0}
+          className={`px-3 ${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/30'}`}
+        >
+          ← Previous
+        </GlassButton>
+        
+        <div className="flex items-center gap-1 mx-2">
+          {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+            let pageNumber;
+            if (totalPages <= 5) {
+              pageNumber = i;
+            } else if (currentPage <= 2) {
+              pageNumber = i;
+            } else if (currentPage >= totalPages - 3) {
+              pageNumber = totalPages - 5 + i;
+            } else {
+              pageNumber = currentPage - 2 + i;
+            }
+            
+            return (
+              <GlassButton
+                key={pageNumber}
+                size="sm"
+                variant={currentPage === pageNumber ? 'primary' : 'secondary'}
+                onClick={() => handlePageChange(pageNumber)}
+                className={`min-w-[36px] h-9 ${
+                  currentPage === pageNumber 
+                    ? 'bg-blue-500/80 text-white font-semibold ring-2 ring-blue-400/50' 
+                    : 'hover:bg-white/20'
+                }`}
+              >
+                {pageNumber + 1}
+              </GlassButton>
+            );
+          })}
+        </div>
+        
+        <GlassButton
+          size="sm"
+          variant="secondary"
+          onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages - 1))}
+          disabled={currentPage === totalPages - 1}
+          className={`px-3 ${currentPage === totalPages - 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/30'}`}
+        >
+          Next →
+        </GlassButton>
+      </div>
     </div>
   )}
     </GlassCard>

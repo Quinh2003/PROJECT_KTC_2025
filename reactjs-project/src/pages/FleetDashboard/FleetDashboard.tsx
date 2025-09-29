@@ -1,5 +1,6 @@
 import { fetchEmergencyRequestsByVehicleId } from "../../services/VehicleMaintenanceAPI";
 import React, { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Truck, CircleDot, Wrench, AlertTriangle } from "lucide-react";
 import { MdManageAccounts } from "react-icons/md";
 import { AiOutlineSetting } from "react-icons/ai";
@@ -55,6 +56,7 @@ export default function FleetDashboard({
   user,
   onLogout,
 }: FleetDashboardProps) {
+  const { t } = useTranslation();
   const {
     // State
     tab,
@@ -223,8 +225,8 @@ export default function FleetDashboard({
         <Navbar
           user={user}
           onLogout={onLogout}
-          title="Dashboard Quản lý đội xe"
-          subtitle=""
+          title={t('dashboard.fleet.title', 'Fleet Management Dashboard')}
+          subtitle={t('dashboard.fleet.subtitle', 'Manage vehicles and maintenance')}
         />
         {/* Mobile Navigation - Tab bar at bottom for mobile */}
         <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-white/30 px-4 py-2 z-50">
@@ -259,33 +261,33 @@ export default function FleetDashboard({
                 <button
                   onClick={refreshVehicles}
                   className="absolute right-0 top-0 flex items-center gap-2 px-3 md:px-4 py-2 bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white rounded-full font-semibold shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-400"
-                  title="Làm mới danh sách phương tiện"
+                  title={t('dashboard.fleet.refreshVehicles', 'Refresh vehicle list')}
                 >
                   <svg className="animate-spin-slow" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M4.93 4.93a10 10 0 1 1-1.32 2.09"/><path d="M4 4V8h4"/></svg>
-                  <span className="hidden md:inline">Làm mới</span>
+                  <span className="hidden md:inline">{t('common.refresh')}</span>
                 </button>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
                 <StatsCard
-                  title="Tổng phương tiện"
+                  title={t('dashboard.fleet.stats.totalVehicles', 'Total Vehicles')}
                   value={fleetStats.total}
                   icon={<Truck size={32} className="text-blue-600" />}
                   color="border-blue-500"
                 />
                 <StatsCard
-                  title="Đang hoạt động"
+                  title={t('dashboard.fleet.stats.inUse', 'In Use')}
                   value={fleetStats.inUse}
                   icon={<CircleDot size={32} className="text-green-600" />}
                   color="border-green-500"
                 />
                 <StatsCard
-                  title="Đang bảo trì"
+                  title={t('dashboard.fleet.stats.maintenance', 'Under Maintenance')}
                   value={fleetStats.maintenance}
                   icon={<Wrench size={32} className="text-yellow-600" />}
                   color="border-yellow-500"
                 />
                 <StatsCard
-                  title="Cần bảo trì"
+                  title={t('dashboard.fleet.stats.needMaintenance', 'Need Maintenance')}
                   value={fleetStats.needMaintenance}
                   icon={<AlertTriangle size={32} className="text-red-600" />}
                   color="border-red-500"

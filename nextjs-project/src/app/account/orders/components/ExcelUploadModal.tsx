@@ -1,11 +1,7 @@
 "use client";
 
-import { Modal, Button, Upload, Typography, Divider, Table } from "antd";
-import {
-  CloudUploadOutlined,
-  CloseOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { Modal, Button, Upload, Typography, Divider, Table, message } from "antd";
+import { CloudUploadOutlined, CloseOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import type { UploadProps } from "antd";
 import { OrderItem } from "@/types/orders";
@@ -24,28 +20,14 @@ export default function ExcelUploadModal({ open, onClose, onSaveData }: Props) {
   const [excelData, setExcelData] = useState<OrderItem[]>([]);
 
   const handleDownloadSample = () => {
-    // Tạo file Excel mẫu
     const sampleData = [
-      [
-        "Tên sản phẩm",
-        "Số lượng",
-        "Cân nặng (kg)",
-        "Chiều cao (cm)",
-        "Chiều rộng (cm)",
-        "Chiều dài (cm)",
-      ],
+      ["Tên sản phẩm", "Số lượng", "Cân nặng (kg)", "Chiều cao (cm)", "Chiều rộng (cm)", "Chiều dài (cm)"],
       ["Sản phẩm mẫu 1", 2, 1.5, 30, 20, 40],
       ["Sản phẩm mẫu 2", 1, 0.8, 15, 15, 25],
     ];
-
-    // Tạo workbook và worksheet
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(sampleData);
-
-    // Thêm worksheet vào workbook
     XLSX.utils.book_append_sheet(wb, ws, "Order Items");
-
-    // Tải file
     XLSX.writeFile(wb, "sample_order_items.xlsx");
   };
 
@@ -55,17 +37,11 @@ export default function ExcelUploadModal({ open, onClose, onSaveData }: Props) {
       try {
         const data = e.target?.result;
         const workbook = XLSX.read(data, { type: "binary" });
-        const firstSheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheetName];
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-        // Chuyển đổi dữ liệu sang định dạng OrderItem
-        const orderItems: OrderItem[] = (
-          jsonData as Record<string, unknown>[]
-        ).map((row) => ({
-          product_name: String(
-            row["Tên sản phẩm"] || row["product_name"] || ""
-          ),
+        const orderItems: OrderItem[] = (jsonData as Record<string, unknown>[]).map((row) => ({
+          product_name: String(row["Tên sản phẩm"] || row["product_name"] || ""),
           quantity: Number(row["Số lượng"] || row["quantity"]) || 1,
           weight: Number(row["Cân nặng (kg)"] || row["weight"]) || 0,
           height: Number(row["Chiều cao (cm)"] || row["height"]) || 0,
@@ -74,9 +50,10 @@ export default function ExcelUploadModal({ open, onClose, onSaveData }: Props) {
         }));
 
         setExcelData(orderItems);
+        message.success(`Đã đọc ${orderItems.length} sản phẩm từ file`);
       } catch (error) {
         console.error("Error reading Excel file:", error);
-        // Có thể thêm thông báo lỗi cho người dùng
+        message.error("Không thể đọc file Excel, vui lòng kiểm tra định dạng.");
       }
     };
     reader.readAsBinaryString(file);
@@ -86,11 +63,15 @@ export default function ExcelUploadModal({ open, onClose, onSaveData }: Props) {
     name: "file",
     multiple: false,
     accept: ".xlsx,.xls",
-    disabled: uploadedFile !== null, // Disable khi đã có file
+    disabled: uploadedFile !== null,
     beforeUpload: (file) => {
+      if (!file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
+        message.error("Chỉ hỗ trợ file Excel (.xlsx, .xls)");
+        return Upload.LIST_IGNORE;
+      }
       setUploadedFile(file);
-      processExcelFile(file); // Tự động xử lý file khi upload
-      return false; // Prevent default upload
+      processExcelFile(file);
+      return false;
     },
     onRemove: () => {
       setUploadedFile(null);
@@ -106,84 +87,37 @@ export default function ExcelUploadModal({ open, onClose, onSaveData }: Props) {
   };
 
   const handleCloseModal = () => {
-    // Reset tất cả state khi đóng modal
     setUploadedFile(null);
     setExcelData([]);
     onClose();
   };
 
-  const handleRemoveFile = () => {
-    setUploadedFile(null);
-    setExcelData([]);
-  };
-
   const tableColumns = [
-    {
-      title: "Tên sản phẩm",
-      dataIndex: "product_name",
-      key: "product_name",
-      width: 200,
-    },
-    {
-      title: "Số lượng",
-      dataIndex: "quantity",
-      key: "quantity",
-      width: 80,
-    },
-    {
-      title: "Cân nặng (kg)",
-      dataIndex: "weight",
-      key: "weight",
-      width: 100,
-    },
-    {
-      title: "Chiều cao (cm)",
-      dataIndex: "height",
-      key: "height",
-      width: 100,
-    },
-    {
-      title: "Chiều rộng (cm)",
-      dataIndex: "width",
-      key: "width",
-      width: 100,
-    },
-    {
-      title: "Chiều dài (cm)",
-      dataIndex: "length",
-      key: "length",
-      width: 100,
-    },
+    { title: "Tên sản phẩm", dataIndex: "product_name", key: "product_name", width: 200 },
+    { title: "Số lượng", dataIndex: "quantity", key: "quantity", width: 80 },
+    { title: "Cân nặng (kg)", dataIndex: "weight", key: "weight", width: 100 },
+    { title: "Chiều cao (cm)", dataIndex: "height", key: "height", width: 100 },
+    { title: "Chiều rộng (cm)", dataIndex: "width", key: "width", width: 100 },
+    { title: "Chiều dài (cm)", dataIndex: "length", key: "length", width: 100 },
   ];
 
   return (
     <Modal
       open={open}
       onCancel={handleCloseModal}
-      width={600}
+      width="100%"
+      style={{ maxWidth: 700 }}
       footer={null}
       closeIcon={<CloseOutlined />}
       centered
     >
       <div style={{ padding: "20px 0" }}>
         <Title level={3} style={{ marginBottom: 8, textAlign: "center" }}>
-          Excel Upload
+          Upload Excel
         </Title>
 
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <Button
-            type="default"
-            onClick={handleDownloadSample}
-            style={{
-              backgroundColor: "#f0f0f0",
-              border: "1px solid #d9d9d9",
-              borderRadius: 6,
-              padding: "6px 24px",
-              height: "auto",
-            }}
-          >
-            Download Sample Categories Data
-          </Button>
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <Button onClick={handleDownloadSample}>Download Sample Excel</Button>
         </div>
 
         <Upload.Dragger
@@ -200,82 +134,57 @@ export default function ExcelUploadModal({ open, onClose, onSaveData }: Props) {
           <p className="ant-upload-drag-icon">
             <CloudUploadOutlined style={{ fontSize: 48, color: "#bfbfbf" }} />
           </p>
-          <p
-            className="ant-upload-text"
-            style={{ fontSize: 16, color: "#8c8c8c" }}
-          >
-            <strong>Click to upload</strong> or drag and drop
+          <p style={{ fontSize: 16, color: "#8c8c8c" }}>
+            <strong>Click to upload</strong> hoặc kéo thả file
           </p>
-          <p
-            className="ant-upload-hint"
-            style={{ fontSize: 14, color: "#bfbfbf" }}
-          >
-            Only Excel Files (.xlsx)
-          </p>
+          <p style={{ fontSize: 14, color: "#bfbfbf" }}>Chỉ hỗ trợ file Excel (.xlsx, .xls)</p>
         </Upload.Dragger>
 
-        {/* Hiển thị file đã chọn */}
         {uploadedFile && (
-          <div style={{ marginBottom: 16 }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "8px 12px",
-                backgroundColor: "#f0f0f0",
-                borderRadius: 6,
-                border: "1px solid #d9d9d9",
+          <div
+            style={{
+              marginBottom: 16,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "8px 12px",
+              backgroundColor: "#f0f0f0",
+              borderRadius: 6,
+              border: "1px solid #d9d9d9",
+            }}
+          >
+            <span style={{ fontSize: 14 }}>📎 {uploadedFile.name}</span>
+            <Button
+              type="text"
+              size="small"
+              icon={<DeleteOutlined />}
+              onClick={() => {
+                setUploadedFile(null);
+                setExcelData([]);
               }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span>📎</span>
-                <span style={{ fontSize: 14 }}>{uploadedFile.name}</span>
-              </div>
-              <Button
-                type="text"
-                size="small"
-                icon={<DeleteOutlined />}
-                onClick={handleRemoveFile}
-                style={{ color: "#ff4d4f" }}
-              />
-            </div>
+              style={{ color: "#ff4d4f" }}
+            />
           </div>
         )}
 
         {excelData.length > 0 && (
           <div style={{ marginBottom: 24 }}>
             <Divider orientation="left">Preview Data</Divider>
-            <Table
-              dataSource={excelData.map((item, index) => ({
-                ...item,
-                key: index,
-              }))}
-              columns={tableColumns}
-              pagination={false}
-              scroll={{ y: 300, x: 700 }}
-              size="small"
-              style={{
-                backgroundColor: "#fafafa",
-                border: "1px solid #d9d9d9",
-                borderRadius: 6,
-              }}
-            />
+            <div style={{ overflowX: "auto" }}>
+              <Table
+                dataSource={excelData.map((item, index) => ({ ...item, key: index }))}
+                columns={tableColumns}
+                pagination={false}
+                scroll={{ y: 300, x: 700 }}
+                size="small"
+              />
+            </div>
           </div>
         )}
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
           <Button onClick={handleCloseModal}>Cancel</Button>
-
-          <Button
-            type="primary"
-            onClick={handleSaveData}
-            disabled={excelData.length === 0}
-            style={{
-              backgroundColor: "#1f2937",
-              borderColor: "#1f2937",
-            }}
-          >
+          <Button type="primary" onClick={handleSaveData} disabled={excelData.length === 0}>
             Save Data
           </Button>
         </div>

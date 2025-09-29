@@ -33,6 +33,7 @@ import {
 } from "@/utils/shipping";
 import { calculateDistanceFee, haversineDistance } from "@/utils/distance";
 import { getMapboxRoute } from "@/utils/mapbox";
+import ShippingFeeTable from "./ShippingFeeTable";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -511,12 +512,14 @@ export default function EstimatePage() {
                   cursor: "default",
                 }}
                 suffix={
-                  deliveryAddressValue ? (
-                    <CloseCircleOutlined
-                      onClick={handleClearAddress}
-                      style={{ cursor: "pointer", color: "#999" }}
-                    />
-                  ) : null
+                  <CloseCircleOutlined
+                    onClick={handleClearAddress}
+                    style={{
+                      cursor: "pointer",
+                      color: "#999",
+                      visibility: deliveryAddressValue ? "visible" : "hidden",
+                    }}
+                  />
                 }
               />
 
@@ -719,142 +722,11 @@ export default function EstimatePage() {
             <Col span={24}>
               <Title
                 level={4}
-                style={{
-                  textAlign: "center",
-                  marginBottom: 20,
-                  color: "#595959",
-                }}
+                style={{ textAlign: "center", marginBottom: 20 }}
               >
                 Bảng giá các loại dịch vụ vận chuyển
               </Title>
-
-              <div
-                style={{
-                  overflowX: "auto",
-                }}
-              >
-                <table
-                  style={{
-                    width: "100%",
-                    // borderCollapse: "collapse",
-                    backgroundColor: "white",
-                    borderRadius: "6px",
-                    overflow: "hidden",
-                    // boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <thead>
-                    <tr style={{ backgroundColor: "#f0f0f0" }}>
-                      <th
-                        style={{
-                          padding: "16px 20px",
-                          textAlign: "left",
-                          fontWeight: 600,
-                          borderBottom: "2px solid #e0e0e0",
-                          fontSize: "16px",
-                        }}
-                      >
-                        Loại dịch vụ
-                      </th>
-                      <th
-                        style={{
-                          padding: "16px 20px",
-                          textAlign: "center",
-                          fontWeight: 600,
-                          borderBottom: "2px solid #e0e0e0",
-                          fontSize: "16px",
-                        }}
-                      >
-                        Hệ số
-                      </th>
-                      <th
-                        style={{
-                          padding: "16px 20px",
-                          textAlign: "center",
-                          fontWeight: 600,
-                          borderBottom: "2px solid #e0e0e0",
-                          fontSize: "16px",
-                        }}
-                      >
-                        Khoảng cách
-                      </th>
-                      <th
-                        style={{
-                          padding: "16px 20px",
-                          textAlign: "right",
-                          fontWeight: 600,
-                          borderBottom: "2px solid #e0e0e0",
-                          fontSize: "16px",
-                        }}
-                      >
-                        Tổng phí
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {feeDetails.allServices.map((service, index) => (
-                      <tr
-                        key={service.serviceType}
-                        style={{
-                          borderBottom:
-                            index < feeDetails.allServices!.length - 1
-                              ? "1px solid #f0f0f0"
-                              : "none",
-                          backgroundColor:
-                            service.serviceType === "STANDARD"
-                              ? "#f6ffed"
-                              : "white",
-                        }}
-                      >
-                        <td style={{ padding: "16px 20px" }}>
-                          <div style={{ fontWeight: 500, fontSize: "15px" }}>
-                            {service.serviceName}
-                          </div>
-                          {service.serviceType === "STANDARD" && (
-                            <Text type="success" style={{ fontSize: "12px" }}>
-                              (Được khuyến nghị)
-                            </Text>
-                          )}
-                        </td>
-                        <td
-                          style={{
-                            padding: "16px 20px",
-                            textAlign: "center",
-                            fontWeight: 500,
-                            fontSize: "15px",
-                          }}
-                        >
-                          x{service.multiplier}
-                        </td>
-                        <td
-                          style={{
-                            padding: "16px 20px",
-                            textAlign: "center",
-                            color: "#666",
-                            fontSize: "15px",
-                          }}
-                        >
-                          {service.distanceKm.toFixed(1)} km
-                        </td>
-                        <td
-                          style={{
-                            padding: "16px 20px",
-                            textAlign: "right",
-                            fontWeight: "bold",
-                            fontSize: "18px",
-                            color:
-                              service.serviceType === "STANDARD"
-                                ? "#52c41a"
-                                : "#1890ff",
-                          }}
-                        >
-                          {service.totalFee.toLocaleString("vi-VN")}đ
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <ShippingFeeTable services={feeDetails.allServices} />
             </Col>
           </Row>
         )}

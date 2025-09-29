@@ -14,21 +14,21 @@ interface PerformanceStatCardsProps {
   performanceData: StatCardData[];
 }
 
-// Function to format minutes to "x giờ y phút" or "x phút"
+// Function to format minutes to "xh ym" or "xm" (shortened format)
 function formatMinutesToTime(minutes: number): string {
-  if (minutes <= 0) return "0 phút";
+  if (minutes <= 0) return "0m";
   
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = Math.round(minutes % 60);
   
   if (hours > 0) {
     if (remainingMinutes > 0) {
-      return `${hours} giờ ${remainingMinutes} phút`;
+      return `${hours}h ${remainingMinutes}m`;
     } else {
-      return `${hours} giờ`;
+      return `${hours}h`;
     }
   } else {
-    return `${remainingMinutes} phút`;
+    return `${remainingMinutes}m`;
   }
 }
 
@@ -47,31 +47,31 @@ export default function PerformanceStatCards({ performanceData }: PerformanceSta
         <StatCard
           key={index}
           title={
-            data.metric.includes('Chi phí')
-              ? 'Chi phí vận chuyển trung bình/km'
+            data.metric.includes('Transportation Cost')
+              ? 'Average Transportation Cost/km'
               : data.metric
           }
           value={
-            data.metric.includes('Chi phí')
+            data.metric.includes('Transportation Cost')
               ? `${Math.round(data.current).toLocaleString()}đ`
-              : (data.metric.includes('thời gian') || data.metric.includes('Thời gian'))
+              : (data.metric.includes('Delivery Time') || data.metric.includes('Average Delivery Time'))
               ? formatMinutesToTime(data.current)
-              : data.metric.includes('km đã vận chuyển')
+              : data.metric.includes('km Transported')
               ? `${Math.round(data.current).toLocaleString()} km`
               : `${data.current.toFixed(1)}%`
           }
           subtitle={
-            data.metric.includes('Chi phí')
+            data.metric.includes('Transportation Cost')
               ? ''
-              : (data.metric.includes('thời gian') || data.metric.includes('Thời gian'))
+              : (data.metric.includes('Delivery Time') || data.metric.includes('Average Delivery Time'))
               ? ''
-              : data.metric.includes('km đã vận chuyển')
+              : data.metric.includes('km Transported')
               ? ''
-              : `Mục tiêu: ${data.target.toFixed(1)}%`
+              : `Target: ${data.target.toFixed(1)}%`
           }
           trend={
-            (data.metric.includes('thời gian') || data.metric.includes('Thời gian') || data.metric.includes('Chi phí') || data.metric.includes('km đã vận chuyển'))
-              ? undefined // Ẩn trend cho thời gian, chi phí và tổng km
+            (data.metric.includes('Delivery Time') || data.metric.includes('Average Delivery Time') || data.metric.includes('Transportation Cost') || data.metric.includes('km Transported'))
+              ? undefined // Hide trend for time, cost and total km
               : {
                   value: Math.abs(data.trend),
                   isPositive: data.trend > 0,
