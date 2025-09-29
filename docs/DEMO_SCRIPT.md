@@ -197,21 +197,14 @@ Kịch bản demo này trình bày một luồng hoàn chỉnh từ việc custo
 1. **Real-time Tracking**
    - Hiển thị vị trí xe realtime
    - Cập nhật trạng thái tức thì
-   - Tính toán ETA chính xác
 
 2. **Quản Lý Vận Hành Hiệu Quả**
    - Dashboard trực quan
    - Phân tích dữ liệu realtime
    - Tối ưu hóa quy trình
 
-3. **Xử Lý Sự Cố Nhanh Chóng**
-   - Phát hiện sớm vấn đề
-   - Nhiều phương án xử lý
-   - Hệ thống backup
-
-4. **Tích Hợp Đa Nền Tảng**
+3. **Tích Hợp Đa Nền Tảng**
    - Mapbox cho bản đồ
-   - Payment Gateway
    - Email service
    - Hóa đơn điện tử
 
