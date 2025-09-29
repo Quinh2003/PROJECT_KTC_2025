@@ -146,6 +146,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                path.startsWith("/v3/api-docs/") ||
                path.equals("/login") ||
                path.equals("/register") ||
-               path.startsWith("/public/");
+               path.startsWith("/public/") ||
+               // allow checklist APIs for public tracking
+               path.startsWith("/api/checklist/");
     }
 }

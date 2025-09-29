@@ -37,13 +37,13 @@ public class DeliveryFeeCalculationService {
     private static final BigDecimal BASE_FEE_ADDITIONAL_500G = new BigDecimal("2500");
     
     // Phí nội cụm (VNĐ) - Theo cột "Nội cụm" 
-    private static final BigDecimal INNER_AREA_FEE_UNDER_250G = new BigDecimal("28000");
-    private static final BigDecimal INNER_AREA_FEE_250_500G = new BigDecimal("30000");
-    private static final BigDecimal INNER_AREA_FEE_500_1000G = new BigDecimal("33000");
-    private static final BigDecimal INNER_AREA_FEE_1000_1500G = new BigDecimal("36000");
-    private static final BigDecimal INNER_AREA_FEE_1500_2000G = new BigDecimal("39000");
-    private static final BigDecimal INNER_AREA_FEE_2000_2500G = new BigDecimal("42000");
-    private static final BigDecimal INNER_AREA_FEE_2500_3000G = new BigDecimal("45000");
+    private static final BigDecimal INNER_AREA_FEE_UNDER_250G = new BigDecimal("17500");
+    private static final BigDecimal INNER_AREA_FEE_250_500G = new BigDecimal("175500");
+    private static final BigDecimal INNER_AREA_FEE_500_1000G = new BigDecimal("17750");
+    private static final BigDecimal INNER_AREA_FEE_1000_1500G = new BigDecimal("18950");
+    private static final BigDecimal INNER_AREA_FEE_1500_2000G = new BigDecimal("19100");
+    private static final BigDecimal INNER_AREA_FEE_2000_2500G = new BigDecimal("19300");
+    private static final BigDecimal INNER_AREA_FEE_2500_3000G = new BigDecimal("19500");
     private static final BigDecimal INNER_AREA_FEE_ADDITIONAL_500G = new BigDecimal("3000");
     
     // CHỈ PHỤC VỤ NỘI CỤM ĐÀ NẴNG - Không cần phí liên miền
@@ -335,7 +335,7 @@ public class DeliveryFeeCalculationService {
         // Chi tiết phí khoảng cách (theo Frontend)
         String zoneType = "Nội thành Đà Nẵng (không có phí khoảng cách)";
         
-        details.append(String.format("- Phí khoảng cách (%s): %,.0f VNĐ\n", zoneType, distanceFee));
+        // details.append(String.format("- Phí khoảng cách (%s): %,.0f VNĐ\n", zoneType, distanceFee));
         details.append(String.format("- TỔNG DELIVERY FEE: %,.0f + %,.0f = %,.0f VNĐ", 
                 adjustedShippingFee, distanceFee, totalDeliveryFee));
         

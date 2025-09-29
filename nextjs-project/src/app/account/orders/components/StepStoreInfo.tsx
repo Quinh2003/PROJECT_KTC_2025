@@ -467,33 +467,24 @@ export default function StepStoreInfo({ store }: Props) {
 
             <Row gutter={[12, 12]}>
               <Col xs={24} sm={12} md={6}>
-                <div>
-                  <div style={{ 
-                    marginBottom: 4, 
-                    fontSize: 12, 
-                    color: "#1890ff", 
-                    fontWeight: 500 
-                  }}>
-                  </div>
-                  <Select
-                    placeholder="Province/City"
-                    style={{ width: "100%" }}
-                    value={selectedProvince || undefined}
-                    onChange={handleProvinceChange}
-                    disabled={true} // Disable vì chỉ phục vụ Đà Nẵng
-                    showSearch={false}
-                  >
-                    {provinces.map((province) => (
-                      <Select.Option
-                        key={province.code}
-                        value={province.code}
-                        label={province.name}
-                      >
-                        {province.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </div>
+                <Select
+                  placeholder="Province/City"
+                  style={{ width: "100%" }}
+                  value={selectedProvince || undefined}
+                  onChange={handleProvinceChange}
+                  disabled={true} // Disable vì chỉ phục vụ Đà Nẵng
+                  showSearch={false}
+                >
+                  {provinces.map((province) => (
+                    <Select.Option
+                      key={province.code}
+                      value={province.code}
+                      label={province.name}
+                    >
+                      {province.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Col>
               <Col xs={24} sm={12} md={6}>
                 <Select

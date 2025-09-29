@@ -130,9 +130,10 @@ export const createAddressPayload = (values: Record<string, unknown>): AddressPa
   }
 
   // Validate Đà Nẵng address
+  const fullAddressWithCity = `${String(values.address)}, ${String(values.city)}`;
   const addressValidation = validateDaNangAddress({
     city: String(values.city),
-    fullAddress: String(values.address)
+    fullAddress: fullAddressWithCity
   });
   
   if (!addressValidation.isValid) {

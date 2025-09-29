@@ -62,3 +62,17 @@ export type OrderStatus =
   | "shipping"
   | "delivered"
   | "cancelled";
+
+// Checklist timeline types for public tracking
+export interface TimelineStepDto {
+  stepCode: string;
+  stepName: string;
+  description?: string;
+  // when completed
+  completedAt?: string | number | Date;
+  completed?: boolean;
+  // optional extra info
+  actor?: string;
+  details?: string;
+  status?: string;
+}

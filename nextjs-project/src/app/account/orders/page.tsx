@@ -330,10 +330,7 @@ export default function OrdersPage() {
       width: 120,
       align: "right" as const,
       render: (amount: number | null) =>
-        (amount || 0).toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        }),
+        `${(amount || 0).toLocaleString("vi-VN")} ₫`,
     },
     {
       title: "Status",

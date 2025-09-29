@@ -138,6 +138,8 @@ authProvider.setUserDetailsService(userDetailsService);
                         .requestMatchers("/api/addresses/**").permitAll()
                         .requestMatchers("/api/order-items/**").permitAll()
                         .requestMatchers("/api/deliveries/**").permitAll()
+                        // Checklist endpoints should be public for customer tracking
+                        .requestMatchers("/api/checklist/**").permitAll()
                         
                         // Store endpoints
                         .requestMatchers(HttpMethod.GET, "/api/stores", "/api/stores/**").permitAll()

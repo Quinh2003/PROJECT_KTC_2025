@@ -193,10 +193,7 @@ export default function CustomerAccount() {
       key: "shipping_fee",
       align: "right" as const,
       render: (amount: number) =>
-        amount.toLocaleString("en-US", {
-          style: "currency",
-          currency: "USD",
-        }),
+        `${amount.toLocaleString("vi-VN")} ₫`,
     },
     {
       title: "Status",

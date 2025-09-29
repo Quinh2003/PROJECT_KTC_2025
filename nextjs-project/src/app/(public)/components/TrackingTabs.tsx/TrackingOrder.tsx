@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { getOrderTrackingApi } from "../../../../server/order.api";
 
 const formatDate = (isoString: string) =>
@@ -34,6 +35,11 @@ export default function TrackingOrder({
     null
   );
   const [isLoading, setIsLoading] = useState(false);
+
+  const OrderChecklistTimeline = dynamic(
+    () => import("@/components/OrderChecklistTimeline"),
+    { ssr: false }
+  );
 
   const handleTrackingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +112,14 @@ export default function TrackingOrder({
               />
               <InfoItem label="From" value={trackingResult.from} />
               <InfoItem label="To" value={trackingResult.to} />
+            </div>
+
+            {/* Checklist timeline */}
+            <div className="mt-6">
+              <OrderChecklistTimeline
+                orderId={trackingResult.code}
+                orderStatus={trackingResult.status}
+              />
             </div>
           </div>
         )}

@@ -242,18 +242,6 @@ export default function StepInvoice({ form, store }: Props) {
                       );
                     },
                   },
-                  {
-                    title: "Shipping Fee",
-                    key: "shipping_fee",
-                    align: "right",
-                    render: (_, r: OrderItem) => {
-                      const fragile = r.is_fragile || false;
-                      const fee = calculateBaseShippingFee([r], fragile);
-                      return (
-                        <Text strong>{fee.toLocaleString("en-US")} ₫</Text>
-                      );
-                    },
-                  },
                 ]}
               />
             )}

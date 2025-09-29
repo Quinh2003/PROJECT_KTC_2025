@@ -14,14 +14,14 @@ export type ServiceType = keyof typeof SERVICE_MULTIPLIERS;
 // BẢNG GIÁ VIETTELPOST CHO ĐÀ NẴNG (Theo hình user cung cấp)
 // Sử dụng cột "Nội cụm" cho Đà Nẵng
 const VIETTEL_PRICES = {
-  UNDER_250G: 28000,      // Đến 250g
-  FROM_250_500G: 30000,   // Trên 250 - 500g  
-  FROM_500_1000G: 33000,  // Trên 500 - 1000g
-  FROM_1000_1500G: 36000, // Trên 1000 - 1500g
-  FROM_1500_2000G: 39000, // Trên 1500 - 2000g
-  FROM_2000_2500G: 42000, // Trên 2000 - 2500g
-  FROM_2500_3000G: 45000, // Trên 2500 - 3000g
-  ADDITIONAL_500G: 3000,  // Mỗi 0,5kg tiếp theo
+  UNDER_250G: 16700,      // Đến 250g
+  FROM_250_500G: 16800,   // Trên 250 - 500g  
+  FROM_500_1000G: 16900,  // Trên 500 - 1000g
+  FROM_1000_1500G: 17100, // Trên 1000 - 1500g
+  FROM_1500_2000G: 17200, // Trên 1500 - 2000g
+  FROM_2000_2500G: 17300, // Trên 2000 - 2500g
+  FROM_2500_3000G: 17400, // Trên 2500 - 3000g
+  ADDITIONAL_500G: 2700,  // Mỗi 0,5kg tiếp theo
 };
 
 /**
