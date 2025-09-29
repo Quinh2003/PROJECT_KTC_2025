@@ -178,12 +178,12 @@ Kịch bản demo này trình bày một luồng hoàn chỉnh từ việc custo
 - **Backend URL**: http://localhost:8080
 - **Frontend URL**: http://localhost:5173
 - **Test Accounts**:
-  - Customer: customer@example.com / password
-  - Dispatcher: dispatcher@example.com / password
-  - Driver: driver@example.com / password
-  - Fleet Manager: fleet@example.com / password
-  - Operations Manager: ops@example.com / password
-  - Admin: admin@example.com / password
+  - Customer: nguyentngoclien0704@gmail.com / 123456
+  - Dispatcher: dispatcher@fr.com / dispatcher@1234
+  - Driver: driver_01@fr.com / 123456
+  - Fleet Manager: fleet@fr.com / fleet@1234
+  - Operations Manager: operations@fr.com / operations@1234
+  - Admin: admin@fr.com / admin@1234
 - **Sample Orders**: ✅
 - **Test Locations**: ✅ (HCMC area)
 - **Payment Integration**: Test Mode ✅
