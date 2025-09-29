@@ -2,7 +2,7 @@
 
 ## 📋 Tổng Quan
 
-Kịch bản demo này trình bày một luồng hoàn chỉnh từ việc customer tạo đơn hàng, dispatcher phân công xe và tài xế, theo dõi hành trình thực tế, cho đến việc hoàn thành giao hàng và xuất hóa đơn điện tử.
+Kịch bản demo này trình bày một luồng hoàn chỉnh từ việc customer tạo đơn hàng, dispatcher phân công xe và tài xế, theo dõi hành trình thực tế, cho đến việc hoàn thành giao hàng và xuất hoá đơn thanh toán.
 
 ---
 
@@ -146,7 +146,7 @@ Kịch bản demo này trình bày một luồng hoàn chỉnh từ việc custo
   - Đề xuất điều chỉnh quy trình
   - Kế hoạch nâng cao chất lượng
 
-#### 4.2.1: Xuất hóa đơn điện tử
+#### 4.2.1: Xuất hoá đơn thanh toán
 - Tạo hóa đơn từ thông tin đơn hàng
 - Gửi email hóa đơn cho khách hàng
 
@@ -207,6 +207,6 @@ Kịch bản demo này trình bày một luồng hoàn chỉnh từ việc custo
 3. **Tích Hợp Đa Nền Tảng**
    - Mapbox cho bản đồ
    - Email service
-   - Hóa đơn điện tử
+   - hoá đơn thanh toán
 
 ---
