@@ -262,3 +262,5 @@ const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({ invoice, onClos
 };
 
 export default InvoiceDetailModal;
+
+
