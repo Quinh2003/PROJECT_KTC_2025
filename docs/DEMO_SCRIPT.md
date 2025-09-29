@@ -105,7 +105,7 @@ Kịch bản demo này trình bày một luồng hoàn chỉnh từ việc custo
 
 ## 📊 **Phần 4: Quản Lý Vận Hành**
 
-### � **Bước 4.1: Fleet Manager Quản Lý Đội Xe**
+### 🚘 **Bước 4.1: Fleet Manager Quản Lý Đội Xe**
 
 #### 4.1.1: Lên lịch bảo trì định kỳ
 - Xem danh sách xe và lịch bảo trì
@@ -135,7 +135,7 @@ Kịch bản demo này trình bày một luồng hoàn chỉnh từ việc custo
 - Phân tích nguyên nhân
 - Lên kế hoạch phòng ngừa
 
-### � **Bước 4.2: Operations Manager Giám Sát Hoạt Động**
+### 📊 **Bước 4.2: Operations Manager Giám Sát Hoạt Động**
 - Theo dõi dashboard vận hành:
   - KPIs về thời gian giao hàng
   - Tỷ lệ giao hàng đúng hẹn
