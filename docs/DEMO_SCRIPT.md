@@ -13,6 +13,7 @@ Kịch bản demo này trình bày một luồng hoàn chỉnh từ việc custo
 - Tạo đơn hàng mới
 - Theo dõi trạng thái đơn hàng
 - Xem lịch sử đơn hàng
+- Tải hóa đơn thanh toán
 
 ### 📦 **Dispatcher (Điều phối viên)**
 - Xử lý và quản lý đơn hàng
@@ -100,10 +101,6 @@ Kịch bản demo này trình bày một luồng hoàn chỉnh từ việc custo
 - Chụp ảnh bằng chứng giao hàng
 - Xác nhận hoàn thành
 
-### 🧾 **Bước 3.4: Xuất hóa đơn điện tử**
-- Tạo hóa đơn từ thông tin đơn hàng
-- Gửi email hóa đơn cho khách hàng
-
 ---
 
 ## 📊 **Phần 4: Quản Lý Vận Hành**
@@ -149,7 +146,11 @@ Kịch bản demo này trình bày một luồng hoàn chỉnh từ việc custo
   - Đề xuất điều chỉnh quy trình
   - Kế hoạch nâng cao chất lượng
 
-#### 4.2.1: Báo cáo tổng hợp
+#### 4.2.1: Xuất hóa đơn điện tử
+- Tạo hóa đơn từ thông tin đơn hàng
+- Gửi email hóa đơn cho khách hàng
+
+#### 4.2.2: Báo cáo tổng hợp
 - Thống kê số đơn hàng
 - Phân tích hiệu suất giao hàng
 - Báo cáo chi phí vận chuyển
