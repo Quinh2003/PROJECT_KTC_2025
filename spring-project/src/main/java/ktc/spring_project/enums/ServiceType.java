@@ -2,10 +2,10 @@ package ktc.spring_project.enums;
 
 public enum ServiceType {
     STANDARD("Standard", 1.0),
-    FIRST_CLASS("First Class", 1.3),
+    FIRST_CLASS("First Class", 1.35), // Theo bảng giá ViettelPost
     SECOND_CLASS("Second Class", 0.8),
-    EXPRESS("Express", 1.8),
-    PRIORITY("Priority", 2.0);
+    EXPRESS("Express", 1.5),
+    PRIORITY("Priority", 1.6);
 
     private final String displayName;
     private final double multiplier;

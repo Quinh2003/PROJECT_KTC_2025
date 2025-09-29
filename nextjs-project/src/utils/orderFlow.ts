@@ -8,6 +8,7 @@ import {
 import { calculateDistanceFee, calculateTotalDistance } from "./distance";
 import { getMapboxRoute } from "./mapbox";
 import { isValidItem, calculateVolume } from "./orderItems";
+import { validateDaNangAddress, DA_NANG_ONLY_MESSAGE } from "./addressValidation";
 
 /**
  * Interface cho payload tạo address
@@ -95,11 +96,11 @@ export interface DeliveryPayload {
 /**
  * Tạo address payload từ form values
  */
-export const createAddressPayload = (values: any): AddressPayload => {
+export const createAddressPayload = (values: Record<string, unknown>): AddressPayload => {
   // Map string sang enum AddressType
   let addressType = "DELIVERY";
   if (values.addressType) {
-    switch (values.addressType.toLowerCase()) {
+    switch (String(values.addressType).toLowerCase()) {
       case "home":
         addressType = "HOME";
         break;
@@ -115,34 +116,44 @@ export const createAddressPayload = (values: any): AddressPayload => {
   }
 
   // Validate required fields
-  if (!values.address || values.address.trim() === "") {
+  if (!values.address || String(values.address).trim() === "") {
     throw new Error("Địa chỉ là bắt buộc");
   }
-  if (!values.city || values.city.trim() === "") {
+  if (!values.city || String(values.city).trim() === "") {
     throw new Error("Thành phố là bắt buộc");
   }
-  if (!values.receiver_name || values.receiver_name.trim() === "") {
+  if (!values.receiver_name || String(values.receiver_name).trim() === "") {
     throw new Error("Tên người nhận là bắt buộc");
   }
-  if (!values.receiver_phone || values.receiver_phone.trim() === "") {
+  if (!values.receiver_phone || String(values.receiver_phone).trim() === "") {
     throw new Error("Số điện thoại người nhận là bắt buộc");
+  }
+
+  // Validate Đà Nẵng address
+  const addressValidation = validateDaNangAddress({
+    city: String(values.city),
+    fullAddress: String(values.address)
+  });
+  
+  if (!addressValidation.isValid) {
+    throw new Error(addressValidation.message || DA_NANG_ONLY_MESSAGE);
   }
 
   // Chỉ trả về những field cần thiết cho address, không bao gồm pickup_date và pickup_time_period
   return {
     addressType,
-    address: values.address.trim(),
-    city: values.city.trim(),
-    contactName: values.receiver_name.trim(),
-    contactPhone: values.receiver_phone.trim(),
-    contactEmail: values.receiver_email || null,
+    address: String(values.address).trim(),
+    city: String(values.city).trim(),
+    contactName: String(values.receiver_name).trim(),
+    contactPhone: String(values.receiver_phone).trim(),
+    contactEmail: values.receiver_email ? String(values.receiver_email) : null,
     state: null,
     country: "Vietnam",
     region: null,
     postalCode: null,
     floorNumber: null,
-    latitude: values.latitude || null,
-    longitude: values.longitude || null,
+    latitude: values.latitude ? Number(values.latitude) : null,
+    longitude: values.longitude ? Number(values.longitude) : null,
   };
 };
 

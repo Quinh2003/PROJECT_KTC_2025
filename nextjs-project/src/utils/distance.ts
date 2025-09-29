@@ -9,9 +9,23 @@ export interface DistanceFeeResult {
 }
 
 /**
- * Tính phí vận chuyển theo khoảng cách
+ * VIETTELPOST ĐÀ NẴNG: Chỉ phục vụ nội thành - KHÔNG CÓ PHÍ KHOẢNG CÁCH
+ * Phí được tính theo trọng lượng trong backend
  */
 export const calculateDistanceFee = (distance: number): DistanceFeeResult => {
+  // Đà Nẵng chỉ phục vụ nội thành, không có phí khoảng cách
+  return {
+    fee: 0, // Không có phí khoảng cách
+    region: "Nội thành Đà Nẵng",
+    base: 0,
+    perKm: 0,
+  };
+};
+
+/**
+ * DEPRECATED: Tính phí theo khoảng cách cũ (không dùng nữa cho Đà Nẵng)
+ */
+export const calculateDistanceFeeOLD = (distance: number): DistanceFeeResult => {
   if (distance <= 50) {
     const fee = 15000 + distance * 1800;
     return {

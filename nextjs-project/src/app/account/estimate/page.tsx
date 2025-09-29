@@ -219,6 +219,25 @@ export default function EstimatePage() {
       try {
         const provincesData = await addressService.getProvinces();
         setProvinces(provincesData);
+        
+        // Tự động chọn Đà Nẵng làm mặc định
+        const daNangProvince = provincesData.find(p => 
+          p.name.toLowerCase().includes('đà nẵng') || 
+          p.name.toLowerCase().includes('da nang')
+        );
+        
+        if (daNangProvince && !selectedProvince) {
+          setSelectedProvince(daNangProvince.code);
+          form.setFieldValue("delivery_city", "Đà Nẵng");
+          
+          // Load districts cho Đà Nẵng
+          try {
+            const districtsData = await addressService.getDistricts(daNangProvince.code);
+            setDistricts(districtsData);
+          } catch (error) {
+            console.error("Error loading Đà Nẵng districts:", error);
+          }
+        }
       } catch (error) {
         console.error("Error loading provinces:", error);
       }
@@ -557,29 +576,34 @@ export default function EstimatePage() {
 
                 <Row gutter={[12, 12]}>
                   <Col xs={24} sm={12} md={6}>
-                    <Select
-                      placeholder="Province/City"
-                      style={{ width: "100%" }}
-                      value={selectedProvince || undefined}
-                      onChange={handleProvinceChange}
-                      showSearch
-                      filterOption={(input, option) =>
-                        option?.label
-                          ?.toString()
-                          .toLowerCase()
-                          .includes(input.toLowerCase()) ?? false
-                      }
-                    >
-                      {provinces.map((province) => (
-                        <Select.Option
-                          key={province.code}
-                          value={province.code}
-                          label={province.name}
-                        >
-                          {province.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
+                    <div>
+                      <div style={{ 
+                        marginBottom: 4, 
+                        fontSize: 12, 
+                        color: "#1890ff", 
+                        fontWeight: 500 
+                      }}>
+                        📍 Chỉ phục vụ nội thành Đà Nẵng
+                      </div>
+                      <Select
+                        placeholder="Province/City"
+                        style={{ width: "100%" }}
+                        value={selectedProvince || undefined}
+                        onChange={handleProvinceChange}
+                        disabled={true} // Disable vì chỉ phục vụ Đà Nẵng
+                        showSearch={false}
+                      >
+                        {provinces.map((province) => (
+                          <Select.Option
+                            key={province.code}
+                            value={province.code}
+                            label={province.name}
+                          >
+                            {province.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </div>
                   </Col>
                   <Col xs={24} sm={12} md={6}>
                     <Select

@@ -1,47 +1,85 @@
 import { OrderItem } from "@/types/orders";
 
-// Hệ số cho từng loại dịch vụ
+// Hệ số cho từng loại dịch vụ - THEO VIETTELPOST
 export const SERVICE_MULTIPLIERS = {
   SECOND_CLASS: 0.8,
   STANDARD: 1.0,
-  FIRST_CLASS: 1.3,
-  EXPRESS: 1.8,
-  PRIORITY: 2.0,
+  FIRST_CLASS: 1.2, // Theo bảng giá ViettelPost
+  EXPRESS: 1.3,
+  PRIORITY: 1.5,
 } as const;
 
 export type ServiceType = keyof typeof SERVICE_MULTIPLIERS;
 
+// BẢNG GIÁ VIETTELPOST CHO ĐÀ NẴNG (Standard)
+const VIETTEL_PRICES = {
+  UNDER_250G: 28000,
+  FROM_250_500G: 30000,
+  FROM_500_1000G: 33000,
+  FROM_1000_1500G: 36000,
+  FROM_1500_2000G: 39000,
+  FROM_2000_2500G: 42000,
+  FROM_2500_3000G: 45000,
+  ADDITIONAL_500G: 3000, // Phí cho mỗi 500g thêm trên 3kg
+};
+
 /**
- * Tính phí vận chuyển cơ bản (chưa áp dụng hệ số dịch vụ)
+ * Tính phí vận chuyển theo công thức ViettelPost dựa trên trọng lượng
+ * CHỈ PHỤC VỤ NỘI THÀNH ĐÀ NẴNG
  */
-export const calculateBaseShippingFee = (
+export const calculateViettelPostShippingFee = (
   items: OrderItem[],
   isFragile?: boolean
 ): number => {
   if (!items || items.length === 0) return 0;
   
-  const riskMultiplier = isFragile ? 1.3 : 1.0;
-  
-  return items.reduce((total, item) => {
-    const weight = Number(item.weight) || 0;
-    const height = Number(item.height) || 0;
-    const width = Number(item.width) || 0;
-    const length = Number(item.length) || 0;
+  // Tính tổng trọng lượng (gram)
+  const totalWeightGrams = items.reduce((total, item) => {
+    const weight = Number(item.weight) || 0; // weight trong kg
     const quantity = Number(item.quantity) || 1;
-    
-    // Tính thể tích (cm³)
-    const volume = height * width * length;
-    // Trọng lượng quy đổi = thể tích / 5000
-    const volumeWeight = volume / 5000;
-    // Trọng lượng tính phí = max(trọng lượng thực tế, trọng lượng quy đổi)
-    const billableWeight = Math.max(weight, volumeWeight);
-    // Phí cơ bản = trọng lượng tính phí × 6,500
-    const baseFee = billableWeight * 6500;
-    // Tổng phí cho item này (chỉ áp dụng hệ số dễ vỡ, chưa áp dụng hệ số dịch vụ)
-    const itemFee = baseFee * riskMultiplier * quantity;
-    
-    return total + itemFee;
+    const weightInGrams = weight * 1000 * quantity; // Chuyển kg sang gram
+    return total + weightInGrams;
   }, 0);
+  
+  // Tính phí theo bảng giá ViettelPost
+  let baseFee = 0;
+  
+  if (totalWeightGrams <= 250) {
+    baseFee = VIETTEL_PRICES.UNDER_250G;
+  } else if (totalWeightGrams <= 500) {
+    baseFee = VIETTEL_PRICES.FROM_250_500G;
+  } else if (totalWeightGrams <= 1000) {
+    baseFee = VIETTEL_PRICES.FROM_500_1000G;
+  } else if (totalWeightGrams <= 1500) {
+    baseFee = VIETTEL_PRICES.FROM_1000_1500G;
+  } else if (totalWeightGrams <= 2000) {
+    baseFee = VIETTEL_PRICES.FROM_1500_2000G;
+  } else if (totalWeightGrams <= 2500) {
+    baseFee = VIETTEL_PRICES.FROM_2000_2500G;
+  } else if (totalWeightGrams <= 3000) {
+    baseFee = VIETTEL_PRICES.FROM_2500_3000G;
+  } else {
+    // Trên 3kg: phí cơ bản 3kg + phí cho từng 500g tiếp theo
+    baseFee = VIETTEL_PRICES.FROM_2500_3000G;
+    const excessWeight = totalWeightGrams - 3000;
+    const additional500gBlocks = Math.ceil(excessWeight / 500);
+    baseFee += additional500gBlocks * VIETTEL_PRICES.ADDITIONAL_500G;
+  }
+  
+  // Áp dụng hệ số dễ vỡ nếu có
+  const riskMultiplier = isFragile ? 1.3 : 1.0;
+  return Math.round(baseFee * riskMultiplier);
+};
+
+/**
+ * DEPRECATED: Tính phí vận chuyển cơ bản (logic cũ)
+ */
+export const calculateBaseShippingFee = (
+  items: OrderItem[],
+  isFragile?: boolean
+): number => {
+  // Sử dụng công thức ViettelPost mới
+  return calculateViettelPostShippingFee(items, isFragile);
 };
 
 /**

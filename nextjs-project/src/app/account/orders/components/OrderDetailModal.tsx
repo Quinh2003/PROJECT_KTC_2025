@@ -288,7 +288,8 @@ export default function OrderDetailModal({
                         <th className="py-2 px-3 text-left border border-gray-200">
                           Fragile
                         </th>
-                        {products?.some((item) => item.shippingFee) && (
+                        {/* ViettelPost: Không hiển thị cột shipping fee từng item */}
+                        {false && products?.some((item) => item.shippingFee) && (
                           <th className="py-2 px-3 text-left border border-gray-200">
                             Shipping Fee
                           </th>
@@ -331,7 +332,8 @@ export default function OrderDetailModal({
                                     : "No"
                                   : ""}
                               </td>
-                              {products.some((item) => item.shippingFee) && (
+                              {/* ViettelPost: Không hiển thị phí ship từng item, chỉ hiển thị tổng phí ship */}
+                              {false && products.some((item) => item.shippingFee) && (
                                 <td className="py-2 px-3 border border-gray-200 text-blue-600">
                                   {(() => {
                                     if (!item.shippingFee) return "";

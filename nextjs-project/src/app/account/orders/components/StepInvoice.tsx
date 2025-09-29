@@ -78,6 +78,7 @@ export default function StepInvoice({ form, store }: Props) {
 
   const serviceFeeMultiplier = getServiceMultiplier(serviceType);
 
+  // ViettelPost: Tính phí dựa trên tổng trọng lượng, không phí khoảng cách
   let baseShippingFee = 0;
   items.forEach((item) => {
     if (isValidItem(item)) {
@@ -87,9 +88,8 @@ export default function StepInvoice({ form, store }: Props) {
     }
   });
 
-  const totalFee = Math.round(
-    baseShippingFee * serviceFeeMultiplier + (distanceFee || 0)
-  );
+  // Đà Nẵng không có phí khoảng cách, chỉ có phí service type
+  const totalFee = Math.round(baseShippingFee * serviceFeeMultiplier);
 
   React.useEffect(() => {
     form.setFieldValue("delivery_fee", totalFee);
@@ -282,13 +282,13 @@ export default function StepInvoice({ form, store }: Props) {
                     </Select.Option>
                     <Select.Option value="STANDARD">Standard</Select.Option>
                     <Select.Option value="FIRST_CLASS">
-                      First Class (+30%)
+                      First Class (+20%)
                     </Select.Option>
                     <Select.Option value="EXPRESS">
-                      Express (+80%)
+                      Express (+30%)
                     </Select.Option>
                     <Select.Option value="PRIORITY">
-                      Priority (+100%)
+                      Priority (+50%)
                     </Select.Option>
                   </Select>
                 </Form.Item>
@@ -345,6 +345,12 @@ export default function StepInvoice({ form, store }: Props) {
                       <Divider style={{ margin: "12px 0" }} />
                     </Col>
 
+                    <Col xs={24} style={{ marginBottom: 8 }}>
+                      <Text style={{ fontSize: 12, color: "#666", fontStyle: "italic" }}>
+                        📍 ViettelPost - Dịch vụ chuyển phát nhanh nội thành Đà Nẵng
+                      </Text>
+                    </Col>
+                    
                     <Col xs={12}>
                       <Text strong style={{ fontSize: 16 }}>
                         Total Shipping Fee:
